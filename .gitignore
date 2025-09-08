@@ -1,3 +1,7 @@
+# ==========================================
+# RLC Bingo Manager - Git Ignore File
+# ==========================================
+
 # Logs
 logs
 *.log
@@ -5,6 +9,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+.pnpm-debug.log*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -56,6 +61,12 @@ web_modules/
 # Optional stylelint cache
 .stylelintcache
 
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
 # Optional REPL history
 .node_repl_history
 
@@ -69,6 +80,10 @@ web_modules/
 .env
 .env.*
 !.env.example
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -93,7 +108,6 @@ dist
 
 # vuepress v2.x temp and cache directory
 .temp
-.cache
 
 # Sveltekit cache directory
 .svelte-kit/
@@ -137,3 +151,254 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# ==========================================
+# Google Apps Script Specific
+# ==========================================
+
+# Clasp configuration files (contains sensitive project IDs)
+.clasp.json
+.clasprc.json
+
+# Google Apps Script local development
+.gas/
+*.gs.js
+
+# Apps Script credentials
+appsscript.json.local
+credentials.json
+token.json
+
+# ==========================================
+# IDE and Editor Files
+# ==========================================
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+.history/
+*.vsix
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+*~
+tags
+[._]*.un~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ==========================================
+# Operating System Files
+# ==========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# Project Specific
+# ==========================================
+
+# Backup files
+*.backup
+*.bak
+*.back
+*.old
+*.orig
+*.original
+*.save
+*.saved
+~$*
+.~lock.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Build directories
+build/
+dist/
+out/
+target/
+
+# Test data (but keep test structure)
+tests/data/*
+!tests/data/.gitkeep
+
+# Local configuration
+config.local.js
+config.local.json
+settings.local.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files specific to the project
+bingo-logs/
+audit-logs/
+error-logs/
+access-logs/
+
+# Sensitive data
+credentials/
+secrets/
+private/
+confidential/
+
+# Google Sheets local cache
+.sheets-cache/
+sheets-backup/
+
+# Report outputs (keep templates)
+reports/output/*
+!reports/output/.gitkeep
+reports/*.pdf
+reports/*.csv
+reports/*.xlsx
+
+# Session data (for development)
+sessions/
+session-data/
+
+# User uploads (if any)
+uploads/
+user-uploads/
+
+# Generated documentation
+docs/generated/
+docs/_build/
+docs/.doctrees/
+
+# Package lock files (optional - uncomment if you want to ignore)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ==========================================
+# Archives and Compressed Files
+# ==========================================
+
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.dmg
+*.iso
+*.jar
+*.war
+
+# ==========================================
+# Certificates and Keys
+# ==========================================
+
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+
+# ==========================================
+# Google Drive Sync
+# ==========================================
+
+# Google Drive desktop sync files
+.tmp.drivedownload/
+.tmp.driveupload/
+desktop.ini
+
+# ==========================================
+# Keep Important Files
+# ==========================================
+
+# Ensure these are tracked
+!.gitignore
+!.gitattributes
+!README.md
+!LICENSE
+!package.json
+!.github/
+!docs/
+!src/
+
+# Keep template files
+!templates/
+!examples/
+!samples/
+
+# Keep configuration examples
+!*.example
+!*.sample
+!*.template
