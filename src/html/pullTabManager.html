@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <style>
+        /* Reuse styles from index.html */
+    </style>
+</head>
+<body>
+    <div class="form-section">
+        <h3>Pull-Tab Sales Management</h3>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Lion in Charge</label>
+                <input type="text" id="ptLionInCharge" placeholder="Enter name">
+            </div>
+            <div class="form-group">
+                <label>Worker Name</label>
+                <input type="text" id="ptWorker" placeholder="Enter name">
+            </div>
+        </div>
+        
+        <h4>Game Information</h4>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Select Game</label>
+                <select id="ptGameSelect" onchange="loadGameDetails()">
+                    <option value="">-- Select Game --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Serial Number</label>
+                <input type="text" id="ptSerialNumber" placeholder="Enter serial #">
+            </div>
+            <div class="form-group">
+                <label>Beginning Count</label>
+                <input type="number" id="ptBeginCount" value="0">
+            </div>
+            <div class="form-group">
+                <label>Ending Count</label>
+                <input type="number" id="ptEndCount" value="0">
+            </div>
+            <div class="form-group">
+                <label>Prizes Paid Out</label>
+                <input type="number" id="ptPrizesPaid" value="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Cash Turned In</label>
+                <input type="number" id="ptCashTurnedIn" value="0" step="0.01">
+            </div>
+        </div>
+        
+        <!-- Cash Variance Analysis -->
+        <div class="variance-section">
+            <h4>Cash Variance Analysis</h4>
+            <div class="variance-grid">
+                <div class="variance-item">
+                    <span>Expected Cash:</span>
+                    <span id="ptExpectedCash">$0.00</span>
+                </div>
+                <div class="variance-item">
+                    <span>Actual Cash:</span>
+                    <span id="ptActualCash">$0.00</span>
+                </div>
+                <div class="variance-item">
+                    <span>Variance:</span>
+                    <span id="ptVariance" class="variance-amount">$0.00</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Variance Explanation</label>
+                <textarea id="ptVarianceExplanation" rows="3" placeholder="Explain any variance..."></textarea>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="savePullTabSale()">
+                <i class="material-icons">save</i> Save Pull-Tab Sale
+            </button>
+            <button class="btn btn-warning" onclick="calculatePTVariance()">
+                <i class="material-icons">calculate</i> Calculate Variance
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function loadGameDetails() {
+            // Load game details based on selection
+        }
+        
+        function calculatePTVariance() {
+            const beginCount = parseInt(document.getElementById('ptBeginCount').value || 0);
+            const endCount = parseInt(document.getElementById('ptEndCount').value || 0);
+            const sold = beginCount - endCount;
+            // Calculate expected vs actual
+        }
+        
+        function savePullTabSale() {
+            const saleData = {
+                lionInCharge: document.getElementById('ptLionInCharge').value,
+                // ... collect all data
+            };
+            
+            google.script.run
+                .withSuccessHandler(() => {
+                    alert('Pull-tab sale saved successfully!');
+                })
+                .withFailureHandler(console.error)
+                .recordPullTabSale(saleData);
+        }
+    </script>
+</body>
+</html>
