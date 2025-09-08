@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1976d2;
+            --secondary-color: #ffc107;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --dark: #263238;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .reports-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .report-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .report-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .report-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .report-tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: var(--border-radius);
+            color: #495057;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .report-tab:hover {
+            background: #f8f9fa;
+            border-color: var(--primary-color);
+        }
+        
+        .report-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .report-content {
+            display: none;
+        }
+        
+        .report-content.active {
+            display: block;
+        }
+        
+        .form-104 {
+            background: white;
+            padding: 30px;
+            border: 2px solid #000;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .form-104-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .form-104-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .form-104-subtitle {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .form-104-section {
+            margin-bottom: 20px;
+            border: 1px solid #000;
+            padding: 10px;
+        }
+        
+        .form-104-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .form-104-label {
+            font-weight: bold;
+            flex: 1;
+        }
+        
+        .form-104-value {
+            flex: 1;
+            text-align: right;
+            padding-left: 10px;
+        }
+        
+        .form-104-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        .form-104-table th,
+        .form-104-table td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center;
+        }
+        
+        .form-104-table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        
+        .form-104-signature {
+            margin-top: 30px;
+            border-top: 1px solid #000;
+            padding-top: 20px;
+        }
+        
+        .quarterly-report {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+        }
+        
+        .quarterly-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .quarterly-card {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .quarterly-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .quarterly-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .offage-report {
+            margin-top: 20px;
+        }
+        
+        .offage-chart {
+            height: 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .offage-table {
+            width: 100%;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .offage-table thead {
+            background: #f8f9fa;
+        }
+        
+        .offage-table th,
+        .offage-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .offage-balanced {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+        
+        .offage-over {
+            color: var(--warning-color);
+            font-weight: 500;
+        }
+        
+        .offage-short {
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+        
+        .date-range-selector {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+        
+        .date-range-selector label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .date-range-selector input {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1565c0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: var(--border-radius);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .btn-group,
+            .export-options,
+            .report-tabs {
+                display: none;
+            }
+            
+            .form-104 {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="reports-container">
+        <div class="report-section">
+            <div class="report-header">
+                <h2 class="report-title">
+                    <i class="material-icons" style="vertical-align: middle;">assessment</i>
+                    Reports & Analytics
+                </h2>
+            </div>
+            
+            <div class="report-tabs">
+                <button class="report-tab active" onclick="switchReportTab('form104')">
+                    MGC Form 104
+                </button>
+                <button class="report-tab" onclick="switchReportTab('quarterly')">
+                    Quarterly Report
+                </button>
+                <button class="report-tab" onclick="switchReportTab('offage')">
+                    Offage Analysis
+                </button>
+                <button class="report-tab" onclick="switchReportTab('statistics')">
+                    Statistics
+                </button>
+            </div>
+            
+            <!-- Form 104 Report -->
+            <div class="report-content active" id="form104Content">
+                <div class="date-range-selector">
+                    <label>Session Date:</label>
+                    <input type="date" id="form104Date">
+                    <button class="btn btn-primary" onclick="loadForm104()">
+                        <i class="material-icons">search</i> Load Session
+                    </button>
+                </div>
+                
+                <div id="form104Container">
+                    <!-- Form 104 will be generated here -->
+                </div>
+                
+                <div class="export-options">
+                    <button class="btn btn-primary" onclick="printForm104()">
+                        <i class="material-icons">print</i> Print Form 104
+                    </button>
+                    <button class="btn btn-success" onclick="saveForm104PDF()">
+                        <i class="material-icons">picture_as_pdf</i> Save as PDF
+                    </button>
+                    <button class="btn btn-warning" onclick="emailForm104()">
+                        <i class="material-icons">email</i> Email to MGC
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quarterly Report -->
+            <div class="report-content" id="quarterlyContent">
+                <div class="date-range-selector">
+                    <label>Quarter:</label>
+                    <select id="quarterSelect">
+                        <option value="Q1">Q1 (Jan-Mar)</option>
+                        <option value="Q2">Q2 (Apr-Jun)</option>
+                        <option value="Q3">Q3 (Jul-Sep)</option>
+                        <option value="Q4">Q4 (Oct-Dec)</option>
+                    </select>
+                    <label>Year:</label>
+                    <input type="number" id="quarterYear" value="2025" min="2020" max="2030">
+                    <button class="btn btn-primary" onclick="loadQuarterlyReport()">
+                        <i class="material-icons">search</i> Generate Report
+                    </button>
+                </div>
+                
+                <div class="quarterly-report">
+                    <h3>Quarterly Summary</h3>
+                    <div class="quarterly-grid">
+                        <div class="quarterly-card">
+                            <div class="quarterly-label">Total Occasions</div>
+                            <div class="quarterly-value" id="qOccasions">0</div>
+                        </div>
+                        <div class="quarterly-card">
+                            <div class="quarterly-label">Total Players</div>
+                            <div class="quarterly-value" id="qPlayers">0</div>
+                        </div>
+                        <div class="quarterly-card">
+                            <div class="quarterly-label">Gross Receipts</div>
+                            <div class="quarterly-value" id="qGross">$0.00</div>
+                        </div>
+                        <div class="quarterly-card">
+                            <div class="quarterly-label">Total Prizes</div>
+                            <div class="quarterly-value" id="qPrizes">$0.00</div>
+                        </div>
+                        <div class="quarterly-card">
+                            <div class="quarterly-label">Net Receipts</div>
+                            <div class="quarterly-value" id="qNet">$0.00</div>
+                        </div>
+                        <div class="quarterly-card">
+                            <div class="quarterly-label">Actual Deposited</div>
+                            <div class="quarterly-value" id="qDeposited">$0.00</div>
+                        </div>
+                    </div>
+                    
+                    <h4>Monthly Breakdown</h4>
+                    <table class="offage-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Occasions</th>
+                                <th>Players</th>
+                                <th>Gross Receipts</th>
+                                <th>Prizes</th>
+                                <th>Net Receipts</th>
+                                <th>Deposited</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quarterlyTableBody">
+                            <!-- Monthly data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="export-options">
+                    <button class="btn btn-primary" onclick="printQuarterly()">
+                        <i class="material-icons">print</i> Print Report
+                    </button>
+                    <button class="btn btn-success" onclick="exportQuarterlyCSV()">
+                        <i class="material-icons">download</i> Export CSV
+                    </button>
+                    <button class="btn btn-warning" onclick="submitToMGC()">
+                        <i class="material-icons">send</i> Submit to MGC
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Offage Analysis -->
+            <div class="report-content" id="offageContent">
+                <div class="date-range-selector">
+                    <label>From:</label>
+                    <input type="date" id="offageStartDate">
+                    <label>To:</label>
+                    <input type="date" id="offageEndDate">
+                    <button class="btn btn-primary" onclick="loadOffageAnalysis()">
+                        <i class="material-icons">analytics</i> Analyze
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgBingoOffage">$0.00</div>
+                        <div class="stat-label">Avg Bingo Offage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgPTOffage">$0.00</div>
+                        <div class="stat-label">Avg Pull-Tab Offage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgTotalOffage">$0.00</div>
+                        <div class="stat-label">Avg Combined Offage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="balancedPercent">0%</div>
+                        <div class="stat-label">Balanced Sessions</div>
+                    </div>
+                </div>
+                
+                <div class="offage-chart" id="offageChart">
+                    <!-- Chart will be rendered here -->
+                    <canvas id="offageCanvas" width="800" height="300"></canvas>
+                </div>
+                
+                <div class="offage-report">
+                    <h4>Offage Details by Session</h4>
+                    <table class="offage-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Session ID</th>
+                                <th>Closet Worker</th>
+                                <th>Bingo Offage</th>
+                                <th>PT Offage</th>
+                                <th>Combined</th>
+                                <th>Status</th>
+                                <th>Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="offageTableBody">
+                            <!-- Offage data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="export-options">
+                    <button class="btn btn-primary" onclick="printOffageReport()">
+                        <i class="material-icons">print</i> Print Report
+                    </button>
+                    <button class="btn btn-success" onclick="exportOffageCSV()">
+                        <i class="material-icons">download</i> Export CSV
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="report-content" id="statisticsContent">
+                <div class="date-range-selector">
+                    <label>Period:</label>
+                    <select id="statsPeriod">
+                        <option value="week">Last Week</option>
+                        <option value="month">Last Month</option>
+                        <option value="quarter">Last Quarter</option>
+                        <option value="year">Last Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                    <div id="customDateRange" style="display: none;">
+                        <label>From:</label>
+                        <input type="date" id="statsStartDate">
+                        <label>To:</label>
+                        <input type="date" id="statsEndDate">
+                    </div>
+                    <button class="btn btn-primary" onclick="loadStatistics()">
+                        <i class="material-icons">bar_chart</i> Generate Stats
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalSessions">0</div>
+                        <div class="stat-label">Total Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalPlayersServed">0</div>
+                        <div class="stat-label">Players Served</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgPlayersPerSession">0</div>
+                        <div class="stat-label">Avg Players/Session</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalGrossReceipts">$0</div>
+                        <div class="stat-label">Total Gross Receipts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalPrizesPaid">$0</div>
+                        <div class="stat-label">Total Prizes Paid</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalNetProfit">$0</div>
+                        <div class="stat-label">Total Net Profit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgProfit">$0</div>
+                        <div class="stat-label">Avg Profit/Session</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="profitMargin">0%</div>
+                        <div class="stat-label">Profit Margin</div>
+                    </div>
+                </div>
+                
+                <h4 style="margin-top: 30px;">Top Performers</h4>
+                <div class="quarterly-grid">
+                    <div class="quarterly-card">
+                        <div class="quarterly-label">Best Day</div>
+                        <div class="quarterly-value" id="bestDay">-</div>
+                    </div>
+                    <div class="quarterly-card">
+                        <div class="quarterly-label">Most Players</div>
+                        <div class="quarterly-value" id="mostPlayers">0</div>
+                    </div>
+                    <div class="quarterly-card">
+                        <div class="quarterly-label">Highest Gross</div>
+                        <div class="quarterly-value" id="highestGross">$0</div>
+                    </div>
+                    <div class="quarterly-card">
+                        <div class="quarterly-label">Highest Profit</div>
+                        <div class="quarterly-value" id="highestProfit">$0</div>
+                    </div>
+                </div>
+                
+                <h4 style="margin-top: 30px;">Game Statistics</h4>
+                <div class="quarterly-grid">
+                    <div class="quarterly-card">
+                        <div class="quarterly-label">Progressive Jackpots Won</div>
+                        <div class="quarterly-value" id="progressivesWon">0</div>
+                    </div>
+                    <div class="quarterly-card">
+                        <div class="quarterly-label">Avg Balls for Winner</div>
+                        <div class="quarterly-value" id="avgBallsForWin">0</div>
+                    </div>
+                    <div class="quarterly-card">
+                        <div class="quarterly-label">Total Birthday BOGOs</div>
+                        <div class="quarterly-value" id="totalBOGOs">0</div>
+                    </div>
+                    <div class="quarterly-card">
+                        <div class="quarterly-label">Pull-Tab Profit %</div>
+                        <div class="quarterly-value" id="ptProfitPercent">0%</div>
+                    </div>
+                </div>
+                
+                <div class="export-options">
+                    <button class="btn btn-primary" onclick="printStatistics()">
+                        <i class="material-icons">print</i> Print Statistics
+                    </button>
+                    <button class="btn btn-success" onclick="exportStatisticsCSV()">
+                        <i class="material-icons">download</i> Export Data
+                    </button>
+                    <button class="btn btn-warning" onclick="generateDashboard()">
+                        <i class="material-icons">dashboard</i> Dashboard View
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSessionData = null;
+        let reportData = {};
+        
+        // Initialize on load
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('form104Date').value = today;
+            document.getElementById('offageEndDate').value = today;
+            
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            document.getElementById('offageStartDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+            
+            // Set quarter year
+            document.getElementById('quarterYear').value = new Date().getFullYear();
+        };
+        
+        function switchReportTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.report-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.report-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Content').classList.add('active');
+        }
+        
+        function loadForm104() {
+            const date = document.getElementById('form104Date').value;
+            if (!date) {
+                alert('Please select a date');
+                return;
+            }
+            
+            // Load session data for the date
+            google.script.run
+                .withSuccessHandler(displayForm104)
+                .withFailureHandler(console.error)
+                .getSessionByDate(date);
+        }
+        
+        function displayForm104(sessionData) {
+            if (!sessionData) {
+                alert('No session found for this date');
+                return;
+            }
+            
+            currentSessionData = sessionData;
+            
+            const container = document.getElementById('form104Container');
+            container.innerHTML = `
+                <div class="form-104">
+                    <div class="form-104-header">
+                        <div class="form-104-title">MISSOURI GAMING COMMISSION</div>
+                        <div class="form-104-subtitle">BINGO/PULL-TAB OCCASION REPORT</div>
+                        <div class="form-104-subtitle">***FOR OPERATOR'S RECORDS ONLY--DO NOT SUBMIT***</div>
+                        <div style="margin-top: 10px;">
+                            <span style="border: 1px solid #000; padding: 5px; margin-right: 20px;">FORM 104</span>
+                            <span style="border: 1px solid #000; padding: 5px;">Page 1</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-104-section">
+                        <div class="form-104-row">
+                            <div class="form-104-label">NAME OF ORGANIZATION:</div>
+                            <div class="form-104-value">${sessionData.organizationName || 'Rolla Lions Club'}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">DAY OF OCCASION:</div>
+                            <div class="form-104-value">${sessionData.dayOfWeek}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">DATE OF OCCASION:</div>
+                            <div class="form-104-value">${new Date(sessionData.date).toLocaleDateString()}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">BINGO LICENSE NUMBER:</div>
+                            <div class="form-104-value">${sessionData.bingoLicenseNumber || 'B-0001'}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">TIME OF OCCASION:</div>
+                            <div class="form-104-value">Start: ${sessionData.startTime} End: ${sessionData.endTime || 'N/A'}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">NUMBER OF PLAYERS:</div>
+                            <div class="form-104-value">${sessionData.totalPlayers}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">NUMBER OF BINGO GAMES:</div>
+                            <div class="form-104-value">${sessionData.numberOfBingoGames}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-104-section">
+                        <h4>PROGRESSIVE GAME INFORMATION</h4>
+                        <table class="form-104-table">
+                            <tr>
+                                <th></th>
+                                <th>Progressive Jackpot Prize Offered</th>
+                                <th>Consolation Prize Offered</th>
+                                <th>Number of Balls Needed to Win Jackpot</th>
+                                <th>Actual Prize Amount Awarded</th>
+                                <th>Actual Balls Called</th>
+                            </tr>
+                            <tr>
+                                <td>1. First Progressive</td>
+                                <td>$${(sessionData.progressive1Jackpot || 0).toFixed(2)}</td>
+                                <td>$${(sessionData.progressive1ConsolationOffered || 100).toFixed(2)}</td>
+                                <td>${sessionData.progressive1BallsToWin || 48}</td>
+                                <td>$${(sessionData.progressive1ActualPrize || 0).toFixed(2)}</td>
+                                <td>${sessionData.progressive1ActualBallsCalled || '-'}</td>
+                            </tr>
+                            <tr>
+                                <td>2. Second Progressive</td>
+                                <td>$${(sessionData.progressive2Jackpot || 0).toFixed(2)}</td>
+                                <td>$${(sessionData.progressive2ConsolationOffered || 100).toFixed(2)}</td>
+                                <td>${sessionData.progressive2BallsToWin || 52}</td>
+                                <td>$${(sessionData.progressive2ActualPrize || 0).toFixed(2)}</td>
+                                <td>${sessionData.progressive2ActualBallsCalled || '-'}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="form-104-section">
+                        <h4>GROSS RECEIPTS</h4>
+                        <div class="form-104-row">
+                            <div class="form-104-label">3. TOTAL PULL-TAB GROSS RECEIPTS (Schedule A Total)</div>
+                            <div class="form-104-value">$${(sessionData.totalPullTabGross || 0).toFixed(2)}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">4. TOTAL GROSS SALES BINGO CARDS</div>
+                            <div class="form-104-value">$${(sessionData.totalBingoCardSales || 0).toFixed(2)}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">5. MISCELLANEOUS RECEIPTS (Daubers, Glue Sticks, etc)</div>
+                            <div class="form-104-value">$${(sessionData.miscellaneousReceipts || 0).toFixed(2)}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">6. STARTING CASH</div>
+                            <div class="form-104-value">$${(sessionData.startingCash || 0).toFixed(2)}</div>
+                        </div>
+                        <div class="form-104-row" style="font-weight: bold; background: #f0f0f0; padding: 10px;">
+                            <div class="form-104-label">TOTAL GROSS RECEIPTS (Add Lines 3 through 6)</div>
+                            <div class="form-104-value">$${(sessionData.totalGrossReceipts || 0).toFixed(2)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-104-section">
+                        <h4>PRIZES AWARDED</h4>
+                        <div class="form-104-row">
+                            <div class="form-104-label">7. TOTAL PULL-TAB PRIZES AWARDED (Schedule C Total)</div>
+                            <div class="form-104-value">$${(sessionData.totalPullTabPrizesAwarded || 0).toFixed(2)}</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">8. TOTAL BINGO PRIZES AWARDED (Schedule B Total)</div>
+                            <div class="form-104-value">$${(sessionData.totalBingoPrizesAwarded || 0).toFixed(2)}</div>
+                        </div>
+                        <div class="form-104-row" style="font-weight: bold; background: #f0f0f0; padding: 10px;">
+                            <div class="form-104-label">TOTAL PRIZES AWARDED (Add Line 7 & 8)</div>
+                            <div class="form-104-value">$${(sessionData.totalPrizesAwarded || 0).toFixed(2)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-104-section">
+                        <h4>NET RECEIPTS</h4>
+                        <div class="form-104-row" style="font-weight: bold;">
+                            <div class="form-104-label">9. NET RECEIPTS (Total Gross Receipts less Total Prizes Awarded)</div>
+                            <div class="form-104-value">$${(sessionData.netReceipts || 0).toFixed(2)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-104-section">
+                        <h4>AMOUNT DEPOSITED</h4>
+                        <div class="form-104-row" style="font-weight: bold;">
+                            <div class="form-104-label">10. ACTUAL AMOUNT DEPOSITED FOR THIS OCCASION</div>
+                            <div class="form-104-value">$${(sessionData.actualAmountDeposited || 0).toFixed(2)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-104-signature">
+                        <div class="form-104-row">
+                            <div class="form-104-label">SIGNATURE OF PREPARER:</div>
+                            <div class="form-104-value">_________________________________</div>
+                        </div>
+                        <div class="form-104-row">
+                            <div class="form-104-label">DATE:</div>
+                            <div class="form-104-value">${new Date().toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function printForm104() {
+            window.print();
+        }
+        
+        function saveForm104PDF() {
+            // This would integrate with a PDF library or server-side generation
+            alert('PDF generation will be implemented with server-side library');
+        }
+        
+        function emailForm104() {
+            // This would send the form via email
+            alert('Email functionality will be configured with SMTP settings');
+        }
+        
+        function loadQuarterlyReport() {
+            const quarter = document.getElementById('quarterSelect').value;
+            const year = document.getElementById('quarterYear').value;
+            
+            google.script.run
+                .withSuccessHandler(displayQuarterlyReport)
+                .withFailureHandler(console.error)
+                .getQuarterlyData(quarter, year);
+        }
+        
+        function displayQuarterlyReport(data) {
+            // Update summary cards
+            document.getElementById('qOccasions').textContent = data.totalOccasions || 0;
+            document.getElementById('qPlayers').textContent = data.totalPlayers || 0;
+            document.getElementById('qGross').textContent = '$' + (data.totalGross || 0).toFixed(2);
+            document.getElementById('qPrizes').textContent = '$' + (data.totalPrizes || 0).toFixed(2);
+            document.getElementById('qNet').textContent = '$' + (data.totalNet || 0).toFixed(2);
+            document.getElementById('qDeposited').textContent = '$' + (data.totalDeposited || 0).toFixed(2);
+            
+            // Update monthly table
+            const tbody = document.getElementById('quarterlyTableBody');
+            tbody.innerHTML = '';
+            
+            if (data.monthlyData) {
+                data.monthlyData.forEach(month => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${month.month}</td>
+                        <td>${month.occasions}</td>
+                        <td>${month.players}</td>
+                        <td>$${month.gross.toFixed(2)}</td>
+                        <td>$${month.prizes.toFixed(2)}</td>
+                        <td>$${month.net.toFixed(2)}</td>
+                        <td>$${month.deposited.toFixed(2)}</td>
+                    `;
+                });
+            }
+        }
+        
+        function loadOffageAnalysis() {
+            const startDate = document.getElementById('offageStartDate').value;
+            const endDate = document.getElementById('offageEndDate').value;
+            
+            google.script.run
+                .withSuccessHandler(displayOffageAnalysis)
+                .withFailureHandler(console.error)
+                .getOffageData(startDate, endDate);
+        }
+        
+        function displayOffageAnalysis(data) {
+            // Update statistics
+            document.getElementById('avgBingoOffage').textContent = 
+                '$' + Math.abs(data.avgBingoOffage || 0).toFixed(2);
+            document.getElementById('avgPTOffage').textContent = 
+                '$' + Math.abs(data.avgPTOffage || 0).toFixed(2);
+            document.getElementById('avgTotalOffage').textContent = 
+                '$' + Math.abs(data.avgTotalOffage || 0).toFixed(2);
+            document.getElementById('balancedPercent').textContent = 
+                (data.balancedPercent || 0).toFixed(1) + '%';
+            
+            // Update table
+            const tbody = document.getElementById('offageTableBody');
+            tbody.innerHTML = '';
+            
+            if (data.sessions) {
+                data.sessions.forEach(session => {
+                    const row = tbody.insertRow();
+                    const statusClass = session.status === 'BALANCED' ? 'offage-balanced' :
+                                       session.status === 'OVER' ? 'offage-over' : 'offage-short';
+                    
+                    row.innerHTML = `
+                        <td>${new Date(session.date).toLocaleDateString()}</td>
+                        <td>${session.sessionId}</td>
+                        <td>${session.closetWorker}</td>
+                        <td class="${session.bingoOffage >= 0 ? 'offage-over' : 'offage-short'}">
+                            $${Math.abs(session.bingoOffage || 0).toFixed(2)}
+                        </td>
+                        <td class="${session.ptOffage >= 0 ? 'offage-over' : 'offage-short'}">
+                            $${Math.abs(session.ptOffage || 0).toFixed(2)}
+                        </td>
+                        <td class="${statusClass}">
+                            $${Math.abs(session.combinedOffage || 0).toFixed(2)}
+                        </td>
+                        <td class="${statusClass}">${session.status}</td>
+                        <td>${session.explanation || '-'}</td>
+                    `;
+                });
+            }
+            
+            // Draw chart
+            drawOffageChart(data);
+        }
+        
+        function drawOffageChart(data) {
+            const canvas = document.getElementById('offageCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Simple line chart implementation
+            // In production, you'd use Chart.js or similar library
+            // This is a placeholder for the chart visualization
+            ctx.strokeStyle = '#1976d2';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            // Draw chart based on data...
+        }
+        
+        function loadStatistics() {
+            const period = document.getElementById('statsPeriod').value;
+            let startDate, endDate;
+            
+            if (period === 'custom') {
+                startDate = document.getElementById('statsStartDate').value;
+                endDate = document.getElementById('statsEndDate').value;
+            } else {
+                // Calculate dates based on period
+                endDate = new Date();
+                startDate = new Date();
+                
+                switch(period) {
+                    case 'week':
+                        startDate.setDate(startDate.getDate() - 7);
+                        break;
+                    case 'month':
+                        startDate.setMonth(startDate.getMonth() - 1);
+                        break;
+                    case 'quarter':
+                        startDate.setMonth(startDate.getMonth() - 3);
+                        break;
+                    case 'year':
+                        startDate.setFullYear(startDate.getFullYear() - 1);
+                        break;
+                }
+            }
+            
+            google.script.run
+                .withSuccessHandler(displayStatistics)
+                .withFailureHandler(console.error)
+                .getStatistics(startDate, endDate);
+        }
+        
+        function displayStatistics(stats) {
+            // Update all stat cards
+            document.getElementById('totalSessions').textContent = stats.totalSessions || 0;
+            document.getElementById('totalPlayersServed').textContent = stats.totalPlayers || 0;
+            document.getElementById('avgPlayersPerSession').textContent = stats.avgPlayers || 0;
+            document.getElementById('totalGrossReceipts').textContent = 
+                '$' + (stats.totalGross || 0).toFixed(0);
+            document.getElementById('totalPrizesPaid').textContent = 
+                '$' + (stats.totalPrizes || 0).toFixed(0);
+            document.getElementById('totalNetProfit').textContent = 
+                '$' + (stats.totalNet || 0).toFixed(0);
+            document.getElementById('avgProfit').textContent = 
+                '$' + (stats.avgProfit || 0).toFixed(0);
+            document.getElementById('profitMargin').textContent = 
+                (stats.profitMargin || 0).toFixed(1) + '%';
+            
+            // Update top performers
+            document.getElementById('bestDay').textContent = stats.bestDay || '-';
+            document.getElementById('mostPlayers').textContent = stats.mostPlayers || 0;
+            document.getElementById('highestGross').textContent = 
+                '$' + (stats.highestGross || 0).toFixed(0);
+            document.getElementById('highestProfit').textContent = 
+                '$' + (stats.highestProfit || 0).toFixed(0);
+            
+            // Update game statistics
+            document.getElementById('progressivesWon').textContent = stats.progressivesWon || 0;
+            document.getElementById('avgBallsForWin').textContent = stats.avgBallsForWin || 0;
+            document.getElementById('totalBOGOs').textContent = stats.totalBOGOs || 0;
+            document.getElementById('ptProfitPercent').textContent = 
+                (stats.ptProfitPercent || 0).toFixed(1) + '%';
+        }
+        
+        // Period selector change handler
+        document.getElementById('statsPeriod').addEventListener('change', function(e) {
+            const customRange = document.getElementById('customDateRange');
+            if (e.target.value === 'custom') {
+                customRange.style.display = 'flex';
+            } else {
+                customRange.style.display = 'none';
+            }
+        });
+        
+        // Export functions
+        function exportQuarterlyCSV() {
+            google.script.run
+                .withSuccessHandler((url) => {
+                    window.open(url, '_blank');
+                })
+                .withFailureHandler(console.error)
+                .exportQuarterlyToCSV();
+        }
+        
+        function exportOffageCSV() {
+            google.script.run
+                .withSuccessHandler((url) => {
+                    window.open(url, '_blank');
+                })
+                .withFailureHandler(console.error)
+                .exportOffageToCSV();
+        }
+        
+        function exportStatisticsCSV() {
+            google.script.run
+                .withSuccessHandler((url) => {
+                    window.open(url, '_blank');
+                })
+                .withFailureHandler(console.error)
+                .exportStatisticsToCSV();
+        }
+    </script>
+</body>
+</html>
