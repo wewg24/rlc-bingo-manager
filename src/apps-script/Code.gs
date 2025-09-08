@@ -6,7 +6,7 @@
  * This system provides complete tracking for:
  * - Bingo sessions with all games ($250 Letter X, $250 Number 7, $500 Coverall)
  * - Progressive jackpots with balls called tracking
- * - Pull-tab sales with cash turn-in reporting
+ * - Pull-tab sales with cash turn-in reportingsetupSystem()
  * - Offage tracking (separate and combined)
  * - Birthday BOGO promotional sales
  * - Missouri Gaming Commission Form 104 compliance
@@ -1294,4 +1294,33 @@ function closeSession(sessionId) {
   }
   
   return {success: false, error: 'Session not found'};
+}
+
+function initializeSheets() {
+  const ss = SpreadsheetApp.openById('1pmJO2WFi--TJs4kr1pFhKxBXEw4AiZdmrTIQ1_HBrVM');
+  
+  // BingoSessions headers
+  const sessionsSheet = ss.getSheetByName('BingoSessions') || ss.insertSheet('BingoSessions');
+  if (sessionsSheet.getLastRow() === 0) {
+    sessionsSheet.appendRow([
+      'sessionId', 'organizationName', 'bingoLicenseNumber', 'date', 'dayOfWeek',
+      'startTime', 'endTime', 'closetWorker', 'lionInChargePullTabs', 'preparer',
+      'totalPlayers', 'birthdayBOGOs', 'numberOfBingoGames',
+      'progressive1Jackpot', 'progressive1BallsToWin', 'progressive1ConsolationOffered',
+      'progressive1ActualPrize', 'progressive1ActualBallsCalled',
+      'progressive2Jackpot', 'progressive2BallsToWin', 'progressive2ConsolationOffered',
+      'progressive2ActualPrize', 'progressive2ActualBallsCalled',
+      'letterXPrizeOffered', 'letterXActualPrize', 'letterXBallsCalled', 'letterXWinner',
+      'number7PrizeOffered', 'number7ActualPrize', 'number7BallsCalled', 'number7Winner',
+      'coverallPrizeOffered', 'coverallActualPrize', 'coverallBallsCalled', 'coverallWinner',
+      'totalBingoCardSales', 'totalPullTabGross', 'miscellaneousReceipts', 'startingCash',
+      'totalGrossReceipts', 'totalBingoPrizesAwarded', 'totalPullTabPrizesAwarded',
+      'totalPrizesAwarded', 'netReceipts', 'actualAmountDeposited',
+      'bingoOffage', 'pullTabOffage', 'combinedOffage', 'offageExplanation',
+      'createdAt', 'createdBy', 'modifiedAt', 'modifiedBy', 'status', 'notes'
+    ]);
+  }
+  
+  // Continue with other sheets...
+  // [Add similar initialization for all other sheets]
 }
