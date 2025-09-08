@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <style>
+        /* Reuse styles from index.html */
+    </style>
+</head>
+<body>
+    <div class="form-section">
+        <h3>Door Sales Entry - Bingo Card Sales</h3>
+        
+        <!-- Paper Sales Section -->
+        <h4>Paper Sales</h4>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>9on20 1st Pack - Beginning Count</label>
+                <input type="number" id="nineOn20FirstBegin" value="150">
+            </div>
+            <div class="form-group">
+                <label>9on20 1st Pack - Ending Count</label>
+                <input type="number" id="nineOn20FirstEnd" value="0">
+            </div>
+            <div class="form-group">
+                <label>9on20 Additional - Beginning Count</label>
+                <input type="number" id="nineOn20AddBegin" value="150">
+            </div>
+            <div class="form-group">
+                <label>9on20 Additional - Ending Count</label>
+                <input type="number" id="nineOn20AddEnd" value="0">
+            </div>
+        </div>
+        
+        <!-- Special Games Extra Sheets -->
+        <h4>Special Games Extra Sheets</h4>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>$250 Letter X - Extra Sheets Sold</label>
+                <input type="number" id="letterXExtra" value="0">
+            </div>
+            <div class="form-group">
+                <label>$250 Number 7 - Extra Sheets Sold</label>
+                <input type="number" id="number7Extra" value="0">
+            </div>
+            <div class="form-group">
+                <label>$500 Coverall - Extra Sheets Sold</label>
+                <input type="number" id="coverallExtra" value="0">
+            </div>
+        </div>
+        
+        <!-- Birthday BOGO -->
+        <h4>Promotional Sales</h4>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Birthday BOGO Count</label>
+                <input type="number" id="birthdayBOGO" value="0">
+            </div>
+            <div class="form-group">
+                <label>Birthday BOGO Value</label>
+                <input type="number" id="birthdayBOGOValue" value="0" step="0.01">
+            </div>
+        </div>
+        
+        <!-- Electronic Sales -->
+        <h4>Electronic Sales</h4>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Machines @ $40</label>
+                <input type="number" id="machines40" value="0">
+            </div>
+            <div class="form-group">
+                <label>Machines @ $65</label>
+                <input type="number" id="machines65" value="0">
+            </div>
+        </div>
+        
+        <!-- Miscellaneous -->
+        <h4>Miscellaneous Sales</h4>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Daubers Sold</label>
+                <input type="number" id="daubers" value="0">
+            </div>
+            <div class="form-group">
+                <label>Glue Sticks Sold</label>
+                <input type="number" id="glueSticks" value="0">
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="summary-section">
+            <h4>Sales Summary</h4>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span>Total Paper Sales:</span>
+                    <span id="totalPaperSales">$0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Total Electronic Sales:</span>
+                    <span id="totalElectronicSales">$0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Miscellaneous Sales:</span>
+                    <span id="totalMiscSales">$0.00</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Grand Total:</span>
+                    <span id="grandTotal">$0.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="saveDoorSales()">
+                <i class="material-icons">save</i> Save Door Sales
+            </button>
+            <button class="btn btn-warning" onclick="calculateTotals()">
+                <i class="material-icons">calculate</i> Calculate
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function calculateTotals() {
+            // Calculate paper sales
+            const nineOn20First = (150 - parseInt(document.getElementById('nineOn20FirstEnd').value || 0)) * 15;
+            const nineOn20Add = (150 - parseInt(document.getElementById('nineOn20AddEnd').value || 0)) * 10;
+            // ... continue calculations
+            
+            const totalPaper = nineOn20First + nineOn20Add;
+            document.getElementById('totalPaperSales').textContent = '$' + totalPaper.toFixed(2);
+        }
+        
+        function saveDoorSales() {
+            const salesData = {
+                // Collect all form data
+            };
+            
+            google.script.run
+                .withSuccessHandler(() => {
+                    alert('Door sales saved successfully!');
+                })
+                .withFailureHandler(console.error)
+                .recordDoorSales(salesData);
+        }
+    </script>
+</body>
+</html>
