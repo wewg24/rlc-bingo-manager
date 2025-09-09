@@ -662,16 +662,112 @@ function generateMonthlySummary() {
 
 
 /**
- * Open web app
+ * Open web app - Fixed version
  */
 function openWebApp() {
   const url = ScriptApp.getService().getUrl();
-  const html = `<script>window.open('${url}', '_blank');google.script.host.close();</script>`;
   
-  SpreadsheetApp.getUi().showModalDialog(
-    HtmlService.createHtmlOutput(html).setWidth(1).setHeight(1),
-    'Opening Web App...'
+  if (!url || url === '') {
+    // Not deployed yet
+    SpreadsheetApp.getUi().alert(
+      'Web App Not Deployed',
+      'The web app has not been deployed yet.\n\n' +
+      'To deploy:\n' +
+      '1. In Apps Script, click Deploy → New Deployment\n' +
+      '2. Choose "Web app" as the type\n' +
+      '3. Set execution and access permissions\n' +
+      '4. Click Deploy\n' +
+      '5. Copy the Web App URL',
+      SpreadsheetApp.getUi().ButtonSet.OK
+    );
+    return;
+  }
+  
+  // Simple alert with the URL
+  const ui = SpreadsheetApp.getUi();
+  const result = ui.alert(
+    'Open Web App',
+    'Your Web App URL:\n\n' + url + '\n\n' +
+    'Click OK to copy this URL to your clipboard instructions.',
+    ui.ButtonSet.OK_CANCEL
   );
+  
+  if (result == ui.Button.OK) {
+    // Show instructions for copying
+    ui.alert(
+      'Copy URL',
+      'To open the web app:\n\n' +
+      '1. Copy this URL:\n' + url + '\n\n' +
+      '2. Open a new browser tab\n' +
+      '3. Paste the URL and press Enter\n\n' +
+      'Tip: Bookmark the URL for easy access!',
+      ui.ButtonSet.OK
+    );
+  }
+}
+
+/**
+ * Alternative function to get Web App URL
+ * Run this from the script editor to get your URL
+ */
+function getWebAppUrl() {
+  const url = ScriptApp.getService().getUrl();
+  
+  if (!url || url === '') {
+    console.log('❌ Web App not deployed yet!');
+    console.log('\nTo deploy:');
+    console.log('1. Click Deploy → New Deployment');
+    console.log('2. Choose "Web app" as the type');
+    console.log('3. Configure settings:');
+    console.log('   - Execute as: Me');
+    console.log('   - Who has access: Anyone (or your organization)');
+    console.log('4. Click Deploy');
+    console.log('5. Copy the Web App URL');
+  } else {
+    console.log('✅ Your Web App URL:');
+    console.log(url);
+    console.log('\nCopy and paste this URL into your browser to access the web app.');
+    console.log('Bookmark it for easy access!');
+  }
+  
+  return url;
+}
+
+/**
+ * Alternative: Create a simple HTML popup with the URL
+ * This works better from the spreadsheet menu
+ */
+function showWebAppLink() {
+  const url = ScriptApp.getService().getUrl();
+  
+  if (!url || url === '') {
+    SpreadsheetApp.getUi().alert('Please deploy the web app first!');
+    return;
+  }
+  
+  const htmlContent = `
+    <div style="padding: 20px; font-family: Arial, sans-serif;">
+      <h3>RLC Bingo Manager Web App</h3>
+      <p>Your web app is deployed at:</p>
+      <div style="background: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0;">
+        <code style="font-size: 12px; word-break: break-all;">${url}</code>
+      </div>
+      <p>To access the web app:</p>
+      <ol>
+        <li>Copy the URL above</li>
+        <li>Open a new browser tab</li>
+        <li>Paste the URL and press Enter</li>
+        <li>Bookmark for easy access!</li>
+      </ol>
+      <button onclick="google.script.host.close()" style="margin-top: 10px; padding: 8px 16px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+    </div>
+  `;
+  
+  const html = HtmlService.createHtmlOutput(htmlContent)
+    .setWidth(400)
+    .setHeight(300);
+  
+  SpreadsheetApp.getUi().showModalDialog(html, 'Web App URL');
 }
 
 /**
@@ -693,82 +789,39 @@ function generateCurrentForm104() {
 }
 
 /**
- * Show help dialog
+ * Show help - Fixed for permissions
  */
 function showHelp() {
-  const html = HtmlService.createHtmlOutput(`
-    <div style="padding: 20px; font-family: Arial, sans-serif;">
-      <h2>RLC Bingo Manager Help</h2>
-      
-      <h3>Quick Start</h3>
-      <ol>
-        <li>Click "Open Web App" to launch the main interface</li>
-        <li>Start a new occasion from the Dashboard</li>
-        <li>Record door sales and pull-tab sales during the session</li>
-        <li>Track bingo game winners and prizes</li>
-        <li>Close the session with cash reconciliation</li>
-      </ol>
-      
-      <h3>Support Resources</h3>
-      <ul>
-        <li>📧 Email: bingo@rollalions.org</li>
-        <li>📞 Phone: (573) 555-0100</li>
-        <li>📚 Documentation: <a href="https://docs.rollalions.org/bingo" target="_blank">Online Manual</a></li>
-      </ul>
-      
-      <h3>Emergency Support</h3>
-      <p>For urgent issues during a session, call the emergency support line:</p>
-      <p><strong>(573) 555-0111</strong></p>
-      
-      <h3>Common Issues</h3>
-      <ul>
-        <li><strong>Can't save data:</strong> Check your internet connection</li>
-        <li><strong>Calculations wrong:</strong> Verify all entries and refresh</li>
-        <li><strong>Report not generating:</strong> Ensure session is closed</li>
-      </ul>
-    </div>
-  `)
-  .setWidth(500)
-  .setHeight(600);
-  
-  SpreadsheetApp.getUi().showModalDialog(html, 'Help & Support');
+  const ui = SpreadsheetApp.getUi();
+  ui.alert('Help & Support',
+    'RLC Bingo Manager Help\n\n' +
+    '📧 Email: bingo@rollalions.org\n' +
+    '📞 Phone: (573) 555-0100\n' +
+    '📞 Emergency: (573) 555-0111\n\n' +
+    'Quick Tips:\n' +
+    '• Start new occasion from Dashboard\n' +
+    '• Record all door sales and pull-tabs\n' +
+    '• Close session with cash reconciliation\n' +
+    '• Generate Form 104 after closing\n\n' +
+    'For detailed help, see the User Manual in GitHub.',
+    ui.ButtonSet.OK);
 }
 
 /**
- * Show about dialog
+ * Show about - Fixed for permissions
  */
 function showAbout() {
   const version = PropertiesService.getScriptProperties().getProperty('VERSION') || '3.0.0';
-  const lastSetup = PropertiesService.getScriptProperties().getProperty('LAST_SETUP') || 'Unknown';
   
-  const html = HtmlService.createHtmlOutput(`
-    <div style="padding: 20px; font-family: Arial, sans-serif; text-align: center;">
-      <h2>🎰 RLC Bingo Manager</h2>
-      <p><strong>Version:</strong> ${version}</p>
-      <p><strong>Last Setup:</strong> ${new Date(lastSetup).toLocaleDateString()}</p>
-      
-      <hr style="margin: 20px 0;">
-      
-      <h3>Rolla Lions Club</h3>
-      <p>Serving the Rolla Community Since 1925</p>
-      
-      <hr style="margin: 20px 0;">
-      
-      <p><strong>Missouri Gaming Commission Compliant</strong></p>
-      <p>License #B-0001</p>
-      
-      <hr style="margin: 20px 0;">
-      
-      <p style="color: #666; font-size: 12px;">
-        © 2025 Rolla Lions Club. All rights reserved.<br>
-        Developed for charitable gaming operations.
-      </p>
-    </div>
-  `)
-  .setWidth(400)
-  .setHeight(400);
-  
-  SpreadsheetApp.getUi().showModalDialog(html, 'About RLC Bingo Manager');
+  SpreadsheetApp.getUi().alert('About RLC Bingo Manager',
+    '🎰 RLC Bingo Manager\n' +
+    'Version: ' + version + '\n\n' +
+    'Rolla Lions Club\n' +
+    'Serving the Community Since 1925\n\n' +
+    'Missouri Gaming Commission Compliant\n' +
+    'License #B-0001\n\n' +
+    '© 2025 Rolla Lions Club',
+    SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
 /**
