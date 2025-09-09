@@ -840,13 +840,24 @@
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            event.target.closest('.nav-tab').classList.add('active');
+            
+            // Find and activate the correct tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                if (tab.textContent.toLowerCase().includes(tabName.toLowerCase()) || 
+                    tab.onclick.toString().includes(tabName)) {
+                    tab.classList.add('active');
+                }
+            });
             
             // Update content sections
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
             });
-            document.getElementById(tabName + 'Section').classList.add('active');
+            
+            const targetSection = document.getElementById(tabName + 'Section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
             
             // Load content for specific tabs
             switch(tabName) {
@@ -870,7 +881,16 @@
         
         // Start new occasion
         function startNewOccasion() {
-            switchTab('occasion');
+            // Make sure this switches to the correct tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab')[1].classList.add('active'); // Occasion tab
+            
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('occasionSection').classList.add('active');
         }
         
         // Create occasion
@@ -914,56 +934,155 @@
         
         // Load door sales form
         function loadDoorSalesForm() {
-            // This would load the door sales HTML dynamically
-            // For now, we'll use a placeholder
             document.getElementById('doorSalesSection').innerHTML = `
                 <div class="form-section">
                     <h3>Door Sales Entry</h3>
-                    <p>Door sales form will be loaded here...</p>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>9on20 First Pack - Beginning</label>
+                            <input type="number" id="pack1Begin" value="150">
+                        </div>
+                        <div class="form-group">
+                            <label>9on20 First Pack - Ending</label>
+                            <input type="number" id="pack1End" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Birthday BOGO Count</label>
+                            <input type="number" id="birthdayBogo" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Machines @ $40</label>
+                            <input type="number" id="machines40" value="0">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveDoorSales()">
+                        <i class="material-icons">save</i> Save Door Sales
+                    </button>
                 </div>
             `;
         }
         
         // Load pull-tabs form
         function loadPullTabsForm() {
-            // This would load the pull-tabs HTML dynamically
             document.getElementById('pullTabsSection').innerHTML = `
                 <div class="form-section">
                     <h3>Pull-Tab Sales Management</h3>
-                    <p>Pull-tabs form will be loaded here...</p>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Lion in Charge</label>
+                            <input type="text" id="ptLionInCharge" placeholder="Enter name">
+                        </div>
+                        <div class="form-group">
+                            <label>Game Name</label>
+                            <input type="text" id="ptGameName" placeholder="Enter game">
+                        </div>
+                        <div class="form-group">
+                            <label>Serial Number</label>
+                            <input type="text" id="ptSerial" placeholder="Serial #">
+                        </div>
+                        <div class="form-group">
+                            <label>Cash Turned In</label>
+                            <input type="number" id="ptCashIn" value="0">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="savePullTab()">
+                        <i class="material-icons">save</i> Save Pull-Tab
+                    </button>
                 </div>
             `;
         }
         
-        // Load bingo games form
+        // Load bingo games form  
         function loadBingoGamesForm() {
-            // This would load the bingo games HTML dynamically
             document.getElementById('bingoGamesSection').innerHTML = `
                 <div class="form-section">
                     <h3>Bingo Games Tracking</h3>
-                    <p>Bingo games form will be loaded here...</p>
+                    <h4>Progressive Game 1</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Winner Name</label>
+                            <input type="text" id="prog1Winner" placeholder="Winner name">
+                        </div>
+                        <div class="form-group">
+                            <label>Balls Called</label>
+                            <input type="number" id="prog1Balls" min="1" max="75">
+                        </div>
+                        <div class="form-group">
+                            <label>Prize Amount</label>
+                            <input type="number" id="prog1Prize" value="0">
+                        </div>
+                    </div>
+                    <h4>Special Games</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>$250 Letter X Winner</label>
+                            <input type="text" id="letterXWinner" placeholder="Winner name">
+                        </div>
+                        <div class="form-group">
+                            <label>$250 Number 7 Winner</label>
+                            <input type="text" id="number7Winner" placeholder="Winner name">
+                        </div>
+                        <div class="form-group">
+                            <label>$500 Coverall Winner</label>
+                            <input type="text" id="coverallWinner" placeholder="Winner name">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveBingoGames()">
+                        <i class="material-icons">save</i> Save Games
+                    </button>
                 </div>
             `;
         }
         
         // Load cash close form
         function loadCashCloseForm() {
-            // This would load the cash close HTML dynamically
             document.getElementById('cashCloseSection').innerHTML = `
                 <div class="form-section">
                     <h3>Cash Reconciliation</h3>
-                    <p>Cash reconciliation form will be loaded here...</p>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Actual Deposit Amount</label>
+                            <input type="number" id="actualDeposit" value="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Closet Worker</label>
+                            <input type="text" id="closetWorkerClose" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="offage-indicator balanced">
+                        <div class="label">Session Offage</div>
+                        <div class="amount" id="offageAmount">$0.00</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Offage Explanation (if needed)</label>
+                        <textarea id="offageExplanation" rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="closeSession()">
+                        <i class="material-icons">check_circle</i> Close Session
+                    </button>
                 </div>
             `;
         }
         
         // Load reports section
         function loadReportsSection() {
-            // This would load the reports HTML dynamically
             document.getElementById('reportsSection').innerHTML = `
                 <div class="form-section">
                     <h3>Reports</h3>
-                    <p>Reports section will be loaded here...</p>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="generateForm104()">
+                            <i class="material-icons">description</i> Generate Form 104
+                        </button>
+                        <button class="btn btn-success" onclick="generateQuarterly()">
+                            <i class="material-icons">date_range</i> Quarterly Report
+                        </button>
+                        <button class="btn btn-warning" onclick="viewOffage()">
+                            <i class="material-icons">analytics</i> Offage Analysis
+                        </button>
+                    </div>
+                    <div id="reportOutput" style="margin-top: 20px;">
+                        <!-- Report will display here -->
+                    </div>
                 </div>
             `;
         }
@@ -1027,6 +1146,36 @@
             hideLoader();
             console.error(error);
             showToast('An error occurred: ' + error.message, 'error');
+        }
+
+        // Save functions
+        function saveDoorSales() {
+            showToast('Saving door sales...', 'info');
+            // Add actual save logic here
+            google.script.run
+                .withSuccessHandler(() => showToast('Door sales saved!', 'success'))
+                .withFailureHandler(handleError)
+                .recordDoorSales({
+                    sessionId: currentSession,
+                    // Add form data here
+                });
+        }
+
+        function savePullTab() {
+            showToast('Saving pull-tab...', 'info');
+            // Add save logic
+        }
+
+        function saveBingoGames() {
+            showToast('Saving bingo games...', 'info');
+            // Add save logic
+        }
+
+        function closeSession() {
+            if (confirm('Are you sure you want to close this session?')) {
+                showToast('Closing session...', 'info');
+                // Add close logic
+            }
         }
     </script>
 </body>
