@@ -890,3 +890,184 @@ function initializeAllSheets() {
   
   return 'All sheets initialized successfully';
 }
+
+// ==========================================
+// MENU FUNCTIONS
+// ==========================================
+
+/**
+ * Generate quarterly report from menu
+ */
+function generateQuarterlyReport() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.prompt('Generate Quarterly Report', 
+    'Enter quarter (Q1, Q2, Q3, or Q4) and year (e.g., Q1 2025):', 
+    ui.ButtonSet.OK_CANCEL);
+  
+  if (response.getSelectedButton() === ui.Button.OK) {
+    const input = response.getResponseText().split(' ');
+    const quarter = input[0];
+    const year = input[1] || new Date().getFullYear();
+    
+    const data = getQuarterlyData(quarter, year);
+    ui.alert('Quarterly Report', 
+      `${quarter} ${year} Summary:\n\n` +
+      `Total Sessions: ${data.totalOccasions}\n` +
+      `Total Players: ${data.totalPlayers}\n` +
+      `Gross Receipts: $${data.totalGross.toFixed(2)}\n` +
+      `Net Receipts: $${data.totalNet.toFixed(2)}`,
+      ui.ButtonSet.OK);
+  }
+}
+
+/**
+ * Generate offage report from menu
+ */
+function generateOffageReport() {
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 30);
+  
+  const data = getOffageData(startDate.toISOString(), endDate.toISOString());
+  
+  SpreadsheetApp.getUi().alert('Offage Analysis (Last 30 Days)',
+    `Average Bingo Offage: $${data.avgBingoOffage.toFixed(2)}\n` +
+    `Average PT Offage: $${data.avgPTOffage.toFixed(2)}\n` +
+    `Average Total Offage: $${data.avgTotalOffage.toFixed(2)}\n` +
+    `Balanced Sessions: ${data.balancedPercent.toFixed(1)}%`,
+    SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+/**
+ * Generate statistics dashboard from menu
+ */
+function generateStatsDashboard() {
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 1);
+  
+  const stats = getStatistics(startDate.toISOString(), endDate.toISOString());
+  
+  SpreadsheetApp.getUi().alert('Statistics Dashboard (Last Month)',
+    `Sessions: ${stats.totalSessions}\n` +
+    `Total Players: ${stats.totalPlayers}\n` +
+    `Gross Receipts: $${stats.totalGross.toFixed(2)}\n` +
+    `Net Profit: $${stats.totalNet.toFixed(2)}\n` +
+    `Profit Margin: ${stats.profitMargin.toFixed(1)}%\n` +
+    `Best Day: ${stats.bestDay}`,
+    SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+/**
+ * Audit current session from menu
+ */
+function auditCurrentSession() {
+  const sessionId = getCurrentSessionId();
+  if (!sessionId) {
+    SpreadsheetApp.getUi().alert('No Active Session', 
+      'There is no active session to audit.', 
+      SpreadsheetApp.getUi().ButtonSet.OK);
+    return;
+  }
+  
+  const audit = auditSession(sessionId);
+  
+  if (audit.findings.length === 0) {
+    SpreadsheetApp.getUi().alert('Audit Complete',
+      `Session ${sessionId} passed all audit checks!`,
+      SpreadsheetApp.getUi().ButtonSet.OK);
+  } else {
+    let message = `Found ${audit.findings.length} issue(s):\n\n`;
+    audit.findings.forEach(finding => {
+      message += `${finding.type}: ${finding.message}\n`;
+    });
+    SpreadsheetApp.getUi().alert('Audit Results', message, 
+      SpreadsheetApp.getUi().ButtonSet.OK);
+  }
+}
+
+/**
+ * Show properties dialog
+ */
+function showPropertiesDialog() {
+  const props = PropertiesService.getScriptProperties().getProperties();
+  let html = '<div style="padding: 20px; font-family: Arial, sans-serif;">';
+  html += '<h3>System Properties</h3>';
+  html += '<table style="width: 100%; border-collapse: collapse;">';
+  
+  Object.keys(props).forEach(key => {
+    html += `<tr>
+      <td style="padding: 5px; border: 1px solid #ddd;"><strong>${key}</strong></td>
+      <td style="padding: 5px; border: 1px solid #ddd;">${props[key]}</td>
+    </tr>`;
+  });
+  
+  html += '</table></div>';
+  
+  const htmlOutput = HtmlService.createHtmlOutput(html)
+    .setWidth(600)
+    .setHeight(400);
+  
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'System Properties');
+}
+
+/**
+ * Show users dialog
+ */
+function showUsersDialog() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName('Users');
+  const data = sheet.getDataRange().getValues();
+  
+  let html = '<div style="padding: 20px; font-family: Arial, sans-serif;">';
+  html += '<h3>System Users</h3>';
+  html += '<table style="width: 100%; border-collapse: collapse;">';
+  html += '<tr><th style="border: 1px solid #ddd; padding: 5px;">Username</th>';
+  html += '<th style="border: 1px solid #ddd; padding: 5px;">Role</th>';
+  html += '<th style="border: 1px solid #ddd; padding: 5px;">Name</th>';
+  html += '<th style="border: 1px solid #ddd; padding: 5px;">Active</th></tr>';
+  
+  for (let i = 1; i < data.length && i < 10; i++) {
+    html += `<tr>
+      <td style="border: 1px solid #ddd; padding: 5px;">${data[i][0]}</td>
+      <td style="border: 1px solid #ddd; padding: 5px;">${data[i][2]}</td>
+      <td style="border: 1px solid #ddd; padding: 5px;">${data[i][3]}</td>
+      <td style="border: 1px solid #ddd; padding: 5px;">${data[i][5] ? '✓' : '✗'}</td>
+    </tr>`;
+  }
+  
+  html += '</table></div>';
+  
+  const htmlOutput = HtmlService.createHtmlOutput(html)
+    .setWidth(500)
+    .setHeight(400);
+  
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'User Management');
+}
+
+/**
+ * Show email settings
+ */
+function showEmailSettings() {
+  const emailEnabled = PropertiesService.getScriptProperties().getProperty('EMAIL_NOTIFICATIONS') === 'true';
+  const notificationEmail = PropertiesService.getScriptProperties().getProperty('NOTIFICATION_EMAIL');
+  
+  const html = `
+    <div style="padding: 20px; font-family: Arial, sans-serif;">
+      <h3>Email Settings</h3>
+      <p><strong>Notifications Enabled:</strong> ${emailEnabled ? 'Yes' : 'No'}</p>
+      <p><strong>Notification Email:</strong> ${notificationEmail}</p>
+      <p><strong>Daily Quota Remaining:</strong> ${MailApp.getRemainingDailyQuota()}</p>
+      <hr>
+      <p style="color: #666; font-size: 12px;">
+        To change settings, update script properties in Apps Script editor.
+      </p>
+    </div>
+  `;
+  
+  const htmlOutput = HtmlService.createHtmlOutput(html)
+    .setWidth(400)
+    .setHeight(300);
+  
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Email Settings');
+}
