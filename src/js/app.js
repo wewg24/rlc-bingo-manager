@@ -45,6 +45,55 @@ class RLCBingoApp {
     const userStr = localStorage.getItem(CONFIG.STORAGE_KEYS.USER);
     return userStr ? JSON.parse(userStr) : null;
   }
+
+  async loadPullTabs() {
+    try {
+      const response = await fetch(CONFIG.API_URL + '?path=pulltab-library');
+      const data = await response.json();
+      
+      if (data.success && data.games) {
+        // Populate dropdown
+        const select = document.querySelector('select[name="gameName"]');
+        if (select) {
+          select.innerHTML = '<option value="">Select game...</option>';
+          
+          data.games.forEach(game => {
+            const option = document.createElement('option');
+            option.value = game.Name;
+            option.textContent = `${game.Name} ($${game.TopPrize})`;
+            option.dataset.form = game.FormNumber;
+            option.dataset.ideal = game.IdealProfit;
+            select.appendChild(option);
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load pull-tabs:', error);
+      // Use offline cached data if available
+      await this.loadCachedPullTabs();
+    }
+  }
+
+  
+  renderGamesSheet() {
+    const sessionType = document.querySelector('select[name="sessionType"]').value;
+    if (!sessionType) return;
+    
+    const games = CONFIG.GAMES[sessionType] || [];
+    const tbody = document.querySelector('#gamesTable tbody');
+    
+    tbody.innerHTML = games.map((game, index) => `
+      <tr>
+        <td>${game.num}</td>
+        <td>${game.color}</td>
+        <td>${game.game}</td>
+        <td>$${game.prize}</td>
+        <td><input type="text" class="form-control" placeholder="Winners"></td>
+        <td><input type="number" class="form-control" placeholder="Total"></td>
+        <td><input type="checkbox"></td>
+      </tr>
+    `).join('');
+  }
   
   setupEventListeners() {
     // Online/offline detection
