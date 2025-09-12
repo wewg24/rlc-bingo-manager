@@ -1,8 +1,22 @@
+const CACHE_NAME = 'rlc-bingo-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/css/main.css',
+  '/js/app.js',
+  '/manifest.json'
+];
 
-// Caching strategy
-const CACHE_STRATEGY = {
-  static: 'cache-first',      // CSS, JS, images
-  api: 'network-first',        // API calls
-  photos: 'cache-then-network', // User photos
-  reports: 'cache-first'        // Generated PDFs
-};
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
+  );
+});
+
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+  );
+});
