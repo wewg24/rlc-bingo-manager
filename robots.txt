@@ -1,1 +1,13 @@
+# RLC Bingo Manager robots.txt
+# Allow all web crawlers
+User-agent: *
+Allow: /
 
+# Block sensitive directories
+Disallow: /api/
+Disallow: /admin/
+Disallow: /backup/
+Disallow: /.git/
+
+# Sitemap location
+Sitemap: https://wewg24.github.io/rlc-bingo-manager/sitemap.xml
