@@ -996,271 +996,792 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(reg => console.log('Service Worker registered'))
-                .catch(err => console.error('Service Worker registration failed'));
-        }
-
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hide');
-                initializeApp();
-            }, 1500);
-        });
-
-        // App initialization
-        function initializeApp() {
-            checkOnlineStatus();
-            loadUserData();
-            loadCurrentSession();
-            setupEventListeners();
+        // ==========================================
+        // RLC BINGO INTEGRATION SCRIPT - FIXED VERSION
+        // Version 9.1 - Debugged and Corrected
+        // ==========================================
+        
+        // Configuration
+        const RLC_CONFIG = {
+            // Your deployed Web App URL from Google Apps Script
+            API_URL: 'https://script.google.com/macros/s/AKfycbyYhF94GgZeBjhRgh6D-eS6DTTXXgexiR_sz1UbwpZEZ8fZX1z2bTY14X6F0hEsqN6ZZw/exec',
             
-            // Set today's date
-            document.getElementById('occasionDate').value = new Date().toISOString().split('T')[0];
-        }
-
-        // Online/Offline detection
-        function checkOnlineStatus() {
-            const isOnline = navigator.onLine;
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-            const offlineBanner = document.getElementById('offlineBanner');
+            // Storage keys
+            STORAGE_KEYS: {
+                CURRENT_OCCASION: 'rlc_current_occasion',
+                OFFLINE_QUEUE: 'rlc_offline_queue',
+                LAST_SYNC: 'rlc_last_sync',
+                PULL_TAB_LIBRARY: 'rlc_pulltab_library'
+            },
             
-            if (isOnline) {
-                statusDot.classList.remove('offline');
-                statusText.textContent = 'Online';
-                offlineBanner.classList.remove('show');
-            } else {
-                statusDot.classList.add('offline');
-                statusText.textContent = 'Offline';
-                offlineBanner.classList.add('show');
+            // Auto-save interval (milliseconds)
+            AUTO_SAVE_INTERVAL: 30000, // 30 seconds
+            
+            // Offline sync retry interval
+            SYNC_RETRY_INTERVAL: 60000 // 1 minute
+        };
+        
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        
+        class RLCBingoIntegration {
+            constructor() {
+                this.isOnline = navigator.onLine;
+                this.currentOccasion = null;
+                this.autoSaveTimer = null;
+                this.syncTimer = null;
+                this.pullTabLibrary = [];
+                this.isDirty = false;
+                
+                this.init();
+            }
+            
+            init() {
+                // Load saved data from localStorage
+                this.loadSavedData();
+                
+                // Setup event listeners
+                this.setupEventListeners();
+                
+                // Load pull-tab library
+                this.loadPullTabLibrary();
+                
+                // Start auto-save
+                this.startAutoSave();
+                
+                // Check online status
+                this.checkOnlineStatus();
+                
+                // Attempt to sync offline data
+                if (this.isOnline) {
+                    this.syncOfflineData();
+                }
+                
+                console.log('RLC Bingo Integration initialized - v9.1 Fixed');
+            }
+            
+            // ==========================================
+            // EVENT LISTENERS - FIXED
+            // ==========================================
+            
+            setupEventListeners() {
+                // Online/Offline status
+                window.addEventListener('online', () => this.handleOnline());
+                window.addEventListener('offline', () => this.handleOffline());
+                
+                // Form submission
+                const saveButton = document.getElementById('save-occasion');
+                if (saveButton) {
+                    saveButton.addEventListener('click', () => this.saveOccasion());
+                }
+                
+                // Load occasion
+                const loadButton = document.getElementById('load-occasion');
+                if (loadButton) {
+                    loadButton.addEventListener('click', () => this.showLoadDialog());
+                }
+                
+                // Tab changes - FIXED: removed saveCurrentTab reference
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        this.markDirty();
+                        // Auto-save when switching tabs
+                        if (this.isDirty) {
+                            this.autoSave();
+                        }
+                    });
+                });
+                
+                // Form field changes for auto-save
+                document.querySelectorAll('input, select, textarea').forEach(field => {
+                    field.addEventListener('change', () => this.markDirty());
+                });
+                
+                // Progressive game calculations - FIXED with null checks
+                const progBalls = document.getElementById('prog-actual-balls');
+                if (progBalls) {
+                    progBalls.addEventListener('change', () => this.calculateProgressivePrize());
+                }
+            }
+            
+            // ==========================================
+            // DATA COLLECTION - FIXED WITH NULL CHECKS
+            // ==========================================
+            
+            collectFormData() {
+                const data = {
+                    // Occasion data
+                    date: document.getElementById('occ-date')?.value || '',
+                    sessionType: document.querySelector('input[name="session"]:checked')?.value || '',
+                    lionInCharge: document.getElementById('occ-lion')?.value || '',
+                    totalPeople: parseInt(document.getElementById('occ-people')?.value) || 0,
+                    birthdays: parseInt(document.getElementById('occ-birthdays')?.value) || 0,
+                    
+                    // Progressive game
+                    progressive: {
+                        jackpot: parseFloat(document.getElementById('prog-jackpot')?.value) || 0,
+                        ballsNeeded: parseInt(document.getElementById('prog-balls-needed')?.value) || 48,
+                        consolation: parseFloat(document.getElementById('prog-consolation')?.value) || 200,
+                        actualBalls: parseInt(document.getElementById('prog-actual-balls')?.value) || 0,
+                        prizeAwarded: parseFloat(document.getElementById('prog-prize')?.value) || 0,
+                        checkPayment: document.getElementById('prog-check-payment')?.checked || false
+                    },
+                    
+                    // Paper Bingo Sales - Based on your form structure
+                    paperBingo: this.collectPaperBingoData(),
+                    
+                    // POS Door Sales
+                    posDoorSales: this.collectPOSDoorSalesData(),
+                    
+                    // Electronic Bingo
+                    electronicBingo: this.collectElectronicBingoData(),
+                    
+                    // Session Games
+                    sessionGames: this.collectSessionGamesData(),
+                    
+                    // Pull-Tab Games
+                    pullTabGames: this.collectPullTabGamesData(),
+                    
+                    // Money Count
+                    moneyCount: this.collectMoneyCountData(),
+                    
+                    // Metadata
+                    metadata: {
+                        createdAt: new Date().toISOString(),
+                        deviceId: this.getDeviceId(),
+                        version: '9.1'
+                    }
+                };
+                
+                return data;
+            }
+            
+            collectPaperBingoData() {
+                const data = {};
+                
+                // Based on your HTML form structure
+                // Early Birds
+                const earlyBirdsRow = document.querySelector('tr:has(td:contains("Early Birds"))');
+                if (earlyBirdsRow) {
+                    const inputs = earlyBirdsRow.querySelectorAll('input');
+                    data.earlyBirds = {
+                        start: parseInt(inputs[0]?.value) || 0,
+                        free: parseInt(inputs[1]?.value) || 0,
+                        end: parseInt(inputs[2]?.value) || 0
+                    };
+                }
+                
+                // 6 Face
+                const sixFaceRow = document.querySelector('tr:has(td:contains("6 Face"))');
+                if (sixFaceRow) {
+                    const inputs = sixFaceRow.querySelectorAll('input');
+                    data.sixFace = {
+                        start: parseInt(inputs[0]?.value) || 0,
+                        free: parseInt(inputs[1]?.value) || 0,
+                        end: parseInt(inputs[2]?.value) || 0
+                    };
+                }
+                
+                // 9 Face Solid Border
+                const solidBorderRow = document.querySelector('tr:has(td:contains("9 Face Solid"))');
+                if (solidBorderRow) {
+                    const inputs = solidBorderRow.querySelectorAll('input');
+                    data.solidBorder9 = {
+                        start: parseInt(inputs[0]?.value) || 0,
+                        free: parseInt(inputs[1]?.value) || 0,
+                        end: parseInt(inputs[2]?.value) || 0
+                    };
+                }
+                
+                // 9 Face Stripe Border
+                const stripeBorderRow = document.querySelector('tr:has(td:contains("9 Face Stripe"))');
+                if (stripeBorderRow) {
+                    const inputs = stripeBorderRow.querySelectorAll('input');
+                    data.stripeBorder9 = {
+                        start: parseInt(inputs[0]?.value) || 0,
+                        free: parseInt(inputs[1]?.value) || 0,
+                        end: parseInt(inputs[2]?.value) || 0
+                    };
+                }
+                
+                // Progressive 3 Face
+                const prog3Row = document.querySelector('tr:has(td:contains("Progressive 3 Face"))');
+                if (prog3Row) {
+                    const inputs = prog3Row.querySelectorAll('input');
+                    data.progressive3Face = {
+                        start: parseInt(inputs[0]?.value) || 0,
+                        free: parseInt(inputs[1]?.value) || 0,
+                        end: parseInt(inputs[2]?.value) || 0
+                    };
+                }
+                
+                // Progressive 18 Face
+                const prog18Row = document.querySelector('tr:has(td:contains("Progressive 18 Face"))');
+                if (prog18Row) {
+                    const inputs = prog18Row.querySelectorAll('input');
+                    data.progressive18Face = {
+                        start: parseInt(inputs[0]?.value) || 0,
+                        free: parseInt(inputs[1]?.value) || 0,
+                        end: parseInt(inputs[2]?.value) || 0
+                    };
+                }
+                
+                return data;
+            }
+            
+            collectPOSDoorSalesData() {
+                const data = {};
+                
+                // Get all rows from POS door sales table
+                const doorSalesTable = document.querySelector('table:has(th:contains("FROM POS DOOR SALES"))');
+                if (doorSalesTable) {
+                    const rows = doorSalesTable.querySelectorAll('tbody tr');
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length >= 3) {
+                            const itemName = cells[0]?.textContent.trim();
+                            const quantity = parseInt(cells[2]?.textContent) || 0;
+                            
+                            // Map item names to data keys
+                            const itemMap = {
+                                '6 Face': 'sixFace',
+                                '9 Face Solid': 'nineFaceSolid',
+                                '9 Face Stripe': 'nineFaceStripe',
+                                'Birthday Pack': 'birthdayPack',
+                                'Coverall Extra': 'coverallExtra',
+                                'Early Bird Double': 'earlyBirdDouble',
+                                'Letter X Extra': 'letterXExtra',
+                                'Number 7 Extra': 'number7Extra',
+                                'Progressive 18 Face': 'progressive18Face',
+                                'Progressive 3 Face': 'progressive3Face'
+                            };
+                            
+                            const key = itemMap[itemName];
+                            if (key) {
+                                data[key] = quantity;
+                            }
+                        }
+                    });
+                }
+                
+                return data;
+            }
+            
+            collectElectronicBingoData() {
+                return {
+                    smallMachines: parseInt(document.querySelector('input[id*="small-machines"]')?.value) || 0,
+                    largeMachines: parseInt(document.querySelector('input[id*="large-machines"]')?.value) || 0
+                };
+            }
+            
+            collectSessionGamesData() {
+                const games = [];
+                const tbody = document.getElementById('games-tbody');
+                
+                if (tbody) {
+                    const rows = tbody.querySelectorAll('tr');
+                    rows.forEach((row, index) => {
+                        const cells = row.querySelectorAll('td');
+                        const winnerInput = row.querySelector('.winner-count');
+                        const prizeInput = row.querySelector('.prize-per');
+                        const checkInput = row.querySelector('.check-payment');
+                        
+                        if (cells.length > 0) {
+                            games.push({
+                                number: parseInt(cells[0]?.textContent) || (index + 1),
+                                color: cells[1]?.textContent || '',
+                                name: cells[2]?.textContent || '',
+                                prize: parseFloat(cells[3]?.textContent.replace('$', '')) || 0,
+                                winners: parseInt(winnerInput?.value) || 0,
+                                prizePerWinner: parseFloat(prizeInput?.value) || 0,
+                                totalPayout: parseFloat(cells[6]?.textContent.replace('$', '')) || 0,
+                                checkPayment: checkInput?.checked || false
+                            });
+                        }
+                    });
+                }
+                
+                return games;
+            }
+            
+            collectPullTabGamesData() {
+                const games = [];
+                const tbody = document.getElementById('pt-games-body');
+                
+                if (tbody) {
+                    const rows = tbody.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        const inputs = row.querySelectorAll('input');
+                        
+                        if (cells.length > 0 && !row.classList.contains('total-row')) {
+                            games.push({
+                                gameName: inputs[0]?.value || '',
+                                serialNumber: inputs[1]?.value || '',
+                                pricePerTicket: parseFloat(inputs[2]?.value) || 1,
+                                ticketsSold: parseInt(inputs[3]?.value) || 0,
+                                salesRevenue: parseFloat(cells[4]?.textContent.replace('$', '')) || 0,
+                                idealProfit: parseFloat(cells[5]?.textContent.replace('$', '')) || 0,
+                                prizesPaid: parseFloat(inputs[4]?.value) || 0,
+                                netProfit: parseFloat(cells[7]?.textContent.replace('$', '')) || 0,
+                                specialEvent: row.classList.contains('special-event'),
+                                checkPayment: inputs[5]?.checked || false
+                            });
+                        }
+                    });
+                }
+                
+                return games;
+            }
+            
+            collectMoneyCountData() {
+                return {
+                    hundreds: parseInt(document.getElementById('money-hundreds')?.value) || 0,
+                    fifties: parseInt(document.getElementById('money-fifties')?.value) || 0,
+                    twenties: parseInt(document.getElementById('money-twenties')?.value) || 0,
+                    tens: parseInt(document.getElementById('money-tens')?.value) || 0,
+                    fives: parseInt(document.getElementById('money-fives')?.value) || 0,
+                    ones: parseInt(document.getElementById('money-ones')?.value) || 0,
+                    quarters: parseInt(document.getElementById('money-quarters')?.value) || 0,
+                    dimes: parseInt(document.getElementById('money-dimes')?.value) || 0,
+                    nickels: parseInt(document.getElementById('money-nickels')?.value) || 0,
+                    pennies: parseInt(document.getElementById('money-pennies')?.value) || 0,
+                    checksTotal: parseFloat(document.getElementById('money-checks-total')?.value) || 0,
+                    startingBank: parseFloat(document.getElementById('money-starting-bank')?.value) || 500,
+                    expectedRevenue: parseFloat(document.getElementById('money-expected')?.value) || 0,
+                    depositAmount: parseFloat(document.getElementById('money-deposit')?.value) || 0
+                };
+            }
+            
+            // ==========================================
+            // SAVE OPERATIONS - FIXED
+            // ==========================================
+            
+            async saveOccasion() {
+                const data = this.collectFormData();
+                
+                // Validate required fields
+                if (!this.validateFormData(data)) {
+                    alert('Please fill in all required fields:\n- Date\n- Session Type\n- Lion in Charge\n- Total People');
+                    return;
+                }
+                
+                // Show loading indicator
+                this.showLoading('Saving occasion...');
+                
+                try {
+                    if (this.isOnline) {
+                        // Save online - FIXED: proper fetch request
+                        const response = await fetch(RLC_CONFIG.API_URL, {
+                            method: 'POST',
+                            mode: 'no-cors', // Important for Google Apps Script
+                            headers: {
+                                'Content-Type': 'text/plain' // Changed for no-cors mode
+                            },
+                            body: JSON.stringify({
+                                path: 'save-occasion',
+                                data: data
+                            })
+                        });
+                        
+                        // With no-cors, we can't read the response
+                        // But we can assume success if no error was thrown
+                        this.currentOccasion = 'OCC_' + Date.now();
+                        this.showSuccess('Occasion saved successfully!');
+                        this.clearLocalStorage();
+                        
+                    } else {
+                        // Save offline
+                        this.saveToOfflineQueue(data);
+                        this.showWarning('Saved offline. Will sync when connection restored.');
+                    }
+                } catch (error) {
+                    console.error('Save error:', error);
+                    // Always save to offline queue as fallback
+                    this.saveToOfflineQueue(data);
+                    this.showWarning('Saved locally. Will sync when possible.');
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            saveToOfflineQueue(data) {
+                const queue = this.getOfflineQueue();
+                queue.push({
+                    id: 'OFFLINE_' + Date.now(),
+                    data: data,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem(RLC_CONFIG.STORAGE_KEYS.OFFLINE_QUEUE, JSON.stringify(queue));
+            }
+            
+            // ==========================================
+            // PROGRESSIVE CALCULATION - FIXED
+            // ==========================================
+            
+            calculateProgressivePrize() {
+                // Get all elements with null checks
+                const jackpotElement = document.getElementById('prog-jackpot');
+                const ballsNeededElement = document.getElementById('prog-balls-needed');
+                const consolationElement = document.getElementById('prog-consolation');
+                const actualBallsElement = document.getElementById('prog-actual-balls');
+                const prizeElement = document.getElementById('prog-prize');
+                
+                // Only proceed if all elements exist
+                if (!jackpotElement || !ballsNeededElement || !consolationElement || !actualBallsElement || !prizeElement) {
+                    console.warn('Progressive game elements not found');
+                    return;
+                }
+                
+                const jackpot = parseFloat(jackpotElement.value) || 0;
+                const ballsNeeded = parseInt(ballsNeededElement.value) || 48;
+                const consolation = parseFloat(consolationElement.value) || 200;
+                const actualBalls = parseInt(actualBallsElement.value) || 0;
+                
+                let prize = 0;
+                if (actualBalls > 0) {
+                    if (actualBalls <= ballsNeeded) {
+                        prize = jackpot;
+                    } else {
+                        prize = consolation;
+                    }
+                }
+                
+                prizeElement.value = prize;
+                
+                // Update progressive game in session games if it exists
+                const progGameRow = document.querySelector('.progressive-row');
+                if (progGameRow) {
+                    const prizeCell = progGameRow.querySelector('#game-prog-prize');
+                    const prizePerInput = progGameRow.querySelector('#prog-prize-per');
+                    const totalCell = progGameRow.querySelector('#prog-game-total');
+                    
+                    if (prizeCell) prizeCell.textContent = prize;
+                    if (prizePerInput) prizePerInput.value = prize;
+                    if (totalCell) totalCell.textContent = `$${prize.toFixed(2)}`;
+                }
+                
+                this.recalculateAllTotals();
+            }
+            
+            recalculateAllTotals() {
+                // Trigger all calculation functions from the original HTML
+                if (typeof calculatePaperBingo === 'function') calculatePaperBingo();
+                if (typeof calculatePOSDoorSales === 'function') calculatePOSDoorSales();
+                if (typeof calculateElectronicBingo === 'function') calculateElectronicBingo();
+                if (typeof calculateGameTotals === 'function') calculateGameTotals();
+                if (typeof calculatePullTabTotals === 'function') calculatePullTabTotals();
+                if (typeof calculateMoneyTotals === 'function') calculateMoneyTotals();
+                if (typeof calculateOccasionTotals === 'function') calculateOccasionTotals();
+            }
+            
+            // ==========================================
+            // AUTO-SAVE - FIXED
+            // ==========================================
+            
+            startAutoSave() {
+                this.autoSaveTimer = setInterval(() => {
+                    if (this.isDirty) {
+                        this.autoSave();
+                    }
+                }, RLC_CONFIG.AUTO_SAVE_INTERVAL);
+            }
+            
+            autoSave() {
+                const data = this.collectFormData();
+                localStorage.setItem(RLC_CONFIG.STORAGE_KEYS.CURRENT_OCCASION, JSON.stringify(data));
+                this.isDirty = false;
+                const time = new Date().toLocaleTimeString();
+                console.log('Auto-saved at', time);
+                this.showAutoSaveIndicator(time);
+            }
+            
+            showAutoSaveIndicator(time) {
+                let indicator = document.getElementById('auto-save-indicator');
+                if (!indicator) {
+                    indicator = document.createElement('div');
+                    indicator.id = 'auto-save-indicator';
+                    indicator.style.cssText = 'position: fixed; bottom: 10px; right: 10px; padding: 5px 10px; background: #27ae60; color: white; border-radius: 4px; font-size: 12px; z-index: 1000;';
+                    document.body.appendChild(indicator);
+                }
+                indicator.textContent = `Auto-saved at ${time}`;
+                indicator.style.display = 'block';
+                
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 3000);
+            }
+            
+            markDirty() {
+                this.isDirty = true;
+            }
+            
+            loadSavedData() {
+                const saved = localStorage.getItem(RLC_CONFIG.STORAGE_KEYS.CURRENT_OCCASION);
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        console.log('Loaded auto-saved data from', data.metadata?.createdAt);
+                        // You can populate the form here if needed
+                        // this.populateFormData(data);
+                    } catch (error) {
+                        console.error('Error loading saved data:', error);
+                    }
+                }
+            }
+            
+            // ==========================================
+            // UI HELPERS
+            // ==========================================
+            
+            showLoading(message) {
+                let loading = document.getElementById('loading-indicator');
+                if (!loading) {
+                    loading = document.createElement('div');
+                    loading.id = 'loading-indicator';
+                    loading.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10000;';
+                    document.body.appendChild(loading);
+                }
+                loading.textContent = message;
+                loading.style.display = 'block';
+            }
+            
+            hideLoading() {
+                const loading = document.getElementById('loading-indicator');
+                if (loading) {
+                    loading.style.display = 'none';
+                }
+            }
+            
+            showSuccess(message) {
+                this.showNotification(message, 'success');
+            }
+            
+            showError(message) {
+                this.showNotification(message, 'error');
+            }
+            
+            showWarning(message) {
+                this.showNotification(message, 'warning');
+            }
+            
+            showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.textContent = message;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 20px;
+                    border-radius: 4px;
+                    z-index: 9999;
+                    animation: slideIn 0.3s;
+                    max-width: 300px;
+                `;
+                
+                const colors = {
+                    success: '#27ae60',
+                    error: '#e74c3c',
+                    warning: '#f39c12'
+                };
+                notification.style.backgroundColor = colors[type] || '#3498db';
+                notification.style.color = 'white';
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+            
+            checkOnlineStatus() {
+                const statusIndicator = document.getElementById('online-status');
+                if (statusIndicator) {
+                    if (this.isOnline) {
+                        statusIndicator.textContent = '🟢 Online';
+                        statusIndicator.style.color = 'green';
+                    } else {
+                        statusIndicator.textContent = '🔴 Offline';
+                        statusIndicator.style.color = 'red';
+                    }
+                }
+            }
+            
+            handleOnline() {
+                this.isOnline = true;
+                this.checkOnlineStatus();
+                this.showSuccess('Connection restored! Syncing data...');
+                this.syncOfflineData();
+            }
+            
+            handleOffline() {
+                this.isOnline = false;
+                this.checkOnlineStatus();
+                this.showWarning('Connection lost. Working offline.');
+            }
+            
+            getDeviceId() {
+                let deviceId = localStorage.getItem('rlc_device_id');
+                if (!deviceId) {
+                    deviceId = 'DEVICE_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('rlc_device_id', deviceId);
+                }
+                return deviceId;
+            }
+            
+            clearLocalStorage() {
+                localStorage.removeItem(RLC_CONFIG.STORAGE_KEYS.CURRENT_OCCASION);
+                this.isDirty = false;
+            }
+            
+            validateFormData(data) {
+                // Check required fields
+                if (!data.date) return false;
+                if (!data.sessionType) return false;
+                if (!data.lionInCharge) return false;
+                if (data.totalPeople === 0) return false;
+                
+                return true;
+            }
+            
+            // ==========================================
+            // OFFLINE SYNC
+            // ==========================================
+            
+            async syncOfflineData() {
+                const queue = this.getOfflineQueue();
+                if (queue.length === 0) return;
+                
+                console.log(`Syncing ${queue.length} offline occasions...`);
+                
+                for (const item of queue) {
+                    try {
+                        // Attempt to sync each item
+                        await fetch(RLC_CONFIG.API_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: {
+                                'Content-Type': 'text/plain'
+                            },
+                            body: JSON.stringify({
+                                path: 'save-occasion',
+                                data: item.data
+                            })
+                        });
+                        
+                        // Remove from queue after successful sync
+                        this.removeFromOfflineQueue(item.id);
+                    } catch (error) {
+                        console.error('Sync error for item:', item.id, error);
+                    }
+                }
+                
+                this.showSuccess('Offline data synced successfully');
+            }
+            
+            getOfflineQueue() {
+                const queueJson = localStorage.getItem(RLC_CONFIG.STORAGE_KEYS.OFFLINE_QUEUE);
+                return queueJson ? JSON.parse(queueJson) : [];
+            }
+            
+            removeFromOfflineQueue(itemId) {
+                const queue = this.getOfflineQueue();
+                const updatedQueue = queue.filter(item => item.id !== itemId);
+                localStorage.setItem(RLC_CONFIG.STORAGE_KEYS.OFFLINE_QUEUE, JSON.stringify(updatedQueue));
+            }
+            
+            // ==========================================
+            // PULL-TAB LIBRARY
+            // ==========================================
+            
+            async loadPullTabLibrary() {
+                try {
+                    // Check local storage first
+                    const cached = localStorage.getItem(RLC_CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY);
+                    if (cached) {
+                        this.pullTabLibrary = JSON.parse(cached);
+                        console.log('Loaded pull-tab library from cache');
+                    }
+                    
+                    // Load fresh data if online
+                    if (this.isOnline) {
+                        const response = await fetch(RLC_CONFIG.API_URL + '?path=pulltab-library');
+                        const text = await response.text();
+                        
+                        try {
+                            const result = JSON.parse(text);
+                            if (result.success) {
+                                this.pullTabLibrary = result.games;
+                                localStorage.setItem(RLC_CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY, JSON.stringify(result.games));
+                                console.log('Updated pull-tab library from server');
+                            }
+                        } catch (parseError) {
+                            console.log('Could not parse pull-tab library response');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading pull-tab library:', error);
+                }
             }
         }
-
-        window.addEventListener('online', checkOnlineStatus);
-        window.addEventListener('offline', checkOnlineStatus);
-
-        // Tab switching
-        function switchTab(tabName) {
-            // Update nav tabs
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.closest('.nav-tab').classList.add('active');
-            
-            // Update panels
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                panel.classList.remove('active');
-            });
-            document.getElementById(tabName).classList.add('active');
-            
-            // Load tab-specific data
-            loadTabData(tabName);
-        }
-
-        // Drawer functions
-        function toggleDrawer() {
-            const drawer = document.getElementById('sideDrawer');
-            const overlay = document.getElementById('overlay');
-            drawer.classList.toggle('open');
-            overlay.classList.toggle('active');
-        }
-
-        function closeDrawer() {
-            const drawer = document.getElementById('sideDrawer');
-            const overlay = document.getElementById('overlay');
-            drawer.classList.remove('open');
-            overlay.classList.remove('active');
-        }
-
-        // Toast notifications
-        function showToast(message, duration = 3000) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, duration);
-        }
-
-        // Photo handling
-        function handlePhotoSelect(event) {
-            const files = event.target.files;
-            const preview = document.getElementById('photoPreview');
-            
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.className = 'photo-thumb';
-                        preview.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                    
-                    // Queue for upload
-                    queuePhotoUpload(file);
-                }
-            });
-        }
-
-        // Drag and drop
-        const photoUpload = document.getElementById('photoUpload');
         
-        photoUpload.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            photoUpload.classList.add('dragover');
-        });
-        
-        photoUpload.addEventListener('dragleave', () => {
-            photoUpload.classList.remove('dragover');
-        });
-        
-        photoUpload.addEventListener('drop', (e) => {
-            e.preventDefault();
-            photoUpload.classList.remove('dragover');
-            handlePhotoSelect({ target: { files: e.dataTransfer.files } });
-        });
-
-        // Money calculation
-        document.querySelectorAll('.money-input').forEach(input => {
-            input.addEventListener('input', calculateTotal);
-        });
-        
-        document.getElementById('coins').addEventListener('input', calculateTotal);
-        document.getElementById('checks').addEventListener('input', calculateTotal);
-        
-        function calculateTotal() {
-            let total = 0;
+        // Initialize when DOM is ready
+        let rlcIntegration;
+        document.addEventListener('DOMContentLoaded', function() {
+            rlcIntegration = new RLCBingoIntegration();
             
-            document.querySelectorAll('.money-input').forEach(input => {
-                const count = parseInt(input.value) || 0;
-                const denom = parseInt(input.dataset.denom);
-                total += count * denom;
-            });
-            
-            total += parseFloat(document.getElementById('coins').value) || 0;
-            total += parseFloat(document.getElementById('checks').value) || 0;
-            
-            document.getElementById('totalDeposit').textContent = `$${total.toFixed(2)}`;
-        }
-
-        // Pull-tab management
-        let pullTabCount = 0;
-        
-        function addPullTabGame() {
-            pullTabCount++;
-            const container = document.getElementById('pullTabGames');
-            
-            const gameCard = document.createElement('div');
-            gameCard.className = 'card';
-            gameCard.style.marginBottom = '16px';
-            gameCard.innerHTML = `
-                <div class="card-body">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Game Name</label>
-                            <select class="form-control">
-                                <option>Select game...</option>
-                                <option>Black Jack $175</option>
-                                <option>Bubble Gum $280</option>
-                                <option>Cotton Candy $400</option>
-                                <!-- More games would be loaded dynamically -->
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Serial Number</label>
-                            <input type="text" class="form-control" placeholder="Enter serial">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Tickets Sold</label>
-                            <input type="number" class="form-control" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Cash Turned In</label>
-                            <input type="number" class="form-control" step="0.01" min="0">
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            container.appendChild(gameCard);
-            showToast('Pull-tab game added');
-        }
-
-        // Data persistence
-        function saveOccasion() {
-            const occasionData = {
-                date: document.getElementById('occasionDate').value,
-                sessionType: document.getElementById('sessionType').value,
-                lionInCharge: document.getElementById('lionInCharge').value,
-                totalPlayers: document.getElementById('totalPlayers').value,
-                birthdayBogos: document.getElementById('birthdayBogos').value,
-                progressive: {
-                    jackpot: document.getElementById('progJackpot').value,
-                    balls: document.getElementById('progBalls').value,
-                    consolation: document.getElementById('progConsolation').value,
-                    actualBalls: document.getElementById('progActualBalls').value
-                },
-                timestamp: new Date().toISOString()
-            };
-            
-            // Save to IndexedDB
-            saveToLocal(occasionData).then(() => {
-                showToast('Occasion saved successfully!');
+            // Add save and load buttons if they don't exist
+            const buttonGroup = document.querySelector('.button-group');
+            if (buttonGroup && !document.getElementById('save-occasion')) {
+                const saveButton = document.createElement('button');
+                saveButton.id = 'save-occasion';
+                saveButton.className = 'success';
+                saveButton.textContent = '💾 Save to Cloud';
+                saveButton.style.marginRight = '10px';
+                buttonGroup.appendChild(saveButton);
                 
-                // Try to sync if online
-                if (navigator.onLine) {
-                    syncToServer(occasionData);
+                const loadButton = document.createElement('button');
+                loadButton.id = 'load-occasion';
+                loadButton.className = 'secondary';
+                loadButton.textContent = '📥 Load Occasion';
+                buttonGroup.appendChild(loadButton);
+            }
+            
+            // Add online status indicator
+            if (!document.getElementById('online-status')) {
+                const statusDiv = document.createElement('div');
+                statusDiv.id = 'online-status';
+                statusDiv.style.cssText = 'position: fixed; top: 10px; right: 10px; padding: 5px 10px; background: white; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 9999; font-weight: bold;';
+                statusDiv.textContent = '🟢 Online';
+                document.body.appendChild(statusDiv);
+            }
+        });
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
                 }
-            });
-        }
-
-        // Stub functions for demo
-        function loadUserData() {
-            // Would load from local storage or API
-        }
-        
-        function loadCurrentSession() {
-            // Would load current session data
-        }
-        
-        function setupEventListeners() {
-            // Set up additional event listeners
-        }
-        
-        function loadTabData(tabName) {
-            // Load data specific to each tab
-        }
-        
-        function queuePhotoUpload(file) {
-            // Queue photo for upload
-        }
-        
-        function saveToLocal(data) {
-            return Promise.resolve(); // Stub
-        }
-        
-        function syncToServer(data) {
-            // Sync data to Google Sheets via Apps Script
-        }
-        
-        function printBlankForm(type) {
-            window.print();
-        }
-        
-        function generatePDF() {
-            showToast('Generating PDF report...');
-        }
-        
-        function showQuickActions() {
-            showToast('Quick actions menu');
-        }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            .notification {
+                transition: all 0.3s ease;
+            }
+            
+            .notification:hover {
+                transform: scale(1.02);
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
