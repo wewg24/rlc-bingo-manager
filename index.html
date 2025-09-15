@@ -316,6 +316,34 @@
             font-family: monospace;
             font-size: 12px;
         }
+        /* Notification Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .notification {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-size: 14px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -417,15 +445,22 @@
             }
             
             setupEventListeners() {
-                // Online/offline detection
+                // Online/offline status
                 window.addEventListener('online', () => {
                     this.isOnline = true;
                     this.updateConnectionStatus();
+                    console.log('Back online - processing sync queue...');
+                    
+                    // Process any queued items
+                    this.processSyncQueue();
                 });
                 
                 window.addEventListener('offline', () => {
                     this.isOnline = false;
                     this.updateConnectionStatus();
+                    console.log('Gone offline - data will be queued for sync');
+                    
+                    this.showNotification('Working offline - data will sync when reconnected', 'info');
                 });
                 
                 // Tab navigation delegation
@@ -830,115 +865,193 @@
             
             // saveOccasion method with proper CORS handling
             async saveOccasion() {
-                const form = document.getElementById('occasionForm');
-                if (!form) return;
+                console.log('Saving occasion...');
                 
                 try {
-                    // Collect all form data
-                    const occasion = {
-                        id: this.generateOccasionId(),
-                        date: document.getElementById('occasionDate').value,
-                        sessionType: document.getElementById('sessionType').value,
-                        lionInCharge: document.getElementById('lionInCharge').value,
-                        timestamp: new Date().toISOString(),
-                        // ... collect other fields
+                    // Collect form data
+                    const form = document.getElementById('occasionForm');
+                    if (!form) {
+                        console.error('Occasion form not found');
+                        return;
+                    }
+                    
+                    const formData = new FormData(form);
+                    
+                    // Build the occasion object with the correct structure for our backend
+                    const occasionData = {
+                        date: formData.get('date') || new Date().toISOString().split('T')[0],
+                        sessionType: formData.get('sessionType') || '',
+                        lionInCharge: formData.get('lionInCharge') || '',
+                        totalPlayers: parseInt(formData.get('totalPlayers')) || 0,
+                        birthdays: parseInt(formData.get('birthdays')) || 0,
+                        progressive: {
+                            jackpot: parseFloat(formData.get('progJackpot')) || 0,
+                            ballsNeeded: parseInt(formData.get('progBalls')) || 48,
+                            consolation: parseFloat(formData.get('progConsolation')) || 200,
+                            actualBalls: parseInt(formData.get('progActualBalls')) || 0,
+                            prizeAwarded: parseFloat(formData.get('progPrize')) || 0,
+                            checkPayment: formData.get('progCheck') === 'on'
+                        }
                     };
                     
-                    // First, always save locally for reliability
-                    await this.saveToLocalStorage(occasion);
+                    // Validate required fields
+                    if (!occasionData.sessionType) {
+                        alert('Please select a session type');
+                        return;
+                    }
                     
-                    // Now attempt server save with proper handling
+                    if (!occasionData.lionInCharge) {
+                        alert('Please enter the Lion in Charge');
+                        return;
+                    }
+                    
+                    // Generate occasion ID if this is a new occasion
+                    if (!this.currentOccasion || !this.currentOccasion.id) {
+                        this.currentOccasion = {
+                            id: this.generateOccasionId(),
+                            ...occasionData
+                        };
+                    } else {
+                        // Update existing occasion
+                        this.currentOccasion = {
+                            ...this.currentOccasion,
+                            ...occasionData
+                        };
+                    }
+                    
+                    // Save to local storage first
+                    await this.db.setItem('currentOccasion', this.currentOccasion);
+                    console.log('Occasion saved locally:', this.currentOccasion);
+                    
+                    // If online, sync to backend
                     if (this.isOnline) {
-                        // Method 1: Try regular CORS request first (preferred)
-                        try {
-                            const response = await fetch(CONFIG.API_URL + '?path=save-occasion', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(occasion)
-                            });
-                            
-                            // If we get here without an error, CORS is working
-                            const result = await response.json();
-                            
-                            if (result.success) {
-                                // Server save successful
-                                console.log('Server save successful:', result);
-                                
-                                // Mark local copy as synced
-                                await this.markAsSynced(occasion.id);
-                                
-                                this.showToast('Occasion saved successfully', 'success');
-                                form.reset();
-                                return;
+                        console.log('Syncing occasion to backend...');
+                        
+                        const response = await fetch(CONFIG.API_URL, {
+                            method: 'POST',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'text/plain',
+                            },
+                            body: JSON.stringify({
+                                path: 'save-occasion',
+                                ...occasionData
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        console.log('Backend response:', result);
+                        
+                        if (result.success) {
+                            // Update local occasion with backend ID if provided
+                            if (result.occasionId) {
+                                this.currentOccasion.backendId = result.occasionId;
+                                await this.db.setItem('currentOccasion', this.currentOccasion);
                             }
                             
-                            // Server returned an error
-                            throw new Error(result.error || 'Server save failed');
-                            
-                        } catch (corsError) {
-                            // CORS failed or server error
-                            console.log('CORS request failed, trying no-cors mode:', corsError);
-                            
-                            // Method 2: Fallback to no-cors mode
-                            // Note: We can't read the response, so we use a verification strategy
-                            try {
-                                // Send the data with no-cors
-                                await fetch(CONFIG.API_URL + '?path=save-occasion', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'text/plain'
-                                    },
-                                    body: JSON.stringify(occasion),
-                                    mode: 'no-cors'
-                                });
-                                
-                                // We can't read the response, but we can verify with a GET request
-                                // Wait a moment for the server to process
-                                await new Promise(resolve => setTimeout(resolve, 1000));
-                                
-                                // Try to verify the save with a GET request (which doesn't have CORS issues)
-                                try {
-                                    const verifyResponse = await fetch(
-                                        CONFIG.API_URL + '?path=occasion&id=' + occasion.id
-                                    );
-                                    const verifyData = await verifyResponse.json();
-                                    
-                                    if (verifyData.success && verifyData.data) {
-                                        // Confirmed the data was saved
-                                        console.log('Save verified via GET request');
-                                        await this.markAsSynced(occasion.id);
-                                        this.showToast('Occasion saved successfully', 'success');
-                                        form.reset();
-                                        return;
-                                    }
-                                } catch (verifyError) {
-                                    console.log('Could not verify save:', verifyError);
-                                }
-                                
-                                // Can't verify, but no-cors request was sent
-                                // Keep local copy and mark for sync
-                                await this.markForSync(occasion.id);
-                                this.showToast('Saved - will verify sync later', 'info');
-                                form.reset();
-                                
-                            } catch (noCorsError) {
-                                // Even no-cors failed (network issue)
-                                console.error('No-cors request failed:', noCorsError);
-                                throw noCorsError;
-                            }
+                            this.showNotification('Occasion saved successfully!', 'success');
+                        } else {
+                            throw new Error(result.error || 'Failed to save to backend');
                         }
                     } else {
-                        // Offline - just use local storage
-                        await this.markForSync(occasion.id);
-                        this.showToast('Saved offline - will sync when online', 'warning');
-                        form.reset();
+                        // Queue for sync when online
+                        await this.queueForSync('occasion', this.currentOccasion);
+                        this.showNotification('Occasion saved locally (will sync when online)', 'info');
                     }
                     
                 } catch (error) {
                     console.error('Save error:', error);
-                    this.showToast('Error saving occasion - data preserved locally', 'error');
+                    this.showNotification('Error saving occasion: ' + error.message, 'error');
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                // Create a simple notification element
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 12px 20px;
+                    background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+                    color: white;
+                    border-radius: 4px;
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+            
+            async queueForSync(type, data) {
+                // Get existing sync queue
+                const syncQueue = (await this.db.getItem('syncQueue')) || [];
+                
+                // Add new item to queue
+                syncQueue.push({
+                    type: type,
+                    data: data,
+                    timestamp: new Date().toISOString(),
+                    id: `${type}_${Date.now()}`
+                });
+                
+                // Save updated queue
+                await this.db.setItem('syncQueue', syncQueue);
+                console.log('Queued for sync:', type, data);
+            }
+            
+            async processSyncQueue() {
+                // This method processes the sync queue when coming back online
+                const syncQueue = (await this.db.getItem('syncQueue')) || [];
+                
+                if (syncQueue.length === 0) {
+                    console.log('No items in sync queue');
+                    return;
+                }
+                
+                console.log(`Processing ${syncQueue.length} items in sync queue...`);
+                
+                const processed = [];
+                
+                for (const item of syncQueue) {
+                    try {
+                        const response = await fetch(CONFIG.API_URL, {
+                            method: 'POST',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'text/plain',
+                            },
+                            body: JSON.stringify({
+                                path: `save-${item.type}`,
+                                ...item.data
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            processed.push(item.id);
+                            console.log(`Synced ${item.type} successfully`);
+                        }
+                    } catch (error) {
+                        console.error(`Failed to sync ${item.type}:`, error);
+                    }
+                }
+                
+                // Remove processed items from queue
+                if (processed.length > 0) {
+                    const remainingQueue = syncQueue.filter(item => !processed.includes(item.id));
+                    await this.db.setItem('syncQueue', remainingQueue);
+                    
+                    this.showNotification(`Synced ${processed.length} items`, 'success');
                 }
             }
             
