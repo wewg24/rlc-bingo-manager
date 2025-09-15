@@ -2,184 +2,205 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#3498db">
-    <title>RLC Bingo Manager</title>
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLC Bingo Manager v10.0</title>
     
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
-    <!-- Styles -->
     <style>
+        /* === CSS RESET & VARIABLES === */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f5f6fa;
-            color: #2c3e50;
+        :root {
+            --primary: #4A148C;
+            --primary-dark: #2A0845;
+            --accent: #FFD600;
+            --success: #4CAF50;
+            --error: #f44336;
+            --warning: #FF9800;
+            --text: #212121;
+            --text-light: #757575;
+            --bg: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --border: #E0E0E0;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-raised: 0 4px 8px rgba(0,0,0,0.15);
         }
         
-        /* Loading Screen */
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #3498db;
+        /* === BASE STYLES === */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
         }
         
-        #loading.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .loader-circle {
-            width: 100px;
-            height: 100px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: bold;
-            color: #3498db;
-            margin-bottom: 20px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .loader-text {
+        /* === HEADER === */
+        header {
+            background: var(--primary);
             color: white;
-            font-size: 18px;
-        }
-        
-        /* Header */
-        .header {
-            background: #3498db;
-            color: white;
-            padding: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem;
+            box-shadow: var(--shadow-raised);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
         
-        .logo {
+        .header-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            font-weight: bold;
+            gap: 0.5rem;
         }
         
-        .sync-indicator {
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .connection-status {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
         }
         
-        .sync-indicator .online {
-            color: #2ecc71;
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
         }
         
-        .sync-indicator .offline {
-            color: #e74c3c;
+        .status-online { background: var(--success); }
+        .status-offline { background: var(--warning); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
-        /* Navigation */
+        /* === NAVIGATION === */
         .nav-tabs {
             background: white;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 64px;
+            z-index: 90;
             overflow-x: auto;
         }
         
+        .nav-tabs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            min-width: 100%;
+        }
+        
         .tab-btn {
-            padding: 12px 20px;
+            padding: 1rem 1.5rem;
             background: none;
             border: none;
             border-bottom: 3px solid transparent;
+            color: var(--text-light);
             cursor: pointer;
-            font-size: 14px;
-            color: #666;
-            white-space: nowrap;
             transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .tab-btn:hover {
-            background: #f5f5f5;
+            background: rgba(0,0,0,0.05);
+            color: var(--text);
         }
         
         .tab-btn.active {
-            color: #3498db;
-            border-bottom-color: #3498db;
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
         
-        /* Content */
-        .content {
+        .tab-btn .material-icons {
+            font-size: 1.2rem;
+        }
+        
+        /* === MAIN CONTENT === */
+        main {
+            flex: 1;
             max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 16px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1rem;
         }
         
-        /* Card */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* === CARDS === */
         .card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
         }
         
         .card-header {
-            padding: 16px;
-            border-bottom: 1px solid #e0e0e0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .card-header h3 {
-            margin: 0;
-            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 500;
         }
         
         .card-body {
-            padding: 16px;
+            padding: 1.5rem;
         }
         
-        /* Form Elements */
+        /* === FORMS === */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
         
         .form-group {
@@ -187,980 +208,745 @@
             flex-direction: column;
         }
         
-        .form-label {
-            margin-bottom: 4px;
-            font-size: 14px;
-            color: #666;
+        .form-group label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .form-control {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
         }
         
         .form-control:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 20, 140, 0.1);
         }
         
-        /* Buttons */
+        select.form-control {
+            cursor: pointer;
+        }
+        
+        /* === TABLES === */
+        .table-container {
+            overflow-x: auto;
+            margin: -1.5rem;
+            padding: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: var(--bg);
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        tr:hover {
+            background: rgba(0,0,0,0.02);
+        }
+        
+        /* === BUTTONS === */
         .btn {
-            padding: 10px 20px;
+            padding: 0.75rem 1.5rem;
             border: none;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-raised);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
         }
         
         .btn-primary {
-            background: #3498db;
+            background: var(--primary);
             color: white;
         }
         
         .btn-primary:hover {
-            background: #2980b9;
+            background: var(--primary-dark);
         }
         
         .btn-success {
-            background: #2ecc71;
+            background: var(--success);
             color: white;
         }
         
         .btn-danger {
-            background: #e74c3c;
+            background: var(--error);
             color: white;
         }
         
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 16px 24px;
-            background: #2c3e50;
+        .btn-secondary {
+            background: var(--text-light);
             color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+        
+        /* === PULL-TAB SPECIFIC === */
+        .pulltab-row input[type="number"] {
+            width: 80px;
+        }
+        
+        .pulltab-row input[type="text"] {
+            width: 120px;
+        }
+        
+        .pulltab-row select {
+            min-width: 200px;
+        }
+        
+        .pulltab-totals {
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            padding: 1rem;
             border-radius: 4px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s ease;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .total-item {
+            text-align: center;
+        }
+        
+        .total-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        
+        .total-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* === NOTIFICATIONS === */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            box-shadow: var(--shadow-raised);
             z-index: 1000;
+            animation: slideUp 0.3s ease;
         }
         
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
+        @keyframes slideUp {
+            from { transform: translate(-50%, 100%); }
+            to { transform: translate(-50%, 0); }
         }
         
-        .toast-success {
-            background: #2ecc71;
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--error); }
+        .notification.warning { background: var(--warning); }
+        .notification.info { background: var(--primary); }
+        
+        /* === LOADING SCREEN === */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
         
-        .toast-error {
-            background: #e74c3c;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
         
-        .toast-warning {
-            background: #f39c12;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        th {
-            background: #f5f5f5;
-            font-weight: 600;
-        }
-        
-        /* Mobile Responsive */
+        /* === MOBILE RESPONSIVE === */
         @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
             .form-grid {
                 grid-template-columns: 1fr;
             }
             
-            .header-content {
-                flex-direction: column;
-                gap: 10px;
+            .tab-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            table {
+                font-size: 0.85rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
             }
         }
         
-        /* Error Display */
-        .error-container {
-            background: #fee;
-            border: 1px solid #fcc;
-            border-radius: 4px;
-            padding: 12px;
-            margin: 12px 0;
-            color: #c00;
-        }
-        
-        .debug-info {
-            background: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 8px;
-            margin: 8px 0;
-            font-family: monospace;
-            font-size: 12px;
-        }
-        /* Notification Animations */
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        
-        .notification {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            font-size: 14px;
-            font-weight: 500;
-        }
+        /* === UTILITY CLASSES === */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-success { color: var(--success); }
+        .text-error { color: var(--error); }
+        .text-warning { color: var(--warning); }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
-    <div id="loading">
-        <div class="loader-circle">RLC</div>
-        <div class="loader-text">Loading Bingo Manager...</div>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="spinner"></div>
+        <p class="mt-2">Initializing RLC Bingo Manager...</p>
     </div>
-    
-    <!-- Main App Container -->
-    <div id="app" style="display: none;"></div>
-    
-    <!-- Third-party Libraries -->
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="header-title">
+                <i class="material-icons">finance_chip</i>
+                <h1>RLC Bingo Manager</h1>
+            </div>
+            <div class="connection-status">
+                <span id="connectionIndicator" class="status-indicator status-online"></span>
+                <span id="connectionText">Online</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <div class="nav-tabs-container">
+            <button class="tab-btn active" data-tab="occasion">
+                <i class="material-icons">event</i>
+                Occasion
+            </button>
+            <button class="tab-btn" data-tab="games">
+                <i class="material-icons">grid_on</i>
+                Games
+            </button>
+            <button class="tab-btn" data-tab="pulltabs">
+                <i class="material-icons">confirmation_number</i>
+                Pull-Tabs
+            </button>
+            <button class="tab-btn" data-tab="money">
+                <i class="material-icons">attach_money</i>
+                Money Count
+            </button>
+            <button class="tab-btn" data-tab="summary">
+                <i class="material-icons">assessment</i>
+                Summary
+            </button>
+            <button class="tab-btn" data-tab="admin">
+                <i class="material-icons">settings</i>
+                Admin
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Occasion Tab -->
+        <div id="occasion-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Occasion Information</h3>
+                    <span id="occasionId"></span>
+                </div>
+                <div class="card-body">
+                    <form id="occasionForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="occasionDate">Date</label>
+                                <input type="date" id="occasionDate" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionType">Session Type</label>
+                                <select id="sessionType" class="form-control" required>
+                                    <option value="">Select session...</option>
+                                    <option value="5-1">Monday (5-1)</option>
+                                    <option value="12-2">Saturday Afternoon (12-2)</option>
+                                    <option value="1-3">Saturday Main (1-3)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="lionInCharge">Lion in Charge</label>
+                                <input type="text" id="lionInCharge" class="form-control" 
+                                       placeholder="Enter name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="totalPlayers">Total Players</label>
+                                <input type="number" id="totalPlayers" class="form-control" 
+                                       min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="machineCount">Machine Count</label>
+                                <input type="number" id="machineCount" class="form-control" 
+                                       min="0" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="paperCount">Paper Count</label>
+                                <input type="number" id="paperCount" class="form-control" 
+                                       min="0" placeholder="0">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">
+                            <i class="material-icons">save</i>
+                            Save Occasion
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Tab -->
+        <div id="games-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Bingo Games</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Game #</th>
+                                    <th>Type</th>
+                                    <th>Winners</th>
+                                    <th>Payout</th>
+                                    <th>Progressive</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gamesTableBody">
+                                <!-- Games will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-primary mt-2" onclick="app.addGameRow()">
+                        <i class="material-icons">add</i>
+                        Add Game
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pull-Tabs Tab -->
+        <div id="pulltabs-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Pull-Tab Games</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Game Name</th>
+                                    <th>Form #</th>
+                                    <th>Serial #</th>
+                                    <th>Start Count</th>
+                                    <th>End Count</th>
+                                    <th>Sold</th>
+                                    <th>Price</th>
+                                    <th>Gross Sales</th>
+                                    <th>Prizes Paid</th>
+                                    <th>Net Revenue</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pullTabsBody">
+                                <!-- Pull-tab rows will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <button class="btn btn-primary mt-2" id="addPullTab">
+                        <i class="material-icons">add</i>
+                        Add Pull-Tab Game
+                    </button>
+                    
+                    <div class="pulltab-totals">
+                        <div class="total-item">
+                            <div class="total-label">Total Sales</div>
+                            <div class="total-value" id="pullTabTotalSales">$0.00</div>
+                        </div>
+                        <div class="total-item">
+                            <div class="total-label">Total Prizes</div>
+                            <div class="total-value" id="pullTabTotalPrizes">$0.00</div>
+                        </div>
+                        <div class="total-item">
+                            <div class="total-label">Net Revenue</div>
+                            <div class="total-value" id="pullTabNetRevenue">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Money Count Tab -->
+        <div id="money-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Money Count & Reconciliation</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Starting Bank</label>
+                            <input type="number" id="startingBank" class="form-control" 
+                                   step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Ending Bank</label>
+                            <input type="number" id="endingBank" class="form-control" 
+                                   step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Cash Sales</label>
+                            <input type="number" id="cashSales" class="form-control" 
+                                   step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Check Sales</label>
+                            <input type="number" id="checkSales" class="form-control" 
+                                   step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Credit Card Sales</label>
+                            <input type="number" id="creditCardSales" class="form-control" 
+                                   step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Total Deposit</label>
+                            <input type="number" id="totalDeposit" class="form-control" 
+                                   step="0.01" placeholder="0.00" readonly>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-success mt-3" onclick="app.calculateMoneyCount()">
+                        <i class="material-icons">calculate</i>
+                        Calculate Totals
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Tab -->
+        <div id="summary-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Session Summary</h3>
+                </div>
+                <div class="card-body">
+                    <div id="summaryContent">
+                        <!-- Summary will be generated here -->
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-primary" onclick="app.generatePDF()">
+                            <i class="material-icons">picture_as_pdf</i>
+                            Generate PDF
+                        </button>
+                        <button class="btn btn-secondary" onclick="app.emailReport()">
+                            <i class="material-icons">email</i>
+                            Email Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Tab -->
+        <div id="admin-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Administration</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <button class="btn btn-secondary" onclick="app.syncData()">
+                            <i class="material-icons">sync</i>
+                            Force Sync
+                        </button>
+                        <button class="btn btn-secondary" onclick="app.exportData()">
+                            <i class="material-icons">download</i>
+                            Export Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="app.importData()">
+                            <i class="material-icons">upload</i>
+                            Import Data
+                        </button>
+                        <button class="btn btn-danger" onclick="app.clearLocalData()">
+                            <i class="material-icons">delete</i>
+                            Clear Local Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
-    
-    <!-- Configuration -->
-    <script>
-        // Configuration for RLC Bingo Manager
-        const CONFIG = {
-            // Google Apps Script Web App URL
-            API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
-            
-            // App settings
-            APP_NAME: 'RLC Bingo Manager',
-            VERSION: '9.1.0',
-            
-            // Storage keys
-            STORAGE_KEYS: {
-                USER: 'rlc_user',
-                TOKEN: 'rlc_token',
-                CURRENT_SESSION: 'rlc_current_session',
-                SYNC_QUEUE: 'rlc_sync_queue',
-                OFFLINE_DATA: 'rlc_offline_data'
-            },
-            
-            // Session types
-            SESSION_TYPES: {
-                '5-1': '1st/5th Monday',
-                '6-2': '2nd Monday',
-                '7-3': '3rd Monday',
-                '8-4': '4th Monday'
-            }
-        };
-        
-        console.log('RLC Bingo Integration initialized - v9.1 Fixed');
-    </script>
-    
+
     <!-- Main Application Script -->
     <script>
-        // Main Application Class
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
+            VERSION: '10.0',
+            STORAGE_KEYS: {
+                OCCASIONS: 'rlc_occasions',
+                PULL_TAB_LIBRARY: 'rlc_pulltab_library',
+                SYNC_QUEUE: 'rlc_sync_queue',
+                CURRENT_OCCASION: 'rlc_current_occasion'
+            }
+        };
+
+        // ==========================================
+        // MAIN APPLICATION CLASS
+        // ==========================================
         class RLCBingoApp {
             constructor() {
-                this.db = null;
+                console.log('RLC Bingo Manager v10.0 - Initializing...');
                 this.isOnline = navigator.onLine;
                 this.currentTab = 'occasion';
+                this.currentOccasion = null;
                 this.pullTabLibrary = [];
+                this.syncQueue = [];
+                this.db = localforage.createInstance({
+                    name: 'RLCBingo',
+                    storeName: 'data'
+                });
                 
-                console.log('RLCBingoApp constructor called');
-                this.init();
+                this.initialize();
             }
             
-            async init() {
+            async initialize() {
                 try {
-                    console.log('Starting app initialization...');
-                    
-                    // Initialize database
-                    this.db = await this.initDB();
-                    console.log('Database initialized');
-                    
-                    // Set up event listeners
-                    this.setupEventListeners();
-                    console.log('Event listeners set up');
-                    
-                    // Try to load pull-tab library
+                    // Load pull-tab library
                     await this.loadPullTabLibrary();
                     
-                    // Register service worker (optional for now)
-                    this.registerServiceWorker();
+                    // Load saved data
+                    await this.loadSavedData();
                     
-                    // Hide loading screen and show app
-                    this.hideLoading();
+                    // Setup event listeners
+                    this.setupEventListeners();
                     
-                    // Render the application
-                    this.render();
-                    console.log('App rendered successfully');
+                    // Initialize offline/online handling
+                    this.setupOfflineHandling();
                     
+                    // Hide loading screen
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    
+                    console.log('Application initialized successfully');
                 } catch (error) {
                     console.error('Initialization error:', error);
-                    this.showError('Failed to initialize application', error);
+                    this.showNotification('Initialization error: ' + error.message, 'error');
                 }
             }
             
-            async initDB() {
-                return await localforage.createInstance({
-                    name: 'RLCBingo',
-                    version: 1.0,
-                    storeName: 'data'
-                });
-            }
-            
-            setupEventListeners() {
-                // Online/offline status
-                window.addEventListener('online', () => {
-                    this.isOnline = true;
-                    this.updateConnectionStatus();
-                    console.log('Back online - processing sync queue...');
-                    
-                    // Process any queued items
-                    this.processSyncQueue();
-                });
-                
-                window.addEventListener('offline', () => {
-                    this.isOnline = false;
-                    this.updateConnectionStatus();
-                    console.log('Gone offline - data will be queued for sync');
-                    
-                    this.showNotification('Working offline - data will sync when reconnected', 'info');
-                });
-                
-                // Tab navigation delegation
-                document.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('tab-btn')) {
-                        e.preventDefault();
-                        this.switchTab(e.target.dataset.tab);
-                    }
-                    
-                    // Save button
-                    if (e.target.id === 'saveOccasion') {
-                        e.preventDefault();
-                        this.saveOccasion();
-                    }
-                    
-                    // Add pull-tab game
-                    if (e.target.id === 'addPullTab') {
-                        e.preventDefault();
-                        this.addPullTabRow();
-                    }
-                });
-                
-                // Form submissions
-                document.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    if (e.target.id === 'occasionForm') {
-                        this.saveOccasion();
-                    }
-                });
-            }
-            
+            // ==========================================
+            // PULL-TAB LIBRARY MANAGEMENT
+            // ==========================================
             async loadPullTabLibrary() {
                 try {
                     console.log('Loading pull-tab library...');
-                    // Use the correct endpoint path that doesn't require occasionId
-                    const response = await fetch(CONFIG.API_URL + '?path=pulltabs', {
-                        method: 'GET',
-                        mode: 'cors',
-                        cache: 'default'
-                    });
                     
-                    const data = await response.json();
-                    console.log('Pull-tab API response:', data);
-                    
-                    if (data.success && data.games) {
-                        this.pullTabLibrary = data.games;
-                        await this.db.setItem('pullTabLibrary', data.games);
-                        console.log(`Pull-tab library loaded: ${data.games.length} games`);
+                    // Try to fetch from API
+                    if (this.isOnline) {
+                        const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
+                        const data = await response.json();
                         
-                        // Update any dropdowns immediately
-                        this.updatePullTabDropdowns();
-                    } else if (data.error) {
-                        console.error('API Error:', data.error);
-                        // Try loading from cache
-                        const cached = await this.db.getItem('pullTabLibrary');
-                        if (cached && cached.length > 0) {
-                            this.pullTabLibrary = cached;
-                            console.log('Using cached pull-tab library');
-                            this.updatePullTabDropdowns();
+                        if (data.success && data.games) {
+                            this.pullTabLibrary = data.games;
+                            await this.db.setItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY, data.games);
+                            console.log(`Loaded ${data.games.length} games from API`);
+                            return;
                         }
                     }
-                } catch (error) {
-                    console.error('Failed to load pull-tab library:', error);
-                    // Try loading from cache
-                    const cached = await this.db.getItem('pullTabLibrary');
-                    if (cached) {
+                    
+                    // Fall back to cached data
+                    const cached = await this.db.getItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY);
+                    if (cached && cached.length > 0) {
                         this.pullTabLibrary = cached;
-                        console.log('Using cached pull-tab library');
-                    } else {
-                        // Use default library
-                        this.pullTabLibrary = [
-                            { name: 'Hit $250', formNumber: '3440', topPrize: 250, ticketPrice: 1 },
-                            { name: 'Lucky Symbols', formNumber: '4000', topPrize: 500, ticketPrice: 1 },
-                            { name: 'Wild 10s', formNumber: '3485', topPrize: 100, ticketPrice: 1 },
-                            { name: 'Diamond Mine', formNumber: '3980', topPrize: 100, ticketPrice: 1 },
-                            { name: 'Super 7-11-21', formNumber: '4424', topPrize: 777, ticketPrice: 1 },
-                            { name: '50/50 Raffle', formNumber: '50/50', topPrize: 0, ticketPrice: 1 }
-                        ];
-                        console.log('Using default pull-tab library');
-                    }
-                }
-            }
-            updatePullTabDropdowns() {
-                // Update all pull-tab dropdowns with the new data structure
-                const selects = document.querySelectorAll('select.pulltab-game');
-                selects.forEach(select => {
-                    // Clear existing options
-                    select.innerHTML = '<option value="">Select a game...</option>';
-                    
-                    // Add games from library with new field names
-                    this.pullTabLibrary.forEach(game => {
-                        const option = document.createElement('option');
-                        option.value = game.name;  // Now using 'name' instead of 'Game Name'
-                        option.textContent = `${game.name} (Form: ${game.form})`;
-                        option.dataset.form = game.form;
-                        option.dataset.count = game.count;
-                        option.dataset.price = game.price;
-                        option.dataset.profit = game.profit;
-                        option.dataset.idealSales = game.idealSales;
-                        option.dataset.idealPrizes = game.idealPrizes;
-                        option.dataset.profitPercent = game.profitPercent;
-                        select.appendChild(option);
-                    });
-                });
-            }
-            registerServiceWorker() {
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('/rlc-bingo-manager/service-worker.js')
-                        .then(reg => console.log('Service Worker registered'))
-                        .catch(err => console.log('Service Worker registration failed:', err));
-                }
-            }
-            
-            hideLoading() {
-                const loadingScreen = document.getElementById('loading');
-                const appContainer = document.getElementById('app');
-                
-                if (loadingScreen) {
-                    loadingScreen.classList.add('hide');
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                    }, 300);
-                }
-                
-                if (appContainer) {
-                    appContainer.style.display = 'block';
-                }
-            }
-            
-            render() {
-                const app = document.getElementById('app');
-                if (!app) {
-                    console.error('App container not found');
-                    return;
-                }
-                
-                app.innerHTML = `
-                    <header class="header">
-                        <div class="header-content">
-                            <div class="logo">
-                                <i class="material-icons">casino</i>
-                                <span>RLC Bingo Manager</span>
-                            </div>
-                            <div class="sync-indicator">
-                                <span class="${this.isOnline ? 'online' : 'offline'}">
-                                    <i class="material-icons">${this.isOnline ? 'cloud_done' : 'cloud_off'}</i>
-                                    ${this.isOnline ? 'Online' : 'Offline'}
-                                </span>
-                            </div>
-                        </div>
-                    </header>
-                    
-                    <nav class="nav-tabs">
-                        <button class="tab-btn ${this.currentTab === 'occasion' ? 'active' : ''}" data-tab="occasion">
-                            <i class="material-icons">event</i> Occasion
-                        </button>
-                        <button class="tab-btn ${this.currentTab === 'games' ? 'active' : ''}" data-tab="games">
-                            <i class="material-icons">games</i> Games
-                        </button>
-                        <button class="tab-btn ${this.currentTab === 'pulltabs' ? 'active' : ''}" data-tab="pulltabs">
-                            <i class="material-icons">confirmation_number</i> Pull-Tabs
-                        </button>
-                        <button class="tab-btn ${this.currentTab === 'money' ? 'active' : ''}" data-tab="money">
-                            <i class="material-icons">attach_money</i> Money Count
-                        </button>
-                        <button class="tab-btn ${this.currentTab === 'reports' ? 'active' : ''}" data-tab="reports">
-                            <i class="material-icons">assessment</i> Reports
-                        </button>
-                    </nav>
-                    
-                    <div class="content" id="tabContent">
-                        ${this.renderTabContent()}
-                    </div>
-                `;
-            }
-            
-            renderTabContent() {
-                switch (this.currentTab) {
-                    case 'occasion':
-                        return this.renderOccasionTab();
-                    case 'games':
-                        return this.renderGamesTab();
-                    case 'pulltabs':
-                        return this.renderPullTabsTab();
-                    case 'money':
-                        return this.renderMoneyTab();
-                    case 'reports':
-                        return this.renderReportsTab();
-                    default:
-                        return '<div class="card"><div class="card-body">Select a tab to continue</div></div>';
-                }
-            }
-            
-            renderOccasionTab() {
-                return `
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Bingo Occasion Information</h3>
-                        </div>
-                        <div class="card-body">
-                            <form id="occasionForm">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label class="form-label">Date</label>
-                                        <input type="date" class="form-control" name="date" value="${new Date().toISOString().split('T')[0]}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Session Type</label>
-                                        <select class="form-control" name="sessionType" required>
-                                            <option value="">Select...</option>
-                                            ${Object.entries(CONFIG.SESSION_TYPES).map(([key, value]) => 
-                                                `<option value="${key}">${value}</option>`
-                                            ).join('')}
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Lion in Charge</label>
-                                        <input type="text" class="form-control" name="lionInCharge" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Total Players</label>
-                                        <input type="number" class="form-control" name="totalPlayers" min="0" value="0">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Birthdays</label>
-                                        <input type="number" class="form-control" name="birthdays" min="0" value="0">
-                                    </div>
-                                </div>
-                                
-                                <div class="card" style="margin-top: 20px; background: #f0f8ff;">
-                                    <div class="card-body">
-                                        <h4>Progressive Game</h4>
-                                        <div class="form-grid">
-                                            <div class="form-group">
-                                                <label class="form-label">Starting Jackpot</label>
-                                                <input type="number" class="form-control" name="progJackpot" step="1" value="500">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Balls to Win</label>
-                                                <input type="number" class="form-control" name="progBalls" value="48">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Consolation Prize</label>
-                                                <input type="number" class="form-control" name="progConsolation" step="1" value="200">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Actual Balls Called</label>
-                                                <input type="number" class="form-control" name="progActualBalls" min="0">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Prize Awarded</label>
-                                                <input type="number" class="form-control" name="progPrize" step="1" value="0">
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">
-                                                    <input type="checkbox" name="progCheck"> Check Payment
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div style="margin-top: 20px;">
-                                    <button type="submit" class="btn btn-primary" id="">
-                                        <i class="material-icons">save</i> Save Occasion
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            renderGamesTab() {
-                return `
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Session Games</h3>
-                        </div>
-                        <div class="card-body">
-                            <p>Select a session type from the Occasion tab to load games.</p>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            renderPullTabsTab() {
-                return `
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Pull-Tab Games</h3>
-                        </div>
-                        <div class="card-body">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Game Name</th>
-                                        <th>Serial #</th>
-                                        <th>Price</th>
-                                        <th>Sold</th>
-                                        <th>Revenue</th>
-                                        <th>Prizes</th>
-                                        <th>Net</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="pullTabsBody">
-                                    <tr>
-                                        <td colspan="7" style="text-align: center; color: #999;">
-                                            No pull-tab games added yet
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button class="btn btn-primary" id="addPullTab" style="margin-top: 10px;">
-                                <i class="material-icons">add</i> Add Pull-Tab Game
-                            </button>
-                            <button class="btn btn-secondary" onclick="app.addCustomPullTab()" style="margin-left: 10px;">
-                                <i class="material-icons">add</i> Add Custom Game
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            renderMoneyTab() {
-                return `
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Money Count & Reconciliation</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label class="form-label">Starting Bank</label>
-                                    <input type="number" class="form-control" name="startingBank" value="500" step="1">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Cash Total</label>
-                                    <input type="number" class="form-control" name="cashTotal" step="0.01">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Checks Total</label>
-                                    <input type="number" class="form-control" name="checksTotal" step="0.01">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Deposit Amount</label>
-                                    <input type="number" class="form-control" name="depositAmount" step="0.01">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            renderReportsTab() {
-                return `
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Reports & Analytics</h3>
-                        </div>
-                        <div class="card-body">
-                            <p>Generate MGC reports and financial summaries here.</p>
-                            <button class="btn btn-primary">
-                                <i class="material-icons">picture_as_pdf</i> Generate MGC Report
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            switchTab(tab) {
-                this.currentTab = tab;
-                this.render();
-            }
-            
-            updateConnectionStatus() {
-                const indicator = document.querySelector('.sync-indicator');
-                if (indicator) {
-                    indicator.innerHTML = `
-                        <span class="${this.isOnline ? 'online' : 'offline'}">
-                            <i class="material-icons">${this.isOnline ? 'cloud_done' : 'cloud_off'}</i>
-                            ${this.isOnline ? 'Online' : 'Offline'}
-                        </span>
-                    `;
-                }
-            }
-            
-            generateOccasionId() {
-                // Generate a unique ID for the occasion
-                // Format: OCC_YYYYMMDD_HHMMSS_RANDOM
-                const now = new Date();
-                const dateStr = now.getFullYear().toString() +
-                               (now.getMonth() + 1).toString().padStart(2, '0') +
-                               now.getDate().toString().padStart(2, '0');
-                const timeStr = now.getHours().toString().padStart(2, '0') +
-                               now.getMinutes().toString().padStart(2, '0') +
-                               now.getSeconds().toString().padStart(2, '0');
-                const randomStr = Math.random().toString(36).substr(2, 5).toUpperCase();
-                
-                return `OCC_${dateStr}_${timeStr}_${randomStr}`;
-            }
-            
-            // saveOccasion method with proper CORS handling
-            async saveOccasion() {
-                console.log('Saving occasion...');
-                
-                try {
-                    // Collect form data
-                    const form = document.getElementById('occasionForm');
-                    if (!form) {
-                        console.error('Occasion form not found');
+                        console.log(`Loaded ${cached.length} games from cache`);
                         return;
                     }
                     
-                    const formData = new FormData(form);
-                    
-                    // Build the occasion object with the correct structure for our backend
-                    const occasionData = {
-                        date: formData.get('date') || new Date().toISOString().split('T')[0],
-                        sessionType: formData.get('sessionType') || '5-1',
-                        lionInCharge: formData.get('lionInCharge') || '',
-                        totalPlayers: parseInt(formData.get('totalPlayers')) || 0,
-                        totalRevenue: parseFloat(formData.get('totalRevenue')) || 0,
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                    // Generate or use existing ID
-                    if (!this.currentOccasion || !this.currentOccasion.id) {
-                        this.currentOccasion = {
-                            id: this.generateOccasionId(),
-                            ...occasionData
-                        };
-                    } else {
-                        this.currentOccasion = {
-                            ...this.currentOccasion,
-                            ...occasionData
-                        };
-                    }
-                    
-                    // Save to local storage first
-                    await this.db.setItem('currentOccasion', this.currentOccasion);
-                    console.log('Occasion saved locally:', this.currentOccasion);
-                    
-                    // If online, sync to backend
-                    if (this.isOnline) {
-                        console.log('Syncing occasion to backend...');
-                        
-                        // CRITICAL FIX: Move path to URL parameter, not in body
-                        const response = await fetch(CONFIG.API_URL + '?path=save-occasion', {
-                            method: 'POST',
-                            mode: 'cors',
-                            headers: {
-                                'Content-Type': 'text/plain',
-                            },
-                            body: JSON.stringify(occasionData)  // Only send data, not path
-                        });
-                        
-                        const result = await response.json();
-                        console.log('Backend response:', result);
-                        
-                        if (result.success) {
-                            // Update local occasion with backend ID if provided
-                            if (result.occasionId) {
-                                this.currentOccasion.backendId = result.occasionId;
-                                await this.db.setItem('currentOccasion', this.currentOccasion);
-                            }
-                            
-                            this.showNotification('Occasion saved successfully!', 'success');
-                        } else {
-                            throw new Error(result.error || 'Failed to save to backend');
-                        }
-                    } else {
-                        // Queue for sync when online
-                        await this.queueForSync('occasion', this.currentOccasion);
-                        this.showNotification('Occasion saved locally (will sync when online)', 'info');
-                    }
+                    // Use default library as last resort
+                    this.pullTabLibrary = this.getDefaultPullTabLibrary();
+                    console.log('Using default pull-tab library');
                     
                 } catch (error) {
-                    console.error('Save error:', error);
-                    this.showNotification('Error saving occasion: ' + error.message, 'error');
+                    console.error('Error loading pull-tab library:', error);
+                    this.pullTabLibrary = this.getDefaultPullTabLibrary();
                 }
             }
-
-            showNotification(message, type = 'info') {
-                // Create a simple notification element
-                const notification = document.createElement('div');
-                notification.className = `notification notification-${type}`;
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 12px 20px;
-                    background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
-                    color: white;
-                    border-radius: 4px;
-                    z-index: 10000;
-                    animation: slideIn 0.3s ease;
-                `;
-                notification.textContent = message;
-                
-                document.body.appendChild(notification);
-                
-                // Remove after 3 seconds
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => notification.remove(), 300);
-                }, 3000);
+            
+            getDefaultPullTabLibrary() {
+                // Based on the Excel file structure
+                return [
+                    { name: "Beat the Clock 599", form: "7724H", count: 960, price: 1, profit: 361 },
+                    { name: "Black Jack 175", form: "6916M", count: 250, price: 1, profit: 75 },
+                    { name: "Black Jack 200", form: "6779P", count: 300, price: 1, profit: 100 },
+                    { name: "Black Jack 280", form: "6917M", count: 400, price: 1, profit: 120 },
+                    { name: "Black Jack 400", form: "6918M", count: 600, price: 1, profit: 200 },
+                    { name: "Diamond Mine", form: "3980", count: 1000, price: 1, profit: 300 },
+                    { name: "Hit $250", form: "3440", count: 500, price: 1, profit: 125 },
+                    { name: "Lucky Symbols", form: "4000", count: 1000, price: 1, profit: 400 },
+                    { name: "Super 7-11-21", form: "4424", count: 777, price: 1, profit: 300 },
+                    { name: "Wild 10s", form: "3485", count: 400, price: 1, profit: 100 },
+                    { name: "50/50 Raffle", form: "50/50", count: 0, price: 1, profit: 0 }
+                ];
             }
             
-            async queueForSync(type, data) {
-                // Get existing sync queue
-                const syncQueue = (await this.db.getItem('syncQueue')) || [];
-                
-                // Add new item to queue
-                syncQueue.push({
-                    type: type,
-                    data: data,
-                    timestamp: new Date().toISOString(),
-                    id: `${type}_${Date.now()}`
+            // ==========================================
+            // EVENT LISTENERS
+            // ==========================================
+            setupEventListeners() {
+                // Tab navigation
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
                 });
                 
-                // Save updated queue
-                await this.db.setItem('syncQueue', syncQueue);
-                console.log('Queued for sync:', type, data);
+                // Form submissions
+                document.getElementById('occasionForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveOccasion();
+                });
+                
+                // Add pull-tab button - NOTE THE CORRECT ID
+                document.getElementById('addPullTab').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.addPullTabRow();
+                });
+                
+                // Auto-save on input change
+                document.querySelectorAll('input, select').forEach(element => {
+                    element.addEventListener('change', () => {
+                        this.autoSave();
+                    });
+                });
             }
             
-            async processSyncQueue() {
-                // This method processes the sync queue when coming back online
-                const syncQueue = (await this.db.getItem('syncQueue')) || [];
+            // ==========================================
+            // TAB MANAGEMENT
+            // ==========================================
+            switchTab(tabName) {
+                // Update active tab button
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabName);
+                });
                 
-                if (syncQueue.length === 0) {
-                    console.log('No items in sync queue');
+                // Update active tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.toggle('active', content.id === `${tabName}-tab`);
+                });
+                
+                this.currentTab = tabName;
+                
+                // Generate summary when switching to summary tab
+                if (tabName === 'summary') {
+                    this.generateSummary();
+                }
+            }
+            
+            // ==========================================
+            // PULL-TAB MANAGEMENT - FIXED
+            // ==========================================
+            addPullTabRow() {
+                const tbody = document.getElementById('pullTabsBody');
+                
+                if (!tbody) {
+                    console.error('Pull-tabs tbody not found!');
                     return;
                 }
                 
-                console.log(`Processing ${syncQueue.length} items in sync queue...`);
-                
-                const processed = [];
-                
-                // FIXED VERSION:
-                for (const item of syncQueue) {
-                    try {
-                        // Build the correct path based on item type
-                        const pathMap = {
-                            'occasion': 'save-occasion',
-                            'games': 'save-games',
-                            'pulltabs': 'save-pulltabs',
-                            'moneycount': 'save-moneycount',
-                            'photo': 'upload-photo'
-                        };
-                        
-                        const apiPath = pathMap[item.type] || `save-${item.type}`;
-                        
-                        // Move path to URL parameter, send only data in body
-                        const response = await fetch(CONFIG.API_URL + '?path=' + apiPath, {
-                            method: 'POST',
-                            mode: 'cors',
-                            headers: {
-                                'Content-Type': 'text/plain',
-                            },
-                            body: JSON.stringify(item.data)  // Only the data, no path
-                        });
-                        
-                        const result = await response.json();
-                        
-                        if (result.success) {
-                            processed.push(item.id);
-                            console.log(`Synced ${item.type} successfully`);
-                        }
-                    } catch (error) {
-                        console.error(`Failed to sync ${item.type}:`, error);
-                    }
+                // Clear the "no games" message if it exists
+                if (tbody.querySelector('td[colspan="11"]')) {
+                    tbody.innerHTML = '';
                 }
                 
-                // Remove processed items from queue
-                if (processed.length > 0) {
-                    const remainingQueue = syncQueue.filter(item => !processed.includes(item.id));
-                    await this.db.setItem('syncQueue', remainingQueue);
-                    
-                    this.showNotification(`Synced ${processed.length} items`, 'success');
-                }
-            }
-            
-            // Helper method to save to local storage
-            async saveToLocalStorage(occasion) {
-                try {
-                    // Get existing occasions
-                    const occasions = await this.db.getItem('occasions') || [];
-                    
-                    // Add or update this occasion
-                    const existingIndex = occasions.findIndex(o => o.id === occasion.id);
-                    if (existingIndex >= 0) {
-                        occasions[existingIndex] = occasion;
-                    } else {
-                        occasions.push(occasion);
-                    }
-                    
-                    // Save back to local storage
-                    await this.db.setItem('occasions', occasions);
-                    
-                    console.log('Saved to local storage:', occasion.id);
-                } catch (error) {
-                    console.error('Local storage save failed:', error);
-                    throw error;
-                }
-            }
-            
-            // Helper method to mark an occasion as synced
-            async markAsSynced(occasionId) {
-                try {
-                    const syncStatus = await this.db.getItem('syncStatus') || {};
-                    syncStatus[occasionId] = {
-                        synced: true,
-                        syncedAt: new Date().toISOString()
-                    };
-                    await this.db.setItem('syncStatus', syncStatus);
-                } catch (error) {
-                    console.error('Failed to mark as synced:', error);
-                }
-            }
-            
-            // Helper method to mark an occasion for future sync
-            async markForSync(occasionId) {
-                try {
-                    const syncQueue = await this.db.getItem('syncQueue') || [];
-                    if (!syncQueue.includes(occasionId)) {
-                        syncQueue.push(occasionId);
-                        await this.db.setItem('syncQueue', syncQueue);
-                    }
-                    
-                    // Also update sync status
-                    const syncStatus = await this.db.getItem('syncStatus') || {};
-                    syncStatus[occasionId] = {
-                        synced: false,
-                        needsSync: true,
-                        lastAttempt: new Date().toISOString()
-                    };
-                    await this.db.setItem('syncStatus', syncStatus);
-                } catch (error) {
-                    console.error('Failed to mark for sync:', error);
-                }
-            }
-            
-            // Background sync method (call this periodically or on reconnection)
-            async syncPendingOccasions() {
-                if (!this.isOnline) return;
-                
-                try {
-                    const syncQueue = await this.db.getItem('syncQueue') || [];
-                    if (syncQueue.length === 0) return;
-                    
-                    console.log('Syncing', syncQueue.length, 'pending occasions');
-                    
-                    const occasions = await this.db.getItem('occasions') || [];
-                    const toSync = occasions.filter(o => syncQueue.includes(o.id));
-                    
-                    for (const occasion of toSync) {
-                        try {
-                            // FIX: Use URL parameter for path
-                            const response = await fetch(CONFIG.API_URL + '?path=save-occasion', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(occasion)  // Send only data
-                            });
-                            
-                            const result = await response.json();
-                            
-                            if (result.success) {
-                                await this.markAsSynced(occasion.id);
-                                console.log('Synced occasion:', occasion.id);
-                            }
-                        } catch (error) {
-                            console.error('Failed to sync occasion:', occasion.id, error);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Sync process failed:', error);
-                }
-            }
-            
-            // Initialize periodic sync (call this in your app initialization)
-            initializeBackgroundSync() {
-                // Check for pending syncs every 30 seconds when online
-                setInterval(() => {
-                    if (this.isOnline) {
-                        this.syncPendingOccasions();
-                    }
-                }, 30000);
-                
-                // Also sync when coming back online
-                window.addEventListener('online', () => {
-                    console.log('Connection restored, attempting sync...');
-                    setTimeout(() => this.syncPendingOccasions(), 2000);
-                });
-            }
-            
-            addPullTabRow() {
-                const tbody = document.getElementById('pullTabTableBody');
                 const row = document.createElement('tr');
                 row.className = 'pulltab-row';
                 row.innerHTML = `
@@ -1172,172 +958,484 @@
                                          data-form="${game.form}" 
                                          data-count="${game.count}"
                                          data-price="${game.price}"
-                                         data-profit="${game.profit}"
-                                         data-ideal-sales="${game.idealSales}"
-                                         data-ideal-prizes="${game.idealPrizes}">
-                                    ${game.name} (${game.profitPercent}% profit)
+                                         data-profit="${game.profit}">
+                                    ${game.name}
                                 </option>`
                             ).join('')}
                         </select>
                     </td>
                     <td class="form-number">-</td>
-                    <td><input type="text" class="form-control" placeholder="Serial #"></td>
-                    <td><input type="number" class="form-control tickets-sold" min="0" onchange="app.calculatePullTabRow(this)"></td>
+                    <td><input type="text" class="form-control serial-number" placeholder="Serial #"></td>
+                    <td><input type="number" class="form-control start-count" min="0" value="0"></td>
+                    <td><input type="number" class="form-control end-count" min="0" value="0" onchange="app.calculatePullTabRow(this)"></td>
+                    <td class="tickets-sold">0</td>
+                    <td class="tab-price">$1.00</td>
                     <td class="gross-sales">$0.00</td>
-                    <td><input type="number" class="form-control prizes-paid" min="0" step="0.01" onchange="app.calculatePullTabRow(this)"></td>
+                    <td><input type="number" class="form-control prizes-paid" min="0" step="0.01" value="0" onchange="app.calculatePullTabRow(this)"></td>
                     <td class="net-revenue">$0.00</td>
-                    <td><button class="btn btn-sm btn-danger" onclick="app.removePullTabRow(this)">×</button></td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="app.removePullTabRow(this)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </td>
                 `;
+                
                 tbody.appendChild(row);
+                console.log('Pull-tab row added successfully');
             }
-
+            
             updatePullTabRow(select) {
                 const row = select.closest('tr');
-                const formCell = row.querySelector('.form-number');
                 const selectedOption = select.selectedOptions[0];
                 
                 if (selectedOption && selectedOption.value) {
-                    formCell.textContent = selectedOption.dataset.form || '-';
+                    // Update form number
+                    row.querySelector('.form-number').textContent = selectedOption.dataset.form || '-';
                     
-                    // Store game data for calculations
-                    row.dataset.price = selectedOption.dataset.price || '1';
-                    row.dataset.count = selectedOption.dataset.count || '0';
+                    // Update price
+                    const price = parseFloat(selectedOption.dataset.price) || 1;
+                    row.querySelector('.tab-price').textContent = `$${price.toFixed(2)}`;
+                    
+                    // Update start count with total tickets
+                    const count = parseInt(selectedOption.dataset.count) || 0;
+                    row.querySelector('.start-count').value = count;
+                    
+                    // Store data for calculations
+                    row.dataset.price = price;
+                    row.dataset.count = count;
                     row.dataset.profit = selectedOption.dataset.profit || '0';
-                    row.dataset.idealSales = selectedOption.dataset.idealSales || '0';
-                    row.dataset.idealPrizes = selectedOption.dataset.idealPrizes || '0';
                     
-                    // Auto-calculate if tickets are entered
-                    const ticketsSold = row.querySelector('.tickets-sold');
-                    if (ticketsSold.value) {
-                        this.calculatePullTabRow(ticketsSold);
-                    }
-                } else {
-                    formCell.textContent = '-';
+                    // Recalculate
+                    this.calculatePullTabRow(row.querySelector('.end-count'));
                 }
             }
-
-            calculatePullTabRow(input) {
-                const row = input.closest('tr');
-                const ticketsSold = parseInt(row.querySelector('.tickets-sold').value) || 0;
-                const prizesPaid = parseFloat(row.querySelector('.prizes-paid').value) || 0;
+            
+            calculatePullTabRow(element) {
+                const row = element.closest('tr');
+                
+                const startCount = parseInt(row.querySelector('.start-count').value) || 0;
+                const endCount = parseInt(row.querySelector('.end-count').value) || 0;
                 const price = parseFloat(row.dataset.price) || 1;
+                const prizesPaid = parseFloat(row.querySelector('.prizes-paid').value) || 0;
                 
+                // Calculate tickets sold
+                const ticketsSold = Math.max(0, startCount - endCount);
+                row.querySelector('.tickets-sold').textContent = ticketsSold;
+                
+                // Calculate gross sales
                 const grossSales = ticketsSold * price;
-                const netRevenue = grossSales - prizesPaid;
-                
                 row.querySelector('.gross-sales').textContent = `$${grossSales.toFixed(2)}`;
+                
+                // Calculate net revenue
+                const netRevenue = grossSales - prizesPaid;
                 row.querySelector('.net-revenue').textContent = `$${netRevenue.toFixed(2)}`;
                 
                 // Update totals
-                this.calculatePullTabTotals();
+                this.updatePullTabTotals();
             }
-
-            async addCustomPullTab() {
-                const gameName = prompt('Enter game name:');
-                if (!gameName) return;
+            
+            removePullTabRow(button) {
+                const row = button.closest('tr');
+                row.remove();
+                this.updatePullTabTotals();
                 
-                const count = parseInt(prompt('Enter ticket count:') || '0');
-                if (!count) return;
-                
-                const profit = parseFloat(prompt('Enter ideal profit amount:') || '0');
-                if (!profit) return;
-                
-                const price = parseFloat(prompt('Enter price per ticket (default $1):') || '1');
-                const form = prompt('Enter form number (optional):') || `CUSTOM_${Date.now()}`;
-                
-                // Add to local library
-                const customGame = {
-                    name: gameName,
-                    form: form,
-                    count: count,
-                    price: price,
-                    profit: profit,
-                    url: '',
-                    idealSales: count * price,
-                    idealPrizes: (count * price) - profit,
-                    profitPercent: ((profit / (count * price)) * 100).toFixed(1)
-                };
-                
-                this.pullTabLibrary.push(customGame);
-                await this.db.setItem('pullTabLibrary', this.pullTabLibrary);
-                
-                // Update dropdowns
-                this.updatePullTabDropdowns();
-                
-                // Save to backend if online
-                if (this.isOnline) {
-                    try {
-                        // Move path to URL parameter
-                        const response = await fetch(CONFIG.API_URL + '?path=save-custom-pulltab', {
-                            method: 'POST',
-                            mode: 'cors',
-                            headers: {
-                                'Content-Type': 'text/plain',
-                            },
-                            body: JSON.stringify({
-                                gameData: customGame  // Only send the data
-                            })
-                        });
-                        
-                        const result = await response.json();
-                        if (result.success) {
-                            console.log('Custom game saved to library');
-                        }
-                    } catch (error) {
-                        console.error('Failed to save custom game to backend:', error);
-                    }
+                // Add "no games" message if tbody is empty
+                const tbody = document.getElementById('pullTabsBody');
+                if (tbody && tbody.children.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="11" style="text-align: center; color: #999;">
+                                No pull-tab games added yet
+                            </td>
+                        </tr>
+                    `;
                 }
             }
             
-            showToast(message, type = 'info') {
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                toast.textContent = message;
-                document.body.appendChild(toast);
+            updatePullTabTotals() {
+                let totalSales = 0;
+                let totalPrizes = 0;
+                
+                document.querySelectorAll('.pulltab-row').forEach(row => {
+                    const sales = parseFloat(row.querySelector('.gross-sales').textContent.replace('$', '')) || 0;
+                    const prizes = parseFloat(row.querySelector('.prizes-paid').value) || 0;
+                    
+                    totalSales += sales;
+                    totalPrizes += prizes;
+                });
+                
+                const netRevenue = totalSales - totalPrizes;
+                
+                document.getElementById('pullTabTotalSales').textContent = `$${totalSales.toFixed(2)}`;
+                document.getElementById('pullTabTotalPrizes').textContent = `$${totalPrizes.toFixed(2)}`;
+                document.getElementById('pullTabNetRevenue').textContent = `$${netRevenue.toFixed(2)}`;
+            }
+            
+            // ==========================================
+            // OCCASION MANAGEMENT
+            // ==========================================
+            async saveOccasion() {
+                try {
+                    const occasionData = {
+                        id: this.currentOccasion?.id || this.generateOccasionId(),
+                        date: document.getElementById('occasionDate').value,
+                        sessionType: document.getElementById('sessionType').value,
+                        lionInCharge: document.getElementById('lionInCharge').value,
+                        totalPlayers: parseInt(document.getElementById('totalPlayers').value) || 0,
+                        machineCount: parseInt(document.getElementById('machineCount').value) || 0,
+                        paperCount: parseInt(document.getElementById('paperCount').value) || 0,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Validate required fields
+                    if (!occasionData.date || !occasionData.sessionType || !occasionData.lionInCharge) {
+                        this.showNotification('Please fill in all required fields', 'error');
+                        return;
+                    }
+                    
+                    // Save locally
+                    this.currentOccasion = occasionData;
+                    await this.db.setItem(CONFIG.STORAGE_KEYS.CURRENT_OCCASION, occasionData);
+                    
+                    // Queue for sync
+                    await this.queueForSync('occasion', occasionData);
+                    
+                    // Update UI
+                    document.getElementById('occasionId').textContent = `ID: ${occasionData.id}`;
+                    
+                    this.showNotification('Occasion saved successfully', 'success');
+                    
+                    // Attempt immediate sync if online
+                    if (this.isOnline) {
+                        this.syncData();
+                    }
+                    
+                } catch (error) {
+                    console.error('Error saving occasion:', error);
+                    this.showNotification('Error saving occasion: ' + error.message, 'error');
+                }
+            }
+            
+            generateOccasionId() {
+                const date = new Date();
+                const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+                const timeStr = date.toTimeString().slice(0, 8).replace(/:/g, '');
+                const random = Math.random().toString(36).substr(2, 5).toUpperCase();
+                return `OCC_${dateStr}_${timeStr}_${random}`;
+            }
+            
+            // ==========================================
+            // GAME MANAGEMENT
+            // ==========================================
+            addGameRow() {
+                const tbody = document.getElementById('gamesTableBody');
+                const gameNumber = tbody.children.length + 1;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${gameNumber}</td>
+                    <td>
+                        <select class="form-control">
+                            <option value="regular">Regular</option>
+                            <option value="special">Special</option>
+                            <option value="progressive">Progressive</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="form-control" min="0" placeholder="0"></td>
+                    <td><input type="number" class="form-control" min="0" step="0.01" placeholder="0.00"></td>
+                    <td><input type="number" class="form-control" min="0" step="0.01" placeholder="0.00"></td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            }
+            
+            // ==========================================
+            // MONEY COUNT
+            // ==========================================
+            calculateMoneyCount() {
+                const startingBank = parseFloat(document.getElementById('startingBank').value) || 0;
+                const cashSales = parseFloat(document.getElementById('cashSales').value) || 0;
+                const checkSales = parseFloat(document.getElementById('checkSales').value) || 0;
+                const creditCardSales = parseFloat(document.getElementById('creditCardSales').value) || 0;
+                
+                const totalSales = cashSales + checkSales + creditCardSales;
+                const endingBank = parseFloat(document.getElementById('endingBank').value) || 0;
+                const totalDeposit = totalSales + endingBank - startingBank;
+                
+                document.getElementById('totalDeposit').value = totalDeposit.toFixed(2);
+                
+                this.showNotification('Money count calculated', 'success');
+            }
+            
+            // ==========================================
+            // SUMMARY GENERATION
+            // ==========================================
+            generateSummary() {
+                const summaryContent = document.getElementById('summaryContent');
+                
+                if (!this.currentOccasion) {
+                    summaryContent.innerHTML = '<p class="text-center text-warning">No occasion data to summarize</p>';
+                    return;
+                }
+                
+                const pullTabTotals = {
+                    sales: document.getElementById('pullTabTotalSales').textContent,
+                    prizes: document.getElementById('pullTabTotalPrizes').textContent,
+                    net: document.getElementById('pullTabNetRevenue').textContent
+                };
+                
+                summaryContent.innerHTML = `
+                    <h4>Occasion Details</h4>
+                    <table class="mb-3">
+                        <tr><td><strong>Date:</strong></td><td>${this.currentOccasion.date}</td></tr>
+                        <tr><td><strong>Session:</strong></td><td>${this.currentOccasion.sessionType}</td></tr>
+                        <tr><td><strong>Lion in Charge:</strong></td><td>${this.currentOccasion.lionInCharge}</td></tr>
+                        <tr><td><strong>Total Players:</strong></td><td>${this.currentOccasion.totalPlayers}</td></tr>
+                    </table>
+                    
+                    <h4>Pull-Tab Summary</h4>
+                    <table>
+                        <tr><td><strong>Total Sales:</strong></td><td>${pullTabTotals.sales}</td></tr>
+                        <tr><td><strong>Total Prizes:</strong></td><td>${pullTabTotals.prizes}</td></tr>
+                        <tr><td><strong>Net Revenue:</strong></td><td>${pullTabTotals.net}</td></tr>
+                    </table>
+                `;
+            }
+            
+            // ==========================================
+            // DATA SYNC & OFFLINE HANDLING
+            // ==========================================
+            setupOfflineHandling() {
+                window.addEventListener('online', () => {
+                    this.isOnline = true;
+                    this.updateConnectionStatus();
+                    this.syncData();
+                });
+                
+                window.addEventListener('offline', () => {
+                    this.isOnline = false;
+                    this.updateConnectionStatus();
+                });
+                
+                // Periodic sync every 30 seconds when online
+                setInterval(() => {
+                    if (this.isOnline) {
+                        this.syncData();
+                    }
+                }, 30000);
+            }
+            
+            updateConnectionStatus() {
+                const indicator = document.getElementById('connectionIndicator');
+                const text = document.getElementById('connectionText');
+                
+                if (this.isOnline) {
+                    indicator.className = 'status-indicator status-online';
+                    text.textContent = 'Online';
+                } else {
+                    indicator.className = 'status-indicator status-offline';
+                    text.textContent = 'Offline';
+                }
+            }
+            
+            async queueForSync(type, data) {
+                const syncQueue = await this.db.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || [];
+                syncQueue.push({
+                    type,
+                    data,
+                    timestamp: new Date().toISOString(),
+                    synced: false
+                });
+                await this.db.setItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE, syncQueue);
+            }
+            
+            async syncData() {
+                if (!this.isOnline) {
+                    console.log('Offline - skipping sync');
+                    return;
+                }
+                
+                try {
+                    const syncQueue = await this.db.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || [];
+                    const unsynced = syncQueue.filter(item => !item.synced);
+                    
+                    if (unsynced.length === 0) {
+                        console.log('No data to sync');
+                        return;
+                    }
+                    
+                    console.log(`Syncing ${unsynced.length} items...`);
+                    
+                    for (const item of unsynced) {
+                        try {
+                            const response = await fetch(CONFIG.API_URL + `?path=save-${item.type}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(item.data)
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                item.synced = true;
+                                console.log(`Synced ${item.type}:`, item.data.id);
+                            }
+                        } catch (error) {
+                            console.error(`Failed to sync ${item.type}:`, error);
+                        }
+                    }
+                    
+                    // Update sync queue
+                    await this.db.setItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE, syncQueue);
+                    
+                    const syncedCount = unsynced.filter(item => item.synced).length;
+                    if (syncedCount > 0) {
+                        this.showNotification(`Synced ${syncedCount} items`, 'success');
+                    }
+                    
+                } catch (error) {
+                    console.error('Sync error:', error);
+                }
+            }
+            
+            // ==========================================
+            // UTILITY FUNCTIONS
+            // ==========================================
+            async loadSavedData() {
+                try {
+                    const currentOccasion = await this.db.getItem(CONFIG.STORAGE_KEYS.CURRENT_OCCASION);
+                    
+                    if (currentOccasion) {
+                        this.currentOccasion = currentOccasion;
+                        
+                        // Populate form fields
+                        document.getElementById('occasionDate').value = currentOccasion.date || '';
+                        document.getElementById('sessionType').value = currentOccasion.sessionType || '';
+                        document.getElementById('lionInCharge').value = currentOccasion.lionInCharge || '';
+                        document.getElementById('totalPlayers').value = currentOccasion.totalPlayers || '';
+                        document.getElementById('machineCount').value = currentOccasion.machineCount || '';
+                        document.getElementById('paperCount').value = currentOccasion.paperCount || '';
+                        document.getElementById('occasionId').textContent = `ID: ${currentOccasion.id}`;
+                        
+                        console.log('Loaded saved occasion:', currentOccasion.id);
+                    }
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
+                }
+            }
+            
+            async autoSave() {
+                // Implement debounced auto-save
+                clearTimeout(this.autoSaveTimeout);
+                this.autoSaveTimeout = setTimeout(() => {
+                    console.log('Auto-saving...');
+                    // Save current form state
+                }, 1000);
+            }
+            
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
                 
                 setTimeout(() => {
-                    toast.classList.add('show');
-                }, 100);
-                
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => {
-                        document.body.removeChild(toast);
-                    }, 300);
+                    notification.remove();
                 }, 3000);
             }
             
-            showError(message, error) {
-                const app = document.getElementById('app');
-                if (app) {
-                    app.innerHTML = `
-                        <div class="error-container">
-                            <h3>Error Loading Application</h3>
-                            <p>${message}</p>
-                            <div class="debug-info">
-                                ${error ? error.toString() : 'Unknown error'}
-                            </div>
-                            <button class="btn btn-primary" onclick="location.reload()">
-                                <i class="material-icons">refresh</i> Reload Page
-                            </button>
-                        </div>
-                    `;
+            async generatePDF() {
+                this.showNotification('PDF generation coming soon', 'info');
+                // TODO: Implement PDF generation
+            }
+            
+            async emailReport() {
+                this.showNotification('Email functionality coming soon', 'info');
+                // TODO: Implement email
+            }
+            
+            async exportData() {
+                try {
+                    const data = {
+                        occasion: this.currentOccasion,
+                        pullTabLibrary: this.pullTabLibrary,
+                        syncQueue: await this.db.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE)
+                    };
+                    
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `rlc-bingo-export-${new Date().toISOString().slice(0, 10)}.json`;
+                    a.click();
+                    
+                    this.showNotification('Data exported successfully', 'success');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    this.showNotification('Export failed: ' + error.message, 'error');
                 }
+            }
+            
+            async importData() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
                 
-                // Hide loading screen
-                this.hideLoading();
+                input.onchange = async (e) => {
+                    try {
+                        const file = e.target.files[0];
+                        const text = await file.text();
+                        const data = JSON.parse(text);
+                        
+                        if (data.occasion) {
+                            this.currentOccasion = data.occasion;
+                            await this.db.setItem(CONFIG.STORAGE_KEYS.CURRENT_OCCASION, data.occasion);
+                        }
+                        
+                        if (data.pullTabLibrary) {
+                            this.pullTabLibrary = data.pullTabLibrary;
+                            await this.db.setItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY, data.pullTabLibrary);
+                        }
+                        
+                        this.showNotification('Data imported successfully', 'success');
+                        location.reload();
+                        
+                    } catch (error) {
+                        console.error('Import error:', error);
+                        this.showNotification('Import failed: ' + error.message, 'error');
+                    }
+                };
+                
+                input.click();
+            }
+            
+            async clearLocalData() {
+                if (confirm('This will clear all local data. Are you sure?')) {
+                    await this.db.clear();
+                    localStorage.clear();
+                    this.showNotification('Local data cleared', 'success');
+                    location.reload();
+                }
             }
         }
+
+        // ==========================================
+        // INITIALIZE APPLICATION
+        // ==========================================
+        let app;
         
-        // Initialize app when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                window.app = new RLCBingoApp();
-            });
-        } else {
-            // DOM already loaded
-            window.app = new RLCBingoApp();
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM ready, initializing app...');
+            app = new RLCBingoApp();
+            window.app = app; // Make available globally for inline event handlers
+        });
     </script>
 </body>
 </html>
