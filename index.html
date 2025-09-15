@@ -880,39 +880,20 @@
                     // Build the occasion object with the correct structure for our backend
                     const occasionData = {
                         date: formData.get('date') || new Date().toISOString().split('T')[0],
-                        sessionType: formData.get('sessionType') || '',
+                        sessionType: formData.get('sessionType') || '5-1',
                         lionInCharge: formData.get('lionInCharge') || '',
                         totalPlayers: parseInt(formData.get('totalPlayers')) || 0,
-                        birthdays: parseInt(formData.get('birthdays')) || 0,
-                        progressive: {
-                            jackpot: parseFloat(formData.get('progJackpot')) || 0,
-                            ballsNeeded: parseInt(formData.get('progBalls')) || 48,
-                            consolation: parseFloat(formData.get('progConsolation')) || 200,
-                            actualBalls: parseInt(formData.get('progActualBalls')) || 0,
-                            prizeAwarded: parseFloat(formData.get('progPrize')) || 0,
-                            checkPayment: formData.get('progCheck') === 'on'
-                        }
+                        totalRevenue: parseFloat(formData.get('totalRevenue')) || 0,
+                        timestamp: new Date().toISOString()
                     };
                     
-                    // Validate required fields
-                    if (!occasionData.sessionType) {
-                        alert('Please select a session type');
-                        return;
-                    }
-                    
-                    if (!occasionData.lionInCharge) {
-                        alert('Please enter the Lion in Charge');
-                        return;
-                    }
-                    
-                    // Generate occasion ID if this is a new occasion
+                    // Generate or use existing ID
                     if (!this.currentOccasion || !this.currentOccasion.id) {
                         this.currentOccasion = {
                             id: this.generateOccasionId(),
                             ...occasionData
                         };
                     } else {
-                        // Update existing occasion
                         this.currentOccasion = {
                             ...this.currentOccasion,
                             ...occasionData
@@ -927,16 +908,14 @@
                     if (this.isOnline) {
                         console.log('Syncing occasion to backend...');
                         
-                        const response = await fetch(CONFIG.API_URL, {
+                        // CRITICAL FIX: Move path to URL parameter, not in body
+                        const response = await fetch(CONFIG.API_URL + '?path=save-occasion', {
                             method: 'POST',
                             mode: 'cors',
                             headers: {
                                 'Content-Type': 'text/plain',
                             },
-                            body: JSON.stringify({
-                                path: 'save-occasion',
-                                ...occasionData
-                            })
+                            body: JSON.stringify(occasionData)  // Only send data, not path
                         });
                         
                         const result = await response.json();
@@ -1130,44 +1109,27 @@
                     
                     for (const occasion of toSync) {
                         try {
-                            // Try regular POST first
+                            // FIX: Use URL parameter for path
                             const response = await fetch(CONFIG.API_URL + '?path=save-occasion', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
-                                body: JSON.stringify(occasion)
+                                body: JSON.stringify(occasion)  // Send only data
                             });
                             
                             const result = await response.json();
                             
                             if (result.success) {
-                                // Remove from sync queue
-                                const index = syncQueue.indexOf(occasion.id);
-                                if (index > -1) {
-                                    syncQueue.splice(index, 1);
-                                }
-                                
                                 await this.markAsSynced(occasion.id);
                                 console.log('Synced occasion:', occasion.id);
                             }
                         } catch (error) {
                             console.error('Failed to sync occasion:', occasion.id, error);
-                            // Keep in queue for next attempt
                         }
                     }
-                    
-                    // Update the sync queue
-                    await this.db.setItem('syncQueue', syncQueue);
-                    
-                    if (syncQueue.length === 0) {
-                        this.showToast('All occasions synced successfully', 'success');
-                    } else {
-                        this.showToast(`${syncQueue.length} occasions pending sync`, 'info');
-                    }
-                    
                 } catch (error) {
-                    console.error('Sync process error:', error);
+                    console.error('Sync process failed:', error);
                 }
             }
             
