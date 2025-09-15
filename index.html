@@ -436,9 +436,9 @@
                     }
                     
                     // Save button
-                    if (e.target.id === 'saveOccasion') {
+                    if (e.target.id === '') {
                         e.preventDefault();
-                        this.saveOccasion();
+                        this.();
                     }
                     
                     // Add pull-tab game
@@ -452,7 +452,7 @@
                 document.addEventListener('submit', (e) => {
                     e.preventDefault();
                     if (e.target.id === 'occasionForm') {
-                        this.saveOccasion();
+                        this.();
                     }
                 });
             }
@@ -689,7 +689,7 @@
                                 </div>
                                 
                                 <div style="margin-top: 20px;">
-                                    <button type="submit" class="btn btn-primary" id="saveOccasion">
+                                    <button type="submit" class="btn btn-primary" id="">
                                         <i class="material-icons">save</i> Save Occasion
                                     </button>
                                 </div>
@@ -811,6 +811,21 @@
                         </span>
                     `;
                 }
+            }
+            
+            generateOccasionId() {
+                // Generate a unique ID for the occasion
+                // Format: OCC_YYYYMMDD_HHMMSS_RANDOM
+                const now = new Date();
+                const dateStr = now.getFullYear().toString() +
+                               (now.getMonth() + 1).toString().padStart(2, '0') +
+                               now.getDate().toString().padStart(2, '0');
+                const timeStr = now.getHours().toString().padStart(2, '0') +
+                               now.getMinutes().toString().padStart(2, '0') +
+                               now.getSeconds().toString().padStart(2, '0');
+                const randomStr = Math.random().toString(36).substr(2, 5).toUpperCase();
+                
+                return `OCC_${dateStr}_${timeStr}_${randomStr}`;
             }
             
             // saveOccasion method with proper CORS handling
