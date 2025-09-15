@@ -1,6 +1,8 @@
 const CONFIG = {
     // Replace with your actual deployment ID
     BACKEND_URL: 'AKfycbyYhF94GgZeBjhRgh6D-eS6DTTXXgexiR_sz1UbwpZEZ8fZX1z2bTY14X6F0hEsqN6ZZw',
+    SHEET_ID: '1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc',
+    PHOTO_FOLDER_ID: '1g0lfGUqI_dCeqv41ZxLaTyZqDAXt5Iyv',
     
     // API request configuration
     API_CONFIG: {
