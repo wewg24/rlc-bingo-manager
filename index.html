@@ -460,25 +460,31 @@
             async loadPullTabLibrary() {
                 try {
                     console.log('Loading pull-tab library...');
-                    // Note: Using GET request which doesn't have CORS issues
+                    // Use the correct endpoint path that doesn't require occasionId
                     const response = await fetch(CONFIG.API_URL + '?path=pulltabs', {
                         method: 'GET',
                         mode: 'cors',
                         cache: 'default'
                     });
+                    
                     const data = await response.json();
+                    console.log('Pull-tab API response:', data);
                     
                     if (data.success && data.games) {
                         this.pullTabLibrary = data.games;
                         await this.db.setItem('pullTabLibrary', data.games);
-                        console.log('Pull-tab library loaded:', data.games.length, 'games');
-                    } else {
-                        console.log('Pull-tab response:', data);
+                        console.log(`Pull-tab library loaded: ${data.games.length} games`);
+                        
+                        // Update any dropdowns immediately
+                        this.updatePullTabDropdowns();
+                    } else if (data.error) {
+                        console.error('API Error:', data.error);
                         // Try loading from cache
                         const cached = await this.db.getItem('pullTabLibrary');
-                        if (cached) {
+                        if (cached && cached.length > 0) {
                             this.pullTabLibrary = cached;
                             console.log('Using cached pull-tab library');
+                            this.updatePullTabDropdowns();
                         }
                     }
                 } catch (error) {
@@ -502,7 +508,29 @@
                     }
                 }
             }
-            
+            updatePullTabDropdowns() {
+                // Update all pull-tab dropdowns with the new data structure
+                const selects = document.querySelectorAll('select.pulltab-game');
+                selects.forEach(select => {
+                    // Clear existing options
+                    select.innerHTML = '<option value="">Select a game...</option>';
+                    
+                    // Add games from library with new field names
+                    this.pullTabLibrary.forEach(game => {
+                        const option = document.createElement('option');
+                        option.value = game.name;  // Now using 'name' instead of 'Game Name'
+                        option.textContent = `${game.name} (Form: ${game.form})`;
+                        option.dataset.form = game.form;
+                        option.dataset.count = game.count;
+                        option.dataset.price = game.price;
+                        option.dataset.profit = game.profit;
+                        option.dataset.idealSales = game.idealSales;
+                        option.dataset.idealPrizes = game.idealPrizes;
+                        option.dataset.profitPercent = game.profitPercent;
+                        select.appendChild(option);
+                    });
+                });
+            }
             registerServiceWorker() {
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('/rlc-bingo-manager/service-worker.js')
@@ -713,6 +741,9 @@
                             </table>
                             <button class="btn btn-primary" id="addPullTab" style="margin-top: 10px;">
                                 <i class="material-icons">add</i> Add Pull-Tab Game
+                            </button>
+                            <button class="btn btn-secondary" onclick="app.addCustomPullTab()" style="margin-left: 10px;">
+                                <i class="material-icons">add</i> Add Custom Game
                             </button>
                         </div>
                     </div>
@@ -1029,31 +1060,133 @@
             }
             
             addPullTabRow() {
-                const tbody = document.getElementById('pullTabsBody');
-                if (!tbody) return;
-                
-                // Clear the "no games" message if it exists
-                if (tbody.querySelector('td[colspan="7"]')) {
-                    tbody.innerHTML = '';
-                }
-                
-                const row = tbody.insertRow();
+                const tbody = document.getElementById('pullTabTableBody');
+                const row = document.createElement('tr');
+                row.className = 'pulltab-row';
                 row.innerHTML = `
                     <td>
-                        <select class="form-control" name="ptGameName">
+                        <select class="form-control pulltab-game" onchange="app.updatePullTabRow(this)">
                             <option value="">Select game...</option>
                             ${this.pullTabLibrary.map(game => 
-                                `<option value="${game.name}">${game.name}</option>`
+                                `<option value="${game.name}" 
+                                         data-form="${game.form}" 
+                                         data-count="${game.count}"
+                                         data-price="${game.price}"
+                                         data-profit="${game.profit}"
+                                         data-ideal-sales="${game.idealSales}"
+                                         data-ideal-prizes="${game.idealPrizes}">
+                                    ${game.name} (${game.profitPercent}% profit)
+                                </option>`
                             ).join('')}
                         </select>
                     </td>
-                    <td><input type="text" class="form-control" name="ptSerial" placeholder="Serial #"></td>
-                    <td><input type="number" class="form-control" name="ptPrice" value="1" step="1"></td>
-                    <td><input type="number" class="form-control" name="ptSold" value="0"></td>
-                    <td><input type="number" class="form-control" name="ptRevenue" value="0" step="0.01"></td>
-                    <td><input type="number" class="form-control" name="ptPrizes" value="0" step="0.01"></td>
-                    <td><input type="number" class="form-control" name="ptNet" value="0" step="0.01" readonly></td>
+                    <td class="form-number">-</td>
+                    <td><input type="text" class="form-control" placeholder="Serial #"></td>
+                    <td><input type="number" class="form-control tickets-sold" min="0" onchange="app.calculatePullTabRow(this)"></td>
+                    <td class="gross-sales">$0.00</td>
+                    <td><input type="number" class="form-control prizes-paid" min="0" step="0.01" onchange="app.calculatePullTabRow(this)"></td>
+                    <td class="net-revenue">$0.00</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="app.removePullTabRow(this)">×</button></td>
                 `;
+                tbody.appendChild(row);
+            }
+
+            updatePullTabRow(select) {
+                const row = select.closest('tr');
+                const formCell = row.querySelector('.form-number');
+                const selectedOption = select.selectedOptions[0];
+                
+                if (selectedOption && selectedOption.value) {
+                    formCell.textContent = selectedOption.dataset.form || '-';
+                    
+                    // Store game data for calculations
+                    row.dataset.price = selectedOption.dataset.price || '1';
+                    row.dataset.count = selectedOption.dataset.count || '0';
+                    row.dataset.profit = selectedOption.dataset.profit || '0';
+                    row.dataset.idealSales = selectedOption.dataset.idealSales || '0';
+                    row.dataset.idealPrizes = selectedOption.dataset.idealPrizes || '0';
+                    
+                    // Auto-calculate if tickets are entered
+                    const ticketsSold = row.querySelector('.tickets-sold');
+                    if (ticketsSold.value) {
+                        this.calculatePullTabRow(ticketsSold);
+                    }
+                } else {
+                    formCell.textContent = '-';
+                }
+            }
+
+            calculatePullTabRow(input) {
+                const row = input.closest('tr');
+                const ticketsSold = parseInt(row.querySelector('.tickets-sold').value) || 0;
+                const prizesPaid = parseFloat(row.querySelector('.prizes-paid').value) || 0;
+                const price = parseFloat(row.dataset.price) || 1;
+                
+                const grossSales = ticketsSold * price;
+                const netRevenue = grossSales - prizesPaid;
+                
+                row.querySelector('.gross-sales').textContent = `$${grossSales.toFixed(2)}`;
+                row.querySelector('.net-revenue').textContent = `$${netRevenue.toFixed(2)}`;
+                
+                // Update totals
+                this.calculatePullTabTotals();
+            }
+
+            async addCustomPullTab() {
+                const gameName = prompt('Enter game name:');
+                if (!gameName) return;
+                
+                const count = parseInt(prompt('Enter ticket count:') || '0');
+                if (!count) return;
+                
+                const profit = parseFloat(prompt('Enter ideal profit amount:') || '0');
+                if (!profit) return;
+                
+                const price = parseFloat(prompt('Enter price per ticket (default $1):') || '1');
+                const form = prompt('Enter form number (optional):') || `CUSTOM_${Date.now()}`;
+                
+                // Add to local library
+                const customGame = {
+                    name: gameName,
+                    form: form,
+                    count: count,
+                    price: price,
+                    profit: profit,
+                    url: '',
+                    idealSales: count * price,
+                    idealPrizes: (count * price) - profit,
+                    profitPercent: ((profit / (count * price)) * 100).toFixed(1)
+                };
+                
+                this.pullTabLibrary.push(customGame);
+                await this.db.setItem('pullTabLibrary', this.pullTabLibrary);
+                
+                // Update dropdowns
+                this.updatePullTabDropdowns();
+                
+                // Save to backend if online
+                if (this.isOnline) {
+                    try {
+                        const response = await fetch(CONFIG.API_URL, {
+                            method: 'POST',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'text/plain',
+                            },
+                            body: JSON.stringify({
+                                path: 'save-custom-pulltab',
+                                gameData: customGame
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        if (result.success) {
+                            console.log('Custom game saved to library');
+                        }
+                    } catch (error) {
+                        console.error('Failed to save custom game to backend:', error);
+                    }
+                }
             }
             
             showToast(message, type = 'info') {
