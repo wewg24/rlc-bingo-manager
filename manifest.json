@@ -1,38 +1,13 @@
 {
   "name": "RLC Bingo Manager",
   "short_name": "RLC Bingo",
-  "description": "Missouri Gaming Commission compliant bingo management system",
-  "start_url": "/",
+  "description": "Complete bingo occasion management system for Rolla Lions Club",
+  "start_url": "/rlc-bingo-manager/",
   "display": "standalone",
+  "background_color": "#2c3e50",
+  "theme_color": "#3498db",
   "orientation": "any",
-  "theme_color": "#2c3e50",
-  "background_color": "#ffffff",
   "icons": [
-    {
-      "src": "assets/icons/icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/icon-96.png",
-      "sizes": "96x96",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/icon-128.png",
-      "sizes": "128x128",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/icon-144.png",
-      "sizes": "144x144",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/icon-152.png",
-      "sizes": "152x152",
-      "type": "image/png"
-    },
     {
       "src": "assets/icons/icon-192.png",
       "sizes": "192x192",
@@ -40,18 +15,12 @@
       "purpose": "any maskable"
     },
     {
-      "src": "assets/icons/icon-384.png",
-      "sizes": "384x384",
-      "type": "image/png"
-    },
-    {
       "src": "assets/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "categories": ["business", "productivity"],
-  "lang": "en-US",
-  "dir": "ltr",
   "prefer_related_applications": false
 }
