@@ -1,30 +1,33 @@
-const CACHE_NAME = 'rlc-bingo-v1.0.0';
+// Service Worker with error handling for cache.addAll
+const CACHE_NAME = 'rlc-bingo-v9.1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/css/main.css',
-  '/css/print.css',
-  '/js/app.js',
-  '/js/config.js',
-  '/js/offline.js',
-  '/js/sync.js',
-  '/js/camera.js',
-  '/lib/localforage.min.js',
-  '/lib/pdfmake.min.js',
-  '/assets/icons/icon-192.png'
+    '/',
+    '/index.html',
+    '/css/style.css',
+    '/js/app.js',
+    '/manifest.json',
+    'https://fonts.googleapis.com/icon?family=Material+Icons',
+    'https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js'
 ];
 
-// Install event
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
-  self.skipWaiting();
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => {
+                console.log('Opened cache');
+                // Add URLs one by one to handle failures gracefully
+                return Promise.allSettled(
+                    urlsToCache.map(url => 
+                        cache.add(url).catch(err => {
+                            console.warn(`Failed to cache ${url}:`, err);
+                        })
+                    )
+                );
+            })
+            .then(() => {
+                console.log('Cache initialization complete');
+            })
+    );
 });
 
 // Activate event
