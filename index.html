@@ -3,1785 +3,919 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="RLC Bingo Manager - Missouri Gaming Commission Compliant">
-    <meta name="theme-color" content="#2c3e50">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
+    <meta name="theme-color" content="#3498db">
     <title>RLC Bingo Manager</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
-    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
+    <link rel="manifest" href="manifest.json">
     
-    <!-- Material Design Icons -->
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    
+    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
+    <!-- Styles -->
     <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --success: #27ae60;
-            --warning: #e67e22;
-            --danger: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #34495e;
-            --white: #ffffff;
-            --shadow: 0 2px 10px rgba(0,0,0,0.1);
-            --radius: 8px;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--light);
-            color: var(--dark);
-            line-height: 1.6;
-            overflow-x: hidden;
+            background: #f5f6fa;
+            color: #2c3e50;
         }
-
-        /* App Shell */
-        .app-container {
+        
+        /* Loading Screen */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #3498db;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            background: var(--white);
-        }
-
-        /* Header */
-        .app-header {
-            background: var(--primary);
-            color: var(--white);
-            padding: 0;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            position: sticky;
-            top: 0;
-        }
-
-        .header-main {
-            display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
         }
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 18px;
-            font-weight: 600;
+        
+        #loading.hide {
+            opacity: 0;
+            pointer-events: none;
         }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            color: var(--white);
-            cursor: pointer;
-            padding: 8px;
+        
+        .loader-circle {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            transition: background 0.3s;
+            font-size: 48px;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
         }
-
-        .menu-toggle:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        /* Status Bar */
-        .status-bar {
-            background: var(--secondary);
-            color: var(--white);
-            padding: 8px 16px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #2ecc71;
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.offline {
-            background: #e74c3c;
-            animation: none;
-        }
-
+        
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
-
-        /* Navigation Tabs */
-        .nav-tabs {
+        
+        .loader-text {
+            color: white;
+            font-size: 18px;
+        }
+        
+        /* Header */
+        .header {
+            background: #3498db;
+            color: white;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
             display: flex;
-            background: var(--white);
-            border-bottom: 1px solid #e0e0e0;
-            overflow-x: auto;
-            scrollbar-width: none;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-
-        .nav-tabs::-webkit-scrollbar {
-            display: none;
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: bold;
         }
-
-        .nav-tab {
-            flex: 0 0 auto;
-            padding: 12px 20px;
-            background: none;
-            border: none;
-            color: var(--dark);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s;
-            white-space: nowrap;
+        
+        .sync-indicator {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
-        .nav-tab:hover {
-            background: rgba(52, 152, 219, 0.1);
+        
+        .sync-indicator .online {
+            color: #2ecc71;
         }
-
-        .nav-tab.active {
-            color: var(--secondary);
+        
+        .sync-indicator .offline {
+            color: #e74c3c;
         }
-
-        .nav-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--secondary);
+        
+        /* Navigation */
+        .nav-tabs {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            overflow-x: auto;
         }
-
-        .nav-tab .material-icons {
-            font-size: 18px;
+        
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+            transition: all 0.3s ease;
         }
-
-        /* Main Content */
-        .app-content {
-            flex: 1;
-            overflow-y: auto;
-            background: var(--light);
+        
+        .tab-btn:hover {
+            background: #f5f5f5;
         }
-
-        .tab-panel {
-            display: none;
-            animation: fadeIn 0.3s;
+        
+        .tab-btn.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
         }
-
-        .tab-panel.active {
-            display: block;
+        
+        /* Content */
+        .content {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 16px;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Cards */
+        
+        /* Card */
         .card {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin: 16px;
-            overflow: hidden;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
-
+        
         .card-header {
             padding: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--white);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            border-bottom: 1px solid #e0e0e0;
         }
-
+        
+        .card-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
         .card-body {
             padding: 16px;
         }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--dark);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-
+        
+        /* Form Elements */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 16px;
         }
-
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .form-control {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
         /* Buttons */
         .btn {
             padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 14px;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--white);
+            transition: all 0.3s ease;
         }
-
+        
         .btn-primary {
-            background: var(--secondary);
+            background: #3498db;
+            color: white;
         }
-
+        
         .btn-primary:hover {
             background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
         }
-
+        
         .btn-success {
-            background: var(--success);
+            background: #2ecc71;
+            color: white;
         }
-
-        .btn-success:hover {
-            background: #229954;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
-        }
-
-        .btn-warning {
-            background: var(--warning);
-        }
-
+        
         .btn-danger {
-            background: var(--danger);
+            background: #e74c3c;
+            color: white;
         }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--secondary);
-            color: var(--white);
-            border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            z-index: 900;
-        }
-
-        .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-
-        .fab .material-icons {
-            font-size: 24px;
-        }
-
-        /* Side Drawer */
-        .side-drawer {
-            position: fixed;
-            top: 0;
-            left: -300px;
-            width: 300px;
-            height: 100vh;
-            background: var(--white);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            transition: left 0.3s;
-            z-index: 2000;
-            overflow-y: auto;
-        }
-
-        .side-drawer.open {
-            left: 0;
-        }
-
-        .drawer-header {
-            background: var(--primary);
-            color: var(--white);
-            padding: 20px;
-        }
-
-        .drawer-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .user-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .drawer-menu {
-            padding: 16px 0;
-        }
-
-        .drawer-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 20px;
-            color: var(--dark);
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-
-        .drawer-item:hover {
-            background: var(--light);
-        }
-
-        .drawer-item.active {
-            background: rgba(52, 152, 219, 0.1);
-            color: var(--secondary);
-            border-left: 3px solid var(--secondary);
-        }
-
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            z-index: 1500;
-        }
-
-        .overlay.active {
-            display: block;
-        }
-
-        /* Photo Upload Area */
-        .photo-upload {
-            border: 2px dashed #ddd;
-            border-radius: var(--radius);
-            padding: 32px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .photo-upload:hover {
-            border-color: var(--secondary);
-            background: rgba(52, 152, 219, 0.05);
-        }
-
-        .photo-upload.dragover {
-            border-color: var(--success);
-            background: rgba(39, 174, 96, 0.1);
-        }
-
-        .photo-preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .photo-thumb {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--light);
-            border-top-color: var(--secondary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
+        
         /* Toast Notifications */
         .toast {
             position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark);
-            color: var(--white);
-            padding: 12px 24px;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            display: none;
-            z-index: 3000;
-            animation: slideUp 0.3s;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
-
+        
         .toast.show {
-            display: block;
+            transform: translateY(0);
+            opacity: 1;
         }
-
-        @keyframes slideUp {
-            from {
-                transform: translateX(-50%) translateY(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
+        
+        .toast-success {
+            background: #2ecc71;
         }
-
+        
+        .toast-error {
+            background: #e74c3c;
+        }
+        
+        .toast-warning {
+            background: #f39c12;
+        }
+        
         /* Tables */
-        .data-table {
+        table {
             width: 100%;
             border-collapse: collapse;
-            background: var(--white);
         }
-
-        .data-table th,
-        .data-table td {
-            padding: 12px;
+        
+        th, td {
+            padding: 8px;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
         }
-
-        .data-table th {
-            background: var(--light);
+        
+        th {
+            background: #f5f5f5;
             font-weight: 600;
-            color: var(--dark);
-            font-size: 14px;
         }
-
-        .data-table tbody tr:hover {
-            background: rgba(52, 152, 219, 0.05);
-        }
-
-        /* Responsive */
+        
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .nav-tab span {
-                display: none;
-            }
-            
             .form-grid {
                 grid-template-columns: 1fr;
             }
             
-            .card {
-                margin: 8px;
-            }
-            
-            .fab {
-                bottom: 16px;
-                right: 16px;
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
             }
         }
-
-        /* Print Styles */
-        @media print {
-            .app-header,
-            .nav-tabs,
-            .fab,
-            .side-drawer,
-            .overlay,
-            .no-print {
-                display: none !important;
-            }
-            
-            .app-content {
-                overflow: visible !important;
-            }
-            
-            .card {
-                page-break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
+        
+        /* Error Display */
+        .error-container {
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 12px 0;
+            color: #c00;
         }
-
-        /* Offline Banner */
-        .offline-banner {
-            background: var(--warning);
-            color: var(--white);
+        
+        .debug-info {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             padding: 8px;
-            text-align: center;
-            font-size: 14px;
-            display: none;
-        }
-
-        .offline-banner.show {
-            display: block;
-        }
-
-        /* Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--white);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 4000;
-        }
-
-        .loading-screen.hide {
-            display: none;
-        }
-
-        .loading-logo {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 20px;
+            margin: 8px 0;
+            font-family: monospace;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">
-            <svg viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="#2c3e50"/>
-                <text x="50" y="50" text-anchor="middle" dy=".3em" fill="white" font-size="24" font-weight="bold">RLC</text>
-            </svg>
-        </div>
-        <div class="spinner"></div>
-        <p style="margin-top: 16px; color: #7f8c8d;">Loading Bingo Manager...</p>
+    <div id="loading">
+        <div class="loader-circle">RLC</div>
+        <div class="loader-text">Loading Bingo Manager...</div>
     </div>
-
+    
     <!-- Main App Container -->
-    <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-main">
-                <button class="menu-toggle" onclick="toggleDrawer()">
-                    <i class="material-icons">menu</i>
-                </button>
-                <div class="header-title">
-                    <i class="material-icons">casino</i>
-                    <span>RLC Bingo Manager</span>
-                </div>
-                <button class="menu-toggle" onclick="syncData()">
-                    <i class="material-icons">sync</i>
-                </button>
-            </div>
-            <div class="status-bar">
-                <div class="status-indicator">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span id="statusText">Online</span>
-                </div>
-                <div id="sessionInfo">
-                    <span id="currentSession">No active session</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Offline Banner -->
-        <div class="offline-banner" id="offlineBanner">
-            <i class="material-icons" style="vertical-align: middle;">wifi_off</i>
-            Working offline - Data will sync when connection returns
-        </div>
-
-        <!-- Navigation Tabs -->
-        <nav class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('occasion')">
-                <i class="material-icons">event</i>
-                <span>Occasion</span>
-            </button>
-            <button class="nav-tab" onclick="switchTab('games')">
-                <i class="material-icons">grid_on</i>
-                <span>Games</span>
-            </button>
-            <button class="nav-tab" onclick="switchTab('pulltabs')">
-                <i class="material-icons">confirmation_number</i>
-                <span>Pull-Tabs</span>
-            </button>
-            <button class="nav-tab" onclick="switchTab('money')">
-                <i class="material-icons">attach_money</i>
-                <span>Money</span>
-            </button>
-            <button class="nav-tab" onclick="switchTab('photos')">
-                <i class="material-icons">photo_camera</i>
-                <span>Photos</span>
-            </button>
-            <button class="nav-tab" onclick="switchTab('reports')">
-                <i class="material-icons">assessment</i>
-                <span>Reports</span>
-            </button>
-            <button class="nav-tab admin-only" onclick="switchTab('admin')" style="display: none;">
-                <i class="material-icons">settings</i>
-                <span>Admin</span>
-            </button>
-        </nav>
-
-        <!-- Main Content Area -->
-        <main class="app-content">
-            <!-- Occasion Tab -->
-            <div class="tab-panel active" id="occasion">
-                <div class="card">
-                    <div class="card-header">
-                        <span>Bingo Occasion Report</span>
-                        <button class="btn btn-sm" style="background: white; color: var(--primary); padding: 6px 12px;" onclick="printBlankForm('occasion')">
-                            <i class="material-icons" style="font-size: 18px;">print</i>
-                            Print Blank
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">Date</label>
-                                <input type="date" class="form-control" id="occasionDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Session Type</label>
-                                <select class="form-control" id="sessionType">
-                                    <option value="">Select Session...</option>
-                                    <option value="5-1">5-1 (1st/5th Monday)</option>
-                                    <option value="6-2">6-2 (2nd Monday)</option>
-                                    <option value="7-3">7-3 (3rd Monday)</option>
-                                    <option value="8-4">8-4 (4th Monday)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Lion in Charge</label>
-                                <input type="text" class="form-control" id="lionInCharge" placeholder="Enter name">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Total Players</label>
-                                <input type="number" class="form-control" id="totalPlayers" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Birthday BOGOs</label>
-                                <input type="number" class="form-control" id="birthdayBogos" min="0">
-                            </div>
-                        </div>
-
-                        <!-- Progressive Section -->
-                        <div class="card" style="margin-top: 20px; background: #f0f8ff;">
-                            <div class="card-body">
-                                <h4 style="margin-bottom: 16px; color: var(--secondary);">Progressive Game</h4>
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label class="form-label">Jackpot Offered</label>
-                                        <input type="number" class="form-control" id="progJackpot" step="1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Balls to Win</label>
-                                        <input type="number" class="form-control" id="progBalls" min="1" max="75">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Consolation Prize</label>
-                                        <input type="number" class="form-control" id="progConsolation" value="200">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Actual Balls Called</label>
-                                        <input type="number" class="form-control" id="progActualBalls" min="0" max="75">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="btn-group">
-                            <button class="btn btn-primary" onclick="saveOccasion()">
-                                <i class="material-icons">save</i>
-                                Save Occasion
-                            </button>
-                            <button class="btn btn-success" onclick="calculateTotals()">
-                                <i class="material-icons">calculate</i>
-                                Calculate Totals
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Games Tab -->
-            <div class="tab-panel" id="games">
-                <div class="card">
-                    <div class="card-header">
-                        <span>Session Games Sheet</span>
-                        <button class="btn btn-sm" style="background: white; color: var(--primary); padding: 6px 12px;" onclick="printBlankForm('games')">
-                            <i class="material-icons" style="font-size: 18px;">print</i>
-                            Print Blank
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <table class="data-table" id="gamesTable">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Color</th>
-                                    <th>Game</th>
-                                    <th>Prize</th>
-                                    <th>Winners</th>
-                                    <th>Total</th>
-                                    <th>Check</th>
-                                </tr>
-                            </thead>
-                            <tbody id="gamesList">
-                                <!-- Games will be populated here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pull-Tabs Tab -->
-            <div class="tab-panel" id="pulltabs">
-                <div class="card">
-                    <div class="card-header">
-                        <span>Pull-Tab Summary</span>
-                        <button class="btn btn-sm" style="background: white; color: var(--primary); padding: 6px 12px;" onclick="addPullTabGame()">
-                            <i class="material-icons" style="font-size: 18px;">add</i>
-                            Add Game
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div id="pullTabGames">
-                            <!-- Pull-tab games will be added here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Money Tab -->
-            <div class="tab-panel" id="money">
-                <div class="card">
-                    <div class="card-header">
-                        <span>Money Count Sheet</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">$100 Bills</label>
-                                <input type="number" class="form-control money-input" data-denom="100" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">$50 Bills</label>
-                                <input type="number" class="form-control money-input" data-denom="50" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">$20 Bills</label>
-                                <input type="number" class="form-control money-input" data-denom="20" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">$10 Bills</label>
-                                <input type="number" class="form-control money-input" data-denom="10" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">$5 Bills</label>
-                                <input type="number" class="form-control money-input" data-denom="5" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">$1 Bills</label>
-                                <input type="number" class="form-control money-input" data-denom="1" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Coins</label>
-                                <input type="number" class="form-control" id="coins" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Checks</label>
-                                <input type="number" class="form-control" id="checks" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="card" style="margin-top: 20px; background: #f8f9fa;">
-                            <div class="card-body">
-                                <h4>Total Deposit: <span id="totalDeposit">$0.00</span></h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Photos Tab -->
-            <div class="tab-panel" id="photos">
-                <div class="card">
-                    <div class="card-header">
-                        <span>Photo Documentation</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="photo-upload" id="photoUpload" onclick="document.getElementById('photoInput').click()">
-                            <i class="material-icons" style="font-size: 48px; color: #bdc3c7;">add_photo_alternate</i>
-                            <p style="margin-top: 12px;">Click to upload or drag & drop photos</p>
-                            <p style="font-size: 12px; color: #7f8c8d;">Supports JPG, PNG up to 10MB</p>
-                            <input type="file" id="photoInput" accept="image/*" multiple style="display: none;" onchange="handlePhotoSelect(event)">
-                        </div>
-                        <div class="photo-preview" id="photoPreview">
-                            <!-- Photo thumbnails will appear here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reports Tab -->
-            <div class="tab-panel" id="reports">
-                <div class="card">
-                    <div class="card-header">
-                        <span>Reports & Analytics</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="btn-group">
-                            <button class="btn btn-primary" onclick="generatePDF()">
-                                <i class="material-icons">picture_as_pdf</i>
-                                Generate PDF Report
-                            </button>
-                            <button class="btn btn-success" onclick="generateMGCForm()">
-                                <i class="material-icons">description</i>
-                                MGC Form 104
-                            </button>
-                            <button class="btn btn-warning" onclick="exportData()">
-                                <i class="material-icons">download</i>
-                                Export Data
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Tab (Hidden by default) -->
-            <div class="tab-panel" id="admin">
-                <div class="card">
-                    <div class="card-header">
-                        <span>Admin Panel</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="btn-group">
-                            <button class="btn btn-primary" onclick="managePullTabLibrary()">
-                                <i class="material-icons">library_books</i>
-                                Pull-Tab Library
-                            </button>
-                            <button class="btn btn-primary" onclick="manageUsers()">
-                                <i class="material-icons">people</i>
-                                User Management
-                            </button>
-                            <button class="btn btn-primary" onclick="systemSettings()">
-                                <i class="material-icons">settings</i>
-                                System Settings
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Floating Action Button -->
-        <button class="fab" id="fab" onclick="showQuickActions()">
-            <i class="material-icons">add</i>
-        </button>
-    </div>
-
-    <!-- Side Drawer -->
-    <aside class="side-drawer" id="sideDrawer">
-        <div class="drawer-header">
-            <h3>Menu</h3>
-            <div class="drawer-user">
-                <div class="user-avatar" id="userAvatar">U</div>
-                <div>
-                    <div id="userName">User Name</div>
-                    <div style="font-size: 12px; opacity: 0.8;" id="userRole">Closet Worker</div>
-                </div>
-            </div>
-        </div>
-        <nav class="drawer-menu">
-            <a href="#" class="drawer-item active" onclick="navigateTo('dashboard')">
-                <i class="material-icons">dashboard</i>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="drawer-item" onclick="navigateTo('occasions')">
-                <i class="material-icons">event</i>
-                <span>My Occasions</span>
-            </a>
-            <a href="#" class="drawer-item" onclick="navigateTo('history')">
-                <i class="material-icons">history</i>
-                <span>History</span>
-            </a>
-            <a href="#" class="drawer-item" onclick="navigateTo('help')">
-                <i class="material-icons">help</i>
-                <span>Help & Support</span>
-            </a>
-            <a href="#" class="drawer-item" onclick="navigateTo('settings')">
-                <i class="material-icons">settings</i>
-                <span>Settings</span>
-            </a>
-            <a href="#" class="drawer-item" onclick="logout()">
-                <i class="material-icons">logout</i>
-                <span>Sign Out</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Overlay -->
-    <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
-
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
-
+    <div id="app" style="display: none;"></div>
+    
+    <!-- Third-party Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
+    
+    <!-- Configuration -->
     <script>
-        // ==========================================
-        // RLC BINGO INTEGRATION SCRIPT - FIXED VERSION
-        // Version 9.1 - Debugged and Corrected
-        // ==========================================
-        
-        // Configuration
-        const RLC_CONFIG = {
-            // Your deployed Web App URL from Google Apps Script
+        // Configuration for RLC Bingo Manager
+        const CONFIG = {
+            // Google Apps Script Web App URL
             API_URL: 'https://script.google.com/macros/s/AKfycbyYhF94GgZeBjhRgh6D-eS6DTTXXgexiR_sz1UbwpZEZ8fZX1z2bTY14X6F0hEsqN6ZZw/exec',
+            
+            // App settings
+            APP_NAME: 'RLC Bingo Manager',
+            VERSION: '9.1.0',
             
             // Storage keys
             STORAGE_KEYS: {
-                CURRENT_OCCASION: 'rlc_current_occasion',
-                OFFLINE_QUEUE: 'rlc_offline_queue',
-                LAST_SYNC: 'rlc_last_sync',
-                PULL_TAB_LIBRARY: 'rlc_pulltab_library'
+                USER: 'rlc_user',
+                TOKEN: 'rlc_token',
+                CURRENT_SESSION: 'rlc_current_session',
+                SYNC_QUEUE: 'rlc_sync_queue',
+                OFFLINE_DATA: 'rlc_offline_data'
             },
             
-            // Auto-save interval (milliseconds)
-            AUTO_SAVE_INTERVAL: 30000, // 30 seconds
-            
-            // Offline sync retry interval
-            SYNC_RETRY_INTERVAL: 60000 // 1 minute
+            // Session types
+            SESSION_TYPES: {
+                '5-1': '1st/5th Monday',
+                '6-2': '2nd Monday',
+                '7-3': '3rd Monday',
+                '8-4': '4th Monday'
+            }
         };
         
-        // ==========================================
-        // INITIALIZATION
-        // ==========================================
-        
-        class RLCBingoIntegration {
+        console.log('RLC Bingo Integration initialized - v9.1 Fixed');
+    </script>
+    
+    <!-- Main Application Script -->
+    <script>
+        // Main Application Class
+        class RLCBingoApp {
             constructor() {
+                this.db = null;
                 this.isOnline = navigator.onLine;
-                this.currentOccasion = null;
-                this.autoSaveTimer = null;
-                this.syncTimer = null;
+                this.currentTab = 'occasion';
                 this.pullTabLibrary = [];
-                this.isDirty = false;
                 
+                console.log('RLCBingoApp constructor called');
                 this.init();
             }
             
-            init() {
-                // Load saved data from localStorage
-                this.loadSavedData();
-                
-                // Setup event listeners
-                this.setupEventListeners();
-                
-                // Load pull-tab library
-                this.loadPullTabLibrary();
-                
-                // Start auto-save
-                this.startAutoSave();
-                
-                // Check online status
-                this.checkOnlineStatus();
-                
-                // Attempt to sync offline data
-                if (this.isOnline) {
-                    this.syncOfflineData();
+            async init() {
+                try {
+                    console.log('Starting app initialization...');
+                    
+                    // Initialize database
+                    this.db = await this.initDB();
+                    console.log('Database initialized');
+                    
+                    // Set up event listeners
+                    this.setupEventListeners();
+                    console.log('Event listeners set up');
+                    
+                    // Try to load pull-tab library
+                    await this.loadPullTabLibrary();
+                    
+                    // Register service worker (optional for now)
+                    this.registerServiceWorker();
+                    
+                    // Hide loading screen and show app
+                    this.hideLoading();
+                    
+                    // Render the application
+                    this.render();
+                    console.log('App rendered successfully');
+                    
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                    this.showError('Failed to initialize application', error);
                 }
-                
-                console.log('RLC Bingo Integration initialized - v9.1 Fixed');
             }
             
-            // ==========================================
-            // EVENT LISTENERS - FIXED
-            // ==========================================
+            async initDB() {
+                return await localforage.createInstance({
+                    name: 'RLCBingo',
+                    version: 1.0,
+                    storeName: 'data'
+                });
+            }
             
             setupEventListeners() {
-                // Online/Offline status
-                window.addEventListener('online', () => this.handleOnline());
-                window.addEventListener('offline', () => this.handleOffline());
-                
-                // Form submission
-                const saveButton = document.getElementById('save-occasion');
-                if (saveButton) {
-                    saveButton.addEventListener('click', () => this.saveOccasion());
-                }
-                
-                // Load occasion
-                const loadButton = document.getElementById('load-occasion');
-                if (loadButton) {
-                    loadButton.addEventListener('click', () => this.showLoadDialog());
-                }
-                
-                // Tab changes - FIXED: removed saveCurrentTab reference
-                document.querySelectorAll('.tab-button').forEach(button => {
-                    button.addEventListener('click', () => {
-                        this.markDirty();
-                        // Auto-save when switching tabs
-                        if (this.isDirty) {
-                            this.autoSave();
-                        }
-                    });
+                // Online/offline detection
+                window.addEventListener('online', () => {
+                    this.isOnline = true;
+                    this.updateConnectionStatus();
                 });
                 
-                // Form field changes for auto-save
-                document.querySelectorAll('input, select, textarea').forEach(field => {
-                    field.addEventListener('change', () => this.markDirty());
+                window.addEventListener('offline', () => {
+                    this.isOnline = false;
+                    this.updateConnectionStatus();
                 });
                 
-                // Progressive game calculations - FIXED with null checks
-                const progBalls = document.getElementById('prog-actual-balls');
-                if (progBalls) {
-                    progBalls.addEventListener('change', () => this.calculateProgressivePrize());
-                }
-            }
-            
-            // ==========================================
-            // DATA COLLECTION - FIXED WITH NULL CHECKS
-            // ==========================================
-            
-            collectFormData() {
-                const data = {
-                    // Occasion data
-                    date: document.getElementById('occ-date')?.value || '',
-                    sessionType: document.querySelector('input[name="session"]:checked')?.value || '',
-                    lionInCharge: document.getElementById('occ-lion')?.value || '',
-                    totalPeople: parseInt(document.getElementById('occ-people')?.value) || 0,
-                    birthdays: parseInt(document.getElementById('occ-birthdays')?.value) || 0,
-                    
-                    // Progressive game
-                    progressive: {
-                        jackpot: parseFloat(document.getElementById('prog-jackpot')?.value) || 0,
-                        ballsNeeded: parseInt(document.getElementById('prog-balls-needed')?.value) || 48,
-                        consolation: parseFloat(document.getElementById('prog-consolation')?.value) || 200,
-                        actualBalls: parseInt(document.getElementById('prog-actual-balls')?.value) || 0,
-                        prizeAwarded: parseFloat(document.getElementById('prog-prize')?.value) || 0,
-                        checkPayment: document.getElementById('prog-check-payment')?.checked || false
-                    },
-                    
-                    // Paper Bingo Sales - Based on your form structure
-                    paperBingo: this.collectPaperBingoData(),
-                    
-                    // POS Door Sales
-                    posDoorSales: this.collectPOSDoorSalesData(),
-                    
-                    // Electronic Bingo
-                    electronicBingo: this.collectElectronicBingoData(),
-                    
-                    // Session Games
-                    sessionGames: this.collectSessionGamesData(),
-                    
-                    // Pull-Tab Games
-                    pullTabGames: this.collectPullTabGamesData(),
-                    
-                    // Money Count
-                    moneyCount: this.collectMoneyCountData(),
-                    
-                    // Metadata
-                    metadata: {
-                        createdAt: new Date().toISOString(),
-                        deviceId: this.getDeviceId(),
-                        version: '9.1'
+                // Tab navigation delegation
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('tab-btn')) {
+                        e.preventDefault();
+                        this.switchTab(e.target.dataset.tab);
                     }
-                };
-                
-                return data;
-            }
-            
-            collectPaperBingoData() {
-                const data = {};
-                
-                // Based on your HTML form structure
-                // Early Birds
-                const earlyBirdsRow = document.querySelector('tr:has(td:contains("Early Birds"))');
-                if (earlyBirdsRow) {
-                    const inputs = earlyBirdsRow.querySelectorAll('input');
-                    data.earlyBirds = {
-                        start: parseInt(inputs[0]?.value) || 0,
-                        free: parseInt(inputs[1]?.value) || 0,
-                        end: parseInt(inputs[2]?.value) || 0
-                    };
-                }
-                
-                // 6 Face
-                const sixFaceRow = document.querySelector('tr:has(td:contains("6 Face"))');
-                if (sixFaceRow) {
-                    const inputs = sixFaceRow.querySelectorAll('input');
-                    data.sixFace = {
-                        start: parseInt(inputs[0]?.value) || 0,
-                        free: parseInt(inputs[1]?.value) || 0,
-                        end: parseInt(inputs[2]?.value) || 0
-                    };
-                }
-                
-                // 9 Face Solid Border
-                const solidBorderRow = document.querySelector('tr:has(td:contains("9 Face Solid"))');
-                if (solidBorderRow) {
-                    const inputs = solidBorderRow.querySelectorAll('input');
-                    data.solidBorder9 = {
-                        start: parseInt(inputs[0]?.value) || 0,
-                        free: parseInt(inputs[1]?.value) || 0,
-                        end: parseInt(inputs[2]?.value) || 0
-                    };
-                }
-                
-                // 9 Face Stripe Border
-                const stripeBorderRow = document.querySelector('tr:has(td:contains("9 Face Stripe"))');
-                if (stripeBorderRow) {
-                    const inputs = stripeBorderRow.querySelectorAll('input');
-                    data.stripeBorder9 = {
-                        start: parseInt(inputs[0]?.value) || 0,
-                        free: parseInt(inputs[1]?.value) || 0,
-                        end: parseInt(inputs[2]?.value) || 0
-                    };
-                }
-                
-                // Progressive 3 Face
-                const prog3Row = document.querySelector('tr:has(td:contains("Progressive 3 Face"))');
-                if (prog3Row) {
-                    const inputs = prog3Row.querySelectorAll('input');
-                    data.progressive3Face = {
-                        start: parseInt(inputs[0]?.value) || 0,
-                        free: parseInt(inputs[1]?.value) || 0,
-                        end: parseInt(inputs[2]?.value) || 0
-                    };
-                }
-                
-                // Progressive 18 Face
-                const prog18Row = document.querySelector('tr:has(td:contains("Progressive 18 Face"))');
-                if (prog18Row) {
-                    const inputs = prog18Row.querySelectorAll('input');
-                    data.progressive18Face = {
-                        start: parseInt(inputs[0]?.value) || 0,
-                        free: parseInt(inputs[1]?.value) || 0,
-                        end: parseInt(inputs[2]?.value) || 0
-                    };
-                }
-                
-                return data;
-            }
-            
-            collectPOSDoorSalesData() {
-                const data = {};
-                
-                // Get all rows from POS door sales table
-                const doorSalesTable = document.querySelector('table:has(th:contains("FROM POS DOOR SALES"))');
-                if (doorSalesTable) {
-                    const rows = doorSalesTable.querySelectorAll('tbody tr');
-                    rows.forEach(row => {
-                        const cells = row.querySelectorAll('td');
-                        if (cells.length >= 3) {
-                            const itemName = cells[0]?.textContent.trim();
-                            const quantity = parseInt(cells[2]?.textContent) || 0;
-                            
-                            // Map item names to data keys
-                            const itemMap = {
-                                '6 Face': 'sixFace',
-                                '9 Face Solid': 'nineFaceSolid',
-                                '9 Face Stripe': 'nineFaceStripe',
-                                'Birthday Pack': 'birthdayPack',
-                                'Coverall Extra': 'coverallExtra',
-                                'Early Bird Double': 'earlyBirdDouble',
-                                'Letter X Extra': 'letterXExtra',
-                                'Number 7 Extra': 'number7Extra',
-                                'Progressive 18 Face': 'progressive18Face',
-                                'Progressive 3 Face': 'progressive3Face'
-                            };
-                            
-                            const key = itemMap[itemName];
-                            if (key) {
-                                data[key] = quantity;
-                            }
-                        }
-                    });
-                }
-                
-                return data;
-            }
-            
-            collectElectronicBingoData() {
-                return {
-                    smallMachines: parseInt(document.querySelector('input[id*="small-machines"]')?.value) || 0,
-                    largeMachines: parseInt(document.querySelector('input[id*="large-machines"]')?.value) || 0
-                };
-            }
-            
-            collectSessionGamesData() {
-                const games = [];
-                const tbody = document.getElementById('games-tbody');
-                
-                if (tbody) {
-                    const rows = tbody.querySelectorAll('tr');
-                    rows.forEach((row, index) => {
-                        const cells = row.querySelectorAll('td');
-                        const winnerInput = row.querySelector('.winner-count');
-                        const prizeInput = row.querySelector('.prize-per');
-                        const checkInput = row.querySelector('.check-payment');
-                        
-                        if (cells.length > 0) {
-                            games.push({
-                                number: parseInt(cells[0]?.textContent) || (index + 1),
-                                color: cells[1]?.textContent || '',
-                                name: cells[2]?.textContent || '',
-                                prize: parseFloat(cells[3]?.textContent.replace('$', '')) || 0,
-                                winners: parseInt(winnerInput?.value) || 0,
-                                prizePerWinner: parseFloat(prizeInput?.value) || 0,
-                                totalPayout: parseFloat(cells[6]?.textContent.replace('$', '')) || 0,
-                                checkPayment: checkInput?.checked || false
-                            });
-                        }
-                    });
-                }
-                
-                return games;
-            }
-            
-            collectPullTabGamesData() {
-                const games = [];
-                const tbody = document.getElementById('pt-games-body');
-                
-                if (tbody) {
-                    const rows = tbody.querySelectorAll('tr');
-                    rows.forEach(row => {
-                        const cells = row.querySelectorAll('td');
-                        const inputs = row.querySelectorAll('input');
-                        
-                        if (cells.length > 0 && !row.classList.contains('total-row')) {
-                            games.push({
-                                gameName: inputs[0]?.value || '',
-                                serialNumber: inputs[1]?.value || '',
-                                pricePerTicket: parseFloat(inputs[2]?.value) || 1,
-                                ticketsSold: parseInt(inputs[3]?.value) || 0,
-                                salesRevenue: parseFloat(cells[4]?.textContent.replace('$', '')) || 0,
-                                idealProfit: parseFloat(cells[5]?.textContent.replace('$', '')) || 0,
-                                prizesPaid: parseFloat(inputs[4]?.value) || 0,
-                                netProfit: parseFloat(cells[7]?.textContent.replace('$', '')) || 0,
-                                specialEvent: row.classList.contains('special-event'),
-                                checkPayment: inputs[5]?.checked || false
-                            });
-                        }
-                    });
-                }
-                
-                return games;
-            }
-            
-            collectMoneyCountData() {
-                return {
-                    hundreds: parseInt(document.getElementById('money-hundreds')?.value) || 0,
-                    fifties: parseInt(document.getElementById('money-fifties')?.value) || 0,
-                    twenties: parseInt(document.getElementById('money-twenties')?.value) || 0,
-                    tens: parseInt(document.getElementById('money-tens')?.value) || 0,
-                    fives: parseInt(document.getElementById('money-fives')?.value) || 0,
-                    ones: parseInt(document.getElementById('money-ones')?.value) || 0,
-                    quarters: parseInt(document.getElementById('money-quarters')?.value) || 0,
-                    dimes: parseInt(document.getElementById('money-dimes')?.value) || 0,
-                    nickels: parseInt(document.getElementById('money-nickels')?.value) || 0,
-                    pennies: parseInt(document.getElementById('money-pennies')?.value) || 0,
-                    checksTotal: parseFloat(document.getElementById('money-checks-total')?.value) || 0,
-                    startingBank: parseFloat(document.getElementById('money-starting-bank')?.value) || 500,
-                    expectedRevenue: parseFloat(document.getElementById('money-expected')?.value) || 0,
-                    depositAmount: parseFloat(document.getElementById('money-deposit')?.value) || 0
-                };
-            }
-            
-            // ==========================================
-            // SAVE OPERATIONS - FIXED
-            // ==========================================
-            
-            async saveOccasion() {
-                const data = this.collectFormData();
-                
-                // Validate required fields
-                if (!this.validateFormData(data)) {
-                    alert('Please fill in all required fields:\n- Date\n- Session Type\n- Lion in Charge\n- Total People');
-                    return;
-                }
-                
-                // Show loading indicator
-                this.showLoading('Saving occasion...');
-                
-                try {
-                    if (this.isOnline) {
-                        // Save online - FIXED: proper fetch request
-                        const response = await fetch(RLC_CONFIG.API_URL, {
-                            method: 'POST',
-                            mode: 'no-cors', // Important for Google Apps Script
-                            headers: {
-                                'Content-Type': 'text/plain' // Changed for no-cors mode
-                            },
-                            body: JSON.stringify({
-                                path: 'save-occasion',
-                                data: data
-                            })
-                        });
-                        
-                        // With no-cors, we can't read the response
-                        // But we can assume success if no error was thrown
-                        this.currentOccasion = 'OCC_' + Date.now();
-                        this.showSuccess('Occasion saved successfully!');
-                        this.clearLocalStorage();
-                        
-                    } else {
-                        // Save offline
-                        this.saveToOfflineQueue(data);
-                        this.showWarning('Saved offline. Will sync when connection restored.');
+                    
+                    // Save button
+                    if (e.target.id === 'saveOccasion') {
+                        e.preventDefault();
+                        this.saveOccasion();
                     }
-                } catch (error) {
-                    console.error('Save error:', error);
-                    // Always save to offline queue as fallback
-                    this.saveToOfflineQueue(data);
-                    this.showWarning('Saved locally. Will sync when possible.');
-                } finally {
-                    this.hideLoading();
-                }
-            }
-            
-            saveToOfflineQueue(data) {
-                const queue = this.getOfflineQueue();
-                queue.push({
-                    id: 'OFFLINE_' + Date.now(),
-                    data: data,
-                    timestamp: new Date().toISOString()
+                    
+                    // Add pull-tab game
+                    if (e.target.id === 'addPullTab') {
+                        e.preventDefault();
+                        this.addPullTabRow();
+                    }
                 });
-                localStorage.setItem(RLC_CONFIG.STORAGE_KEYS.OFFLINE_QUEUE, JSON.stringify(queue));
-            }
-            
-            // ==========================================
-            // PROGRESSIVE CALCULATION - FIXED
-            // ==========================================
-            
-            calculateProgressivePrize() {
-                // Get all elements with null checks
-                const jackpotElement = document.getElementById('prog-jackpot');
-                const ballsNeededElement = document.getElementById('prog-balls-needed');
-                const consolationElement = document.getElementById('prog-consolation');
-                const actualBallsElement = document.getElementById('prog-actual-balls');
-                const prizeElement = document.getElementById('prog-prize');
                 
-                // Only proceed if all elements exist
-                if (!jackpotElement || !ballsNeededElement || !consolationElement || !actualBallsElement || !prizeElement) {
-                    console.warn('Progressive game elements not found');
-                    return;
-                }
-                
-                const jackpot = parseFloat(jackpotElement.value) || 0;
-                const ballsNeeded = parseInt(ballsNeededElement.value) || 48;
-                const consolation = parseFloat(consolationElement.value) || 200;
-                const actualBalls = parseInt(actualBallsElement.value) || 0;
-                
-                let prize = 0;
-                if (actualBalls > 0) {
-                    if (actualBalls <= ballsNeeded) {
-                        prize = jackpot;
-                    } else {
-                        prize = consolation;
+                // Form submissions
+                document.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (e.target.id === 'occasionForm') {
+                        this.saveOccasion();
                     }
-                }
-                
-                prizeElement.value = prize;
-                
-                // Update progressive game in session games if it exists
-                const progGameRow = document.querySelector('.progressive-row');
-                if (progGameRow) {
-                    const prizeCell = progGameRow.querySelector('#game-prog-prize');
-                    const prizePerInput = progGameRow.querySelector('#prog-prize-per');
-                    const totalCell = progGameRow.querySelector('#prog-game-total');
-                    
-                    if (prizeCell) prizeCell.textContent = prize;
-                    if (prizePerInput) prizePerInput.value = prize;
-                    if (totalCell) totalCell.textContent = `$${prize.toFixed(2)}`;
-                }
-                
-                this.recalculateAllTotals();
+                });
             }
-            
-            recalculateAllTotals() {
-                // Trigger all calculation functions from the original HTML
-                if (typeof calculatePaperBingo === 'function') calculatePaperBingo();
-                if (typeof calculatePOSDoorSales === 'function') calculatePOSDoorSales();
-                if (typeof calculateElectronicBingo === 'function') calculateElectronicBingo();
-                if (typeof calculateGameTotals === 'function') calculateGameTotals();
-                if (typeof calculatePullTabTotals === 'function') calculatePullTabTotals();
-                if (typeof calculateMoneyTotals === 'function') calculateMoneyTotals();
-                if (typeof calculateOccasionTotals === 'function') calculateOccasionTotals();
-            }
-            
-            // ==========================================
-            // AUTO-SAVE - FIXED
-            // ==========================================
-            
-            startAutoSave() {
-                this.autoSaveTimer = setInterval(() => {
-                    if (this.isDirty) {
-                        this.autoSave();
-                    }
-                }, RLC_CONFIG.AUTO_SAVE_INTERVAL);
-            }
-            
-            autoSave() {
-                const data = this.collectFormData();
-                localStorage.setItem(RLC_CONFIG.STORAGE_KEYS.CURRENT_OCCASION, JSON.stringify(data));
-                this.isDirty = false;
-                const time = new Date().toLocaleTimeString();
-                console.log('Auto-saved at', time);
-                this.showAutoSaveIndicator(time);
-            }
-            
-            showAutoSaveIndicator(time) {
-                let indicator = document.getElementById('auto-save-indicator');
-                if (!indicator) {
-                    indicator = document.createElement('div');
-                    indicator.id = 'auto-save-indicator';
-                    indicator.style.cssText = 'position: fixed; bottom: 10px; right: 10px; padding: 5px 10px; background: #27ae60; color: white; border-radius: 4px; font-size: 12px; z-index: 1000;';
-                    document.body.appendChild(indicator);
-                }
-                indicator.textContent = `Auto-saved at ${time}`;
-                indicator.style.display = 'block';
-                
-                setTimeout(() => {
-                    indicator.style.display = 'none';
-                }, 3000);
-            }
-            
-            markDirty() {
-                this.isDirty = true;
-            }
-            
-            loadSavedData() {
-                const saved = localStorage.getItem(RLC_CONFIG.STORAGE_KEYS.CURRENT_OCCASION);
-                if (saved) {
-                    try {
-                        const data = JSON.parse(saved);
-                        console.log('Loaded auto-saved data from', data.metadata?.createdAt);
-                        // You can populate the form here if needed
-                        // this.populateFormData(data);
-                    } catch (error) {
-                        console.error('Error loading saved data:', error);
-                    }
-                }
-            }
-            
-            // ==========================================
-            // UI HELPERS
-            // ==========================================
-            
-            showLoading(message) {
-                let loading = document.getElementById('loading-indicator');
-                if (!loading) {
-                    loading = document.createElement('div');
-                    loading.id = 'loading-indicator';
-                    loading.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10000;';
-                    document.body.appendChild(loading);
-                }
-                loading.textContent = message;
-                loading.style.display = 'block';
-            }
-            
-            hideLoading() {
-                const loading = document.getElementById('loading-indicator');
-                if (loading) {
-                    loading.style.display = 'none';
-                }
-            }
-            
-            showSuccess(message) {
-                this.showNotification(message, 'success');
-            }
-            
-            showError(message) {
-                this.showNotification(message, 'error');
-            }
-            
-            showWarning(message) {
-                this.showNotification(message, 'warning');
-            }
-            
-            showNotification(message, type) {
-                const notification = document.createElement('div');
-                notification.className = `notification notification-${type}`;
-                notification.textContent = message;
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 15px 20px;
-                    border-radius: 4px;
-                    z-index: 9999;
-                    animation: slideIn 0.3s;
-                    max-width: 300px;
-                `;
-                
-                const colors = {
-                    success: '#27ae60',
-                    error: '#e74c3c',
-                    warning: '#f39c12'
-                };
-                notification.style.backgroundColor = colors[type] || '#3498db';
-                notification.style.color = 'white';
-                
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.remove();
-                }, 5000);
-            }
-            
-            checkOnlineStatus() {
-                const statusIndicator = document.getElementById('online-status');
-                if (statusIndicator) {
-                    if (this.isOnline) {
-                        statusIndicator.textContent = '🟢 Online';
-                        statusIndicator.style.color = 'green';
-                    } else {
-                        statusIndicator.textContent = '🔴 Offline';
-                        statusIndicator.style.color = 'red';
-                    }
-                }
-            }
-            
-            handleOnline() {
-                this.isOnline = true;
-                this.checkOnlineStatus();
-                this.showSuccess('Connection restored! Syncing data...');
-                this.syncOfflineData();
-            }
-            
-            handleOffline() {
-                this.isOnline = false;
-                this.checkOnlineStatus();
-                this.showWarning('Connection lost. Working offline.');
-            }
-            
-            getDeviceId() {
-                let deviceId = localStorage.getItem('rlc_device_id');
-                if (!deviceId) {
-                    deviceId = 'DEVICE_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('rlc_device_id', deviceId);
-                }
-                return deviceId;
-            }
-            
-            clearLocalStorage() {
-                localStorage.removeItem(RLC_CONFIG.STORAGE_KEYS.CURRENT_OCCASION);
-                this.isDirty = false;
-            }
-            
-            validateFormData(data) {
-                // Check required fields
-                if (!data.date) return false;
-                if (!data.sessionType) return false;
-                if (!data.lionInCharge) return false;
-                if (data.totalPeople === 0) return false;
-                
-                return true;
-            }
-            
-            // ==========================================
-            // OFFLINE SYNC
-            // ==========================================
-            
-            async syncOfflineData() {
-                const queue = this.getOfflineQueue();
-                if (queue.length === 0) return;
-                
-                console.log(`Syncing ${queue.length} offline occasions...`);
-                
-                for (const item of queue) {
-                    try {
-                        // Attempt to sync each item
-                        await fetch(RLC_CONFIG.API_URL, {
-                            method: 'POST',
-                            mode: 'no-cors',
-                            headers: {
-                                'Content-Type': 'text/plain'
-                            },
-                            body: JSON.stringify({
-                                path: 'save-occasion',
-                                data: item.data
-                            })
-                        });
-                        
-                        // Remove from queue after successful sync
-                        this.removeFromOfflineQueue(item.id);
-                    } catch (error) {
-                        console.error('Sync error for item:', item.id, error);
-                    }
-                }
-                
-                this.showSuccess('Offline data synced successfully');
-            }
-            
-            getOfflineQueue() {
-                const queueJson = localStorage.getItem(RLC_CONFIG.STORAGE_KEYS.OFFLINE_QUEUE);
-                return queueJson ? JSON.parse(queueJson) : [];
-            }
-            
-            removeFromOfflineQueue(itemId) {
-                const queue = this.getOfflineQueue();
-                const updatedQueue = queue.filter(item => item.id !== itemId);
-                localStorage.setItem(RLC_CONFIG.STORAGE_KEYS.OFFLINE_QUEUE, JSON.stringify(updatedQueue));
-            }
-            
-            // ==========================================
-            // PULL-TAB LIBRARY
-            // ==========================================
             
             async loadPullTabLibrary() {
                 try {
-                    // Check local storage first
-                    const cached = localStorage.getItem(RLC_CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY);
-                    if (cached) {
-                        this.pullTabLibrary = JSON.parse(cached);
-                        console.log('Loaded pull-tab library from cache');
-                    }
+                    console.log('Loading pull-tab library...');
+                    const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
+                    const data = await response.json();
                     
-                    // Load fresh data if online
-                    if (this.isOnline) {
-                        const response = await fetch(RLC_CONFIG.API_URL + '?path=pulltab-library');
-                        const text = await response.text();
-                        
-                        try {
-                            const result = JSON.parse(text);
-                            if (result.success) {
-                                this.pullTabLibrary = result.games;
-                                localStorage.setItem(RLC_CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY, JSON.stringify(result.games));
-                                console.log('Updated pull-tab library from server');
-                            }
-                        } catch (parseError) {
-                            console.log('Could not parse pull-tab library response');
+                    if (data.success && data.games) {
+                        this.pullTabLibrary = data.games;
+                        await this.db.setItem('pullTabLibrary', data.games);
+                        console.log('Pull-tab library loaded:', data.games.length, 'games');
+                    } else {
+                        console.log('Pull-tab response:', data);
+                        // Try loading from cache
+                        const cached = await this.db.getItem('pullTabLibrary');
+                        if (cached) {
+                            this.pullTabLibrary = cached;
+                            console.log('Using cached pull-tab library');
                         }
                     }
                 } catch (error) {
-                    console.error('Error loading pull-tab library:', error);
+                    console.error('Failed to load pull-tab library:', error);
+                    // Try loading from cache
+                    const cached = await this.db.getItem('pullTabLibrary');
+                    if (cached) {
+                        this.pullTabLibrary = cached;
+                        console.log('Using cached pull-tab library');
+                    } else {
+                        // Use default library
+                        this.pullTabLibrary = [
+                            { name: 'Hit $250', formNumber: '3440', topPrize: 250, ticketPrice: 1 },
+                            { name: 'Lucky Symbols', formNumber: '4000', topPrize: 500, ticketPrice: 1 },
+                            { name: 'Wild 10s', formNumber: '3485', topPrize: 100, ticketPrice: 1 },
+                            { name: 'Diamond Mine', formNumber: '3980', topPrize: 100, ticketPrice: 1 },
+                            { name: 'Super 7-11-21', formNumber: '4424', topPrize: 777, ticketPrice: 1 },
+                            { name: '50/50 Raffle', formNumber: '50/50', topPrize: 0, ticketPrice: 1 }
+                        ];
+                        console.log('Using default pull-tab library');
+                    }
                 }
+            }
+            
+            registerServiceWorker() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/rlc-bingo-manager/service-worker.js')
+                        .then(reg => console.log('Service Worker registered'))
+                        .catch(err => console.log('Service Worker registration failed:', err));
+                }
+            }
+            
+            hideLoading() {
+                const loadingScreen = document.getElementById('loading');
+                const appContainer = document.getElementById('app');
+                
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hide');
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                    }, 300);
+                }
+                
+                if (appContainer) {
+                    appContainer.style.display = 'block';
+                }
+            }
+            
+            render() {
+                const app = document.getElementById('app');
+                if (!app) {
+                    console.error('App container not found');
+                    return;
+                }
+                
+                app.innerHTML = `
+                    <header class="header">
+                        <div class="header-content">
+                            <div class="logo">
+                                <i class="material-icons">casino</i>
+                                <span>RLC Bingo Manager</span>
+                            </div>
+                            <div class="sync-indicator">
+                                <span class="${this.isOnline ? 'online' : 'offline'}">
+                                    <i class="material-icons">${this.isOnline ? 'cloud_done' : 'cloud_off'}</i>
+                                    ${this.isOnline ? 'Online' : 'Offline'}
+                                </span>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    <nav class="nav-tabs">
+                        <button class="tab-btn ${this.currentTab === 'occasion' ? 'active' : ''}" data-tab="occasion">
+                            <i class="material-icons">event</i> Occasion
+                        </button>
+                        <button class="tab-btn ${this.currentTab === 'games' ? 'active' : ''}" data-tab="games">
+                            <i class="material-icons">games</i> Games
+                        </button>
+                        <button class="tab-btn ${this.currentTab === 'pulltabs' ? 'active' : ''}" data-tab="pulltabs">
+                            <i class="material-icons">confirmation_number</i> Pull-Tabs
+                        </button>
+                        <button class="tab-btn ${this.currentTab === 'money' ? 'active' : ''}" data-tab="money">
+                            <i class="material-icons">attach_money</i> Money Count
+                        </button>
+                        <button class="tab-btn ${this.currentTab === 'reports' ? 'active' : ''}" data-tab="reports">
+                            <i class="material-icons">assessment</i> Reports
+                        </button>
+                    </nav>
+                    
+                    <div class="content" id="tabContent">
+                        ${this.renderTabContent()}
+                    </div>
+                `;
+            }
+            
+            renderTabContent() {
+                switch (this.currentTab) {
+                    case 'occasion':
+                        return this.renderOccasionTab();
+                    case 'games':
+                        return this.renderGamesTab();
+                    case 'pulltabs':
+                        return this.renderPullTabsTab();
+                    case 'money':
+                        return this.renderMoneyTab();
+                    case 'reports':
+                        return this.renderReportsTab();
+                    default:
+                        return '<div class="card"><div class="card-body">Select a tab to continue</div></div>';
+                }
+            }
+            
+            renderOccasionTab() {
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Bingo Occasion Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="occasionForm">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control" name="date" value="${new Date().toISOString().split('T')[0]}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Session Type</label>
+                                        <select class="form-control" name="sessionType" required>
+                                            <option value="">Select...</option>
+                                            ${Object.entries(CONFIG.SESSION_TYPES).map(([key, value]) => 
+                                                `<option value="${key}">${value}</option>`
+                                            ).join('')}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Lion in Charge</label>
+                                        <input type="text" class="form-control" name="lionInCharge" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Total Players</label>
+                                        <input type="number" class="form-control" name="totalPlayers" min="0" value="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Birthdays</label>
+                                        <input type="number" class="form-control" name="birthdays" min="0" value="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="card" style="margin-top: 20px; background: #f0f8ff;">
+                                    <div class="card-body">
+                                        <h4>Progressive Game</h4>
+                                        <div class="form-grid">
+                                            <div class="form-group">
+                                                <label class="form-label">Starting Jackpot</label>
+                                                <input type="number" class="form-control" name="progJackpot" step="1" value="500">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Balls to Win</label>
+                                                <input type="number" class="form-control" name="progBalls" value="48">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Consolation Prize</label>
+                                                <input type="number" class="form-control" name="progConsolation" step="1" value="200">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Actual Balls Called</label>
+                                                <input type="number" class="form-control" name="progActualBalls" min="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Prize Awarded</label>
+                                                <input type="number" class="form-control" name="progPrize" step="1" value="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    <input type="checkbox" name="progCheck"> Check Payment
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 20px;">
+                                    <button type="submit" class="btn btn-primary" id="saveOccasion">
+                                        <i class="material-icons">save</i> Save Occasion
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderGamesTab() {
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Session Games</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Select a session type from the Occasion tab to load games.</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderPullTabsTab() {
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Pull-Tab Games</h3>
+                        </div>
+                        <div class="card-body">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Game Name</th>
+                                        <th>Serial #</th>
+                                        <th>Price</th>
+                                        <th>Sold</th>
+                                        <th>Revenue</th>
+                                        <th>Prizes</th>
+                                        <th>Net</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pullTabsBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; color: #999;">
+                                            No pull-tab games added yet
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button class="btn btn-primary" id="addPullTab" style="margin-top: 10px;">
+                                <i class="material-icons">add</i> Add Pull-Tab Game
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderMoneyTab() {
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Money Count & Reconciliation</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Starting Bank</label>
+                                    <input type="number" class="form-control" name="startingBank" value="500" step="1">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Cash Total</label>
+                                    <input type="number" class="form-control" name="cashTotal" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Checks Total</label>
+                                    <input type="number" class="form-control" name="checksTotal" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Deposit Amount</label>
+                                    <input type="number" class="form-control" name="depositAmount" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderReportsTab() {
+                return `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Reports & Analytics</h3>
+                        </div>
+                        <div class="card-body">
+                            <p>Generate MGC reports and financial summaries here.</p>
+                            <button class="btn btn-primary">
+                                <i class="material-icons">picture_as_pdf</i> Generate MGC Report
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            switchTab(tab) {
+                this.currentTab = tab;
+                this.render();
+            }
+            
+            updateConnectionStatus() {
+                const indicator = document.querySelector('.sync-indicator');
+                if (indicator) {
+                    indicator.innerHTML = `
+                        <span class="${this.isOnline ? 'online' : 'offline'}">
+                            <i class="material-icons">${this.isOnline ? 'cloud_done' : 'cloud_off'}</i>
+                            ${this.isOnline ? 'Online' : 'Offline'}
+                        </span>
+                    `;
+                }
+            }
+            
+            async saveOccasion() {
+                console.log('Saving occasion...');
+                
+                const form = document.getElementById('occasionForm');
+                if (!form) {
+                    console.error('Form not found');
+                    return;
+                }
+                
+                const formData = new FormData(form);
+                const occasion = {
+                    date: formData.get('date'),
+                    sessionType: formData.get('sessionType'),
+                    lionInCharge: formData.get('lionInCharge'),
+                    totalPlayers: parseInt(formData.get('totalPlayers')) || 0,
+                    birthdays: parseInt(formData.get('birthdays')) || 0,
+                    progressive: {
+                        jackpot: parseFloat(formData.get('progJackpot')) || 0,
+                        ballsNeeded: parseInt(formData.get('progBalls')) || 48,
+                        consolation: parseFloat(formData.get('progConsolation')) || 200,
+                        actualBalls: parseInt(formData.get('progActualBalls')) || 0,
+                        prizeAwarded: parseFloat(formData.get('progPrize')) || 0,
+                        checkPayment: formData.get('progCheck') === 'on'
+                    }
+                };
+                
+                console.log('Occasion data:', occasion);
+                
+                try {
+                    // Save locally first
+                    const occasionId = 'OCC_' + Date.now();
+                    await this.db.setItem(occasionId, occasion);
+                    
+                    // Try to save to server
+                    if (this.isOnline) {
+                        const response = await fetch(CONFIG.API_URL + '?path=save-occasion', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(occasion)
+                        });
+                        
+                        const result = await response.json();
+                        if (result.success) {
+                            this.showToast('Occasion saved successfully!', 'success');
+                        } else {
+                            this.showToast('Saved locally - will sync when online', 'warning');
+                        }
+                    } else {
+                        this.showToast('Saved offline - will sync when online', 'warning');
+                    }
+                    
+                    // Reset form
+                    form.reset();
+                    
+                } catch (error) {
+                    console.error('Save error:', error);
+                    this.showToast('Error saving occasion', 'error');
+                }
+            }
+            
+            addPullTabRow() {
+                const tbody = document.getElementById('pullTabsBody');
+                if (!tbody) return;
+                
+                // Clear the "no games" message if it exists
+                if (tbody.querySelector('td[colspan="7"]')) {
+                    tbody.innerHTML = '';
+                }
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>
+                        <select class="form-control" name="ptGameName">
+                            <option value="">Select game...</option>
+                            ${this.pullTabLibrary.map(game => 
+                                `<option value="${game.name}">${game.name}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control" name="ptSerial" placeholder="Serial #"></td>
+                    <td><input type="number" class="form-control" name="ptPrice" value="1" step="1"></td>
+                    <td><input type="number" class="form-control" name="ptSold" value="0"></td>
+                    <td><input type="number" class="form-control" name="ptRevenue" value="0" step="0.01"></td>
+                    <td><input type="number" class="form-control" name="ptPrizes" value="0" step="0.01"></td>
+                    <td><input type="number" class="form-control" name="ptNet" value="0" step="0.01" readonly></td>
+                `;
+            }
+            
+            showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 100);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+            
+            showError(message, error) {
+                const app = document.getElementById('app');
+                if (app) {
+                    app.innerHTML = `
+                        <div class="error-container">
+                            <h3>Error Loading Application</h3>
+                            <p>${message}</p>
+                            <div class="debug-info">
+                                ${error ? error.toString() : 'Unknown error'}
+                            </div>
+                            <button class="btn btn-primary" onclick="location.reload()">
+                                <i class="material-icons">refresh</i> Reload Page
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                // Hide loading screen
+                this.hideLoading();
             }
         }
         
-        // Initialize when DOM is ready
-        let rlcIntegration;
-        document.addEventListener('DOMContentLoaded', function() {
-            rlcIntegration = new RLCBingoIntegration();
-            
-            // Add save and load buttons if they don't exist
-            const buttonGroup = document.querySelector('.button-group');
-            if (buttonGroup && !document.getElementById('save-occasion')) {
-                const saveButton = document.createElement('button');
-                saveButton.id = 'save-occasion';
-                saveButton.className = 'success';
-                saveButton.textContent = '💾 Save to Cloud';
-                saveButton.style.marginRight = '10px';
-                buttonGroup.appendChild(saveButton);
-                
-                const loadButton = document.createElement('button');
-                loadButton.id = 'load-occasion';
-                loadButton.className = 'secondary';
-                loadButton.textContent = '📥 Load Occasion';
-                buttonGroup.appendChild(loadButton);
-            }
-            
-            // Add online status indicator
-            if (!document.getElementById('online-status')) {
-                const statusDiv = document.createElement('div');
-                statusDiv.id = 'online-status';
-                statusDiv.style.cssText = 'position: fixed; top: 10px; right: 10px; padding: 5px 10px; background: white; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 9999; font-weight: bold;';
-                statusDiv.textContent = '🟢 Online';
-                document.body.appendChild(statusDiv);
-            }
-        });
-        
-        // Add CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            
-            .notification {
-                transition: all 0.3s ease;
-            }
-            
-            .notification:hover {
-                transform: scale(1.02);
-            }
-        `;
-        document.head.appendChild(style);
+        // Initialize app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                window.app = new RLCBingoApp();
+            });
+        } else {
+            // DOM already loaded
+            window.app = new RLCBingoApp();
+        }
     </script>
 </body>
 </html>
