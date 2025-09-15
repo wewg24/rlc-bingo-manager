@@ -1000,18 +1000,28 @@
                 
                 const processed = [];
                 
+                // FIXED VERSION:
                 for (const item of syncQueue) {
                     try {
-                        const response = await fetch(CONFIG.API_URL, {
+                        // Build the correct path based on item type
+                        const pathMap = {
+                            'occasion': 'save-occasion',
+                            'games': 'save-games',
+                            'pulltabs': 'save-pulltabs',
+                            'moneycount': 'save-moneycount',
+                            'photo': 'upload-photo'
+                        };
+                        
+                        const apiPath = pathMap[item.type] || `save-${item.type}`;
+                        
+                        // Move path to URL parameter, send only data in body
+                        const response = await fetch(CONFIG.API_URL + '?path=' + apiPath, {
                             method: 'POST',
                             mode: 'cors',
                             headers: {
                                 'Content-Type': 'text/plain',
                             },
-                            body: JSON.stringify({
-                                path: `save-${item.type}`,
-                                ...item.data
-                            })
+                            body: JSON.stringify(item.data)  // Only the data, no path
                         });
                         
                         const result = await response.json();
@@ -1257,15 +1267,15 @@
                 // Save to backend if online
                 if (this.isOnline) {
                     try {
-                        const response = await fetch(CONFIG.API_URL, {
+                        // Move path to URL parameter
+                        const response = await fetch(CONFIG.API_URL + '?path=save-custom-pulltab', {
                             method: 'POST',
                             mode: 'cors',
                             headers: {
                                 'Content-Type': 'text/plain',
                             },
                             body: JSON.stringify({
-                                path: 'save-custom-pulltab',
-                                gameData: customGame
+                                gameData: customGame  // Only send the data
                             })
                         });
                         
