@@ -1,0 +1,99 @@
+/* Dark Mode Styles */
+body.dark-mode {
+    --background: #1a1a1a;
+    --text: #e0e0e0;
+    --white: #2c2c2c;
+    --light: #3a3a3a;
+    --border: #4a4a4a;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .app-header {
+    background: #0c1217;
+}
+
+body.dark-mode .form-section,
+body.dark-mode .summary-card,
+body.dark-mode .metrics-card {
+    background: var(--white);
+}
+
+body.dark-mode input,
+body.dark-mode select {
+    background: var(--light);
+    color: var(--text);
+    border-color: var(--border);
+}
+
+body.dark-mode .data-table th {
+    background: var(--light);
+    color: var(--text);
+}
+
+body.dark-mode .data-table td {
+    background: var(--white);
+    border-color: var(--border);
+}
+
+body.dark-mode .total-row {
+    background: #1e3a5f;
+}
+
+body.dark-mode .grand-total {
+    background: #264a7a;
+}
+
+body.dark-mode .progressive-section {
+    background: #1a2332;
+}
+
+body.dark-mode .summary-item {
+    background: var(--light);
+}
+
+body.dark-mode .summary-item.grand-total {
+    background: #264a7a;
+}
+
+body.dark-mode .drawer-section {
+    background: var(--light);
+}
+
+body.dark-mode .side-menu {
+    background: var(--white);
+}
+
+body.dark-mode .menu-nav a:hover {
+    background: var(--light);
+}
+
+body.dark-mode .wizard-progress {
+    background: var(--white);
+}
+
+body.dark-mode .progress-bar {
+    background: var(--light);
+}
+
+body.dark-mode .step-number {
+    background: var(--light);
+}
+
+body.dark-mode .wizard-navigation {
+    background: var(--white);
+}
+
+/* Theme toggle animation */
+body {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.theme-icon {
+    display: inline-block;
+    transition: transform 0.3s;
+}
+
+body.dark-mode .theme-icon {
+    transform: rotate(180deg);
+}
