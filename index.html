@@ -2,1376 +2,550 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="RLC Bingo Manager - Digital system for managing bingo occasions">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>RLC Bingo Manager</title>
     
-    <style>
-        /* ============================================
-           CSS VARIABLES & THEMING
-           ============================================ */
-        :root {
-            /* Light mode colors */
-            --bg-primary: #f8f9fa;
-            --bg-secondary: #ffffff;
-            --bg-tertiary: #e9ecef;
-            --text-primary: #212529;
-            --text-secondary: #6c757d;
-            --text-tertiary: #adb5bd;
-            --border-color: #dee2e6;
-            --accent-primary: #3b82f6;
-            --accent-secondary: #10b981;
-            --accent-danger: #ef4444;
-            --accent-warning: #f59e0b;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-
-        [data-theme="dark"] {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-tertiary: #64748b;
-            --border-color: #334155;
-            --accent-primary: #60a5fa;
-            --accent-secondary: #34d399;
-            --accent-danger: #f87171;
-            --accent-warning: #fbbf24;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
-            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        /* ============================================
-           RESET & BASE STYLES
-           ============================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: var(--transition);
-            min-height: 100vh;
-        }
-
-        /* ============================================
-           LAYOUT COMPONENTS
-           ============================================ */
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0;
-        }
-
-        /* Header */
-        .header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .header-title h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        /* Status Indicator */
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--bg-tertiary);
-            border-radius: 2rem;
-            font-size: 0.875rem;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.online {
-            background: var(--accent-secondary);
-        }
-
-        .status-dot.offline {
-            background: var(--accent-warning);
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background: var(--bg-tertiary);
-            border-radius: 30px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 2px solid var(--border-color);
-        }
-
-        .theme-toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 20px;
-            height: 20px;
-            background: var(--accent-primary);
-            border-radius: 50%;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        [data-theme="dark"] .theme-toggle-slider {
-            transform: translateX(30px);
-        }
-
-        /* Navigation Tabs */
-        .nav-tabs {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-        }
-
-        .nav-tab {
-            flex: 0 0 auto;
-            padding: 1rem 1.5rem;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
-            white-space: nowrap;
-        }
-
-        .nav-tab:hover {
-            color: var(--text-primary);
-            background: var(--bg-tertiary);
-        }
-
-        .nav-tab.active {
-            color: var(--accent-primary);
-        }
-
-        .nav-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--accent-primary);
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: scaleX(0); }
-            to { transform: scaleX(1); }
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-            padding: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Cards */
-        .card {
-            background: var(--bg-secondary);
-            border-radius: 0.75rem;
-            box-shadow: var(--shadow-md);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: var(--transition);
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .card-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* Forms */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-
-        .form-input,
-        .form-select {
-            padding: 0.75rem 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            transition: var(--transition);
-        }
-
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .form-input[readonly] {
-            background: var(--bg-primary);
-            opacity: 0.7;
-        }
-
-        /* Tables */
-        .table-wrapper {
-            overflow-x: auto;
-            border-radius: 0.75rem;
-            border: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: var(--bg-tertiary);
-        }
-
-        th, td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            font-size: 0.875rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            font-weight: 600;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-
-        tbody tr:hover {
-            background: var(--bg-tertiary);
-        }
-
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .table-input {
-            width: 100%;
-            padding: 0.5rem;
-            background: transparent;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-            transition: var(--transition);
-        }
-
-        .table-input:focus {
-            background: var(--bg-primary);
-            border-color: var(--accent-primary);
-            outline: none;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--accent-primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .btn-secondary:hover {
-            background: var(--border-color);
-        }
-
-        .btn-success {
-            background: var(--accent-secondary);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--accent-danger);
-            color: white;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header-title h1 {
-                font-size: 1.25rem;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-tab {
-                padding: 0.75rem 1rem;
-                font-size: 0.8rem;
-            }
-
-            .card {
-                padding: 1rem;
-            }
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--bg-tertiary);
-            border-top-color: var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Alerts */
-        .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            animation: slideDown 0.3s ease;
-        }
-
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--accent-secondary);
-            color: var(--accent-secondary);
-        }
-
-        .alert-error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--accent-danger);
-            color: var(--accent-danger);
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-10px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-    </style>
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/wizard.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
 </head>
-<body data-theme="dark">
-    <div class="app-container">
+<body>
+    <div id="app">
         <!-- Header -->
-        <header class="header">
+        <header class="app-header">
             <div class="header-content">
-                <div class="header-title">
-                    <h1>🦁 RLC Bingo Manager</h1>
-                </div>
+                <h1>RLC Bingo Manager</h1>
                 <div class="header-controls">
-                    <div class="status-indicator">
-                        <div class="status-dot online" id="statusDot"></div>
-                        <span id="statusText">Online</span>
-                    </div>
-                    <div class="theme-toggle" onclick="toggleTheme()">
-                        <div class="theme-toggle-slider">
-                            <span id="themeIcon">🌙</span>
-                        </div>
+                    <button id="theme-toggle" class="icon-button" aria-label="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                    <button id="menu-toggle" class="icon-button" aria-label="Menu">
+                        <span>☰</span>
+                    </button>
+                    <div class="connection-status">
+                        <span id="status-indicator" class="status-online">●</span>
+                        <span id="status-text">Online</span>
                     </div>
                 </div>
             </div>
         </header>
-
-        <!-- Navigation -->
-        <nav class="nav-tabs">
-            <button class="nav-tab active" onclick="showTab('occasion')">Occasion Report</button>
-            <button class="nav-tab" onclick="showTab('games')">Session Games</button>
-            <button class="nav-tab" onclick="showTab('pulltabs')">Pull-Tabs</button>
-            <button class="nav-tab" onclick="showTab('money')">Money Count</button>
-            <button class="nav-tab" onclick="showTab('admin')">Admin</button>
-        </nav>
-
-        <!-- Tab Contents -->
-        <!-- Occasion Report Tab -->
-        <div id="occasion" class="tab-content active">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Bingo Occasion Information</h2>
+        
+        <!-- Progress Bar -->
+        <div class="wizard-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <span class="step-number">1</span>
+                    <span class="step-label">Session Info</span>
                 </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Date</label>
-                        <input type="date" id="occDate" class="form-input" onchange="syncData()">
+                <div class="step" data-step="2">
+                    <span class="step-number">2</span>
+                    <span class="step-label">Paper Sales</span>
+                </div>
+                <div class="step" data-step="3">
+                    <span class="step-number">3</span>
+                    <span class="step-label">Game Results</span>
+                </div>
+                <div class="step" data-step="4">
+                    <span class="step-number">4</span>
+                    <span class="step-label">Pull-Tabs</span>
+                </div>
+                <div class="step" data-step="5">
+                    <span class="step-number">5</span>
+                    <span class="step-label">Money Count</span>
+                </div>
+                <div class="step" data-step="6">
+                    <span class="step-number">6</span>
+                    <span class="step-label">Review</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="wizard-container">
+            <!-- Step 1: Session Information -->
+            <div class="wizard-step active" id="step-1">
+                <h2>Session Information</h2>
+                <div class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="session-date">Date</label>
+                            <input type="date" id="session-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="session-type">Session</label>
+                            <select id="session-type" required>
+                                <option value="">Select...</option>
+                                <option value="5-1">5-1 (1st/5th Monday)</option>
+                                <option value="6-2">6-2 (2nd Monday)</option>
+                                <option value="7-3">7-3 (3rd Monday)</option>
+                                <option value="8-4">8-4 (4th Monday)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="lion-charge">Lion in Charge</label>
+                            <input type="text" id="lion-charge" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="total-people">Total People</label>
+                            <input type="number" id="total-people" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="birthdays">Birthdays (BOGOs)</label>
+                            <input type="number" id="birthdays" min="0" value="0">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Session Type</label>
-                        <select id="sessionType" class="form-select" onchange="loadSessionGames()">
-                            <option value="5-1">1st/5th Monday (5-1)</option>
-                            <option value="6-2">2nd Monday (6-2)</option>
-                            <option value="7-3">3rd Monday (7-3)</option>
-                            <option value="8-4">4th Monday (8-4)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Lion in Charge</label>
-                        <input type="text" id="lionInCharge" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Total Players</label>
-                        <input type="number" id="totalPlayers" class="form-input">
+                    
+                    <div class="progressive-section">
+                        <h3>Progressive Game</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="prog-jackpot">Jackpot Offered</label>
+                                <input type="number" id="prog-jackpot" step="1" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="prog-balls">Balls to Win</label>
+                                <input type="number" id="prog-balls" min="1" max="75">
+                            </div>
+                            <div class="form-group">
+                                <label for="prog-consolation">Consolation Prize</label>
+                                <input type="number" id="prog-consolation" value="200">
+                            </div>
+                            <div class="form-group">
+                                <label for="prog-actual-balls">Actual Balls Called</label>
+                                <input type="number" id="prog-actual-balls" min="1" max="75">
+                            </div>
+                            <div class="form-group">
+                                <label for="prog-prize">Prize Awarded</label>
+                                <input type="number" id="prog-prize" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="prog-check">
+                                    Paid by Check
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Progressive Game</h2>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Progressive Jackpot</label>
-                        <input type="number" id="progJackpot" class="form-input" placeholder="$">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Balls to Win</label>
-                        <input type="number" id="progBalls" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Consolation Prize</label>
-                        <input type="number" id="progConsolation" class="form-input" value="200">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Actual Balls Called</label>
-                        <input type="number" id="progActual" class="form-input">
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Paper Bingo Sales</h2>
-                </div>
-                <div class="table-wrapper">
-                    <table>
+            
+            <!-- Step 2: Paper Bingo Sales -->
+            <div class="wizard-step" id="step-2">
+                <h2>Paper Bingo Sales</h2>
+                <div class="form-section">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Type</th>
-                                <th>Start Count</th>
+                                <th>Start</th>
                                 <th>Free</th>
-                                <th>End Count</th>
+                                <th>End</th>
                                 <th>Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paper-sales-body">
+                            <!-- Rows will be generated by JavaScript -->
+                        </tbody>
+                    </table>
+                    
+                    <h3>POS Door Sales</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
                                 <th>Price</th>
+                                <th>Quantity</th>
                                 <th>Total</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Early Birds</td>
-                                <td><input type="number" class="table-input" id="ebStart"></td>
-                                <td><input type="number" class="table-input" id="ebFree" readonly></td>
-                                <td><input type="number" class="table-input" id="ebEnd"></td>
-                                <td id="ebSold">0</td>
-                                <td>$5.00</td>
-                                <td id="ebTotal">$0.00</td>
-                            </tr>
-                            <tr>
-                                <td>6 Face</td>
-                                <td><input type="number" class="table-input" id="sixStart"></td>
-                                <td><input type="number" class="table-input" id="sixFree" readonly></td>
-                                <td><input type="number" class="table-input" id="sixEnd"></td>
-                                <td id="sixSold">0</td>
-                                <td>$10.00</td>
-                                <td id="sixTotal">$0.00</td>
-                            </tr>
-                            <tr>
-                                <td>9 Face Solid</td>
-                                <td><input type="number" class="table-input" id="nineSStart"></td>
-                                <td>-</td>
-                                <td><input type="number" class="table-input" id="nineSEnd"></td>
-                                <td id="nineSSold">0</td>
-                                <td>$15.00</td>
-                                <td id="nineSTotal">$0.00</td>
-                            </tr>
-                            <tr>
-                                <td>9 Face Stripe</td>
-                                <td><input type="number" class="table-input" id="nineStrStart"></td>
-                                <td>-</td>
-                                <td><input type="number" class="table-input" id="nineStrEnd"></td>
-                                <td id="nineStrSold">0</td>
-                                <td>$10.00</td>
-                                <td id="nineStrTotal">$0.00</td>
-                            </tr>
+                        <tbody id="pos-sales-body">
+                            <!-- Rows will be generated by JavaScript -->
                         </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="3">Total Paper Sales</td>
+                                <td id="total-paper-sales">$0.00</td>
+                            </tr>
+                        </tfoot>
                     </table>
+                    
+                    <h3>Electronic Bingo</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="small-machines">Small Machines (27reg/18pro) @ $40</label>
+                            <input type="number" id="small-machines" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="large-machines">Large Machines (45reg/36pro) @ $65</label>
+                            <input type="number" id="large-machines" min="0" value="0">
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="calculateTotals()">
-                    Calculate Totals
-                </button>
-                <button class="btn btn-success" onclick="saveOccasion()">
-                    Save Occasion
-                </button>
-                <button class="btn btn-secondary" onclick="printReport()">
-                    Print Report
-                </button>
-            </div>
-        </div>
-
-        <!-- Session Games Tab -->
-        <div id="games" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title" id="gamesTitle">Session Games - 5-1</h2>
-                </div>
-                <div class="table-wrapper">
-                    <table id="gamesTable">
+            
+            <!-- Step 3: Game Results -->
+            <div class="wizard-step" id="step-3">
+                <h2>Session Games</h2>
+                <div class="form-section">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Color</th>
                                 <th>Game</th>
-                                <th>Base Prize</th>
+                                <th>Prize</th>
                                 <th>Winners</th>
-                                <th>Prize/Winner</th>
+                                <th>Per Winner</th>
                                 <th>Total</th>
                                 <th>Check</th>
                             </tr>
                         </thead>
-                        <tbody id="gamesBody">
-                            <!-- Games will be loaded dynamically -->
+                        <tbody id="games-body">
+                            <!-- Games will be loaded based on session -->
                         </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="6">Total Bingo Prizes</td>
+                                <td id="total-bingo-prizes">$0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="calculateGameTotals()">
-                        Calculate Totals
-                    </button>
-                    <button class="btn btn-success" onclick="saveGames()">
-                        Save Games
-                    </button>
-                </div>
             </div>
-        </div>
-
-        <!-- Pull-Tabs Tab -->
-        <div id="pulltabs" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Pull-Tab Games</h2>
-                    <button class="btn btn-primary" onclick="addPullTab()">Add Game</button>
-                </div>
-                <div class="table-wrapper">
-                    <table>
+            
+            <!-- Step 4: Pull-Tab Summary -->
+            <div class="wizard-step" id="step-4">
+                <h2>Pull-Tab Summary</h2>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="pt-lion">Lion in Charge of Pull-Tabs</label>
+                        <input type="text" id="pt-lion">
+                    </div>
+                    
+                    <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Game Name</th>
+                                <th>Game</th>
                                 <th>Serial #</th>
-                                <th>Price</th>
+                                <th>$/Ticket</th>
                                 <th>Tickets</th>
                                 <th>Sales</th>
+                                <th>Ideal</th>
                                 <th>Prizes</th>
                                 <th>Net</th>
-                                <th>Actions</th>
+                                <th>SE</th>
+                                <th>Check</th>
                             </tr>
                         </thead>
-                        <tbody id="pullTabBody">
-                            <!-- Pull-tabs will be added dynamically -->
+                        <tbody id="pulltab-body">
+                            <!-- Pull-tab games will be added here -->
                         </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="4">Regular Games</td>
+                                <td id="pt-reg-sales">$0.00</td>
+                                <td id="pt-reg-ideal">$0.00</td>
+                                <td id="pt-reg-prizes">$0.00</td>
+                                <td id="pt-reg-net">$0.00</td>
+                                <td colspan="2"></td>
+                            </tr>
+                            <tr class="total-row special-event">
+                                <td colspan="4">Special Events</td>
+                                <td id="pt-se-sales">$0.00</td>
+                                <td id="pt-se-ideal">$0.00</td>
+                                <td id="pt-se-prizes">$0.00</td>
+                                <td id="pt-se-net">$0.00</td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
                     </table>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="calculatePullTabTotals()">
-                        Calculate Totals
-                    </button>
-                    <button class="btn btn-success" onclick="savePullTabs()">
-                        Save Pull-Tabs
-                    </button>
+                    
+                    <button class="button secondary" onclick="addPullTabRow()">Add Game</button>
+                    <button class="button warning" onclick="addSpecialEventRow()">Add Special Event</button>
                 </div>
             </div>
-        </div>
-
-        <!-- Money Count Tab -->
-        <div id="money" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Money Count - Bingo Drawer</h2>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">$100 Bills</label>
-                        <input type="number" class="form-input" id="bingo100" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$50 Bills</label>
-                        <input type="number" class="form-input" id="bingo50" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$20 Bills</label>
-                        <input type="number" class="form-input" id="bingo20" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$10 Bills</label>
-                        <input type="number" class="form-input" id="bingo10" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$5 Bills</label>
-                        <input type="number" class="form-input" id="bingo5" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$1 Bills</label>
-                        <input type="number" class="form-input" id="bingo1" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Coins</label>
-                        <input type="number" class="form-input" id="bingoCoins" step="0.01" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Checks</label>
-                        <input type="number" class="form-input" id="bingoChecks" step="0.01" onchange="calculateMoney()">
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Money Count - Pull-Tab Drawer</h2>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">$100 Bills</label>
-                        <input type="number" class="form-input" id="pt100" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$50 Bills</label>
-                        <input type="number" class="form-input" id="pt50" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$20 Bills</label>
-                        <input type="number" class="form-input" id="pt20" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$10 Bills</label>
-                        <input type="number" class="form-input" id="pt10" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$5 Bills</label>
-                        <input type="number" class="form-input" id="pt5" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">$1 Bills</label>
-                        <input type="number" class="form-input" id="pt1" onchange="calculateMoney()">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Coins</label>
-                        <input type="number" class="form-input" id="ptCoins" step="0.01" onchange="calculateMoney()">
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Total Deposit</h2>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Total Cash</label>
-                        <input type="text" class="form-input" id="totalCash" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Total Checks</label>
-                        <input type="text" class="form-input" id="totalChecks" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Grand Total</label>
-                        <input type="text" class="form-input" id="grandTotal" readonly>
-                    </div>
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-success" onclick="saveMoney()">
-                    Save Money Count
-                </button>
-            </div>
-        </div>
-
-        <!-- Admin Tab -->
-        <div id="admin" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Admin Dashboard</h2>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="viewOccasions()">
-                        View Past Occasions
-                    </button>
-                    <button class="btn btn-secondary" onclick="exportData()">
-                        Export Data
-                    </button>
-                    <button class="btn btn-secondary" onclick="viewMetrics()">
-                        View Metrics
-                    </button>
-                </div>
-            </div>
-
-            <div id="adminContent"></div>
-        </div>
-    </div>
-
-    <script>
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec';
-        
-        let currentOccasion = {};
-        let isOnline = true;
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        window.addEventListener('DOMContentLoaded', () => {
-            // Set today's date
-            document.getElementById('occDate').value = new Date().toISOString().split('T')[0];
             
-            // Load saved theme
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            document.body.setAttribute('data-theme', savedTheme);
-            updateThemeIcon();
-            
-            // Initialize offline support
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed'));
-            }
-            
-            // Check connection status
-            checkConnection();
-            window.addEventListener('online', () => updateConnectionStatus(true));
-            window.addEventListener('offline', () => updateConnectionStatus(false));
-            
-            // Load initial data
-            determineSession();
-            loadSessionGames();
-            loadPullTabLibrary();
-        });
-
-        // ============================================
-        // THEME MANAGEMENT
-        // ============================================
-        function toggleTheme() {
-            const currentTheme = document.body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon();
-        }
-
-        function updateThemeIcon() {
-            const theme = document.body.getAttribute('data-theme');
-            document.getElementById('themeIcon').textContent = theme === 'dark' ? '🌙' : '☀️';
-        }
-
-        // ============================================
-        // TAB NAVIGATION
-        // ============================================
-        function showTab(tabName) {
-            // Update tabs
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Update content
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(tabName).classList.add('active');
-        }
-
-        // ============================================
-        // CONNECTION MANAGEMENT
-        // ============================================
-        function checkConnection() {
-            fetch(API_URL + '?action=status')
-                .then(response => response.json())
-                .then(data => updateConnectionStatus(data.success))
-                .catch(() => updateConnectionStatus(false));
-        }
-
-        function updateConnectionStatus(online) {
-            isOnline = online;
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
-            
-            if (online) {
-                dot.classList.remove('offline');
-                dot.classList.add('online');
-                text.textContent = 'Online';
-                syncOfflineData();
-            } else {
-                dot.classList.remove('online');
-                dot.classList.add('offline');
-                text.textContent = 'Offline';
-            }
-        }
-
-        // ============================================
-        // SESSION MANAGEMENT
-        // ============================================
-        function determineSession() {
-            const date = new Date(document.getElementById('occDate').value);
-            const day = date.getDay();
-            
-            if (day === 1) { // Monday
-                const firstMonday = new Date(date.getFullYear(), date.getMonth(), 1);
-                while (firstMonday.getDay() !== 1) {
-                    firstMonday.setDate(firstMonday.getDate() + 1);
-                }
-                
-                const weekNumber = Math.ceil((date.getDate() - firstMonday.getDate() + 1) / 7) + 1;
-                
-                let session;
-                switch(weekNumber) {
-                    case 1:
-                    case 5:
-                        session = '5-1';
-                        break;
-                    case 2:
-                        session = '6-2';
-                        break;
-                    case 3:
-                        session = '7-3';
-                        break;
-                    case 4:
-                        session = '8-4';
-                        break;
-                    default:
-                        session = '5-1';
-                }
-                
-                document.getElementById('sessionType').value = session;
-                loadSessionGames();
-            }
-        }
-
-        // ============================================
-        // SESSION GAMES
-        // ============================================
-        function loadSessionGames() {
-            const session = document.getElementById('sessionType').value;
-            document.getElementById('gamesTitle').textContent = `Session Games - ${session}`;
-            
-            if (isOnline) {
-                fetch(`${API_URL}?action=session-games&session=${session}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            displayGames(data.games);
-                        }
-                    })
-                    .catch(err => console.error('Error loading games:', err));
-            } else {
-                // Load from local storage
-                const localGames = localStorage.getItem(`games_${session}`);
-                if (localGames) {
-                    displayGames(JSON.parse(localGames));
-                }
-            }
-        }
-
-        function displayGames(games) {
-            const tbody = document.getElementById('gamesBody');
-            tbody.innerHTML = '';
-            
-            games.forEach(game => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${game.num}</td>
-                    <td>${game.color}</td>
-                    <td>${game.game}</td>
-                    <td>$${game.prize}</td>
-                    <td><input type="number" class="table-input" value="1" min="1" onchange="calculateGamePrize(this)"></td>
-                    <td><input type="number" class="table-input" value="${game.prize}"></td>
-                    <td class="game-total">$${game.prize}</td>
-                    <td><input type="checkbox" class="check-payment"></td>
-                `;
-            });
-        }
-
-        function calculateGamePrize(input) {
-            const row = input.closest('tr');
-            const basePrize = parseFloat(row.cells[3].textContent.replace('$', ''));
-            const winners = parseInt(input.value) || 1;
-            const prizePerWinner = Math.ceil(basePrize / winners);
-            
-            row.cells[5].querySelector('input').value = prizePerWinner;
-            row.cells[6].textContent = `$${(prizePerWinner * winners).toFixed(2)}`;
-            
-            calculateGameTotals();
-        }
-
-        function calculateGameTotals() {
-            let total = 0;
-            let checkTotal = 0;
-            
-            document.querySelectorAll('#gamesBody tr').forEach(row => {
-                const amount = parseFloat(row.cells[6].textContent.replace('$', ''));
-                total += amount;
-                
-                if (row.querySelector('.check-payment').checked) {
-                    checkTotal += amount;
-                }
-            });
-            
-            // Update display
-            console.log(`Games Total: $${total.toFixed(2)}, Check Total: $${checkTotal.toFixed(2)}`);
-        }
-
-        // ============================================
-        // PULL-TAB MANAGEMENT
-        // ============================================
-        let pullTabCount = 0;
-
-        function loadPullTabLibrary() {
-            if (isOnline) {
-                fetch(`${API_URL}?action=pulltabs`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            localStorage.setItem('pullTabLibrary', JSON.stringify(data.games));
-                        }
-                    })
-                    .catch(err => console.error('Error loading pull-tab library:', err));
-            }
-        }
-
-        function addPullTab() {
-            pullTabCount++;
-            const tbody = document.getElementById('pullTabBody');
-            const row = tbody.insertRow();
-            
-            row.innerHTML = `
-                <td><input type="text" class="table-input" placeholder="Game Name"></td>
-                <td><input type="text" class="table-input" placeholder="Serial #"></td>
-                <td><input type="number" class="table-input" value="1.00" step="0.01"></td>
-                <td><input type="number" class="table-input" onchange="calculatePullTabRow(this)"></td>
-                <td class="pt-sales">$0.00</td>
-                <td><input type="number" class="table-input" step="0.01"></td>
-                <td class="pt-net">$0.00</td>
-                <td><button class="btn btn-danger" onclick="this.closest('tr').remove()">Remove</button></td>
-            `;
-        }
-
-        function calculatePullTabRow(input) {
-            const row = input.closest('tr');
-            const price = parseFloat(row.cells[2].querySelector('input').value) || 0;
-            const tickets = parseFloat(row.cells[3].querySelector('input').value) || 0;
-            const prizes = parseFloat(row.cells[5].querySelector('input').value) || 0;
-            
-            const sales = price * tickets;
-            const net = sales - prizes;
-            
-            row.cells[4].textContent = `$${sales.toFixed(2)}`;
-            row.cells[6].textContent = `$${net.toFixed(2)}`;
-            
-            calculatePullTabTotals();
-        }
-
-        function calculatePullTabTotals() {
-            let totalSales = 0;
-            let totalNet = 0;
-            
-            document.querySelectorAll('#pullTabBody tr').forEach(row => {
-                const sales = parseFloat(row.cells[4].textContent.replace('$', ''));
-                const net = parseFloat(row.cells[6].textContent.replace('$', ''));
-                totalSales += sales;
-                totalNet += net;
-            });
-            
-            console.log(`Pull-Tab Sales: $${totalSales.toFixed(2)}, Net: $${totalNet.toFixed(2)}`);
-        }
-
-        // ============================================
-        // MONEY COUNT
-        // ============================================
-        function calculateMoney() {
-            const denominations = [
-                { id: 'bingo100', value: 100 },
-                { id: 'bingo50', value: 50 },
-                { id: 'bingo20', value: 20 },
-                { id: 'bingo10', value: 10 },
-                { id: 'bingo5', value: 5 },
-                { id: 'bingo1', value: 1 },
-                { id: 'bingoCoins', value: 1 },
-                { id: 'pt100', value: 100 },
-                { id: 'pt50', value: 50 },
-                { id: 'pt20', value: 20 },
-                { id: 'pt10', value: 10 },
-                { id: 'pt5', value: 5 },
-                { id: 'pt1', value: 1 },
-                { id: 'ptCoins', value: 1 }
-            ];
-            
-            let totalCash = 0;
-            denominations.forEach(denom => {
-                const element = document.getElementById(denom.id);
-                if (element) {
-                    const amount = parseFloat(element.value) || 0;
-                    totalCash += amount * (denom.id.includes('Coins') ? 1 : denom.value);
-                }
-            });
-            
-            const checks = parseFloat(document.getElementById('bingoChecks')?.value) || 0;
-            
-            document.getElementById('totalCash').value = `$${totalCash.toFixed(2)}`;
-            document.getElementById('totalChecks').value = `$${checks.toFixed(2)}`;
-            document.getElementById('grandTotal').value = `$${(totalCash + checks).toFixed(2)}`;
-        }
-
-        // ============================================
-        // DATA PERSISTENCE
-        // ============================================
-        function saveOccasion() {
-            const occasionData = {
-                id: currentOccasion.id || generateId(),
-                date: document.getElementById('occDate').value,
-                session: document.getElementById('sessionType').value,
-                lionInCharge: document.getElementById('lionInCharge').value,
-                totalPlayers: document.getElementById('totalPlayers').value,
-                progressiveJackpot: document.getElementById('progJackpot').value,
-                progressiveBalls: document.getElementById('progBalls').value,
-                timestamp: new Date().toISOString()
-            };
-            
-            if (isOnline) {
-                fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'save-occasion',
-                        occasion: occasionData
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showAlert('Occasion saved successfully!', 'success');
-                        currentOccasion = occasionData;
-                    }
-                })
-                .catch(err => {
-                    console.error('Save error:', err);
-                    saveToOfflineQueue(occasionData);
-                });
-            } else {
-                saveToOfflineQueue(occasionData);
-            }
-        }
-
-        function saveToOfflineQueue(data) {
-            const queue = JSON.parse(localStorage.getItem('syncQueue') || '[]');
-            queue.push(data);
-            localStorage.setItem('syncQueue', JSON.stringify(queue));
-            showAlert('Saved offline. Will sync when connection is restored.', 'warning');
-        }
-
-        function syncOfflineData() {
-            const queue = JSON.parse(localStorage.getItem('syncQueue') || '[]');
-            if (queue.length === 0) return;
-            
-            // Process sync queue
-            queue.forEach(item => {
-                // Send to server
-                fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(item)
-                });
-            });
-            
-            localStorage.removeItem('syncQueue');
-            showAlert('Offline data synced successfully!', 'success');
-        }
-
-        // ============================================
-        // ADMIN FUNCTIONS
-        // ============================================
-        function viewOccasions() {
-            fetch(`${API_URL}?action=occasions`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        displayOccasions(data.occasions);
-                    }
-                })
-                .catch(err => console.error('Error loading occasions:', err));
-        }
-
-        function displayOccasions(occasions) {
-            const content = document.getElementById('adminContent');
-            content.innerHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Past Occasions</h2>
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
+            <!-- Step 5: Money Count -->
+            <div class="wizard-step" id="step-5">
+                <h2>Money Summary</h2>
+                <div class="form-section">
+                    <div class="money-grid">
+                        <div class="drawer-section">
+                            <h3>Bingo Drawer</h3>
+                            <table class="money-table">
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Session</th>
-                                    <th>Lion</th>
-                                    <th>Players</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <td>$100's</td>
+                                    <td><input type="number" id="bingo-100" step="100" min="0"></td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                ${occasions.map(occ => `
-                                    <tr>
-                                        <td>${occ.date}</td>
-                                        <td>${occ.session}</td>
-                                        <td>${occ.lionInCharge}</td>
-                                        <td>${occ.totalPlayers}</td>
-                                        <td>${occ.status}</td>
-                                        <td>
-                                            <button class="btn btn-primary" onclick="loadOccasion('${occ.id}')">View</button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+                                <tr>
+                                    <td>$50's</td>
+                                    <td><input type="number" id="bingo-50" step="50" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$20's</td>
+                                    <td><input type="number" id="bingo-20" step="20" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$10's</td>
+                                    <td><input type="number" id="bingo-10" step="10" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$5's</td>
+                                    <td><input type="number" id="bingo-5" step="5" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$2's</td>
+                                    <td><input type="number" id="bingo-2" step="2" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$1's</td>
+                                    <td><input type="number" id="bingo-1" step="1" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>Coins</td>
+                                    <td><input type="number" id="bingo-coins" step="0.01" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>Checks</td>
+                                    <td><input type="number" id="bingo-checks" step="0.01" min="0"></td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td>Total</td>
+                                    <td id="bingo-total">$0.00</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="drawer-section">
+                            <h3>Pull-Tab Drawer</h3>
+                            <table class="money-table">
+                                <tr>
+                                    <td>$100's</td>
+                                    <td><input type="number" id="pt-100" step="100" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$50's</td>
+                                    <td><input type="number" id="pt-50" step="50" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$20's</td>
+                                    <td><input type="number" id="pt-20" step="20" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$10's</td>
+                                    <td><input type="number" id="pt-10" step="10" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$5's</td>
+                                    <td><input type="number" id="pt-5" step="5" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$2's</td>
+                                    <td><input type="number" id="pt-2" step="2" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>$1's</td>
+                                    <td><input type="number" id="pt-1" step="1" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>Coins</td>
+                                    <td><input type="number" id="pt-coins" step="0.01" min="0"></td>
+                                </tr>
+                                <tr>
+                                    <td>Checks</td>
+                                    <td>N/A</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td>Total</td>
+                                    <td id="pt-total">$0.00</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="drawer-section">
+                            <h3>Deposit Summary</h3>
+                            <table class="money-table">
+                                <tr>
+                                    <td>Currency</td>
+                                    <td id="deposit-currency">$0.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Coins</td>
+                                    <td id="deposit-coins">$0.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Checks</td>
+                                    <td id="deposit-checks">$0.00</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td>Total Deposit</td>
+                                    <td id="deposit-total">$0.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Less Startup</td>
+                                    <td>-$1,000.00</td>
+                                </tr>
+                                <tr class="grand-total">
+                                    <td>Net Deposit</td>
+                                    <td id="net-deposit">$0.00</td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            `;
-        }
-
-        function viewMetrics() {
-            fetch(`${API_URL}?action=metrics`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        displayMetrics(data.metrics);
-                    }
-                })
-                .catch(err => console.error('Error loading metrics:', err));
-        }
-
-        function displayMetrics(metrics) {
-            const content = document.getElementById('adminContent');
-            content.innerHTML = `
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Performance Metrics</h2>
+            </div>
+            
+            <!-- Step 6: Review and Submit -->
+            <div class="wizard-step" id="step-6">
+                <h2>Review & Submit</h2>
+                <div class="form-section">
+                    <div class="summary-card">
+                        <h3>Financial Summary</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <label>Total Bingo Sales:</label>
+                                <span id="summary-bingo-sales">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Pull-Tab Sales:</label>
+                                <span id="summary-pt-sales">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Special Event Sales:</label>
+                                <span id="summary-se-sales">$0.00</span>
+                            </div>
+                            <div class="summary-item grand-total">
+                                <label>Gross Sales:</label>
+                                <span id="summary-gross">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Bingo Prizes:</label>
+                                <span id="summary-bingo-prizes">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Pull-Tab Prizes:</label>
+                                <span id="summary-pt-prizes">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Special Event Prizes:</label>
+                                <span id="summary-se-prizes">$0.00</span>
+                            </div>
+                            <div class="summary-item grand-total">
+                                <label>Total Prizes:</label>
+                                <span id="summary-total-prizes">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Cash Deposit:</label>
+                                <span id="summary-deposit">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Less Startup:</label>
+                                <span>-$1,000.00</span>
+                            </div>
+                            <div class="summary-item grand-total">
+                                <label>Actual Profit:</label>
+                                <span id="summary-actual">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <label>Ideal Profit:</label>
+                                <span id="summary-ideal">$0.00</span>
+                            </div>
+                            <div class="summary-item" id="overshort-item">
+                                <label>Over/Short:</label>
+                                <span id="summary-overshort">$0.00</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Total Occasions</label>
-                            <input type="text" class="form-input" value="${metrics.totalOccasions}" readonly>
+                    
+                    <div class="metrics-card">
+                        <h3>Performance Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <span class="metric-value" id="metric-players">0</span>
+                                <span class="metric-label">Total Players</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="metric-gross">$0.00</span>
+                                <span class="metric-label">Gross Sales</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="metric-profit">$0.00</span>
+                                <span class="metric-label">Net Profit</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value" id="metric-per-player">$0.00</span>
+                                <span class="metric-label">Per Player</span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Total Players</label>
-                            <input type="text" class="form-input" value="${metrics.totalPlayers}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Total Revenue</label>
-                            <input type="text" class="form-input" value="$${metrics.totalRevenue.toFixed(2)}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Total Profit</label>
-                            <input type="text" class="form-input" value="$${metrics.totalProfit.toFixed(2)}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Avg Players/Session</label>
-                            <input type="text" class="form-input" value="${metrics.averagePlayersPerSession.toFixed(1)}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Avg Profit/Player</label>
-                            <input type="text" class="form-input" value="$${metrics.averageProfitPerPlayer.toFixed(2)}" readonly>
-                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="button success large" onclick="submitOccasion()">
+                            Submit Occasion
+                        </button>
+                        <button class="button secondary" onclick="saveDraft()">
+                            Save Draft
+                        </button>
+                        <button class="button" onclick="printReport()">
+                            Print Report
+                        </button>
+                        <button class="button" onclick="exportData()">
+                            Export Data
+                        </button>
                     </div>
                 </div>
-            `;
-        }
-
-        // ============================================
-        // UTILITY FUNCTIONS
-        // ============================================
-        function generateId() {
-            const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-            const random = Math.random().toString(36).substr(2, 5).toUpperCase();
-            return `OCC_${date}_${random}`;
-        }
-
-        function showAlert(message, type) {
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            
-            document.querySelector('.header').after(alert);
-            
-            setTimeout(() => alert.remove(), 3000);
-        }
-
-        function syncData() {
-            // Sync date across forms
-            const date = document.getElementById('occDate').value;
-            // Update other date fields if needed
-            
-            // Determine session
-            determineSession();
-        }
-
-        function calculateTotals() {
-            // Calculate paper bingo sales
-            const items = [
-                { start: 'ebStart', free: 'ebFree', end: 'ebEnd', sold: 'ebSold', price: 5, total: 'ebTotal' },
-                { start: 'sixStart', free: 'sixFree', end: 'sixEnd', sold: 'sixSold', price: 10, total: 'sixTotal' },
-                { start: 'nineSStart', free: null, end: 'nineSEnd', sold: 'nineSSold', price: 15, total: 'nineSTotal' },
-                { start: 'nineStrStart', free: null, end: 'nineStrEnd', sold: 'nineStrSold', price: 10, total: 'nineStrTotal' }
-            ];
-            
-            items.forEach(item => {
-                const start = parseInt(document.getElementById(item.start)?.value) || 0;
-                const end = parseInt(document.getElementById(item.end)?.value) || 0;
-                const free = item.free ? (parseInt(document.getElementById(item.free)?.value) || 0) : 0;
-                const sold = start - end - free;
-                
-                document.getElementById(item.sold).textContent = sold;
-                document.getElementById(item.total).textContent = `$${(sold * item.price).toFixed(2)}`;
-            });
-        }
-
-        function printReport() {
-            window.print();
-        }
-
-        function exportData() {
-            // Export functionality
-            showAlert('Export feature coming soon!', 'info');
-        }
-    </script>
+            </div>
+        </main>
+        
+        <!-- Navigation -->
+        <div class="wizard-navigation">
+            <button class="button secondary" id="prev-btn" onclick="prevStep()" disabled>
+                Previous
+            </button>
+            <button class="button primary" id="next-btn" onclick="nextStep()">
+                Next
+            </button>
+        </div>
+        
+        <!-- Side Menu -->
+        <div class="side-menu" id="side-menu">
+            <div class="menu-header">
+                <h3>Menu</h3>
+                <button class="close-menu" onclick="closeMenu()">×</button>
+            </div>
+            <nav class="menu-nav">
+                <a href="#" onclick="showOccasions()">View Occasions</a>
+                <a href="#" onclick="showReports()">Reports</a>
+                <a href="#" onclick="showPullTabLibrary()">Pull-Tab Library</a>
+                <a href="#admin" onclick="showAdmin()">Admin</a>
+                <a href="#" onclick="showHelp()">Help</a>
+            </nav>
+        </div>
+        
+        <!-- Overlay -->
+        <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/wizard.js"></script>
+    <script src="js/calculations.js"></script>
+    <script src="js/offline.js"></script>
+    <script src="js/sync.js"></script>
 </body>
 </html>
