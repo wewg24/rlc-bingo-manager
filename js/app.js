@@ -37,12 +37,12 @@ class BingoApp {
         if (!container) return;
         
         container.innerHTML = `
-            <div class="view-container">
+            <div class="occasions-view">
                 <div class="view-header">
                     <h2>Recent Occasions</h2>
-                    <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+                    <button class="button secondary" onclick="window.app.returnToWizard()">Back to Entry</button>
                 </div>
-                <div class="occasions-list" id="occasions-list">
+                <div class="occasions-list">
                     <p>Loading occasions...</p>
                 </div>
             </div>
