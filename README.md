@@ -1,6 +1,6 @@
 # RLC Bingo Manager
 
-[![Version](https://img.shields.io/badge/version-11.0.2-blue.svg)](https://github.com/wewg24/rlc-bingo-manager/releases)
+[![Version](https://img.shields.io/badge/version-11.0.4-blue.svg)](https://github.com/wewg24/rlc-bingo-manager/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-Ready-orange.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 [![MGC Compliant](https://img.shields.io/badge/MGC-Compliant-red.svg)](https://www.mgc.dps.mo.gov/)
@@ -42,7 +42,7 @@ A modern Progressive Web Application (PWA) for managing bingo occasions with com
 1. **Google Apps Script Backend Setup**
    ```javascript
    // 1. Open Google Apps Script project
-   // 2. Replace Main.gs with provided v11.0.2 code
+   // 2. Replace Main.gs with provided v11.0.4 code
    // 3. Keep existing PullTabLibrary.gs
    // 4. Run setup() function once
    // 5. Deploy as Web App
@@ -54,14 +54,14 @@ A modern Progressive Web Application (PWA) for managing bingo occasions with com
    // Edit js/config.js
    const CONFIG = {
      API_URL: 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
-     VERSION: '11.0.2'
+     VERSION: '11.0.4'
    };
    ```
 
 3. **Deploy to GitHub Pages**
    ```bash
    git add .
-   git commit -m "Deploy v11.0.2"
+   git commit -m "Deploy v11.0.4"
    git push origin main
    # Enable GitHub Pages in repository settings
    ```
@@ -97,7 +97,7 @@ Frontend (PWA) - Wizard Interface
 └── Review & Submit (Complete validation)
           ↓
    Service Worker
-   (Cache v11.0.2)
+   (Cache v11.0.4)
           ↓
     Google Apps Script Backend
     ├── Occasions Sheet
@@ -123,21 +123,21 @@ rlc-bingo-manager/
 ├── 📁 css/                       # Stylesheets
 │   ├── style.css                 # Core styles
 │   ├── wizard.css                # Wizard-specific styles
-│   └── dark-mode.css             # Dark theme (enhanced v11.0.2)
+│   └── dark-mode.css             # Dark theme (enhanced v11.0.4)
 │
 ├── 📁 js/                        # JavaScript modules
 │   ├── app.js                    # Main BingoApp class
 │   ├── wizard.js                 # Step navigation logic
 │   ├── calculations.js           # Financial calculations
-│   ├── config.js                 # Configuration (v11.0.2)
+│   ├── config.js                 # Configuration (v11.0.4)
 │   ├── offline.js                # IndexedDB manager
 │   └── sync.js                   # Sync queue manager
 │
 ├── 📁 assets/                    # Static assets
 │   └── icons/                    # PWA icons
 │
-├── 📄 README.md                  # This file (v11.0.2)
-└── 📄 USER-MANUAL.md             # User documentation (v11.0.2)
+├── 📄 README.md                  # This file (v11.0.4)
+└── 📄 USER-MANUAL.md             # User documentation (v11.0.4)
 ```
 
 ## 🔧 Configuration
@@ -191,11 +191,11 @@ The system provides separate counting areas for:
 ## 🛡️ Security & Compliance
 
 ### Cache Management
-Version 11.0.2 implements intelligent cache busting:
+Version 11.0.4 implements intelligent cache busting:
 ```javascript
 // All assets versioned
-<link rel="stylesheet" href="css/style.css?v=11.0.2">
-<script src="js/app.js?v=11.0.2"></script>
+<link rel="stylesheet" href="css/style.css?v=11.0.4">
+<script src="js/app.js?v=11.0.4"></script>
 ```
 
 ### Data Integrity
@@ -212,7 +212,7 @@ Version 11.0.2 implements intelligent cache busting:
 
 ## 🚨 Troubleshooting
 
-### Cache Issues (Fixed in v11.0.2)
+### Cache Issues (Fixed in v11.0.4)
 The system now includes automatic cache busting. Users only need to refresh once to get updates.
 
 ### Common Solutions
@@ -256,7 +256,7 @@ The system tracks:
 
 ## 🔄 Version History
 
-### v11.0.2 (Current)
+### v11.0.4 (Current)
 - Fixed dark mode readability issues
 - Implemented cache busting strategy
 - Added version checking system
@@ -301,7 +301,7 @@ python -m http.server 8000
 
 # Deploy
 git add .
-git commit -m "Version 11.0.2 updates"
+git commit -m "Version 11.0.4 updates"
 git push origin main
 ```
 
@@ -329,7 +329,7 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ---
 
-**Version**: 11.0.2  
+**Version**: 11.0.4  
 **Status**: Production Ready  
 **Last Updated**: September 2025  
 **Next Session Type**: Auto-detected based on date  
