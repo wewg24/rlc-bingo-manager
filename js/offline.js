@@ -120,7 +120,12 @@ class OfflineManager {
 // Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
+        // Detect if we're on GitHub Pages and adjust path accordingly
+        const swPath = window.location.hostname === 'wewg24.github.io' 
+            ? '/rlc-bingo-manager/sw.js' 
+            : '/sw.js';
+            
+        navigator.serviceWorker.register(swPath)
             .then(registration => console.log('SW registered:', registration))
             .catch(error => console.log('SW registration failed:', error));
     });
