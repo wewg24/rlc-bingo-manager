@@ -1,8 +1,12 @@
-// Main Application Logic
+// Main Application Logic for RLC Bingo Manager
+// Version 11.0.3 - Fixed syntax errors and pull tab library integration
+
 class BingoApp {
     constructor() {
         this.currentStep = 1;
         this.totalSteps = 6;
+        
+        // Initialize comprehensive data structure
         this.data = {
             occasion: {},
             paperBingo: {},
@@ -16,23 +20,32 @@ class BingoApp {
             },
             financial: {}
         };
+        
+        // Pull Tab Library array - will be populated from Excel data
         this.pullTabLibrary = [];
+        
+        // Application state
         this.isDarkMode = localStorage.getItem(CONFIG.STORAGE_KEYS.THEME) === 'dark';
         this.isOnline = navigator.onLine;
         
+        // Initialize the application
         this.init();
     }
-
+    
+    /**
+     * Display the occasions list view
+     * Stores current wizard state and loads historical occasions
+     */
     showOccasions() {
         this.closeMenu();
         
-        // Store current wizard state
+        // Store current wizard state for recovery
         sessionStorage.setItem('wizardState', JSON.stringify({
             step: this.currentStep || 1,
             data: this.data
         }));
         
-        // Create occasions view
+        // Create occasions view interface
         const container = document.querySelector('.wizard-container');
         if (!container) return;
         
@@ -51,6 +64,9 @@ class BingoApp {
         this.loadOccasionsList();
     }
     
+    /**
+     * Load and display occasions from the backend
+     */
     async loadOccasionsList() {
         try {
             const response = await fetch(CONFIG.API_URL + '?path=occasions');
@@ -73,6 +89,9 @@ class BingoApp {
         }
     }
     
+    /**
+     * Display reports generation interface
+     */
     showReports() {
         this.closeMenu();
         
@@ -106,25 +125,39 @@ class BingoApp {
         `;
     }
     
+    /**
+     * Display pull-tab library with proper Excel data mapping
+     * Maps Excel columns: Game, Form, Count, Price, IdealProfit
+     */
     showPullTabLibrary() {
         this.closeMenu();
         
         const container = document.querySelector('.wizard-container');
         if (!container) return;
         
-        // Display pull-tab library with proper formatting
+        // Generate library table HTML with proper field mapping
         const libraryHTML = this.pullTabLibrary && this.pullTabLibrary.length > 0
-            ? this.pullTabLibrary.slice(0, 50).map(game => `
-                <tr>
-                    <td>${game.name || ''}</td>
-                    <td>${game.form || ''}</td>
-                    <td>${game.count || 0}</td>
-                    <td>$${game.price || 1}</td>
-                    <td>$${game.profit || 0}</td>
-                </tr>
-            `).join('')
+            ? this.pullTabLibrary.slice(0, 50).map(game => {
+                // Map Excel column names to display values
+                const gameName = game.Game || game.name || '';
+                const formNumber = game.Form || game.form || '';
+                const ticketCount = game[' Count '] || game.Count || game.count || 0;
+                const ticketPrice = game.Price || game.price || 1;
+                const idealProfit = game.IdealProfit || game.profit || 0;
+                
+                return `
+                    <tr>
+                        <td>${gameName}</td>
+                        <td>${formNumber}</td>
+                        <td>${ticketCount}</td>
+                        <td>$${ticketPrice.toFixed(2)}</td>
+                        <td>$${idealProfit.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('')
             : '<tr><td colspan="5">No games loaded</td></tr>';
         
+        // CRITICAL FIX: Properly close the template literal with backtick
         container.innerHTML = `
             <div class="view-container">
                 <div class="view-header">
@@ -133,16 +166,17 @@ class BingoApp {
                 </div>
                 <div class="library-info">
                     <p>Total Games in Library: ${this.pullTabLibrary ? this.pullTabLibrary.length : 0}</p>
+                    <p class="info-note">Displaying first 50 games of ${this.pullTabLibrary.length} total</p>
                 </div>
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Game Name</th>
-                                <th>Form</th>
-                                <th>Count</th>
+                                <th>Form #</th>
+                                <th>Ticket Count</th>
                                 <th>Price</th>
-                                <th>Profit</th>
+                                <th>Ideal Profit</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,9 +185,12 @@ class BingoApp {
                     </table>
                 </div>
             </div>
-        ;
+        `; // FIXED: Properly closed template literal with backtick
     }
     
+    /**
+     * Display admin interface for system management
+     */
     showAdmin() {
         this.closeMenu();
         
@@ -173,21 +210,26 @@ class BingoApp {
                         <button class="button danger" onclick="window.app.clearLocalData()">Clear Local Storage</button>
                     </div>
                     <div class="admin-section">
-                        <h3>System</h3>
+                        <h3>System Status</h3>
                         <button class="button" onclick="window.app.checkForUpdates()">Check for Updates</button>
                         <button class="button" onclick="window.app.viewSyncQueue()">View Sync Queue</button>
+                        <button class="button" onclick="window.app.reloadPullTabLibrary()">Reload Pull-Tab Library</button>
                     </div>
                     <div class="admin-section">
-                        <h3>Version Info</h3>
+                        <h3>Version Information</h3>
                         <p>Version: ${CONFIG.VERSION}</p>
-                        <p>Cache Version: v11.0.2</p>
+                        <p>Cache Version: v11.0.3</p>
                         <p>API URL: ${CONFIG.API_URL ? 'Configured' : 'Not configured'}</p>
+                        <p>Library Games: ${this.pullTabLibrary.length}</p>
                     </div>
                 </div>
             </div>
         `;
     }
     
+    /**
+     * Display help documentation interface
+     */
     showHelp() {
         this.closeMenu();
         
@@ -203,7 +245,8 @@ class BingoApp {
                 <div class="help-content">
                     <section>
                         <h3>Using the Wizard</h3>
-                        <p>The RLC Bingo Manager uses a 6-step wizard to guide you through recording each bingo session. Each step validates your entries before allowing you to proceed, ensuring complete and accurate data collection.</p>
+                        <p>The RLC Bingo Manager uses a 6-step wizard to guide you through recording each bingo session. 
+                           Each step validates your entries before allowing you to proceed, ensuring complete and accurate data collection.</p>
                     </section>
                     
                     <section>
@@ -231,12 +274,13 @@ class BingoApp {
                     </section>
                     
                     <section>
-                        <h3>Tips</h3>
+                        <h3>Tips for Success</h3>
                         <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
                             <li>The system auto-saves your progress locally as you type</li>
                             <li>You can work completely offline - data syncs when connected</li>
                             <li>Click any completed step number to go back and review</li>
                             <li>Use dark mode (moon icon) for evening sessions</li>
+                            <li>Pull-tab library contains ${this.pullTabLibrary.length} games for quick selection</li>
                         </ul>
                     </section>
                     
@@ -244,32 +288,41 @@ class BingoApp {
                         <h3>Support</h3>
                         <p>For technical support, contact: wewg24@github.com</p>
                         <p>Version: ${CONFIG.VERSION}</p>
+                        <p>Last Library Update: ${localStorage.getItem('lastLibraryUpdate') || 'Never'}</p>
                     </section>
                 </div>
             </div>
         `;
     }
     
+    /**
+     * Return to wizard from any view
+     * Restores saved wizard state
+     */
     returnToWizard() {
-        // Restore wizard state
+        // Restore wizard state if available
         const savedState = sessionStorage.getItem('wizardState');
         if (savedState) {
             const state = JSON.parse(savedState);
             this.data = state.data;
-            // Restore the wizard view
+            this.currentStep = state.step;
         }
         
-        // Reload to restore full wizard (simplest approach)
+        // Reload to restore full wizard (simplest approach for now)
         window.location.reload();
     }
-
+    
+    /**
+     * Export all application data for backup
+     */
     exportAllData() {
         const exportData = {
             version: CONFIG.VERSION,
             exportDate: new Date().toISOString(),
             currentSession: this.data,
             localStorage: { ...localStorage },
-            pullTabLibrary: this.pullTabLibrary
+            pullTabLibrary: this.pullTabLibrary,
+            syncQueue: JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]')
         };
         
         const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -279,65 +332,59 @@ class BingoApp {
         a.download = `rlc-bingo-export-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
+        
+        alert('Data exported successfully!');
     }
     
+    /**
+     * Clear all local storage data with confirmation
+     */
     clearLocalData() {
-        if (confirm('This will clear all local data. Are you sure?')) {
-            localStorage.clear();
-            sessionStorage.clear();
-            alert('Local data cleared. Refreshing...');
-            window.location.reload();
+        if (confirm('This will clear all local data including drafts and sync queue. Are you sure?')) {
+            if (confirm('This action cannot be undone. Continue?')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                alert('Local data cleared. Refreshing...');
+                window.location.reload();
+            }
         }
     }
     
+    /**
+     * View pending sync queue items
+     */
     viewSyncQueue() {
         const queue = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]');
-        alert(`Sync Queue: ${queue.length} items pending\n\n${JSON.stringify(queue, null, 2)}`);
+        alert(`Sync Queue: ${queue.length} items pending\n\n` + 
+              (queue.length > 0 ? `Next item: ${JSON.stringify(queue[0], null, 2).substring(0, 500)}...` : 'Queue is empty'));
     }
     
-    // Global functions for onclick handlers - Browser Compatible Version
-    function closeMenu() {
-        if (window.app && window.app.closeMenu) {
-            window.app.closeMenu();
-        }
+    /**
+     * Force reload pull-tab library from backend
+     */
+    async reloadPullTabLibrary() {
+        const originalLength = this.pullTabLibrary.length;
+        await this.loadPullTabLibrary(true); // Force reload
+        alert(`Library reloaded. Games: ${originalLength} → ${this.pullTabLibrary.length}`);
     }
     
-    function showOccasions() {
-        if (window.app && window.app.showOccasions) {
-            window.app.showOccasions();
-        }
-    }
-    
-    function showReports() {
-        if (window.app && window.app.showReports) {
-            window.app.showReports();
-        }
-    }
-    
-    function showPullTabLibrary() {
-        if (window.app && window.app.showPullTabLibrary) {
-            window.app.showPullTabLibrary();
-        }
-    }
-    
-    function showAdmin() {
-        if (window.app && window.app.showAdmin) {
-            window.app.showAdmin();
-        }
-    }
-    
-    function showHelp() {
-        if (window.app && window.app.showHelp) {
-            window.app.showHelp();
-        }
-    }    
+    /**
+     * Check for application updates
+     */
     checkForUpdates() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.ready.then(registration => {
                 registration.update();
+                alert('Checking for updates... If an update is available, it will be installed on next refresh.');
             });
+        } else {
+            alert('Service Worker not supported. Manual refresh required for updates.');
         }
     }
+    
+    /**
+     * Check version from server
+     */
     async checkVersion() {
         try {
             const response = await fetch('/version.json?t=' + Date.now());
@@ -358,31 +405,38 @@ class BingoApp {
             console.log('Version check failed:', error);
         }
     }
+    
+    /**
+     * Initialize the application
+     */
     async init() {
         // Load saved draft if exists
         this.loadDraft();
         
-        // Initialize UI
+        // Initialize UI components
         this.initializeTheme();
         this.initializeEventListeners();
         this.initializeDateField();
         this.initializePaperSalesTable();
         this.initializePOSSalesTable();
         
-        // Load pull-tab library
+        // Load pull-tab library with Excel column mapping
         await this.loadPullTabLibrary();
         
         // Setup online/offline detection
         this.setupConnectionMonitoring();
         
-        // Check for sync queue
+        // Process any pending sync items
         await this.processSyncQueue();
-
-        // Check for updates every 5 minutes
+        
+        // Check for updates periodically
         this.checkForUpdates();
-        setInterval(() => this.checkForUpdates(), 5 * 60 * 1000);
+        setInterval(() => this.checkForUpdates(), 5 * 60 * 1000); // Every 5 minutes
     }
     
+    /**
+     * Initialize dark/light theme
+     */
     initializeTheme() {
         if (this.isDarkMode) {
             document.body.classList.add('dark-mode');
@@ -390,6 +444,9 @@ class BingoApp {
         }
     }
     
+    /**
+     * Setup all event listeners
+     */
     initializeEventListeners() {
         // Theme toggle
         document.getElementById('theme-toggle')?.addEventListener('click', () => this.toggleTheme());
@@ -421,6 +478,9 @@ class BingoApp {
         });
     }
     
+    /**
+     * Initialize date field with auto-session detection
+     */
     initializeDateField() {
         const dateField = document.getElementById('session-date');
         if (dateField) {
@@ -430,6 +490,9 @@ class BingoApp {
         }
     }
     
+    /**
+     * Initialize paper sales inventory table
+     */
     initializePaperSalesTable() {
         const tbody = document.getElementById('paper-sales-body');
         if (!tbody) return;
@@ -452,6 +515,9 @@ class BingoApp {
         });
     }
     
+    /**
+     * Initialize POS sales table
+     */
     initializePOSSalesTable() {
         const tbody = document.getElementById('pos-sales-body');
         if (!tbody) return;
@@ -471,6 +537,9 @@ class BingoApp {
         });
     }
     
+    /**
+     * Determine session type based on date (Monday logic)
+     */
     determineSession(dateString) {
         const date = new Date(dateString);
         if (date.getDay() !== 1) return; // Not Monday
@@ -508,6 +577,9 @@ class BingoApp {
         }
     }
     
+    /**
+     * Load session-specific games from backend
+     */
     async loadSessionGames(sessionType) {
         if (!sessionType) return;
         
@@ -525,6 +597,9 @@ class BingoApp {
         }
     }
     
+    /**
+     * Render games table with session data
+     */
     renderGamesTable(games) {
         const tbody = document.getElementById('games-body');
         if (!tbody) return;
@@ -559,6 +634,9 @@ class BingoApp {
         this.data.games = games;
     }
     
+    /**
+     * Calculate birthday BOGO promotions
+     */
     calculateBirthdayBOGO(birthdays) {
         const count = parseInt(birthdays) || 0;
         
@@ -576,6 +654,9 @@ class BingoApp {
         this.calculatePOSSales('birthday', 0);
     }
     
+    /**
+     * Calculate paper sales inventory
+     */
     calculatePaperSales(typeId) {
         const start = parseInt(document.getElementById(`${typeId}-start`)?.value) || 0;
         const end = parseInt(document.getElementById(`${typeId}-end`)?.value) || 0;
@@ -591,6 +672,9 @@ class BingoApp {
         this.data.paperBingo[typeId] = { start, end, free, sold };
     }
     
+    /**
+     * Calculate POS sales items
+     */
     calculatePOSSales(itemId, price) {
         const qty = parseInt(document.getElementById(`${itemId}-qty`)?.value) || 0;
         const total = qty * price;
@@ -607,6 +691,9 @@ class BingoApp {
         this.calculateTotalPaperSales();
     }
     
+    /**
+     * Calculate total paper sales revenue
+     */
     calculateTotalPaperSales() {
         let total = 0;
         Object.values(this.data.posSales).forEach(item => {
@@ -619,6 +706,9 @@ class BingoApp {
         }
     }
     
+    /**
+     * Calculate electronic rental sales
+     */
     calculateElectronicSales() {
         const small = parseInt(document.getElementById('small-machines')?.value) || 0;
         const large = parseInt(document.getElementById('large-machines')?.value) || 0;
@@ -636,6 +726,9 @@ class BingoApp {
         };
     }
     
+    /**
+     * Calculate progressive game prize
+     */
     calculateProgressivePrize() {
         const jackpot = parseFloat(document.getElementById('prog-jackpot')?.value) || 0;
         const ballsNeeded = parseInt(document.getElementById('prog-balls')?.value) || 0;
@@ -656,6 +749,9 @@ class BingoApp {
         this.updateProgressiveGame(prize);
     }
     
+    /**
+     * Update progressive game row in table
+     */
     updateProgressiveGame(prize) {
         const progRow = document.querySelector('.progressive-row');
         if (progRow) {
@@ -665,6 +761,9 @@ class BingoApp {
         }
     }
     
+    /**
+     * Calculate individual game prizes
+     */
     calculateGamePrize(gameNum) {
         const row = document.querySelector(`[data-game="${gameNum}"]`).closest('tr');
         const winners = parseInt(row.querySelector('.winner-count').value) || 1;
@@ -675,6 +774,9 @@ class BingoApp {
         this.calculateTotalBingoPrizes();
     }
     
+    /**
+     * Calculate total bingo prizes
+     */
     calculateTotalBingoPrizes() {
         let total = 0;
         let checkTotal = 0;
@@ -698,6 +800,9 @@ class BingoApp {
         this.data.financial.prizesPaidByCheck = checkTotal;
     }
     
+    /**
+     * Calculate money drawer totals
+     */
     calculateMoneyTotals() {
         // Calculate Bingo drawer
         let bingoTotal = 0;
@@ -743,15 +848,29 @@ class BingoApp {
         this.data.financial.actualProfit = netDeposit;
     }
     
-    async loadPullTabLibrary() {
+    /**
+     * Load pull-tab library from backend or cache
+     * Maps Excel columns to expected structure
+     */
+    async loadPullTabLibrary(forceReload = false) {
         try {
-            if (this.isOnline) {
+            if (this.isOnline && (forceReload || !localStorage.getItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY))) {
                 const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
                 const data = await response.json();
                 
                 if (data.success && data.games) {
-                    this.pullTabLibrary = data.games;
-                    localStorage.setItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY, JSON.stringify(data.games));
+                    // Map Excel column names to consistent structure
+                    this.pullTabLibrary = data.games.map(game => ({
+                        name: game.Game || game.name || '',
+                        form: game.Form || game.form || '',
+                        count: game[' Count '] || game.Count || game.count || 0,
+                        price: game.Price || game.price || 1,
+                        profit: game.IdealProfit || game.profit || 0,
+                        url: game.URL || game.url || null
+                    }));
+                    
+                    localStorage.setItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY, JSON.stringify(this.pullTabLibrary));
+                    localStorage.setItem('lastLibraryUpdate', new Date().toISOString());
                     return;
                 }
             }
@@ -760,24 +879,57 @@ class BingoApp {
             const cached = localStorage.getItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY);
             if (cached) {
                 this.pullTabLibrary = JSON.parse(cached);
+            } else {
+                // If no cache and offline, use minimal defaults
+                this.pullTabLibrary = this.getDefaultPullTabGames();
             }
         } catch (error) {
             console.error('Error loading pull-tab library:', error);
+            // Load from cache or defaults on error
+            const cached = localStorage.getItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY);
+            this.pullTabLibrary = cached ? JSON.parse(cached) : this.getDefaultPullTabGames();
         }
     }
     
+    /**
+     * Get default pull-tab games if library unavailable
+     */
+    getDefaultPullTabGames() {
+        return [
+            {name: 'Beat the Clock 599', form: '7724H', count: 960, price: 1, profit: 361},
+            {name: 'Black Jack 175', form: '6916M', count: 250, price: 1, profit: 75},
+            {name: 'Black Jack 200', form: '6779P', count: 300, price: 1, profit: 100}
+        ];
+    }
+    
+    /**
+     * Get default games for session type
+     */
     getDefaultGames(sessionType) {
         // Default games if API fails
         const defaults = {
             '5-1': [
                 {num: 1, color: 'Early Bird', game: 'Hard Way Bingo', prize: 100},
                 {num: 2, color: 'Blue', game: 'Regular Bingo', prize: 100},
-                // Add more default games...
+                {num: 3, color: 'Pink', game: 'Letter X', prize: 100},
+                {num: 4, color: 'Purple', game: 'Diamond', prize: 100},
+                {num: 5, color: 'Yellow', game: 'Picture Frame', prize: 100}
+            ],
+            '6-2': [
+                {num: 1, color: 'Early Bird', game: 'Four Corners', prize: 125},
+                {num: 2, color: 'Blue', game: 'Regular Bingo', prize: 125},
+                {num: 3, color: 'Pink', game: 'Two Lines', prize: 125},
+                {num: 4, color: 'Purple', game: 'Layer Cake', prize: 125},
+                {num: 5, color: 'Yellow', game: 'Picture Frame', prize: 125},
+                {num: 6, color: 'Red', game: 'Coverall', prize: 125}
             ]
         };
         return defaults[sessionType] || defaults['5-1'];
     }
     
+    /**
+     * Toggle dark/light theme
+     */
     toggleTheme() {
         this.isDarkMode = !this.isDarkMode;
         document.body.classList.toggle('dark-mode');
@@ -792,16 +944,25 @@ class BingoApp {
         localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, this.isDarkMode ? 'dark' : 'light');
     }
     
+    /**
+     * Open side menu
+     */
     openMenu() {
         document.getElementById('side-menu')?.classList.add('active');
         document.getElementById('overlay')?.classList.add('active');
     }
     
+    /**
+     * Close side menu
+     */
     closeMenu() {
         document.getElementById('side-menu')?.classList.remove('active');
         document.getElementById('overlay')?.classList.remove('active');
     }
     
+    /**
+     * Setup connection monitoring for online/offline detection
+     */
     setupConnectionMonitoring() {
         window.addEventListener('online', () => {
             this.isOnline = true;
@@ -817,10 +978,16 @@ class BingoApp {
         });
     }
     
+    /**
+     * Save draft data to local storage
+     */
     saveDraft() {
         localStorage.setItem(CONFIG.STORAGE_KEYS.DRAFT_DATA, JSON.stringify(this.data));
     }
     
+    /**
+     * Load draft data from local storage
+     */
     loadDraft() {
         const draft = localStorage.getItem(CONFIG.STORAGE_KEYS.DRAFT_DATA);
         if (draft) {
@@ -830,14 +997,23 @@ class BingoApp {
         }
     }
     
+    /**
+     * Populate form fields from saved data
+     */
     populateFormFromData() {
         // Populate occasion fields
         if (this.data.occasion.date) {
             document.getElementById('session-date').value = this.data.occasion.date;
         }
-        // Add more field population logic...
+        if (this.data.occasion.sessionType) {
+            document.getElementById('session-type').value = this.data.occasion.sessionType;
+        }
+        // Add more field population logic as needed
     }
     
+    /**
+     * Process sync queue when online
+     */
     async processSyncQueue() {
         if (!this.isOnline) return;
         
@@ -873,34 +1049,29 @@ class BingoApp {
     }
 }
 
-// Global functions for onclick handlers
+// Global functions for onclick handlers - Browser compatible
 function closeMenu() {
     window.app?.closeMenu();
 }
 
 function showOccasions() {
-    window.app?.closeMenu();
-    // Navigate to occasions view
+    window.app?.showOccasions();
 }
 
 function showReports() {
-    window.app?.closeMenu();
-    // Navigate to reports view
+    window.app?.showReports();
 }
 
 function showPullTabLibrary() {
-    window.app?.closeMenu();
-    // Navigate to pull-tab library
+    window.app?.showPullTabLibrary();
 }
 
 function showAdmin() {
-    window.app?.closeMenu();
-    // Navigate to admin panel
+    window.app?.showAdmin();
 }
 
 function showHelp() {
-    window.app?.closeMenu();
-    // Show help documentation
+    window.app?.showHelp();
 }
 
 // Initialize app when DOM is ready
