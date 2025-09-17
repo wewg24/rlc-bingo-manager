@@ -1,5 +1,5 @@
 // Main Application Logic for RLC Bingo Manager
-// Version 11.0.3 - Fixed syntax errors and pull tab library integration
+// Version 11.0.4 - Fixed syntax errors and pull tab library integration
 
 class BingoApp {
     constructor() {
@@ -218,7 +218,7 @@ class BingoApp {
                     <div class="admin-section">
                         <h3>Version Information</h3>
                         <p>Version: ${CONFIG.VERSION}</p>
-                        <p>Cache Version: v11.0.3</p>
+                        <p>Cache Version: v11.0.4</p>
                         <p>API URL: ${CONFIG.API_URL ? 'Configured' : 'Not configured'}</p>
                         <p>Library Games: ${this.pullTabLibrary.length}</p>
                     </div>
