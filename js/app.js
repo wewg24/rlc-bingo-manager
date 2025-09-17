@@ -295,13 +295,42 @@ class BingoApp {
         alert(`Sync Queue: ${queue.length} items pending\n\n${JSON.stringify(queue, null, 2)}`);
     }
     
-    // Update the global functions to use the app instance
-    window.showOccasions = () => window.app?.showOccasions();
-    window.showReports = () => window.app?.showReports();
-    window.showPullTabLibrary = () => window.app?.showPullTabLibrary();
-    window.showAdmin = () => window.app?.showAdmin();
-    window.showHelp = () => window.app?.showHelp();
+    // Global functions for onclick handlers - Browser Compatible Version
+    function closeMenu() {
+        if (window.app && window.app.closeMenu) {
+            window.app.closeMenu();
+        }
+    }
     
+    function showOccasions() {
+        if (window.app && window.app.showOccasions) {
+            window.app.showOccasions();
+        }
+    }
+    
+    function showReports() {
+        if (window.app && window.app.showReports) {
+            window.app.showReports();
+        }
+    }
+    
+    function showPullTabLibrary() {
+        if (window.app && window.app.showPullTabLibrary) {
+            window.app.showPullTabLibrary();
+        }
+    }
+    
+    function showAdmin() {
+        if (window.app && window.app.showAdmin) {
+            window.app.showAdmin();
+        }
+    }
+    
+    function showHelp() {
+        if (window.app && window.app.showHelp) {
+            window.app.showHelp();
+        }
+    }    
     checkForUpdates() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.ready.then(registration => {
