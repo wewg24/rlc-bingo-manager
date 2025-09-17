@@ -1,5 +1,5 @@
 # RLC Bingo Manager - User Manual
-*Version 11.0.2 - Wizard-Based PWA System*
+*Version 11.0.4 - Wizard-Based PWA System*
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -18,7 +18,7 @@
 ### Purpose
 The RLC Bingo Manager is a modern Progressive Web Application designed specifically for the Rolla Lions Club to manage Monday night bingo sessions. This wizard-based system guides you through each step of recording a bingo occasion, ensuring complete and accurate data collection for Missouri Gaming Commission compliance.
 
-### What's New in Version 11.0.2
+### What's New in Version 11.0.4
 - **Wizard Interface**: 6-step guided workflow that matches your actual session process
 - **Dark/Light Mode**: Easy on the eyes with automatic theme switching
 - **Smart Caching**: Never see outdated versions again with intelligent cache management
@@ -420,7 +420,7 @@ You can export session data for:
 **Solution**: Toggle between dark and light mode using the moon/sun icon
 
 **Problem**: Old version keeps appearing  
-**Solution**: Press CTRL+F5 once to clear cache (fixed in v11.0.2)
+**Solution**: Press CTRL+F5 once to clear cache (fixed in v11.0.4)
 
 #### Data Entry Issues
 
@@ -517,11 +517,11 @@ If you encounter issues:
 
 ## Document Information
 
-**Version**: 11.0.2  
-**System Version**: RLC Bingo Manager v11.0.2  
+**Version**: 11.0.4  
+**System Version**: RLC Bingo Manager v11.0.4  
 **Last Updated**: September 2025  
 **Support**: wewg24@github.com  
 
 © 2025 Rolla Lions Club. All rights reserved.
 
-This manual describes the wizard-based interface implemented in version 11.0.2, featuring step-by-step data entry, automatic calculations, complete offline support, and enhanced dark mode visibility.
+This manual describes the wizard-based interface implemented in version 11.0.4, featuring step-by-step data entry, automatic calculations, complete offline support, and enhanced dark mode visibility.
