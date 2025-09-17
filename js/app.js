@@ -22,6 +22,141 @@ class BingoApp {
         
         this.init();
     }
+
+    showOccasions() {
+        this.closeMenu();
+        // Create occasions view
+        const mainContent = document.querySelector('.wizard-container');
+        mainContent.innerHTML = `
+            <div class="occasions-view">
+                <h2>Recent Occasions</h2>
+                <div class="occasions-list">
+                    <p>Loading occasions...</p>
+                </div>
+                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+            </div>
+        `;
+        this.loadOccasionsList();
+    }
+    
+    async loadOccasionsList() {
+        try {
+            const response = await fetch(CONFIG.API_URL + '?path=occasions');
+            const data = await response.json();
+            
+            const listContainer = document.querySelector('.occasions-list');
+            if (data.success && data.occasions) {
+                listContainer.innerHTML = data.occasions.map(occ => `
+                    <div class="occasion-item">
+                        <strong>${occ.Date}</strong> - ${occ['Session Type']} - ${occ['Lion in Charge']}
+                        <span class="occasion-status">${occ.Status}</span>
+                    </div>
+                `).join('');
+            } else {
+                listContainer.innerHTML = '<p>No occasions found or unable to load.</p>';
+            }
+        } catch (error) {
+            console.error('Error loading occasions:', error);
+            document.querySelector('.occasions-list').innerHTML = '<p>Error loading occasions. Check connection.</p>';
+        }
+    }
+    
+    showReports() {
+        this.closeMenu();
+        const mainContent = document.querySelector('.wizard-container');
+        mainContent.innerHTML = `
+            <div class="reports-view">
+                <h2>Reports</h2>
+                <div class="reports-options">
+                    <button class="button" onclick="window.app.generateMGCForm()">MGC Form 104</button>
+                    <button class="button" onclick="window.app.generateSessionSummary()">Session Summary</button>
+                    <button class="button" onclick="window.app.generateMonthlyReport()">Monthly Report</button>
+                </div>
+                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+            </div>
+        `;
+    }
+    
+    showPullTabLibrary() {
+        this.closeMenu();
+        const mainContent = document.querySelector('.wizard-container');
+        mainContent.innerHTML = `
+            <div class="pulltab-library-view">
+                <h2>Pull-Tab Game Library</h2>
+                <div class="library-info">
+                    <p>Total Games Available: ${this.pullTabLibrary.length}</p>
+                </div>
+                <div class="library-grid">
+                    ${this.pullTabLibrary.slice(0, 20).map(game => `
+                        <div class="library-item">
+                            <strong>${game.name}</strong><br>
+                            Form: ${game.form}<br>
+                            Count: ${game.count}<br>
+                            Profit: $${game.profit}
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+            </div>
+        `;
+    }
+    
+    showAdmin() {
+        this.closeMenu();
+        const mainContent = document.querySelector('.wizard-container');
+        mainContent.innerHTML = `
+            <div class="admin-view">
+                <h2>Administration</h2>
+                <div class="admin-options">
+                    <button class="button" onclick="window.app.exportAllData()">Export All Data</button>
+                    <button class="button" onclick="window.app.clearLocalData()">Clear Local Storage</button>
+                    <button class="button" onclick="window.app.checkForUpdates()">Check for Updates</button>
+                    <button class="button" onclick="window.app.viewSyncQueue()">View Sync Queue</button>
+                </div>
+                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+            </div>
+        `;
+    }
+    
+    showHelp() {
+        this.closeMenu();
+        const mainContent = document.querySelector('.wizard-container');
+        mainContent.innerHTML = `
+            <div class="help-view">
+                <h2>Help & Support</h2>
+                <div class="help-content">
+                    <h3>Quick Start Guide</h3>
+                    <p>The RLC Bingo Manager uses a 6-step wizard to guide you through recording a bingo session.</p>
+                    
+                    <h3>Steps:</h3>
+                    <ol>
+                        <li><strong>Session Info</strong>: Enter date, type, attendance, and progressive details</li>
+                        <li><strong>Paper Sales</strong>: Record inventory and POS sales</li>
+                        <li><strong>Game Results</strong>: Enter winners for each of the 17 games</li>
+                        <li><strong>Pull-Tabs</strong>: Track pull-tab games and serial numbers</li>
+                        <li><strong>Money Count</strong>: Count cash drawers and calculate deposit</li>
+                        <li><strong>Review</strong>: Verify all data and submit</li>
+                    </ol>
+                    
+                    <h3>Support</h3>
+                    <p>For technical support, contact: wewg24@github.com</p>
+                </div>
+                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+            </div>
+        `;
+    }
+    
+    returnToWizard() {
+        // Restore the wizard interface
+        location.reload(); // Simple solution to restore wizard state
+    }
+    
+    // Update the global functions to use the app instance
+    window.showOccasions = () => window.app?.showOccasions();
+    window.showReports = () => window.app?.showReports();
+    window.showPullTabLibrary = () => window.app?.showPullTabLibrary();
+    window.showAdmin = () => window.app?.showAdmin();
+    window.showHelp = () => window.app?.showHelp();
     
     checkForUpdates() {
         if ('serviceWorker' in navigator) {
