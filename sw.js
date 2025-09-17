@@ -3,25 +3,17 @@ const CACHE_VERSION = 'v11.0.4';
 const CACHE_NAME = `rlc-bingo-${CACHE_VERSION}`;
 
 const urlsToCache = [
-  '/assets/icons/icon-192.png',
-  '/assets/icons/icon-50.png',
-  '/assets/icons/icon-512.png',
+  '/',
   '/index.html',
-  '/sw.js',
   '/css/style.css',
-  '/css/print.css',
   '/css/wizard.css',
   '/css/dark-mode.css',
-  '/js/app.js',
-  '/js/calculations.js',
-  '/js/camera.js',
   '/js/config.js',
-  '/js/offline.js',
-  '/js/sync.js',
+  '/js/app.js',
   '/js/wizard.js',
-  '/lib/localforage.min.js',
-  '/lib/pdfmake.min.js',
-  '/lib/vfs_fonts.min.js'
+  '/js/calculations.js',
+  '/js/offline.js',
+  '/js/sync.js'
 ];
 
 self.addEventListener('install', event => {
