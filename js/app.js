@@ -151,7 +151,7 @@ class BingoApp {
                     </table>
                 </div>
             </div>
-        `;
+        ;
     }
     
     showAdmin() {
