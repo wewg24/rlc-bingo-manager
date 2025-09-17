@@ -1,5 +1,5 @@
 // Service Worker with error handling for cache.addAll
-const CACHE_NAME = 'rlc-bingo-v9.1';
+const CACHE_NAME = 'rlc-bingo-v11.0.2';
 const urlsToCache = [
     '/',
     '/index.html',
