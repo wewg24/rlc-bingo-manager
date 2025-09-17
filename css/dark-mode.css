@@ -28,22 +28,37 @@ body.dark-mode {
 /* Header adjustments for dark mode */
 body.dark-mode .app-header {
     background: #0c0c0c;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid #4a4a4a;
 }
 
 body.dark-mode .app-header h1 {
-    color: #ffffff !important;  /* Force white text for title */
+    color: #ffffff !important;  /* Force white for the title */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Add subtle shadow for depth */
+}
+
+body.dark-mode .header-content {
+    color: #ffffff;
+}
+
+body.dark-mode .header-controls {
+    color: #ffffff;
 }
 
 body.dark-mode .icon-button {
-    color: #ffffff !important;  /* Force white for hamburger and theme toggle */
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff !important;  /* This fixes the hamburger menu visibility */
+    background: transparent;
+    border: none;
+    opacity: 0.9;
 }
 
 body.dark-mode .icon-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+body.dark-mode .theme-icon {
+    filter: brightness(1.5); /* Brighten the emoji icons */
 }
 
 /* Form sections with improved contrast */
