@@ -1,711 +1,527 @@
 # RLC Bingo Manager - User Manual
-*Version 9.0 - Complete PWA System*
+*Version 11.0.2 - Wizard-Based PWA System*
 
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Getting Started](#getting-started)
-3. [System Overview](#system-overview)
-4. [Daily Operations](#daily-operations)
-5. [Data Entry Procedures](#data-entry-procedures)
-6. [Offline Operations](#offline-operations)
-7. [Reports and Compliance](#reports-and-compliance)
-8. [Troubleshooting](#troubleshooting)
-9. [Reference Guide](#reference-guide)
+3. [The Wizard Workflow](#the-wizard-workflow)
+4. [Step-by-Step Instructions](#step-by-step-instructions)
+5. [Offline Operations](#offline-operations)
+6. [Reports and Compliance](#reports-and-compliance)
+7. [Troubleshooting](#troubleshooting)
+8. [Quick Reference Guide](#quick-reference-guide)
 
 ---
 
 ## 1. Introduction
 
 ### Purpose
-The RLC Bingo Manager is a complete Progressive Web Application (PWA) designed specifically for the Rolla Lions Club to manage bingo occasions in compliance with Missouri Gaming Commission (MGC) regulations. This system replaces paper-based recording with a digital solution that works both online and offline.
+The RLC Bingo Manager is a modern Progressive Web Application designed specifically for the Rolla Lions Club to manage Monday night bingo sessions. This wizard-based system guides you through each step of recording a bingo occasion, ensuring complete and accurate data collection for Missouri Gaming Commission compliance.
+
+### What's New in Version 11.0.2
+- **Wizard Interface**: 6-step guided workflow that matches your actual session process
+- **Dark/Light Mode**: Easy on the eyes with automatic theme switching
+- **Smart Caching**: Never see outdated versions again with intelligent cache management
+- **Enhanced Calculations**: Automatic BOGO processing and progressive prize calculations
+- **Improved Offline**: Complete functionality without internet connection
 
 ### Key Features
-- ✅ **Offline-First Design**: Full functionality without internet connection
-- ✅ **MGC Compliance**: Built-in Missouri Gaming Commission reporting
-- ✅ **Photo Documentation**: Capture winner photos and receipts
-- ✅ **Automatic Calculations**: Real-time totals and variance tracking
-- ✅ **Cloud Sync**: Automatic synchronization when online
-- ✅ **Mobile Optimized**: Works on phones, tablets, and computers
-- ✅ **Secure Access**: Role-based user authentication
-
-### User Roles
-
-| Role | Permissions | Typical User |
-|------|------------|--------------|
-| **Closet Worker** | Data entry, occasion management, photo capture | Session volunteers |
-| **Manager** | All worker permissions + reports, audit logs | Bingo chairperson |
-| **Administrator** | Full system access + user management | IT coordinator |
+✅ **Step-by-Step Guidance**: Never miss important data with our wizard workflow  
+✅ **Auto-Save Everything**: Every field change is saved locally  
+✅ **Real-Time Calculations**: See totals update as you type  
+✅ **Touch-Optimized**: Works perfectly on tablets and phones  
+✅ **Complete Offline Mode**: Full functionality without internet  
+✅ **Automatic Sync**: Data uploads when connection returns  
+✅ **Dark Mode**: Reduce eye strain during evening sessions  
 
 ---
 
 ## 2. Getting Started
 
-### System Requirements
-- **Device**: Any modern smartphone, tablet, or computer
-- **Browser**: Chrome (recommended), Safari, Firefox, or Edge
-- **Storage**: Minimum 100MB available storage for offline data
-- **Camera**: Device camera for photo documentation (optional)
+### Accessing the Application
 
-### Initial Setup
+#### First Time Setup
+1. Open your web browser (Chrome or Edge recommended)
+2. Navigate to: `https://wewg24.github.io/rlc-bingo-manager/`
+3. Bookmark the page for quick access
+4. The application will load and cache itself for offline use
 
-#### Step 1: Access the Application
-1. Open your web browser
-2. Navigate to: `https://[your-deployment-url].github.io/rlc-bingo-manager/`
-3. Bookmark the page for easy access
+#### Installing as an App (Recommended)
 
-#### Step 2: Install as App (Recommended)
-**On Mobile (iOS/Android):**
-1. Tap the share button in your browser
-2. Select "Add to Home Screen"
-3. Name it "RLC Bingo"
-4. The app icon will appear on your home screen
+**On a Tablet (iPad/Android):**
+1. Open the website in Chrome or Safari
+2. Tap the share button
+3. Select "Add to Home Screen"
+4. Name it "RLC Bingo"
+5. An app icon appears on your home screen
 
-**On Desktop (Chrome):**
-1. Click the install icon (⊕) in the address bar
+**On a Computer:**
+1. Look for the install icon (⊕) in the address bar
 2. Click "Install"
-3. The app will open in its own window
+3. The app opens in its own window
 
-#### Step 3: Login
-1. Enter your username and password
-2. Click "Login"
-3. Your credentials will be remembered for 30 days
+### Understanding the Interface
 
-### First-Time Configuration
-Default credentials:
-- Username: `admin`
-- Password: `admin123`
+#### Top Header
+The header shows three important elements:
+- **Theme Toggle** (🌙/☀️): Switch between dark and light modes
+- **Menu Button** (☰): Access additional features and reports
+- **Connection Status**: 
+  - 🟢 Online: Connected to internet
+  - 🔴 Offline: Working locally (will sync later)
 
-**IMPORTANT**: Change the admin password immediately after first login.
+#### Progress Bar
+The wizard progress bar shows your current position:
+- **Blue circle**: Current step
+- **Green checkmark**: Completed step
+- **Gray circle**: Upcoming step
 
----
+You can click on any completed step to go back and review or edit.
 
-## 3. System Overview
+#### Navigation Buttons
+- **Previous**: Go back one step (disabled on first step)
+- **Next**: Advance to next step (changes to "Complete" on final step)
 
-### Navigation
-
-The application uses a tab-based navigation system with six main sections:
-
-| Tab | Icon | Purpose |
-|-----|------|---------|
-| **Occasion** | 📅 | Record event details and attendance |
-| **Games** | 🎮 | Track individual game winners and prizes |
-| **Pull-Tabs** | 🎟️ | Manage pull-tab inventory and sales |
-| **Money** | 💵 | Count cash and record deposits |
-| **Photos** | 📸 | Document winners and receipts |
-| **Reports** | 📊 | Generate MGC forms and analytics |
-
-### Status Indicators
-
-#### Connection Status
-- **🟢 Online**: Data syncs automatically
-- **🔴 Offline**: Data saved locally, will sync when reconnected
-
-#### Sync Status
-- **✓ Synced**: All data uploaded to cloud
-- **⏳ Pending**: Data waiting to sync
-- **⚠️ Error**: Sync issue requiring attention
+### Session Detection
+The system automatically determines your session type based on the date:
+- Entering a Monday date auto-selects the correct session (5-1, 6-2, 7-3, or 8-4)
+- Session type determines which 17 games are loaded
+- You can override if needed for special circumstances
 
 ---
 
-## 4. Daily Operations
+## 3. The Wizard Workflow
 
-### Pre-Session Checklist
-- [ ] Verify internet connection (optional but recommended)
-- [ ] Login to the system
-- [ ] Check progressive jackpot amount from previous session
-- [ ] Prepare starting bank ($500 standard)
-- [ ] Have camera ready for winner photos
+The wizard guides you through six logical steps that match your actual bingo session workflow:
 
-### Session Workflow
-
-```mermaid
-graph TD
-    A[Start Session] --> B[Create Occasion]
-    B --> C[During Play: Record Games]
-    C --> D[Manage Pull-Tabs]
-    D --> E[End Session: Count Money]
-    E --> F[Take Photos]
-    F --> G[Generate Reports]
-    G --> H[Submit to MGC]
+```
+1. Session Info → 2. Paper Sales → 3. Game Results
+      ↓                ↓                ↓
+   Basic Info      Inventory        Prize Tracking
+   Progressive     POS Sales        17 Games
+      ↓                ↓                ↓
+4. Pull-Tabs → 5. Money Count → 6. Review & Submit
+      ↓                ↓                ↓
+   Game Entry     Drawer Count    Final Summary
+   Serial #s      Deposit Calc    Submit Data
 ```
 
-### Post-Session Tasks
-1. Verify all data is complete
-2. Ensure photos are uploaded
-3. Generate MGC Form 104
-4. Print reports for filing
-5. Confirm sync status is green
+### Step Validation
+Each step validates your entries before allowing you to proceed. This ensures:
+- Required fields are completed
+- Calculations make sense
+- No critical data is missed
+
+You can always go back to previous steps to make corrections.
 
 ---
 
-## 5. Data Entry Procedures
+## 4. Step-by-Step Instructions
 
-### 5.1 Occasion Tab
+### Step 1: Session Information
 
-The Occasion tab captures the main event information required for MGC compliance.
+This first step captures the basic occasion details and progressive game setup.
 
-#### Required Fields
+#### Basic Information Fields
 
-| Field | Description | Example |
-|-------|-------------|---------|
-| **Date** | Date of the bingo session | 01/15/2025 |
-| **Session Type** | Monday schedule code | 5-1 (1st/5th Monday) |
-| **Lion in Charge** | Primary responsible member | John Smith |
-| **Total Players** | Attendance count | 147 |
+**Date**: Select the date of your bingo session. The system will:
+- Auto-detect if it's a Monday
+- Determine the session type (1st, 2nd, 3rd, or 4th Monday)
+- Load the appropriate game configuration
 
-#### Session Types Explained
+**Session Type**: Automatically selected based on date:
 - **5-1**: 1st and 5th Mondays (when applicable)
-- **6-2**: 2nd Monday
-- **7-3**: 3rd Monday
-- **8-4**: 4th Monday
+- **6-2**: 2nd Monday of the month
+- **7-3**: 3rd Monday of the month
+- **8-4**: 4th Monday of the month
 
-Each session type has a predefined set of 17 games with specific prizes.
+**Lion in Charge**: Enter the name of the Lion member running the closet. This is the person responsible for the session's operations.
 
-#### Progressive Game Fields
+**Total People**: Enter the total attendance count. This includes all players but excludes workers.
 
-| Field | Description | Default |
-|-------|-------------|---------|
-| **Starting Jackpot** | Current progressive amount | Previous + increment |
-| **Balls to Win** | Required balls for jackpot | 48 |
-| **Consolation Prize** | Amount if not won in required balls | $200 |
-| **Actual Balls Called** | Balls when won (if applicable) | Enter if won |
+**Birthdays (BOGOs)**: Enter the number of players celebrating birthdays. The system automatically calculates:
+- 2 free Early Bird sheets per birthday
+- 1 free 6-Face sheet per birthday
+- Updates inventory calculations in Step 2
 
-**Progressive Rules:**
-- Jackpot increases by $100 each session if not won
-- If won in ≤48 balls: Pay full jackpot
-- If won in >48 balls: Pay $200 consolation
-- Reset to $1,000 seed after jackpot win
+#### Progressive Game Section
 
-### 5.2 Games Tab
+The progressive game is a special jackpot that grows each week until won.
 
-The Games tab displays all 17 games for the selected session type.
+**Jackpot Offered**: Enter the current progressive amount. This carries over from the previous week plus any increments.
 
-#### Game Entry Process
+**Balls to Win**: Enter the number of balls required to win the full jackpot (typically 48).
 
-1. **For Each Game Played:**
-   - Enter number of winners (default: 0)
-   - System calculates total payout automatically
-   - Optional: Enter winner name/table number
-   - Optional: Record balls called
+**Consolation Prize**: The amount paid if won after the required balls (default: $200).
 
-2. **Special Games:**
-   - **Game #9 (Event)**: Variable prize - enter manually
-   - **Game #13 (Progressive)**: Links to occasion progressive data
+**Actual Balls Called**: Enter only if the progressive was won. The system will:
+- Calculate if full jackpot or consolation is paid
+- Update the prize amount automatically
+- Show the calculated prize in the "Prize Awarded" field
 
-#### Color-Coded Game Cards
+**Paid by Check**: Check this box if the progressive winner was paid by check rather than cash.
 
-| Color | Games | Typical Prize |
-|-------|-------|---------------|
-| Early Bird | 1-3 | $100 |
-| Blue/Orange/Green/Yellow/Pink | 4-8 | $100-250 |
-| Gray/Olive/Brown | 10-12 | $150 |
-| Red/Purple/Black | 14-16 | $150 |
-| Aqua | 17 | $500 (Coverall) |
+### Step 2: Paper Sales
 
-### 5.3 Pull-Tabs Tab
+This step tracks your paper bingo inventory and point-of-sale transactions.
 
-Pull-tabs are instant-win games sold during the session.
+#### Paper Bingo Inventory
 
-#### Adding a Pull-Tab Game
+For each type of paper, enter:
 
-1. Click **"Add Pull-Tab Game"**
-2. Enter game information:
-   - **Game Name**: From the ticket display
-   - **Serial Number**: Located on the flare
-   - **Price per Tab**: Usually $0.25, $0.50, or $1.00
-   - **Starting Count**: Number of tabs at start
-   - **Ending Count**: Number of tabs remaining
+**Start Count**: Number of sheets at the beginning of the session  
+**Free Count**: Automatically calculated for Early Birds and 6-Face based on birthdays  
+**End Count**: Number of sheets remaining after the session  
+**Sold**: Automatically calculated as (Start - End - Free)  
 
-3. System calculates automatically:
-   - Tabs Sold = Starting - Ending
-   - Gross Sales = Tabs Sold × Price
-   - Net Revenue = Gross Sales - Prizes Paid
+Paper types tracked:
+- Early Birds (includes free birthday sheets)
+- 6 Face (includes free birthday sheets)
+- 9 Face Solid Border
+- 9 Face Stripe Border
+- Progressive 3 Face ($1)
+- Progressive 18 Face ($5)
 
-#### Recording Prize Winners
-1. Enter total prizes paid out
-2. Click "Add Prize Entry" for each winner
-3. Record amount and winner information
-4. System updates net revenue automatically
+#### POS Door Sales
 
-#### Pull-Tab Best Practices
-- Count remaining tabs immediately after session
-- Record all prize payouts as they occur
-- Keep serial numbers for state reporting
-- Verify calculations match cash on hand
+This table shows items sold at the door with automatic total calculations:
 
-### 5.4 Money Count Tab
+For each item type, enter the **Quantity** sold. The system calculates the total based on preset prices:
+- 6 Face: $10.00
+- 9 Face Solid: $15.00
+- 9 Face Stripe: $10.00
+- Birthday Pack: $0.00 (BOGO, quantity auto-filled)
+- Progressive 18 Face: $5.00
+- Progressive 3 Face: $1.00
+- Letter X Extra: $1.00
+- Number 7 Extra: $1.00
+- Coverall Extra: $1.00
+- Early Bird Double: $5.00
 
-Accurate money counting is critical for balancing and deposits.
+The **Total Paper Sales** updates automatically as you enter quantities.
 
-#### Denomination Count
+#### Electronic Bingo
 
-Count and enter quantities for each denomination:
+Enter the number of electronic machines rented:
+- **Small Machines** (27 regular/18 progressive games): $40 each
+- **Large Machines** (45 regular/36 progressive games): $65 each
 
-| Bills | Coins |
-|-------|-------|
-| $100 | Quarters |
-| $50 | Dimes |
-| $20 | Nickels |
-| $10 | Pennies |
-| $5 | |
-| $1 | |
+### Step 3: Game Results
 
-The system calculates subtotals and grand total automatically.
+This step displays all 17 games for your session type. The games are pre-loaded based on the session you selected in Step 1.
 
-#### Check Recording
+For each game, you'll see:
+- **Game Number** (1-17)
+- **Color** (card color for that game)
+- **Game Name** (the pattern being played)
+- **Prize Amount** (standard prize for that game)
 
-For each check received:
-1. Click **"Add Check"**
-2. Enter:
-   - Check number
-   - Payer name
-   - Amount
-3. System adds to total deposit
+#### Recording Winners
 
-#### Verification Process
+For each game played:
+1. Enter the **number of winners** (default is 1)
+2. If multiple winners, the system calculates the split automatically
+3. Adjust the **Prize per Winner** if needed
+4. The **Total** column shows the total payout for that game
+5. Check the **Check** box if any winner was paid by check
 
-1. **Starting Bank**: Enter amount (usually $500)
-2. **Expected Revenue**: Enter anticipated total
-3. **System Calculates**:
-   - Total Cash + Checks
-   - Less Starting Bank = Deposit Amount
-   - Variance from Expected
+#### Special Games
 
-**Variance Indicators:**
-- 🟢 Green: Within $1 (acceptable)
-- 🟡 Yellow: $1-10 difference (review)
-- 🔴 Red: Over $10 difference (investigate)
+**Game 13 - Progressive**: This automatically links to the progressive prize calculated in Step 1. The prize amount updates based on whether the jackpot was won and at how many balls.
 
-#### Count Verification
-- **Counted By**: Person who performed count
-- **Verified By**: Second person who verified
+**Game 9 - Event Game**: This may vary by session. Enter the appropriate prize amount.
 
-### 5.5 Photos Tab
+The **Total Bingo Prizes** at the bottom shows your total payout for all games.
 
-Photo documentation provides visual records for compliance and disputes.
+### Step 4: Pull-Tabs
 
-#### What to Photograph
-- ✅ Large prize winners (over $100)
-- ✅ Progressive game winners
-- ✅ Unusual payouts or disputes
-- ✅ Completed pull-tab flares
-- ✅ Check payments
-- ✅ End-of-night money count sheets
+Pull-tabs are instant-win games sold throughout the session. This step tracks each game opened.
 
-#### Taking Photos
-1. Click the camera area or "Click to upload photos"
-2. Choose:
-   - **Take Photo**: Use device camera
-   - **Choose File**: Select existing photo
-3. Photos are automatically:
-   - Compressed for storage
-   - Tagged with occasion ID
-   - Queued for cloud upload
+#### Lion in Charge of Pull-Tabs
+Enter the name of the Lion member who managed pull-tabs for this session.
 
-#### Photo Tips
-- Ensure good lighting
-- Include faces for winner photos
-- Make text/numbers clearly readable
-- Take multiple angles if needed
-- Photos sync when online
+#### Adding Pull-Tab Games
 
-### 5.6 Reports Tab
+Click **"Add Game"** for each regular pull-tab game opened:
 
-Generate required reports and forms for compliance.
+1. **Select Game** from the dropdown (152 games in library)
+2. **Enter Serial Number** from the game flare
+3. **Price per Ticket** auto-fills from library
+4. **Enter Tickets Sold** (or starting/ending counts)
+5. System calculates **Sales** automatically
+6. **Enter Ideal Profit** from the flare
+7. **Enter Prizes Paid** (actual amount paid out)
+8. System calculates **Net Profit**
 
-#### Available Reports
+#### Special Event Games
 
-| Report | Purpose | Format |
-|--------|---------|--------|
-| **MGC Form 104** | Missouri Gaming Commission required filing | PDF |
-| **Session Summary** | Internal records and accounting | PDF |
-| **Detailed Games Report** | Individual game analysis | PDF/Excel |
-| **Pull-Tab Inventory** | Track pull-tab sales and profits | Excel |
-| **Monthly Summary** | Board reporting | PDF |
+Click **"Add Special Event"** for any special event games (these are tracked separately):
+- These appear with a yellow background
+- Enter the same information as regular games
+- Mark the **SE** (Special Event) checkbox
 
-#### Generating MGC Form 104
+#### Check Payments
+Check the **Check** box for any prizes paid by check.
 
-1. Ensure all data is complete:
-   - Occasion details filled
-   - Games recorded
-   - Money counted
-   - Pull-tabs entered
+The totals section shows:
+- **Regular Games**: Total sales, ideal profit, prizes, and net
+- **Special Events**: Separate totals for special event games
+- **Grand Totals**: Combined figures
 
-2. Click **"Generate MGC Form 104"**
-3. Review generated form for accuracy
-4. Click **"Download PDF"**
-5. Print and file as required
+### Step 5: Money Count
 
-#### Report Distribution
-- **MGC Copy**: Submit as required by regulations
-- **Club Copy**: File with treasurer
-- **Backup Copy**: Store in secure location
+This step reconciles all cash and checks from the session.
+
+#### Bingo Drawer Count
+
+Count and enter the quantity of each denomination:
+- $100 bills
+- $50 bills
+- $20 bills
+- $10 bills
+- $5 bills
+- $2 bills (if any)
+- $1 bills
+- Coins (total value)
+- Checks (total value)
+
+The **Bingo Total** calculates automatically.
+
+#### Pull-Tab Drawer Count
+
+Count pull-tab cash (typically no checks):
+- Enter quantities for each denomination
+- The **Pull-Tab Total** calculates automatically
+
+#### Deposit Summary
+
+The system automatically shows:
+- **Currency Total**: All bills from both drawers
+- **Coins Total**: Combined coin amount
+- **Checks Total**: All checks received
+- **Total Deposit**: Everything combined
+- **Less Startup Cash**: Subtracts $1,000 startup
+- **Net Deposit**: Final deposit amount
+
+### Step 6: Review & Submit
+
+This final step shows a complete summary for review before submission.
+
+#### Financial Summary
+
+Review all calculated totals:
+- **Sales Breakdown**: Bingo, Pull-Tab, and Special Event sales
+- **Gross Sales**: Total of all sales
+- **Prize Breakdown**: Amounts paid for each category
+- **Total Prizes**: All prizes paid out
+- **Deposit Information**: Cash deposit and calculations
+- **Profit Analysis**: Actual vs. Ideal profit
+- **Over/Short**: Variance (highlighted if significant)
+
+#### Performance Metrics
+
+Key performance indicators:
+- **Total Players**: Attendance for the session
+- **Gross Sales**: Total revenue generated
+- **Net Profit**: After all prizes paid
+- **Per Player**: Average profit per attendee
+
+#### Action Buttons
+
+- **Submit Occasion**: Saves all data to the cloud (or queue if offline)
+- **Save Draft**: Saves current progress locally
+- **Print Report**: Generates a printable version
+- **Export Data**: Downloads data as JSON file
 
 ---
 
-## 6. Offline Operations
+## 5. Offline Operations
 
 ### How Offline Mode Works
 
-The system is designed to work without internet connection:
+The application is designed to function completely without internet:
 
-1. **Automatic Detection**: System detects connection loss
-2. **Local Storage**: All data saved to device storage
-3. **Queue System**: Changes tracked for later sync
-4. **Visual Indicators**: Red offline status shown
-5. **Auto-Sync**: Data uploads when reconnected
+1. **Automatic Detection**: The status indicator shows when you're offline
+2. **Full Functionality**: All features work exactly the same offline
+3. **Local Storage**: Data saves to your device automatically
+4. **Sync Queue**: Changes are queued for upload when reconnected
+5. **Visual Feedback**: Red offline indicator in header
+6. **Auto-Sync**: Data uploads automatically when connection returns
 
-### Offline Capabilities
+### Working Offline
 
-✅ **Full Functionality Available Offline:**
-- Create and edit occasions
-- Record all game data
-- Manage pull-tabs
-- Count money
-- Generate reports (except cloud features)
+You can complete an entire bingo session offline:
+- Enter all data normally through the wizard
+- Calculations work exactly the same
+- Save draft or submit occasion
+- Data is stored securely on your device
+- When internet returns, everything syncs automatically
 
-⚠️ **Limited Offline:**
-- Photo uploads (queued for sync)
-- Historical data access (cached only)
-- Multi-device synchronization
+### Sync Process
 
-❌ **Requires Connection:**
-- Initial login
-- User management
-- Downloading updates
-
-### Best Practices for Offline Use
-
-1. **Before Going Offline:**
-   - Login while connected
-   - Let app fully load
-   - Verify offline indicator works
-
-2. **During Offline Use:**
-   - Continue normal operations
-   - Note the offline indicator
-   - Save frequently (automatic)
-
-3. **After Reconnecting:**
-   - Wait for sync to complete
-   - Verify green sync status
-   - Check for conflicts
-
-### Data Sync Process
-
-```
-Offline Changes → Local Queue → Connection Restored → 
-Auto-Sync → Server Validation → Confirmation → ✓ Synced
-```
-
-### Handling Sync Conflicts
-
-If the same record was edited on multiple devices:
-1. System shows conflict alert
-2. Review both versions
-3. Choose which to keep
-4. Manually merge if needed
+When connection is restored:
+1. The status indicator turns green
+2. Queued data begins uploading
+3. You'll see a sync progress indicator
+4. Once complete, data is safely in the cloud
+5. Local backup is retained until confirmed
 
 ---
 
-## 7. Reports and Compliance
+## 6. Reports and Compliance
 
 ### Missouri Gaming Commission Requirements
 
-#### MGC Form 104 - Occasion Report
+The system helps maintain MGC compliance by:
+- Tracking all required data fields
+- Enforcing session configurations
+- Calculating prizes accurately
+- Maintaining complete audit trails
+- Generating required reports
 
-**Required Information:**
-- Organization name and license number
-- Date and location of occasion
-- Attendance figures
-- Detailed prize payouts
-- Gross receipts and net proceeds
-- Responsible party signatures
+### Available Reports
 
-**Submission Timeline:**
-- Monthly: Compile all occasion reports
-- Quarterly: Submit summary to MGC
-- Annual: Complete comprehensive report
+Access reports through the menu (☰):
 
-#### Record Retention
+**MGC Form 104**: Official occasion report for state filing
+- Generated from completed occasion data
+- Includes all required fields
+- PDF format for printing/filing
 
-| Document Type | Retention Period |
-|--------------|------------------|
-| MGC Forms | 3 years |
-| Financial Records | 7 years |
-| Winner Photos | 1 year |
-| Dispute Documentation | 3 years |
-
-### Internal Reports
-
-#### Session Summary Report
-Provides complete overview of single occasion:
-- Attendance and demographics
-- Game-by-game prize analysis
+**Session Summary**: Internal report showing:
+- Complete financial reconciliation
+- Game-by-game analysis
 - Pull-tab performance
-- Financial reconciliation
 - Variance explanations
 
-#### Monthly Operations Report
-Aggregates all sessions for the month:
+**Monthly Reports**: Aggregate data for board meetings
 - Total attendance trends
 - Revenue analysis
-- Prize payout ratios
-- Progressive game status
-- Operational insights
+- Profit margins
+- Progressive status
 
-#### Annual Analytics
-Year-end comprehensive analysis:
-- Seasonal patterns
-- Game popularity metrics
-- Volunteer performance
-- Profit trends
-- Recommendations
+### Data Export
 
-### Generating Custom Reports
-
-1. Navigate to Reports tab
-2. Select report type
-3. Choose date range
-4. Apply filters (optional):
-   - Session type
-   - Specific games
-   - Prize ranges
-5. Click "Generate"
-6. Export as PDF or Excel
+You can export session data for:
+- Backup purposes
+- External analysis
+- Historical records
+- Audit requirements
 
 ---
 
-## 8. Troubleshooting
+## 7. Troubleshooting
 
 ### Common Issues and Solutions
 
-#### Login Problems
+#### Display Issues
 
-| Issue | Solution |
-|-------|----------|
-| Forgot password | Contact administrator for reset |
-| Account locked | Wait 15 minutes or contact admin |
-| "Invalid credentials" | Check caps lock, verify username |
+**Problem**: Text is hard to read  
+**Solution**: Toggle between dark and light mode using the moon/sun icon
+
+**Problem**: Old version keeps appearing  
+**Solution**: Press CTRL+F5 once to clear cache (fixed in v11.0.2)
+
+#### Data Entry Issues
+
+**Problem**: Can't proceed to next step  
+**Solution**: Check for required fields marked with red borders
+
+**Problem**: Calculations seem wrong  
+**Solution**: Verify all source numbers are entered correctly
+
+**Problem**: Progressive prize not calculating  
+**Solution**: Enter all progressive fields including balls to win
 
 #### Sync Issues
 
-| Issue | Solution |
-|-------|----------|
-| Stuck on "Syncing..." | Check internet connection, refresh page |
-| "Sync failed" error | Click retry, check for app updates |
-| Missing data after sync | Check filters, verify date range |
+**Problem**: Data not syncing  
+**Solution**: Check connection status, wait for green indicator
 
-#### Data Entry Errors
-
-| Issue | Solution |
-|-------|----------|
-| Can't save occasion | Verify all required fields completed |
-| Wrong session games | Check session type selection |
-| Money count doesn't balance | Recount, check for entry errors |
-
-#### App Performance
-
-| Issue | Solution |
-|-------|----------|
-| App running slowly | Clear browser cache, restart device |
-| Buttons not responding | Check internet connection, refresh |
-| Photos won't upload | Verify file size <5MB, check format |
-
-### Error Messages
-
-#### "Network Error"
-- **Cause**: No internet connection
-- **Solution**: Continue in offline mode, data will sync later
-
-#### "Session Expired"
-- **Cause**: Logged in too long
-- **Solution**: Log out and back in
-
-#### "Insufficient Storage"
-- **Cause**: Device storage full
-- **Solution**: Clear old data, free up space
-
-#### "Validation Error"
-- **Cause**: Invalid data entered
-- **Solution**: Check highlighted fields, correct errors
+**Problem**: "Sync failed" message  
+**Solution**: Click retry, check for app updates
 
 ### Getting Help
 
-#### Support Channels
-
-1. **Immediate Help**:
-   - In-app help button
-   - Context-sensitive tips
-   - Validation messages
-
-2. **Administrator Support**:
-   - Contact: [admin email]
-   - Phone: [support number]
-   - Hours: [availability]
-
-3. **Technical Support**:
-   - Email: support@rlcbingo.org
-   - Documentation: [docs URL]
+If you encounter issues:
+1. Check the connection status indicator
+2. Try refreshing the page
+3. Verify all required fields are completed
+4. Contact technical support if problems persist
 
 ---
 
-## 9. Reference Guide
+## 8. Quick Reference Guide
 
-### Quick Reference Card
+### Session Start Checklist
+- [ ] Navigate to the application URL
+- [ ] Check theme preference (dark/light)
+- [ ] Note connection status
+- [ ] Click through wizard steps
 
-#### Session Start
-1. Login → Occasion tab
-2. Enter date, type, lion in charge
-3. Record attendance
-4. Note progressive jackpot
-5. Save occasion
+### Wizard Steps Quick Reference
 
-#### During Session
-1. Games tab → Enter winners
-2. Pull-tabs → Track sales
-3. Photos → Capture winners
-4. Save frequently
+**Step 1 - Session Info**
+- Date → Session auto-selects
+- Enter Lion in Charge and attendance
+- Record birthdays for BOGOs
+- Set up progressive game
 
-#### Session End
-1. Money tab → Count all cash
-2. Record checks
-3. Verify totals
-4. Generate reports
-5. Confirm sync
+**Step 2 - Paper Sales**
+- Enter starting/ending inventory
+- Record POS door sales
+- Count electronic rentals
 
-### Data Field Reference
+**Step 3 - Games**
+- Enter winner counts
+- Verify prize amounts
+- Mark check payments
 
-#### Occasion Fields
+**Step 4 - Pull-Tabs**
+- Add each game opened
+- Enter serial numbers
+- Record prizes paid
+- Separate special events
 
-| Field | Type | Required | Validation |
-|-------|------|----------|------------|
-| Date | Date | Yes | Not future date |
-| Session Type | Select | Yes | 5-1, 6-2, 7-3, 8-4 |
-| Lion in Charge | Text | Yes | 2-50 characters |
-| Total Players | Number | Yes | 0-500 |
-| Workers Count | Number | No | 0-50 |
-| Start Time | Time | No | Valid time |
-| End Time | Time | No | After start time |
+**Step 5 - Money**
+- Count bingo drawer
+- Count pull-tab drawer
+- Verify deposit total
 
-#### Progressive Game Rules
-
-| Balls Called | Action | Payout |
-|--------------|--------|--------|
-| ≤48 | Jackpot Won | Full progressive amount |
-| >48 | Consolation | $200 |
-| Not won | Carry over | Add $100 for next session |
+**Step 6 - Review**
+- Check all totals
+- Review over/short
+- Submit occasion
 
 ### Keyboard Shortcuts
+- **Tab**: Next field
+- **Shift+Tab**: Previous field
+- **Enter**: Submit form/next step
+- **Numbers**: Direct entry in number fields
 
-| Shortcut | Action |
-|----------|--------|
-| Tab | Next field |
-| Shift+Tab | Previous field |
-| Enter | Submit form |
-| Esc | Cancel dialog |
-| Ctrl+S | Save current form |
-| Ctrl+P | Print report |
+### Important Numbers
+- **Startup Cash**: $1,000 (Bingo) + $550 (Pull-tabs)
+- **Progressive Seed**: $1,000 after jackpot won
+- **Progressive Increment**: $100 per week if not won
+- **Consolation Prize**: $200 (if won after 48 balls)
+- **Birthday BOGOs**: 2 Early Birds + 1 Six Face per birthday
 
-### Session Type Game Configurations
-
-#### 5-1 Schedule (1st/5th Monday)
-1. Hard Way Bingo - $100
-2. Diagonal & Corners - $100
-3. Small Picture Frame - $100
-4. Block of 9 - $100
-5. $250 Number 7 - $250
-6. Small Diamond - $100
-7. Razor Blade - $100
-8. $250 Letter X - $250
-9. Special Event - Variable
-10. 5 Around Corner - $150
-11. Double Postage - $150
-12. Outside Line - $150
-13. Progressive Diamond - Progressive
-14. Checkmark - $150
-15. Regular Bingo - $150
-16. 3 Top & Bottom - $150
-17. $500 Coverall - $500
-
-*(Similar configurations for 6-2, 7-3, and 8-4 schedules)*
-
-### Glossary
-
-| Term | Definition |
-|------|------------|
-| **Occasion** | Single bingo session/event |
-| **Session Type** | Monday schedule determining games |
-| **Progressive** | Jackpot that grows until won |
-| **Consolation** | Reduced prize for late win |
-| **Pull-Tab** | Instant-win paper game |
-| **Flare** | Pull-tab display showing prizes |
-| **MGC** | Missouri Gaming Commission |
-| **Variance** | Difference between expected and actual |
-| **Sync** | Upload local data to cloud |
-
----
-
-## Appendices
-
-### Appendix A: MGC Compliance Checklist
-
-- [ ] Licensed organization displayed
-- [ ] License number on all reports
-- [ ] Occasion reports filed monthly
-- [ ] Prize limits not exceeded
-- [ ] Proper record retention
-- [ ] Annual report submitted
-- [ ] Taxes filed quarterly
-
-### Appendix B: Emergency Procedures
-
-**Power Failure During Session:**
-1. Switch to paper backup forms
-2. Record all transactions manually
-3. Enter into system when power restored
-4. Note incident in occasion notes
-
-**System Failure:**
-1. Try different device/browser
-2. Use offline mode if possible
-3. Contact technical support
-4. Use paper backup as last resort
-
-**Data Loss:**
-1. Check offline storage
-2. Contact administrator
-3. Restore from last backup
-4. Re-enter missing data
-
-### Appendix C: Training Materials
-
-**New User Training Checklist:**
-- [ ] System overview
-- [ ] Login procedures
-- [ ] Navigation basics
-- [ ] Occasion creation
-- [ ] Game recording
-- [ ] Money counting
-- [ ] Report generation
-- [ ] Offline operations
-- [ ] Troubleshooting
-
-**Training Resources:**
-- Video tutorials: [URL]
-- Practice environment: [URL]
-- Quick start guide: [URL]
-- FAQ document: [URL]
+### Session Types by Monday
+- **1st Monday**: Session 5-1
+- **2nd Monday**: Session 6-2
+- **3rd Monday**: Session 7-3
+- **4th Monday**: Session 8-4
+- **5th Monday** (when applicable): Session 5-1
 
 ---
 
 ## Document Information
 
-**Version**: 9.0  
-**Last Updated**: January 2025  
-**Author**: RLC Bingo System Team  
-**Contact**: support@rlcbingo.org  
+**Version**: 11.0.2  
+**System Version**: RLC Bingo Manager v11.0.2  
+**Last Updated**: September 2025  
+**Support**: wewg24@github.com  
 
 © 2025 Rolla Lions Club. All rights reserved.
 
-This manual is proprietary to the Rolla Lions Club and contains confidential information. Unauthorized distribution is prohibited.
+This manual describes the wizard-based interface implemented in version 11.0.2, featuring step-by-step data entry, automatic calculations, complete offline support, and enhanced dark mode visibility.
