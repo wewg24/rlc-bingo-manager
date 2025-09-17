@@ -23,6 +23,13 @@ class BingoApp {
         this.init();
     }
     
+    checkForUpdates() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.update();
+            });
+        }
+    }
     async init() {
         // Load saved draft if exists
         this.loadDraft();
@@ -42,6 +49,10 @@ class BingoApp {
         
         // Check for sync queue
         await this.processSyncQueue();
+
+        // Check for updates every 5 minutes
+        this.checkForUpdates();
+        setInterval(() => this.checkForUpdates(), 5 * 60 * 1000);
     }
     
     initializeTheme() {
