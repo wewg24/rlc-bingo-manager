@@ -1,547 +1,337 @@
 # RLC Bingo Manager
 
-[![Version](https://img.shields.io/badge/version-9.0-blue.svg)](https://github.com/wewantthefunk/rlc-bingo-manager/releases)
+[![Version](https://img.shields.io/badge/version-11.0.2-blue.svg)](https://github.com/wewg24/rlc-bingo-manager/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![PWA](https://img.shields.io/badge/PWA-Ready-orange.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 [![MGC Compliant](https://img.shields.io/badge/MGC-Compliant-red.svg)](https://www.mgc.dps.mo.gov/)
 
-A complete Progressive Web Application (PWA) for managing bingo occasions with offline capabilities, designed specifically for the Rolla Lions Club in compliance with Missouri Gaming Commission regulations.
+A modern Progressive Web Application (PWA) for managing bingo occasions with comprehensive offline capabilities. Designed specifically for the Rolla Lions Club in compliance with Missouri Gaming Commission regulations.
 
 ## 🎯 Features
 
 ### Core Functionality
-- **📱 Progressive Web App**: Installable on any device, works offline
+- **🧙 Wizard-Based Workflow**: 6-step guided data entry process
+- **🌓 Dark/Light Mode**: Automatic theme switching with user preference
+- **📱 Mobile-First Design**: Touch-optimized with 44px minimum targets
 - **☁️ Cloud Sync**: Automatic bidirectional synchronization with Google Sheets
 - **📸 Photo Documentation**: Integrated camera support for winner documentation
 - **💰 Financial Tracking**: Complete money counting and deposit reconciliation
 - **📊 MGC Compliance**: Built-in Missouri Gaming Commission reporting
-- **🔒 Secure Access**: Role-based authentication and audit logging
 - **🎮 Session Management**: Predefined game configurations for each Monday
-- **🎟️ Pull-Tab Tracking**: Complete inventory and sales management
+- **🎟️ Pull-Tab Tracking**: Complete inventory and sales management with library
 
 ### Technical Features
 - **Offline-First Architecture**: Full functionality without internet connection
-- **IndexedDB Storage**: Local data persistence using LocalForage
-- **Service Worker**: Background sync and cache management
-- **Responsive Design**: Mobile-first, works on all screen sizes
-- **Real-time Calculations**: Automatic totals and variance tracking
-- **Conflict Resolution**: Smart merge for multi-device edits
-- **Data Validation**: Client and server-side validation
+- **IndexedDB Storage**: Local data persistence with automatic sync queue
+- **Service Worker**: Background sync and intelligent cache management
+- **Responsive Design**: Seamless experience across all device sizes
+- **Real-time Calculations**: Automatic progressive prize and BOGO calculations
+- **Cache Busting**: Version-controlled assets prevent stale cache issues
+- **Data Validation**: Client and server-side validation with visual feedback
 - **Audit Trail**: Complete change tracking for compliance
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
 - Google Account with Apps Script access
-- GitHub Pages enabled (for hosting)
-- Modern web browser (Chrome recommended)
+- GitHub repository (for hosting)
+- Modern web browser (Chrome/Edge recommended)
 
 ### Installation
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/wewantthefunk/rlc-bingo-manager.git
-   cd rlc-bingo-manager
-   ```
-
-2. **Deploy Google Apps Script Backend**
+1. **Google Apps Script Backend Setup**
    ```javascript
-   // 1. Create new Google Apps Script project
-   // 2. Copy all *.gs files from /gas directory
-   // 3. Run setup() function
-   // 4. Deploy as Web App
-   // 5. Copy deployment URL
+   // 1. Open Google Apps Script project
+   // 2. Replace Main.gs with provided v11.0.2 code
+   // 3. Keep existing PullTabLibrary.gs
+   // 4. Run setup() function once
+   // 5. Deploy as Web App
+   // 6. Copy deployment URL
    ```
 
-3. **Configure Frontend**
+2. **Configure Frontend**
    ```javascript
    // Edit js/config.js
    const CONFIG = {
-     API_URL: 'YOUR_DEPLOYMENT_URL_HERE',
-     // ... other settings
+     API_URL: 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
+     VERSION: '11.0.2'
    };
    ```
 
-4. **Deploy to GitHub Pages**
+3. **Deploy to GitHub Pages**
    ```bash
    git add .
-   git commit -m "Initial deployment"
+   git commit -m "Deploy v11.0.2"
    git push origin main
    # Enable GitHub Pages in repository settings
    ```
 
-5. **Access Application**
+4. **Access Application**
    ```
-   https://[your-username].github.io/rlc-bingo-manager/
+   https://wewg24.github.io/rlc-bingo-manager/
    ```
 
 ## 🏗️ Architecture
 
+### Wizard Workflow
+```
+Step 1: Session Info → Step 2: Paper Sales → Step 3: Game Results
+    ↓                      ↓                      ↓
+Date, Type, Lion      Inventory, POS        17 Session Games
+Progressive Setup     Electronic Sales       Prize Calculations
+    ↓                      ↓                      ↓
+Step 4: Pull-Tabs → Step 5: Money Count → Step 6: Review & Submit
+    ↓                      ↓                      ↓
+Game Entry, S/N      Drawer Reconcile       Financial Summary
+Special Events       Deposit Calculation     Performance Metrics
+```
+
 ### System Components
-
 ```
-┌────────────────────────────────────────────┐
-│               Frontend (PWA)               │
-├────────────────────────────────────────────┤
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
-│  │   HTML   │  │    CSS   │  │    JS    │  │
-│  │  index   │  │   main   │  │   app    │  │
-│  │          │  │  mobile  │  │  config  │  │
-│  │          │  │  print   │  │  offline │  │
-│  └──────────┘  └──────────┘  └──────────┘  │
-│                                            │
-│  ┌──────────────────────────────────────┐  │
-│  │    Service Worker                    │  │
-│  │    - Cache Management                │  │
-│  │    - Background Sync                 │  │
-│  │    - Offline Support                 │  │
-│  └──────────────────────────────────────┘  │
-│                                            │
-│  ┌──────────────────────────────────────┐  │
-│  │    LocalForage (IndexedDB)           │  │
-│  │    - Local Data Storage              │  │
-│  │    - Sync Queue                      │  │
-│  │    - Offline Cache                   │  │
-│  └──────────────────────────────────────┘  │
-└────────────────────────────────────────────┘
-                            │
-                    RESTful API (HTTPS)
-                            │
-┌─────────────────────────────────────────────────────────┐
-│              Backend (Google Apps Script)               │
-├─────────────────────────────────────────────────────────┤
-│  ┌───────────────────────────────────────┐              │
-│  │            Web App (doGet/doPost)     │              │
-│  └───────────────────────────────────────┘              │
-│                      │                                  │
-│  ┌─────────┬─────────┴─────────┬─────────┐              │
-│  │   Auth  │   DataManager     │ Reports │              │
-│  │         │                   │         │              │
-│  └─────────┴───────────────────┴─────────┘              │
-│                       │                                 │
-│  ┌───────────────────────────────────────┐              │
-│  │         Google Sheets Database        │              │
-│  │  - Occasions  - Games   - PullTabs    │              │
-│  │  - MoneyCount - Users   - AuditLog    │              │
-│  └───────────────────────────────────────┘              │
-│                       │                                 │
-│  ┌───────────────────────────────────────┐              │
-│  │         Google Drive Storage          │              │
-│  │         - Photos - Backups            │              │
-│  └───────────────────────────────────────┘              │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Data Flow
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant P as PWA
-    participant S as Service Worker
-    participant L as LocalForage
-    participant A as Apps Script API
-    participant G as Google Sheets
-
-    U->>P: Enter Data
-    P->>L: Save Locally
-    P->>S: Queue Sync
-    
-    alt Online
-        S->>A: POST Data
-        A->>G: Write to Sheets
-        G-->>A: Confirm
-        A-->>S: Response
-        S->>L: Clear Queue
-    else Offline
-        S->>L: Store in Queue
-        Note over S,L: Wait for Connection
-    end
+Frontend (PWA) - Wizard Interface
+├── Session Information (Progressive tracking)
+├── Paper Bingo Sales (BOGO calculations)
+├── Session Games (Auto-populated by type)
+├── Pull-Tab Management (Library integration)
+├── Money Count (Denomination breakdown)
+└── Review & Submit (Complete validation)
+          ↓
+   Service Worker
+   (Cache v11.0.2)
+          ↓
+    Google Apps Script Backend
+    ├── Occasions Sheet
+    ├── SessionGames Sheet
+    ├── PullTabLibrary (152 games)
+    ├── PullTabUsage Sheet
+    ├── PaperBingo Sheet
+    ├── POSDoorSales Sheet
+    ├── Electronic Sheet
+    ├── MoneyCount Sheet
+    └── FinancialSummary Sheet
 ```
 
 ## 📁 Project Structure
 
 ```
 rlc-bingo-manager/
-├── 📄 index.html                 # Main application entry
-├── 📄 manifest.json              # PWA manifest
-├── 📄 service-worker.js          # Offline support
-├── 📄 robots.txt                 # SEO configuration
+├── 📄 index.html                 # Wizard UI with 6 steps
+├── 📄 manifest.json              # PWA manifest v11
+├── 📄 sw.js                      # Service worker with cache busting
+├── 📄 version.json               # Version control file
 │
 ├── 📁 css/                       # Stylesheets
-│   ├── main.css                  # Core styles
-│   ├── mobile.css                # Mobile responsive
-│   └── print.css                 # Print layouts
+│   ├── style.css                 # Core styles
+│   ├── wizard.css                # Wizard-specific styles
+│   └── dark-mode.css             # Dark theme (enhanced v11.0.2)
 │
 ├── 📁 js/                        # JavaScript modules
-│   ├── app.js                    # Main application
-│   ├── config.js                 # Configuration
-│   ├── offline.js                # Offline manager
-│   ├── sync.js                   # Sync manager
-│   └── camera.js                 # Photo capture
-│
-├── 📁 components/                # UI Components
-│   ├── occasion-form.js          # Occasion entry
-│   ├── games-sheet.js            # Games management
-│   ├── pulltab-manager.js        # Pull-tab tracking
-│   ├── money-count.js            # Cash counting
-│   ├── admin-panel.js            # Admin controls
-│   └── pdf.js                    # Report generation
-│
-├── 📁 lib/                       # Third-party libraries
-│   ├── localforage.min.js        # IndexedDB wrapper
-│   ├── pdfmake.min.js            # PDF generation
-│   └── vfs_fonts.js              # PDF fonts
+│   ├── app.js                    # Main BingoApp class
+│   ├── wizard.js                 # Step navigation logic
+│   ├── calculations.js           # Financial calculations
+│   ├── config.js                 # Configuration (v11.0.2)
+│   ├── offline.js                # IndexedDB manager
+│   └── sync.js                   # Sync queue manager
 │
 ├── 📁 assets/                    # Static assets
 │   └── icons/                    # PWA icons
 │
-├── 📁 gas/                       # Google Apps Script
-│   ├── Code.gs                   # Main backend
-│   ├── Setup.gs                  # Initial setup
-│   ├── DataManager.gs            # Data operations
-│   ├── Auth.gs                   # Authentication
-│   ├── Reports.gs                # Report generation
-│   └── appsscript.json           # GAS manifest
-│
-├── 📄 README.md                  # This file
-├── 📄 LICENSE                    # MIT License
-└── 📄 user-manual.md             # User documentation
+├── 📄 README.md                  # This file (v11.0.2)
+└── 📄 USER-MANUAL.md             # User documentation (v11.0.2)
 ```
 
 ## 🔧 Configuration
 
-### Environment Variables
+### Session Types (Auto-detected by date)
+| Session | Schedule | Games | Description |
+|---------|----------|-------|-------------|
+| **5-1** | 1st/5th Monday | 17 games | Standard configuration |
+| **6-2** | 2nd Monday | 17 games | Alternate prizes |
+| **7-3** | 3rd Monday | 17 games | Varied patterns |
+| **8-4** | 4th Monday | 17 games | Mixed configuration |
 
-Edit `js/config.js`:
+### Progressive Game Rules
+- **Starting Seed**: $1,000
+- **Weekly Increment**: $100 if not won
+- **Balls to Win**: 48 (configurable)
+- **Consolation Prize**: $200 (if won after 48 balls)
 
+### Pull-Tab Library
+- **Total Games**: 152 pre-loaded
+- **Auto-populate**: Select from dropdown
+- **Fields**: Name, Form, Count, Price, Profit, URL
+- **Special Events**: Separate tracking category
+
+## 🎮 Key Features Explained
+
+### Wizard-Based Data Entry
+The application guides users through a logical workflow that matches the actual session process. Each step validates before allowing progression, ensuring data completeness. The wizard remembers your position if you need to go back, and all data is auto-saved locally.
+
+### Birthday BOGO System
+When you enter the number of birthdays in Step 1, the system automatically:
+- Allocates 2 free Early Bird sheets per birthday
+- Allocates 1 free 6-Face sheet per birthday
+- Updates the POS door sales to reflect the BOGO count
+- Adjusts inventory calculations accordingly
+
+### Progressive Prize Calculation
+The progressive game dynamically calculates prizes based on:
+- Current jackpot amount (carried from previous session)
+- Balls required to win (default: 48)
+- Actual balls called when won
+- Automatic determination of jackpot vs. consolation prize
+
+### Money Count Reconciliation
+The system provides separate counting areas for:
+- **Bingo Drawer**: All denominations plus checks
+- **Pull-Tab Drawer**: Cash only (no checks)
+- **Automatic Calculations**: Running totals and deposit summary
+- **Variance Detection**: Highlights discrepancies for review
+
+## 🛡️ Security & Compliance
+
+### Cache Management
+Version 11.0.2 implements intelligent cache busting:
 ```javascript
-const CONFIG = {
-  // Google Apps Script Web App URL
-  API_URL: 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
-  
-  // App settings
-  APP_NAME: 'RLC Bingo Manager',
-  VERSION: '9.0.0',
-  
-  // Storage keys
-  STORAGE_KEYS: {
-    USER: 'rlc_user',
-    TOKEN: 'rlc_token',
-    CURRENT_SESSION: 'rlc_current_session',
-    SYNC_QUEUE: 'rlc_sync_queue'
-  },
-  
-  // Session types
-  SESSION_TYPES: {
-    '5-1': '1st/5th Monday',
-    '6-2': '2nd Monday',
-    '7-3': '3rd Monday',
-    '8-4': '4th Monday'
-  }
-};
+// All assets versioned
+<link rel="stylesheet" href="css/style.css?v=11.0.2">
+<script src="js/app.js?v=11.0.2"></script>
 ```
 
-### Google Apps Script Setup
+### Data Integrity
+- Local draft saving every field change
+- Sync queue for offline changes
+- Conflict resolution for multi-device edits
+- Complete audit trail in Google Sheets
 
-1. **Create Spreadsheet Structure**
-   ```javascript
-   // Run in Apps Script
-   function setupSystem() {
-     // Creates all required sheets
-     // Sets up formatting
-     // Initializes pull-tab library
-     // Creates admin user
-   }
-   ```
+### MGC Compliance
+- Session-based game configurations
+- Prize limit enforcement
+- Complete financial tracking
+- Report generation capabilities
 
-2. **Configure Properties**
-   ```javascript
-   // Script Properties
-   SPREADSHEET_ID: 'your-spreadsheet-id'
-   DRIVE_FOLDER_ID: 'your-folder-id'
-   PHOTO_FOLDER_ID: 'your-photo-folder-id'
-   ```
+## 🚨 Troubleshooting
 
-3. **Deploy Web App**
-   - Execute as: User accessing the web app
-   - Access: Anyone (or Anyone with Google account)
-   - Copy deployment URL
+### Cache Issues (Fixed in v11.0.2)
+The system now includes automatic cache busting. Users only need to refresh once to get updates.
 
-## 🔐 Security
-
-### Authentication
-- Username/password authentication
-- Session tokens with expiration
-- Role-based access control (RBAC)
-- Audit logging of all actions
-
-### Data Protection
-- HTTPS encryption in transit
-- Client-side data encryption for sensitive fields
-- Secure token storage using localStorage
-- Regular automated backups
-
-### Compliance
-- Missouri Gaming Commission requirements
-- Data retention policies
-- Audit trail maintenance
-- Financial reconciliation controls
+### Common Solutions
+| Issue | Solution |
+|-------|----------|
+| Old version showing | CTRL+F5 once, then normal |
+| Sync not working | Check online status indicator |
+| Data not saving | Verify browser storage permissions |
+| Progressive not calculating | Enter all required fields |
 
 ## 📊 Database Schema
 
-### Occasions Table
-| Field | Type | Description |
-|-------|------|-------------|
-| ID | String | Unique identifier (OCC_timestamp) |
-| Date | Date | Session date |
-| SessionType | Enum | 5-1, 6-2, 7-3, 8-4 |
-| LionInCharge | String | Responsible member |
-| TotalPlayers | Number | Attendance count |
-| Progressive | Object | Jackpot details |
-| CreatedAt | DateTime | Creation timestamp |
-| SyncStatus | Enum | PENDING, SYNCED, ERROR |
-
-### Games Table
-| Field | Type | Description |
-|-------|------|-------------|
-| ID | String | Unique identifier (GAME_timestamp) |
-| OccasionID | String | Parent occasion reference |
-| GameNum | Number | Game number (1-17) |
-| Color | String | Card color |
-| Prize | Number | Prize amount |
-| Winners | Number | Winner count |
-| TotalPaid | Number | Total payout |
-
-### PullTabs Table
-| Field | Type | Description |
-|-------|------|-------------|
-| ID | String | Unique identifier (PT_timestamp) |
-| OccasionID | String | Parent occasion reference |
-| GameName | String | Pull-tab game name |
-| Serial | String | Serial number |
-| TabsSold | Number | Number sold |
-| GrossSales | Number | Total sales |
-| NetRevenue | Number | Profit after prizes |
-
-### MoneyCount Table
-| Field | Type | Description |
-|-------|------|-------------|
-| ID | String | Unique identifier (MC_timestamp) |
-| OccasionID | String | Parent occasion reference |
-| StartingBank | Number | Opening cash |
-| TotalCash | Number | Cash count |
-| TotalChecks | Number | Check total |
-| DepositAmount | Number | Bank deposit |
-| Variance | Number | Difference from expected |
-
-## 🧪 Testing
-
-### Unit Tests
-```bash
-npm test                 # Run all tests
-npm run test:unit       # Unit tests only
-npm run test:integration # Integration tests
-npm run test:e2e        # End-to-end tests
-```
-
-### Test Coverage
-- Unit Tests: Core functions and calculations
-- Integration Tests: API endpoints and data flow
-- E2E Tests: Complete user workflows
-- Performance Tests: Load and stress testing
-
-## 📈 Performance
-
-### Optimization Strategies
-- **Code Splitting**: Lazy load components
-- **Image Compression**: Automatic photo optimization
-- **Caching Strategy**: Service Worker cache-first
-- **Database Indexing**: Optimized queries
-- **Minification**: Production build optimization
-
-### Metrics
-- **First Paint**: <1.5s
-- **Time to Interactive**: <3s
-- **Offline Ready**: Instant
-- **Sync Time**: <5s for typical session
-- **Storage**: ~50MB typical usage
-
-## 🚢 Deployment
-
-### Production Deployment
-
-1. **Build Process**
-   ```bash
-   npm run build
-   # Minifies assets
-   # Generates service worker
-   # Creates production bundle
-   ```
-
-2. **Deploy to GitHub Pages**
-   ```bash
-   npm run deploy
-   # Pushes to gh-pages branch
-   # Updates live site
-   ```
-
-3. **Update Backend**
-   ```bash
-   clasp push
-   clasp deploy --description "v9.0 Release"
-   ```
-
-### Rollback Procedure
-```bash
-# Frontend
-git revert HEAD
-git push origin main
-
-# Backend
-clasp deployments # List deployments
-clasp redeploy --deploymentId [PREVIOUS_ID]
-```
-
-## 🛠️ Maintenance
-
-### Regular Tasks
-- **Daily**: Monitor sync status
-- **Weekly**: Check error logs
-- **Monthly**: Review usage statistics
-- **Quarterly**: Update MGC compliance
-- **Annually**: Security audit
-
-### Backup Strategy
-- **Automatic**: Daily Google Sheets backup
-- **Manual**: Monthly full export
-- **Archives**: Quarterly offline storage
-- **Retention**: 3 years minimum
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Sync fails | Network timeout | Retry with exponential backoff |
-| Login error | Token expired | Clear cache, re-authenticate |
-| Missing data | Filter active | Check view settings |
-| Slow performance | Large dataset | Implement pagination |
-
-### Debug Mode
+### Main Occasion Record
 ```javascript
-// Enable debug logging
-localStorage.setItem('DEBUG', 'true');
-
-// View sync queue
-const queue = await localforage.getItem('syncQueue');
-console.table(queue);
-
-// Force sync
-app.syncManager.syncAll();
-```
-
-## 📝 API Documentation
-
-### Endpoints
-
-#### GET /status
-Health check endpoint
-```json
 {
-  "success": true,
-  "version": "9.0.0",
-  "timestamp": "2025-01-15T10:00:00Z"
-}
-```
-
-#### POST /occasion
-Create or update occasion
-```javascript
-POST /occasion
-{
-  "date": "2025-01-15",
-  "sessionType": "5-1",
-  "lionInCharge": "John Smith",
-  "totalPlayers": 147
-}
-```
-
-#### POST /sync
-Batch synchronization
-```javascript
-POST /sync
-{
-  "deviceId": "DEV_123456",
-  "data": {
-    "occasions": [...],
-    "games": [...],
-    "pullTabs": [...]
+  occasionId: 'OCC_[timestamp]',
+  date: '2025-09-17',
+  sessionType: '5-1',
+  lionInCharge: 'John Smith',
+  totalPeople: 150,
+  birthdays: 3,
+  progressive: {
+    jackpot: 1500,
+    ballsNeeded: 48,
+    actualBalls: 50,
+    actualPrize: 200,
+    checkPayment: false
   }
 }
 ```
+
+### Complete Data Structure
+The system tracks:
+- Paper inventory (start/end/free/sold)
+- POS door sales (10 categories)
+- Electronic machine rentals
+- 17 session games with winners
+- Pull-tab games with serial tracking
+- Complete money denomination counts
+- Financial summary with reconciliation
+
+## 🔄 Version History
+
+### v11.0.2 (Current)
+- Fixed dark mode readability issues
+- Implemented cache busting strategy
+- Added version checking system
+- Enhanced service worker update logic
+
+### v11.0.1
+- Implemented complete wizard UI
+- Added all missing JavaScript functions
+- Created comprehensive offline support
+
+### v11.0.0
+- Complete backend rewrite
+- Pull-tab library integration
+- Multi-sheet data structure
+
+## 📈 Performance Metrics
+
+- **Initial Load**: <2s on 3G
+- **Wizard Navigation**: Instant (all client-side)
+- **Calculations**: Real-time (<10ms)
+- **Offline Ready**: Full functionality
+- **Sync Time**: <3s for complete session
+- **Storage Usage**: ~5MB typical session
 
 ## 🤝 Contributing
 
 ### Development Setup
 ```bash
-# Install dependencies
-npm install
+# Clone repository
+git clone https://github.com/wewg24/rlc-bingo-manager.git
+cd rlc-bingo-manager
 
-# Start development server
-npm run dev
+# Update version in:
+# - config.js (VERSION)
+# - index.html (asset versions)
+# - sw.js (CACHE_VERSION)
+# - version.json
 
-# Run tests
-npm test
+# Test locally
+python -m http.server 8000
+# Navigate to localhost:8000
 
-# Build for production
-npm run build
+# Deploy
+git add .
+git commit -m "Version 11.0.2 updates"
+git push origin main
 ```
-
-### Contribution Guidelines
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
-
-### Code Style
-- Use ESLint configuration
-- Follow JSDoc for documentation
-- Write unit tests for new features
-- Update documentation
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - See [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- **Rolla Lions Club** - For 100 years of community service
-- **Missouri Gaming Commission** - For regulatory guidance
-- **Contributors** - All volunteers who made this possible
-- **Open Source Community** - For the amazing tools and libraries
+- **Rolla Lions Club** - 100 years of community service
+- **Missouri Gaming Commission** - Regulatory guidance
+- **Contributors** - Volunteer developers and testers
 
 ## 📞 Support
 
-### Contact Information
-- **Technical Support**: support@rlcbingo.org
-- **Bug Reports**: [GitHub Issues](https://github.com/wewantthefunk/rlc-bingo-manager/issues)
-- **Feature Requests**: [GitHub Discussions](https://github.com/wewantthefunk/rlc-bingo-manager/discussions)
-- **Security Issues**: security@rlcbingo.org
-
 ### Resources
-- [User Manual](user-manual.md)
-- [API Documentation](https://docs.rlcbingo.org/api)
-- [Video Tutorials](https://youtube.com/rlcbingo)
-- [FAQ](https://rlcbingo.org/faq)
+- [User Manual](USER-MANUAL.md) - Complete usage guide
+- [Issue Tracker](https://github.com/wewg24/rlc-bingo-manager/issues)
+- Technical Support: wewg24@github.com
+
+### Quick Links
+- **Production URL**: https://wewg24.github.io/rlc-bingo-manager/
+- **Backend Script**: [Google Apps Script Project](https://script.google.com/home/projects/1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU)
+- **Data Spreadsheet**: [RLC Bingo Manager Database](https://docs.google.com/spreadsheets/d/1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc)
 
 ---
 
-**Version**: 9.0.0  
+**Version**: 11.0.2  
 **Status**: Production Ready  
-**Last Updated**: January 2025  
+**Last Updated**: September 2025  
+**Next Session Type**: Auto-detected based on date  
 
 © 2025 Rolla Lions Club. Built with ❤️ for community service.
