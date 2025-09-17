@@ -31,6 +31,21 @@ body.dark-mode .app-header {
     border-bottom: 1px solid var(--border);
 }
 
+body.dark-mode .app-header h1 {
+    color: #ffffff !important;  /* Force white text for title */
+}
+
+body.dark-mode .icon-button {
+    color: #ffffff !important;  /* Force white for hamburger and theme toggle */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .icon-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
 /* Form sections with improved contrast */
 body.dark-mode .form-section,
 body.dark-mode .summary-card,
@@ -145,10 +160,10 @@ body.dark-mode .step-number {
     border: 2px solid var(--border);
 }
 
-body.dark-mode .step.active .step-number {
-    background: var(--primary);
+body.dark-mode .step-number {
+    background: #3a3a3a;
     color: #ffffff;
-    border-color: var(--primary);
+    border: 2px solid #505050;
 }
 
 body.dark-mode .step.completed .step-number {
@@ -158,11 +173,11 @@ body.dark-mode .step.completed .step-number {
 }
 
 body.dark-mode .step-label {
-    color: var(--text-secondary);
+    color: #b0b0b0;
 }
 
 body.dark-mode .step.active .step-label {
-    color: var(--text);
+    color: #ffffff;
 }
 
 /* Navigation area */
@@ -275,7 +290,12 @@ body.dark-mode .status-bad {
 
 /* Connection status */
 body.dark-mode .connection-status {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+body.dark-mode #status-text {
+    color: #ffffff !important;
 }
 
 body.dark-mode .status-online {
