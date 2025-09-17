@@ -6,31 +6,35 @@ class OfflineManager {
     }
     
     async initDB() {
-        // Initialize IndexedDB for offline storage
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open('RLCBingo', 1);
+            // Clear old database if version mismatch
+            const deleteReq = indexedDB.deleteDatabase('RLCBingo');
             
-            request.onerror = () => reject(request.error);
-            request.onsuccess = () => {
-                this.db = request.result;
-                resolve();
-            };
-            
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
+            deleteReq.onsuccess = () => {
+                const request = indexedDB.open('RLCBingo', 2); // Use version 2
                 
-                // Create object stores
-                if (!db.objectStoreNames.contains('occasions')) {
-                    db.createObjectStore('occasions', { keyPath: 'occasionId' });
-                }
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    this.db = request.result;
+                    resolve();
+                };
                 
-                if (!db.objectStoreNames.contains('drafts')) {
-                    db.createObjectStore('drafts', { keyPath: 'id' });
-                }
-                
-                if (!db.objectStoreNames.contains('sync_queue')) {
-                    db.createObjectStore('sync_queue', { autoIncrement: true });
-                }
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    // Create object stores
+                    if (!db.objectStoreNames.contains('occasions')) {
+                        db.createObjectStore('occasions', { keyPath: 'occasionId' });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('drafts')) {
+                        db.createObjectStore('drafts', { keyPath: 'id' });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('sync_queue')) {
+                        db.createObjectStore('sync_queue', { autoIncrement: true });
+                    }
+                };
             };
         });
     }
