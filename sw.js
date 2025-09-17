@@ -3,26 +3,25 @@ const CACHE_VERSION = 'v11.0.4';
 const CACHE_NAME = `rlc-bingo-${CACHE_VERSION}`;
 
 const urlsToCache = [
-  '/rlc-bingo-manager/',
-  '/rlc-bingo-manager/assets/icons/icon-192.png',
-  '/rlc-bingo-manager/assets/icons/icon-50.png',
-  '/rlc-bingo-manager/assets/icons/icon-512.png',
-  '/rlc-bingo-manager/index.html',
-  '/rlc-bingo-manager/sw.js',
-  '/rlc-bingo-manager/css/style.css',
-  '/rlc-bingo-manager/css/print.css',
-  '/rlc-bingo-manager/css/wizard.css',
-  '/rlc-bingo-manager/css/dark-mode.css',
-  '/rlc-bingo-manager/js/app.js',
-  '/rlc-bingo-manager/js/calculations.js',
-  '/rlc-bingo-manager/js/camera.js',
-  '/rlc-bingo-manager/js/config.js',
-  '/rlc-bingo-manager/js/offline.js',
-  '/rlc-bingo-manager/js/sync.js',
-  '/rlc-bingo-manager/js/wizard.js',
-  '/rlc-bingo-manager/lib/localforage.min.js',
-  '/rlc-bingo-manager/lib/pdfmake.min.js',
-  '/rlc-bingo-manager/lib/vfs_fonts.min.js'
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-50.png',
+  '/assets/icons/icon-512.png',
+  '/index.html',
+  '/sw.js',
+  '/css/style.css',
+  '/css/print.css',
+  '/css/wizard.css',
+  '/css/dark-mode.css',
+  '/js/app.js',
+  '/js/calculations.js',
+  '/js/camera.js',
+  '/js/config.js',
+  '/js/offline.js',
+  '/js/sync.js',
+  '/js/wizard.js',
+  '/lib/localforage.min.js',
+  '/lib/pdfmake.min.js',
+  '/lib/vfs_fonts.min.js'
 ];
 
 self.addEventListener('install', event => {
