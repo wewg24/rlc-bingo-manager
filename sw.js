@@ -3,17 +3,17 @@ const CACHE_VERSION = 'v11.0.2';
 const CACHE_NAME = `rlc-bingo-${CACHE_VERSION}`;
 
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/css/wizard.css',
-  '/css/dark-mode.css',
-  '/js/config.js',
-  '/js/app.js',
-  '/js/wizard.js',
-  '/js/calculations.js',
-  '/js/offline.js',
-  '/js/sync.js'
+  '/rlc-bingo-manager/',
+  '/rlc-bingo-manager/index.html',
+  '/rlc-bingo-manager/css/style.css',
+  '/rlc-bingo-manager/css/wizard.css',
+  '/rlc-bingo-manager/css/dark-mode.css',
+  '/rlc-bingo-manager/js/config.js',
+  '/rlc-bingo-manager/js/app.js',
+  '/rlc-bingo-manager/js/wizard.js',
+  '/rlc-bingo-manager/js/calculations.js',
+  '/rlc-bingo-manager/js/offline.js',
+  '/rlc-bingo-manager/js/sync.js'
 ];
 
 self.addEventListener('install', event => {
