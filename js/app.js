@@ -30,6 +30,26 @@ class BingoApp {
             });
         }
     }
+    async checkVersion() {
+        try {
+            const response = await fetch('/version.json?t=' + Date.now());
+            const data = await response.json();
+            
+            const currentVersion = localStorage.getItem('app_version');
+            
+            if (currentVersion && currentVersion !== data.version) {
+                // New version available
+                if (confirm('A new version is available. Refresh to update?')) {
+                    localStorage.setItem('app_version', data.version);
+                    window.location.reload(true);
+                }
+            } else {
+                localStorage.setItem('app_version', data.version);
+            }
+        } catch (error) {
+            console.log('Version check failed:', error);
+        }
+    }
     async init() {
         // Load saved draft if exists
         this.loadDraft();
