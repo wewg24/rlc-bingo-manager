@@ -25,17 +25,29 @@ class BingoApp {
 
     showOccasions() {
         this.closeMenu();
+        
+        // Store current wizard state
+        sessionStorage.setItem('wizardState', JSON.stringify({
+            step: this.currentStep || 1,
+            data: this.data
+        }));
+        
         // Create occasions view
-        const mainContent = document.querySelector('.wizard-container');
-        mainContent.innerHTML = `
-            <div class="occasions-view">
-                <h2>Recent Occasions</h2>
-                <div class="occasions-list">
+        const container = document.querySelector('.wizard-container');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Recent Occasions</h2>
+                    <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+                </div>
+                <div class="occasions-list" id="occasions-list">
                     <p>Loading occasions...</p>
                 </div>
-                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
             </div>
         `;
+        
         this.loadOccasionsList();
     }
     
@@ -63,92 +75,224 @@ class BingoApp {
     
     showReports() {
         this.closeMenu();
-        const mainContent = document.querySelector('.wizard-container');
-        mainContent.innerHTML = `
-            <div class="reports-view">
-                <h2>Reports</h2>
-                <div class="reports-options">
-                    <button class="button" onclick="window.app.generateMGCForm()">MGC Form 104</button>
-                    <button class="button" onclick="window.app.generateSessionSummary()">Session Summary</button>
-                    <button class="button" onclick="window.app.generateMonthlyReport()">Monthly Report</button>
+        
+        const container = document.querySelector('.wizard-container');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Reports</h2>
+                    <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
                 </div>
-                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+                <div class="reports-content">
+                    <div class="report-card">
+                        <h3>MGC Form 104</h3>
+                        <p>Generate official Missouri Gaming Commission report</p>
+                        <button class="button" onclick="alert('MGC Form generation coming soon')">Generate</button>
+                    </div>
+                    <div class="report-card">
+                        <h3>Session Summary</h3>
+                        <p>Complete financial summary of current session</p>
+                        <button class="button" onclick="window.print()">Print Current</button>
+                    </div>
+                    <div class="report-card">
+                        <h3>Monthly Report</h3>
+                        <p>Aggregate report for board meetings</p>
+                        <button class="button" onclick="alert('Monthly report coming soon')">Generate</button>
+                    </div>
+                </div>
             </div>
         `;
     }
     
     showPullTabLibrary() {
         this.closeMenu();
-        const mainContent = document.querySelector('.wizard-container');
-        mainContent.innerHTML = `
-            <div class="pulltab-library-view">
-                <h2>Pull-Tab Game Library</h2>
+        
+        const container = document.querySelector('.wizard-container');
+        if (!container) return;
+        
+        // Display pull-tab library with proper formatting
+        const libraryHTML = this.pullTabLibrary && this.pullTabLibrary.length > 0
+            ? this.pullTabLibrary.slice(0, 50).map(game => `
+                <tr>
+                    <td>${game.name || ''}</td>
+                    <td>${game.form || ''}</td>
+                    <td>${game.count || 0}</td>
+                    <td>$${game.price || 1}</td>
+                    <td>$${game.profit || 0}</td>
+                </tr>
+            `).join('')
+            : '<tr><td colspan="5">No games loaded</td></tr>';
+        
+        container.innerHTML = `
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Pull-Tab Game Library</h2>
+                    <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+                </div>
                 <div class="library-info">
-                    <p>Total Games Available: ${this.pullTabLibrary.length}</p>
+                    <p>Total Games in Library: ${this.pullTabLibrary ? this.pullTabLibrary.length : 0}</p>
                 </div>
-                <div class="library-grid">
-                    ${this.pullTabLibrary.slice(0, 20).map(game => `
-                        <div class="library-item">
-                            <strong>${game.name}</strong><br>
-                            Form: ${game.form}<br>
-                            Count: ${game.count}<br>
-                            Profit: $${game.profit}
-                        </div>
-                    `).join('')}
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Game Name</th>
+                                <th>Form</th>
+                                <th>Count</th>
+                                <th>Price</th>
+                                <th>Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${libraryHTML}
+                        </tbody>
+                    </table>
                 </div>
-                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
             </div>
         `;
     }
     
     showAdmin() {
         this.closeMenu();
-        const mainContent = document.querySelector('.wizard-container');
-        mainContent.innerHTML = `
-            <div class="admin-view">
-                <h2>Administration</h2>
-                <div class="admin-options">
-                    <button class="button" onclick="window.app.exportAllData()">Export All Data</button>
-                    <button class="button" onclick="window.app.clearLocalData()">Clear Local Storage</button>
-                    <button class="button" onclick="window.app.checkForUpdates()">Check for Updates</button>
-                    <button class="button" onclick="window.app.viewSyncQueue()">View Sync Queue</button>
+        
+        const container = document.querySelector('.wizard-container');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Administration</h2>
+                    <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
                 </div>
-                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+                <div class="admin-content">
+                    <div class="admin-section">
+                        <h3>Data Management</h3>
+                        <button class="button" onclick="window.app.exportAllData()">Export All Data</button>
+                        <button class="button warning" onclick="window.app.clearLocalData()">Clear Local Storage</button>
+                    </div>
+                    <div class="admin-section">
+                        <h3>System</h3>
+                        <button class="button" onclick="window.app.checkForUpdates()">Check for Updates</button>
+                        <button class="button" onclick="window.app.viewSyncQueue()">View Sync Queue</button>
+                    </div>
+                    <div class="admin-section">
+                        <h3>Version Info</h3>
+                        <p>Version: ${CONFIG.VERSION}</p>
+                        <p>Cache Version: v11.0.2</p>
+                        <p>API URL: ${CONFIG.API_URL ? 'Configured' : 'Not configured'}</p>
+                    </div>
+                </div>
             </div>
         `;
     }
     
     showHelp() {
         this.closeMenu();
-        const mainContent = document.querySelector('.wizard-container');
-        mainContent.innerHTML = `
-            <div class="help-view">
-                <h2>Help & Support</h2>
-                <div class="help-content">
-                    <h3>Quick Start Guide</h3>
-                    <p>The RLC Bingo Manager uses a 6-step wizard to guide you through recording a bingo session.</p>
-                    
-                    <h3>Steps:</h3>
-                    <ol>
-                        <li><strong>Session Info</strong>: Enter date, type, attendance, and progressive details</li>
-                        <li><strong>Paper Sales</strong>: Record inventory and POS sales</li>
-                        <li><strong>Game Results</strong>: Enter winners for each of the 17 games</li>
-                        <li><strong>Pull-Tabs</strong>: Track pull-tab games and serial numbers</li>
-                        <li><strong>Money Count</strong>: Count cash drawers and calculate deposit</li>
-                        <li><strong>Review</strong>: Verify all data and submit</li>
-                    </ol>
-                    
-                    <h3>Support</h3>
-                    <p>For technical support, contact: wewg24@github.com</p>
+        
+        const container = document.querySelector('.wizard-container');
+        if (!container) return;
+        
+        container.innerHTML = `
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Help & Support</h2>
+                    <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
                 </div>
-                <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+                <div class="help-content">
+                    <section>
+                        <h3>Using the Wizard</h3>
+                        <p>The RLC Bingo Manager uses a 6-step wizard to guide you through recording each bingo session. Each step validates your entries before allowing you to proceed, ensuring complete and accurate data collection.</p>
+                    </section>
+                    
+                    <section>
+                        <h3>The Six Steps</h3>
+                        <div class="help-steps">
+                            <div class="help-step">
+                                <strong>1. Session Info:</strong> Enter the date, session type, attendance, and progressive game details.
+                            </div>
+                            <div class="help-step">
+                                <strong>2. Paper Sales:</strong> Record beginning and ending inventory counts, POS sales, and electronic rentals.
+                            </div>
+                            <div class="help-step">
+                                <strong>3. Game Results:</strong> Enter winner counts for each of the 17 session games.
+                            </div>
+                            <div class="help-step">
+                                <strong>4. Pull-Tabs:</strong> Track each pull-tab game opened with serial numbers and prizes paid.
+                            </div>
+                            <div class="help-step">
+                                <strong>5. Money Count:</strong> Count both cash drawers and calculate the deposit.
+                            </div>
+                            <div class="help-step">
+                                <strong>6. Review:</strong> Verify all totals and submit the completed occasion.
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <section>
+                        <h3>Tips</h3>
+                        <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+                            <li>The system auto-saves your progress locally as you type</li>
+                            <li>You can work completely offline - data syncs when connected</li>
+                            <li>Click any completed step number to go back and review</li>
+                            <li>Use dark mode (moon icon) for evening sessions</li>
+                        </ul>
+                    </section>
+                    
+                    <section>
+                        <h3>Support</h3>
+                        <p>For technical support, contact: wewg24@github.com</p>
+                        <p>Version: ${CONFIG.VERSION}</p>
+                    </section>
+                </div>
             </div>
         `;
     }
     
     returnToWizard() {
-        // Restore the wizard interface
-        location.reload(); // Simple solution to restore wizard state
+        // Restore wizard state
+        const savedState = sessionStorage.getItem('wizardState');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            this.data = state.data;
+            // Restore the wizard view
+        }
+        
+        // Reload to restore full wizard (simplest approach)
+        window.location.reload();
+    }
+
+    exportAllData() {
+        const exportData = {
+            version: CONFIG.VERSION,
+            exportDate: new Date().toISOString(),
+            currentSession: this.data,
+            localStorage: { ...localStorage },
+            pullTabLibrary: this.pullTabLibrary
+        };
+        
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rlc-bingo-export-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    
+    clearLocalData() {
+        if (confirm('This will clear all local data. Are you sure?')) {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('Local data cleared. Refreshing...');
+            window.location.reload();
+        }
+    }
+    
+    viewSyncQueue() {
+        const queue = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]');
+        alert(`Sync Queue: ${queue.length} items pending\n\n${JSON.stringify(queue, null, 2)}`);
     }
     
     // Update the global functions to use the app instance
