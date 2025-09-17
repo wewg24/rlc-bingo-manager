@@ -161,16 +161,16 @@ class BingoApp {
         if (!container) return;
         
         container.innerHTML = `
-            <div class="view-container">
+            <div class="admin-view">
                 <div class="view-header">
                     <h2>Administration</h2>
-                    <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+                    <button class="button secondary" onclick="window.app.returnToWizard()">Back to Entry</button>
                 </div>
-                <div class="admin-content">
+                <div class="admin-sections">
                     <div class="admin-section">
                         <h3>Data Management</h3>
                         <button class="button" onclick="window.app.exportAllData()">Export All Data</button>
-                        <button class="button warning" onclick="window.app.clearLocalData()">Clear Local Storage</button>
+                        <button class="button danger" onclick="window.app.clearLocalData()">Clear Local Storage</button>
                     </div>
                     <div class="admin-section">
                         <h3>System</h3>
