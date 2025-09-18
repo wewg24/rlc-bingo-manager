@@ -6,7 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>RLC Bingo Manager</title>
-
+    <script src="config.js"></script>
     <!-- Cache control meta tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -530,31 +530,6 @@
         </div>
     </main>
 
-    <!-- Configuration -->
-    <script>
-        const CONFIG = {
-            VERSION: '11.0.4',
-            API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
-            STORAGE_KEYS: {
-                DRAFT_DATA: 'bingo_draft',
-                PULL_TAB_LIBRARY: 'pulltab_library',
-                SYNC_QUEUE: 'sync_queue',
-                THEME: 'theme_preference'
-            },
-            PAPER_TYPES: [
-                { id: 'eb', name: 'Early Bird', price: 5, hasFree: true },
-                { id: '3f', name: '3 Face', price: 1, hasFree: false },
-                { id: '6f', name: '6 Face', price: 10, hasFree: true },
-                { id: '9fs', name: '9 Face Solid', price: 15, hasFree: false },
-                { id: '9fst', name: '9 Face Stripe', price: 10, hasFree: false },
-                { id: 'singles', name: 'Singles', price: 1, hasFree: false },
-                { id: 'doubles', name: 'Doubles', price: 2, hasFree: false }
-            ],
-            // POS items will be populated by getPOSItemsOrdered() in wizard.js
-        };
-    </script>
-
-    <!-- Scripts -->
     <!-- Scripts -->
     <script src="js/config.js?v=11.0.4"></script>
     <script src="js/app.js?v=11.0.4"></script>
