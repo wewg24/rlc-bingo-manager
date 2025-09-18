@@ -13,43 +13,19 @@
   "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
-      "src": "assets/icon-50.png",
+      "src": "assets/icons/icon-50.png",
       "sizes": "50x50",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "assets/icon-50.png",
-      "sizes": "48x48",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-50.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-50.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-50.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-50.png",
+      "src": "assets/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "assets/icon-50.png",
+      "src": "assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -63,8 +39,8 @@
       "url": "/rlc-bingo-manager/?action=new",
       "icons": [
         {
-          "src": "assets/icon-50.png",
-          "sizes": "96x96"
+          "src": "assets/icons/icon-50.png",
+          "sizes": "50x50"
         }
       ]
     },
@@ -75,8 +51,8 @@
       "url": "/rlc-bingo-manager/?action=recent",
       "icons": [
         {
-          "src": "assets/icon-50.png",
-          "sizes": "96x96"
+          "src": "assets/icons/icon-50.png",
+          "sizes": "50x50"
         }
       ]
     }
