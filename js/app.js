@@ -1,6 +1,5 @@
 // Main Application Logic for RLC Bingo Manager
-// Version 11.0.3 - Fixed syntax errors and pull tab library integration
-
+// Version 11.0.4 - Fully refactored with proper global scope and initialization
 class BingoApp {
     constructor() {
         this.currentStep = 1;
@@ -31,7 +30,7 @@ class BingoApp {
         // Initialize the application
         this.init();
     }
-    window.BingoApp = BingoApp;
+
     /**
      * Display the occasions list view
      * Stores current wizard state and loads historical occasions
@@ -157,7 +156,6 @@ class BingoApp {
             }).join('')
             : '<tr><td colspan="5">No games loaded</td></tr>';
         
-        // CRITICAL FIX: Properly close the template literal with backtick
         container.innerHTML = `
             <div class="view-container">
                 <div class="view-header">
@@ -185,7 +183,7 @@ class BingoApp {
                     </table>
                 </div>
             </div>
-        `; // FIXED: Properly closed template literal with backtick
+        `;
     }
     
     /**
@@ -218,7 +216,7 @@ class BingoApp {
                     <div class="admin-section">
                         <h3>Version Information</h3>
                         <p>Version: ${CONFIG.VERSION}</p>
-                        <p>Cache Version: v11.0.3</p>
+                        <p>Cache Version: v11.0.4</p>
                         <p>API URL: ${CONFIG.API_URL ? 'Configured' : 'Not configured'}</p>
                         <p>Library Games: ${this.pullTabLibrary.length}</p>
                     </div>
@@ -430,8 +428,8 @@ class BingoApp {
         await this.processSyncQueue();
         
         // Check for updates periodically
-        this.checkForUpdates();
-        setInterval(() => this.checkForUpdates(), 5 * 60 * 1000); // Every 5 minutes
+        this.checkVersion();
+        setInterval(() => this.checkVersion(), 5 * 60 * 1000); // Every 5 minutes
     }
     
     /**
@@ -440,7 +438,10 @@ class BingoApp {
     initializeTheme() {
         if (this.isDarkMode) {
             document.body.classList.add('dark-mode');
-            document.getElementById('theme-toggle').innerHTML = '<span class="theme-icon">☀️</span>';
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.innerHTML = '<span class="theme-icon">☀️</span>';
+            }
         }
     }
     
@@ -449,19 +450,34 @@ class BingoApp {
      */
     initializeEventListeners() {
         // Theme toggle
-        document.getElementById('theme-toggle')?.addEventListener('click', () => this.toggleTheme());
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
+        }
         
         // Menu toggle
-        document.getElementById('menu-toggle')?.addEventListener('click', () => this.openMenu());
+        const menuToggle = document.getElementById('menu-toggle');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => this.openMenu());
+        }
         
         // Session type change
-        document.getElementById('session-type')?.addEventListener('change', (e) => this.loadSessionGames(e.target.value));
+        const sessionType = document.getElementById('session-type');
+        if (sessionType) {
+            sessionType.addEventListener('change', (e) => this.loadSessionGames(e.target.value));
+        }
         
         // Birthday BOGO calculation
-        document.getElementById('birthdays')?.addEventListener('input', (e) => this.calculateBirthdayBOGO(e.target.value));
+        const birthdays = document.getElementById('birthdays');
+        if (birthdays) {
+            birthdays.addEventListener('input', (e) => this.calculateBirthdayBOGO(e.target.value));
+        }
         
         // Progressive calculations
-        document.getElementById('prog-actual-balls')?.addEventListener('input', () => this.calculateProgressivePrize());
+        const progActualBalls = document.getElementById('prog-actual-balls');
+        if (progActualBalls) {
+            progActualBalls.addEventListener('input', () => this.calculateProgressivePrize());
+        }
         
         // Money count calculations
         document.querySelectorAll('[id^="bingo-"], [id^="pt-"]').forEach(input => {
@@ -469,8 +485,14 @@ class BingoApp {
         });
         
         // Electronic sales
-        document.getElementById('small-machines')?.addEventListener('input', () => this.calculateElectronicSales());
-        document.getElementById('large-machines')?.addEventListener('input', () => this.calculateElectronicSales());
+        const smallMachines = document.getElementById('small-machines');
+        const largeMachines = document.getElementById('large-machines');
+        if (smallMachines) {
+            smallMachines.addEventListener('input', () => this.calculateElectronicSales());
+        }
+        if (largeMachines) {
+            largeMachines.addEventListener('input', () => this.calculateElectronicSales());
+        }
         
         // Auto-save on input
         document.querySelectorAll('input, select').forEach(element => {
@@ -836,13 +858,19 @@ class BingoApp {
         const coins = (this.data.moneyCount.bingo.coins || 0) + (this.data.moneyCount.pullTab.coins || 0);
         const checks = this.data.moneyCount.bingo.checks || 0;
         
-        document.getElementById('deposit-currency').textContent = `$${currency.toFixed(2)}`;
-        document.getElementById('deposit-coins').textContent = `$${coins.toFixed(2)}`;
-        document.getElementById('deposit-checks').textContent = `$${checks.toFixed(2)}`;
-        document.getElementById('deposit-total').textContent = `$${totalDeposit.toFixed(2)}`;
+        const depositCurrencyElement = document.getElementById('deposit-currency');
+        const depositCoinsElement = document.getElementById('deposit-coins');
+        const depositChecksElement = document.getElementById('deposit-checks');
+        const depositTotalElement = document.getElementById('deposit-total');
+        const netDepositElement = document.getElementById('net-deposit');
+        
+        if (depositCurrencyElement) depositCurrencyElement.textContent = `$${currency.toFixed(2)}`;
+        if (depositCoinsElement) depositCoinsElement.textContent = `$${coins.toFixed(2)}`;
+        if (depositChecksElement) depositChecksElement.textContent = `$${checks.toFixed(2)}`;
+        if (depositTotalElement) depositTotalElement.textContent = `$${totalDeposit.toFixed(2)}`;
         
         const netDeposit = totalDeposit - 1000; // Less startup cash
-        document.getElementById('net-deposit').textContent = `$${netDeposit.toFixed(2)}`;
+        if (netDepositElement) netDepositElement.textContent = `$${netDeposit.toFixed(2)}`;
         
         this.data.financial.totalCashDeposit = totalDeposit;
         this.data.financial.actualProfit = netDeposit;
@@ -852,14 +880,14 @@ class BingoApp {
      * Load pull-tab library from backend or cache
      * Maps Excel columns to expected structure
      */
-    async function loadPullTabLibrary() {
+    async loadPullTabLibrary(forceReload = false) {
         try {
             const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
             const data = await response.json();
             
             if (data.success && data.games) {
                 // Store library with proper mapping
-                window.pullTabLibrary = data.games.map(game => {
+                this.pullTabLibrary = data.games.map(game => {
                     // Handle both array and object formats from backend
                     if (Array.isArray(game)) {
                         return {
@@ -884,66 +912,13 @@ class BingoApp {
                     }
                 });
                 
-                // Populate dropdowns
-                populatePullTabDropdowns();
+                // Store timestamp for cache
+                localStorage.setItem('lastLibraryUpdate', new Date().toISOString());
             }
         } catch (error) {
             console.error('Error loading pull-tab library:', error);
-        }
-    }
-    function populatePullTabDropdowns() {
-        const dropdowns = document.querySelectorAll('.pulltab-select');
-        
-        dropdowns.forEach(select => {
-            // Clear existing options except the first
-            while (select.options.length > 1) {
-                select.remove(1);
-            }
-            
-            // Add library games
-            window.pullTabLibrary.forEach(game => {
-                const option = document.createElement('option');
-                option.value = game.identifier;
-                option.textContent = `${game.name} (${game.form})`;
-                option.dataset.tickets = game.count;
-                option.dataset.price = game.price;
-                option.dataset.profit = game.profit;
-                select.appendChild(option);
-            });
-        });
-    }
-    function handlePullTabSelection(selectElement) {
-        const selectedValue = selectElement.value;
-        if (!selectedValue || selectedValue === 'No Game') return;
-        
-        const row = selectElement.closest('tr');
-        const game = window.pullTabLibrary.find(g => g.identifier === selectedValue);
-        
-        if (game && row) {
-            // Auto-populate fields
-            const serialInput = row.querySelector('.serial-input');
-            const ticketsCell = row.querySelector('.tickets-cell');
-            const pricesCell = row.querySelector('.prices-cell');
-            const ticketsSoldCell = row.querySelector('.tickets-sold-cell');
-            const prizesPaidCell = row.querySelector('.prizes-cell');
-            const profitCell = row.querySelector('.profit-cell');
-            const idealProfitCell = row.querySelector('.ideal-profit-cell');
-            
-            // Set values
-            if (ticketsCell) ticketsCell.textContent = game.count;
-            if (pricesCell) pricesCell.textContent = `$${game.price}`;
-            
-            // Calculate ideal values
-            const idealSales = game.count * game.price;
-            const idealPrizes = idealSales - game.profit;
-            
-            if (ticketsSoldCell) ticketsSoldCell.textContent = `$${idealSales.toFixed(2)}`;
-            if (prizesPaidCell) prizesPaidCell.textContent = `$${idealPrizes.toFixed(2)}`;
-            if (profitCell) profitCell.textContent = `$${game.profit.toFixed(2)}`;
-            if (idealProfitCell) idealProfitCell.textContent = `$${game.profit.toFixed(2)}`;
-            
-            // Trigger totals calculation
-            calculatePullTabTotals();
+            // Use default games if API fails
+            this.pullTabLibrary = this.getDefaultPullTabGames();
         }
     }
     
@@ -952,79 +927,12 @@ class BingoApp {
      */
     getDefaultPullTabGames() {
         return [
-            {name: 'Beat the Clock 599', form: '7724H', count: 960, price: 1, profit: 361},
-            {name: 'Black Jack 175', form: '6916M', count: 250, price: 1, profit: 75},
-            {name: 'Black Jack 200', form: '6779P', count: 300, price: 1, profit: 100}
+            {name: 'Beat the Clock 599', form: '7724H', count: 960, price: 1, profit: 361, identifier: 'Beat the Clock 599_7724H'},
+            {name: 'Black Jack 175', form: '6916M', count: 250, price: 1, profit: 75, identifier: 'Black Jack 175_6916M'},
+            {name: 'Black Jack 200', form: '6779P', count: 300, price: 1, profit: 100, identifier: 'Black Jack 200_6779P'}
         ];
     }
-    function deletePullTabRow(button) {
-        const row = button.closest('tr');
-        if (row && confirm('Delete this pull-tab game?')) {
-            row.remove();
-            calculatePullTabTotals();
-        }
-    }
-    function addSpecialEventRow() {
-        const tbody = document.getElementById('special-events-body');
-        if (!tbody) return;
-        
-        const rowId = 'special-' + Date.now();
-        const row = document.createElement('tr');
-        row.className = 'special-event-row';
-        row.id = rowId;
-        
-        row.innerHTML = `
-            <td>
-                <select class="special-event-select" onchange="handleSpecialEventSelection(this)">
-                    <option value="">Select Special Event...</option>
-                    <option value="Fire Fighters 599">Fire Fighters 599 ($960)</option>
-                    <option value="Race Horse Downs 250">Race Horse Downs 250 ($1000)</option>
-                    <option value="Dig Life 200">Dig Life 200 ($300)</option>
-                    <option value="Gum Drops 400">Gum Drops 400 ($600)</option>
-                    <option value="Bubble Gum 400">Bubble Gum 400 ($600)</option>
-                    <option value="custom">Custom Event...</option>
-                </select>
-                <input type="text" class="event-name-input" style="display:none;" placeholder="Event name">
-            </td>
-            <td><input type="text" class="event-serial-input" placeholder="Serial #"></td>
-            <td class="event-tickets-cell">0</td>
-            <td class="event-sales-cell">$0.00</td>
-            <td><input type="number" class="event-prizes-input" min="0" step="0.01" value="0"></td>
-            <td class="event-profit-cell">$0.00</td>
-            <td><button onclick="deleteSpecialEvent(this)" class="remove-btn">×</button></td>
-        `;
-        
-        tbody.appendChild(row);
-    }
     
-    function handleSpecialEventSelection(selectElement) {
-        const row = selectElement.closest('tr');
-        const nameInput = row.querySelector('.event-name-input');
-        const ticketsCell = row.querySelector('.event-tickets-cell');
-        const salesCell = row.querySelector('.event-sales-cell');
-        
-        if (selectElement.value === 'custom') {
-            nameInput.style.display = 'block';
-            selectElement.style.display = 'none';
-        } else if (selectElement.value) {
-            // Parse the value to get tickets amount
-            const match = selectElement.value.match(/\$(\d+)/);
-            if (match) {
-                const amount = parseInt(match[1]);
-                ticketsCell.textContent = amount;
-                salesCell.textContent = `$${amount.toFixed(2)}`;
-            }
-            calculatePullTabTotals();
-        }
-    }
-    
-    function deleteSpecialEvent(button) {
-        const row = button.closest('tr');
-        if (row && confirm('Delete this special event?')) {
-            row.remove();
-            calculatePullTabTotals();
-        }
-    }
     /**
      * Get default games for session type
      */
@@ -1071,16 +979,20 @@ class BingoApp {
      * Open side menu
      */
     openMenu() {
-        document.getElementById('side-menu')?.classList.add('active');
-        document.getElementById('overlay')?.classList.add('active');
+        const sideMenu = document.getElementById('side-menu');
+        const overlay = document.getElementById('overlay');
+        if (sideMenu) sideMenu.classList.add('active');
+        if (overlay) overlay.classList.add('active');
     }
     
     /**
      * Close side menu
      */
     closeMenu() {
-        document.getElementById('side-menu')?.classList.remove('active');
-        document.getElementById('overlay')?.classList.remove('active');
+        const sideMenu = document.getElementById('side-menu');
+        const overlay = document.getElementById('overlay');
+        if (sideMenu) sideMenu.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
     }
     
     /**
@@ -1089,15 +1001,19 @@ class BingoApp {
     setupConnectionMonitoring() {
         window.addEventListener('online', () => {
             this.isOnline = true;
-            document.getElementById('status-indicator').className = 'status-online';
-            document.getElementById('status-text').textContent = 'Online';
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            if (statusIndicator) statusIndicator.className = 'status-online';
+            if (statusText) statusText.textContent = 'Online';
             this.processSyncQueue();
         });
         
         window.addEventListener('offline', () => {
             this.isOnline = false;
-            document.getElementById('status-indicator').className = 'status-offline';
-            document.getElementById('status-text').textContent = 'Offline';
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            if (statusIndicator) statusIndicator.className = 'status-offline';
+            if (statusText) statusText.textContent = 'Offline';
         });
     }
     
@@ -1126,10 +1042,12 @@ class BingoApp {
     populateFormFromData() {
         // Populate occasion fields
         if (this.data.occasion.date) {
-            document.getElementById('session-date').value = this.data.occasion.date;
+            const sessionDate = document.getElementById('session-date');
+            if (sessionDate) sessionDate.value = this.data.occasion.date;
         }
         if (this.data.occasion.sessionType) {
-            document.getElementById('session-type').value = this.data.occasion.sessionType;
+            const sessionType = document.getElementById('session-type');
+            if (sessionType) sessionType.value = this.data.occasion.sessionType;
         }
         // Add more field population logic as needed
     }
@@ -1171,482 +1089,121 @@ class BingoApp {
         }
     }
 }
-function calculateFinalTotals() {
-    // Paper Bingo Sales
-    let bingoSales = 0;
-    const paperTypes = document.querySelectorAll('[id$="-sold"]');
-    paperTypes.forEach(cell => {
-        const count = parseInt(cell.textContent) || 0;
-        const typeId = cell.id.replace('-sold', '');
-        const price = getPaperPrice(typeId);
-        bingoSales += count * price;
-    });
-    
-    // POS Door Sales
-    let posSales = 0;
-    document.querySelectorAll('[id$="-total"]').forEach(cell => {
-        const amount = parseFloat(cell.textContent.replace('$', '')) || 0;
-        posSales += amount;
-    });
-    
-    // Electronic Sales
-    const electronicSales = (window.app?.data?.electronic?.total) || 0;
-    
-    // Total Bingo Sales
-    const totalBingoSales = bingoSales + posSales + electronicSales;
-    
-    // Pull-Tab Sales and Prizes (INCLUDING Special Events)
-    let pullTabSales = 0;
-    let pullTabPrizes = 0;
-    
-    // Regular pull-tab games
-    document.querySelectorAll('.pulltab-row').forEach(row => {
-        const salesAmount = parseFloat(row.querySelector('.tickets-sold-cell')?.textContent?.replace('$', '')) || 0;
-        const prizesAmount = parseFloat(row.querySelector('.prizes-cell')?.textContent?.replace('$', '')) || 0;
-        pullTabSales += salesAmount;
-        pullTabPrizes += prizesAmount;
-    });
-    
-    // Special events
-    document.querySelectorAll('.special-event-row').forEach(row => {
-        const salesAmount = parseFloat(row.querySelector('.event-sales-cell')?.textContent?.replace('$', '')) || 0;
-        const prizesAmount = parseFloat(row.querySelector('.event-prizes-input')?.value) || 0;
-        pullTabSales += salesAmount;
-        pullTabPrizes += prizesAmount;
-    });
-    
-    // Bingo Prizes
-    const bingoPrizes = parseFloat(document.getElementById('total-bingo-prizes')?.textContent?.replace('$', '')) || 0;
-    
-    // Gross Sales
-    const grossSales = totalBingoSales + pullTabSales;
-    
-    // Total Prizes
-    const totalPrizes = bingoPrizes + pullTabPrizes;
-    
-    // Cash Deposit
-    const bingoDrawer = parseFloat(document.getElementById('bingo-total')?.textContent?.replace('$', '')) || 0;
-    const ptDrawer = parseFloat(document.getElementById('pt-total')?.textContent?.replace('$', '')) || 0;
-    const cashDeposit = bingoDrawer + ptDrawer;
-    
-    // Actual Profit
-    const actualProfit = cashDeposit - 1000; // Less $1000 startup
-    
-    // Update display
-    document.getElementById('review-bingo-sales').textContent = `$${totalBingoSales.toFixed(2)}`;
-    document.getElementById('review-pulltab-sales').textContent = `$${pullTabSales.toFixed(2)}`;
-    document.getElementById('review-gross-sales').textContent = `$${grossSales.toFixed(2)}`;
-    document.getElementById('review-bingo-prizes').textContent = `$${bingoPrizes.toFixed(2)}`;
-    document.getElementById('review-pulltab-prizes').textContent = `$${pullTabPrizes.toFixed(2)}`;
-    document.getElementById('review-total-prizes').textContent = `$${totalPrizes.toFixed(2)}`;
-    document.getElementById('review-cash-deposit').textContent = `$${cashDeposit.toFixed(2)}`;
-    document.getElementById('review-actual-profit').textContent = `$${actualProfit.toFixed(2)}`;
-    
-    // Calculate ideal profit
-    const idealProfit = grossSales - totalPrizes;
-    document.getElementById('review-ideal-profit').textContent = `$${idealProfit.toFixed(2)}`;
-    
-    // Over/Short
-    const overShort = actualProfit - idealProfit;
-    document.getElementById('review-over-short').textContent = `$${overShort.toFixed(2)}`;
-    
-    // Performance metrics
-    document.getElementById('metric-attendance').textContent = document.getElementById('total-people')?.value || '0';
-    document.getElementById('metric-gross-sales').textContent = `$${grossSales.toFixed(2)}`;
-    document.getElementById('metric-net-profit').textContent = `$${actualProfit.toFixed(2)}`;
-    
-    const attendance = parseInt(document.getElementById('total-people')?.value) || 1;
-    const perPlayer = grossSales / attendance;
-    document.getElementById('metric-per-player').textContent = `$${perPlayer.toFixed(2)}`;
-}
 
-function getPaperPrice(typeId) {
-    const prices = {
-        'eb': 5,    // Early Bird
-        '6f': 10,   // Six Face
-        '9f': 15,   // Nine Face Solid
-        '9fs': 10,  // Nine Face Stripe
-        '3f': 1,    // Three Face
-        '18f': 5    // Eighteen Face
-    };
-    return prices[typeId] || 0;
-}
-async function submitOccasion() {
-    if (!validateAllSteps()) {
-        alert('Please complete all required fields');
-        return;
-    }
-    
-    // Gather all data
-    const occasionData = {
-        occasion: {
-            date: '2025-01-17',
-            sessionType: '5-1',
-            lionInCharge: 'John Smith',
-            attendance: 97,
-            birthdays: 3,
-            progressive: { /* progressive data */ }
-        },
-        paperBingo: { /* paper sales data */ },
-        posSales: { /* door sales data */ },
-        electronic: { /* electronic rentals */ },
-        games: [ /* array of game results */ ],
-        pullTabs: [ /* array of pull-tab games */ ],
-        moneyCount: { /* money drawer counts */ },
-        financial: { /* calculated totals */ },
-        timestamp: new Date().toISOString()
-    };
-    
-    try {
-        // Show loading state
-        const submitBtn = document.querySelector('[onclick="submitOccasion()"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-        }
-        
-        // Send to backend
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                action: 'saveOccasion',
-                data: JSON.stringify(occasionData)
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            // Clear local draft
-            localStorage.removeItem(CONFIG.STORAGE_KEYS.DRAFT_DATA);
-            
-            // Show success message
-            alert('Occasion submitted successfully!');
-            
-            // Reset wizard
-            window.location.reload();
-        } else {
-            throw new Error(result.error || 'Submission failed');
-        }
-    } catch (error) {
-        console.error('Error submitting occasion:', error);
-        
-        // Add to sync queue for later
-        const queue = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]');
-        queue.push({
-            action: 'saveOccasion',
-            data: occasionData,
-            timestamp: new Date().toISOString()
-        });
-        localStorage.setItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE, JSON.stringify(queue));
-        
-        alert('Saved offline. Will sync when connection is restored.');
-    } finally {
-        const submitBtn = document.querySelector('[onclick="submitOccasion()"]');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Occasion';
-        }
-    }
-}
+// CRITICAL: Expose class to global scope AFTER definition
+window.BingoApp = BingoApp;
 
-function validateAllSteps() {
-    // Check each step has minimum required data
-    const required = {
-        occasion: ['date', 'sessionType', 'lionInCharge'],
-        games: [], // Games are auto-populated
-        financial: []
-    };
+// Create and expose the global app instance
+window.app = new BingoApp();
+
+// Global utility functions for pull-tab management
+window.populatePullTabDropdowns = function() {
+    const dropdowns = document.querySelectorAll('.pulltab-select');
     
-    for (const [section, fields] of Object.entries(required)) {
-        for (const field of fields) {
-            if (!window.app.data[section]?.[field]) {
-                return false;
-            }
+    dropdowns.forEach(select => {
+        // Clear existing options except the first
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+        
+        // Add library games
+        window.app.pullTabLibrary.forEach(game => {
+            const option = document.createElement('option');
+            option.value = game.identifier;
+            option.textContent = `${game.name} (${game.form})`;
+            option.dataset.tickets = game.count;
+            option.dataset.price = game.price;
+            option.dataset.profit = game.profit;
+            select.appendChild(option);
+        });
+    });
+};
+
+window.handlePullTabSelection = function(selectElement) {
+    const selectedValue = selectElement.value;
+    if (!selectedValue || selectedValue === 'No Game') return;
+    
+    const row = selectElement.closest('tr');
+    const game = window.app.pullTabLibrary.find(g => g.identifier === selectedValue);
+    
+    if (game && row) {
+        // Auto-populate fields
+        const ticketsCell = row.querySelector('.tickets-cell');
+        const pricesCell = row.querySelector('.prices-cell');
+        const ticketsSoldCell = row.querySelector('.tickets-sold-cell');
+        const prizesPaidCell = row.querySelector('.prizes-cell');
+        const profitCell = row.querySelector('.profit-cell');
+        const idealProfitCell = row.querySelector('.ideal-profit-cell');
+        
+        // Set values
+        if (ticketsCell) ticketsCell.textContent = game.count;
+        if (pricesCell) pricesCell.textContent = `$${game.price}`;
+        
+        // Calculate ideal values
+        const idealSales = game.count * game.price;
+        const idealPrizes = idealSales - game.profit;
+        
+        if (ticketsSoldCell) ticketsSoldCell.textContent = `$${idealSales.toFixed(2)}`;
+        if (prizesPaidCell) prizesPaidCell.textContent = `$${idealPrizes.toFixed(2)}`;
+        if (profitCell) profitCell.textContent = `$${game.profit.toFixed(2)}`;
+        if (idealProfitCell) idealProfitCell.textContent = `$${game.profit.toFixed(2)}`;
+        
+        // Trigger totals calculation if function exists
+        if (typeof window.calculatePullTabTotals === 'function') {
+            window.calculatePullTabTotals();
         }
     }
-    
-    return true;
-}
+};
+
+window.deletePullTabRow = function(button) {
+    const row = button.closest('tr');
+    if (row && confirm('Delete this pull-tab game?')) {
+        row.remove();
+        if (typeof window.calculatePullTabTotals === 'function') {
+            window.calculatePullTabTotals();
+        }
+    }
+};
+
 // Global functions for onclick handlers - Browser compatible
-function closeMenu() {
+window.closeMenu = function() {
     window.app?.closeMenu();
-}
+};
 
-function showOccasions() {
+window.showOccasions = function() {
     window.app?.showOccasions();
-}
+};
 
-function showReports() {
+window.showReports = function() {
     window.app?.showReports();
-}
+};
 
-function showPullTabLibrary() {
+window.showPullTabLibrary = function() {
     window.app?.showPullTabLibrary();
-}
+};
 
-function showAdmin() {
+window.showAdmin = function() {
     window.app?.showAdmin();
-}
+};
 
-function showHelp() {
+window.showHelp = function() {
     window.app?.showHelp();
-}
+};
 
-// Initialize app when DOM is ready
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize date picker
-    initializeDatePicker();
-    
-    // Initialize game calculations
-    initializeGameCalculations();
-    
-    // Load pull-tab library
-    loadPullTabLibrary();
+    console.log('DOM loaded, BingoApp available:', typeof window.BingoApp);
+    console.log('App instance available:', typeof window.app);
     
     // Set up pull-tab dropdown handlers
     document.addEventListener('change', function(e) {
         if (e.target.classList.contains('pulltab-select')) {
-            handlePullTabSelection(e.target);
-        }
-    });
-    
-    // Initialize POS items with correct order
-    if (typeof CONFIG !== 'undefined') {
-        CONFIG.POS_ITEMS = CORRECTED_POS_ITEMS;
-    }
-    
-    // Re-render POS table if it exists
-    if (window.app && typeof window.app.initializePOSSalesTable === 'function') {
-        window.app.initializePOSSalesTable();
-    }
-});
-// CRITICAL FIX: Add this to the END of app.js or create a new init.js file
-// This ensures proper initialization after all scripts are loaded
-
-// Wait for all scripts to be loaded
-window.addEventListener('load', function() {
-    console.log('Starting full initialization...');
-    
-    // Check if app exists, if not create it
-    if (!window.app) {
-        console.log('Creating app instance...');
-        window.app = new BingoApp();
-    }
-    
-    // Ensure we're on step 1, not step 6
-    if (window.app.currentStep === 6 || !window.app.currentStep) {
-        console.log('Resetting to step 1...');
-        window.app.currentStep = 1;
-    }
-    
-    // Force display of step 1 content
-    const initializeSteps = () => {
-        // Hide all steps first
-        document.querySelectorAll('.wizard-step').forEach((step, index) => {
-            step.style.display = 'none';
-            step.classList.remove('active');
-        });
-        
-        // Show step 1
-        const step1 = document.getElementById('step-1');
-        if (step1) {
-            step1.style.display = 'block';
-            step1.classList.add('active');
-            console.log('Step 1 displayed');
-        } else {
-            console.error('Step 1 element not found!');
-        }
-        
-        // Update step indicators
-        document.querySelectorAll('.step').forEach((indicator, index) => {
-            indicator.classList.remove('active', 'completed');
-            if (index === 0) {
-                indicator.classList.add('active');
-            }
-        });
-        
-        // Fix navigation buttons
-        const prevBtn = document.querySelector('button:has-text("Previous"), button[onclick*="previous"]');
-        const nextBtn = document.querySelector('button:has-text("Complete"), button[onclick*="next"]');
-        
-        // For first step, hide Previous and show Next
-        if (prevBtn) {
-            prevBtn.style.display = 'none';
-        }
-        
-        if (nextBtn) {
-            nextBtn.textContent = 'Next';
-            nextBtn.onclick = function() {
-                if (typeof nextStep === 'function') {
-                    nextStep();
-                } else {
-                    console.error('nextStep function not found');
-                }
-            };
-        }
-    };
-    
-    // Initialize steps
-    initializeSteps();
-    
-    // Initialize date picker if the function exists
-    if (typeof initializeDatePicker === 'function') {
-        initializeDatePicker();
-        console.log('Date picker initialized');
-    }
-    
-    // Initialize game calculations if the function exists  
-    if (typeof initializeGameCalculations === 'function') {
-        initializeGameCalculations();
-        console.log('Game calculations initialized');
-    }
-    
-    // Load pull-tab library
-    if (typeof loadPullTabLibrary === 'function') {
-        loadPullTabLibrary();
-        console.log('Loading pull-tab library...');
-    } else if (window.app && typeof window.app.loadPullTabLibrary === 'function') {
-        window.app.loadPullTabLibrary();
-        console.log('Loading pull-tab library from app...');
-    }
-    
-    // Make navigation functions globally available
-    window.nextStep = function() {
-        console.log('Next step clicked');
-        if (!validateCurrentStep()) {
-            return false;
-        }
-        
-        saveStepData();
-        
-        if (window.app.currentStep < window.app.totalSteps) {
-            window.app.currentStep++;
-            updateStepDisplay();
-            loadStepData();
-        }
-    };
-    
-    window.previousStep = function() {
-        console.log('Previous step clicked');
-        if (window.app.currentStep > 1) {
-            saveStepData();
-            window.app.currentStep--;
-            updateStepDisplay();
-            loadStepData();
-        }
-    };
-    
-    // Ensure updateStepDisplay function exists globally
-    window.updateStepDisplay = function() {
-        console.log('Updating step display to step', window.app.currentStep);
-        
-        // Hide all steps
-        document.querySelectorAll('.wizard-step').forEach(step => {
-            step.style.display = 'none';
-            step.classList.remove('active');
-        });
-        
-        // Show current step
-        const currentStepElement = document.getElementById(`step-${window.app.currentStep}`);
-        if (currentStepElement) {
-            currentStepElement.style.display = 'block';
-            currentStepElement.classList.add('active');
-        }
-        
-        // Update step indicators
-        document.querySelectorAll('.step').forEach((indicator, index) => {
-            const stepNum = index + 1;
-            indicator.classList.remove('active', 'completed');
-            
-            if (stepNum === window.app.currentStep) {
-                indicator.classList.add('active');
-            } else if (stepNum < window.app.currentStep) {
-                indicator.classList.add('completed');
-            }
-        });
-        
-        // Update navigation buttons
-        const prevBtn = document.querySelector('button:contains("Previous"), button[onclick*="previous"]') ||
-                       document.querySelector('.wizard-navigation button:first-child');
-        const nextBtn = document.querySelector('button:contains("Next"), button:contains("Complete"), button[onclick*="next"]') ||
-                       document.querySelector('.wizard-navigation button:last-child');
-        
-        if (prevBtn) {
-            prevBtn.style.display = window.app.currentStep === 1 ? 'none' : 'inline-block';
-            prevBtn.textContent = 'Previous';
-            prevBtn.onclick = previousStep;
-        }
-        
-        if (nextBtn) {
-            if (window.app.currentStep === window.app.totalSteps) {
-                nextBtn.textContent = 'Complete';
-                nextBtn.onclick = submitOccasion;
-            } else {
-                nextBtn.textContent = 'Next';
-                nextBtn.onclick = nextStep;
-            }
-        }
-    };
-    
-    // Placeholder validation functions if they don't exist
-    if (typeof validateCurrentStep === 'undefined') {
-        window.validateCurrentStep = function() {
-            console.log('Validation check for step', window.app.currentStep);
-            // Basic validation - can be enhanced
-            return true;
-        };
-    }
-    
-    if (typeof saveStepData === 'undefined') {
-        window.saveStepData = function() {
-            console.log('Saving data for step', window.app.currentStep);
-            // Save logic here
-        };
-    }
-    
-    if (typeof loadStepData === 'undefined') {
-        window.loadStepData = function() {
-            console.log('Loading data for step', window.app.currentStep);
-            // Load logic here
-        };
-    }
-    
-    if (typeof submitOccasion === 'undefined') {
-        window.submitOccasion = function() {
-            console.log('Submitting occasion...');
-            alert('Submit function needs to be implemented');
-        };
-    }
-    
-    console.log('Full initialization complete');
-    
-    // Log current state for debugging
-    console.log('Current state:', {
-        currentStep: window.app.currentStep,
-        totalSteps: window.app.totalSteps,
-        step1Element: document.getElementById('step-1'),
-        navigationButtons: {
-            previous: document.querySelector('button:contains("Previous")'),
-            next: document.querySelector('button:contains("Next")')
+            window.handlePullTabSelection(e.target);
         }
     });
 });
 
-// Also add a fallback for button text selector
-document.addEventListener('DOMContentLoaded', function() {
-    // Polyfill for button text selection if needed
-    if (!document.querySelector('button:contains')) {
-        document.querySelectorAll('button').forEach(btn => {
-            if (btn.textContent.includes('Previous')) {
-                btn.classList.add('prev-button');
-            }
-            if (btn.textContent.includes('Next') || btn.textContent.includes('Complete')) {
-                btn.classList.add('next-button');
-            }
-        });
-    }
-});
+// Final validation and debugging
+console.log('app.js loaded successfully');
+console.log('BingoApp class available:', typeof window.BingoApp);
+console.log('App instance created:', typeof window.app);
