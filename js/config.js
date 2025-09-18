@@ -8,7 +8,6 @@ const CONFIG = {
         pullTabLibrary: 'PullTabLibrary',
         doorSales: 'DoorSales',
         moneyCount: 'MoneyCount',
-        fiftyFifty: 'FiftyFifty',
         metrics: 'Metrics'
     },
     SESSION_TYPES: {
