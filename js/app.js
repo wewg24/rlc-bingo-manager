@@ -1,9 +1,5 @@
 // Main Application Logic for RLC Bingo Manager
 // Version 11.0.4 - Fixed syntax errors and pull tab library integration
-
-if (typeof BingoApp === 'undefined') {
-
-// Your existing BingoApp class here:
 class BingoApp {
     constructor() {
         this.currentStep = 1;
@@ -1166,7 +1162,4 @@ if (!window.app) {
     document.addEventListener('DOMContentLoaded', () => {
         window.app = new BingoApp();
     });
-}
-
-}
 
