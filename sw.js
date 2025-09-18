@@ -1,5 +1,5 @@
 // sw.js - Updated with cache versioning
-const CACHE_VERSION = 'v11.0.2';
+const CACHE_VERSION = 'v11.0.4';
 const CACHE_NAME = `rlc-bingo-${CACHE_VERSION}`;
 
 const urlsToCache = [
