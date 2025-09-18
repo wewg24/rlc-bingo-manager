@@ -3,6 +3,29 @@
 
 class BingoApp {
     constructor() {
+        // Initialize with defaults if CONFIG isn't defined yet
+        if (typeof CONFIG === 'undefined') {
+            console.warn('CONFIG not defined, using defaults');
+            window.CONFIG = {
+                VERSION: '11.0.5',
+                API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
+                STORAGE_KEYS: {
+                    DRAFT_DATA: 'bingo_draft',
+                    PULL_TAB_LIBRARY: 'pulltab_library',
+                    SYNC_QUEUE: 'sync_queue',
+                    THEME: 'theme_preference'
+                },
+                PAPER_TYPES: [
+                    { id: 'eb', name: 'Early Bird', price: 5, hasFree: true },
+                    { id: '3f', name: '3 Face', price: 1, hasFree: false },
+                    { id: '6f', name: '6 Face', price: 10, hasFree: true },
+                    { id: '9fs', name: '9 Face Solid', price: 15, hasFree: false },
+                    { id: '9fst', name: '9 Face Stripe', price: 10, hasFree: false },
+                    { id: 'singles', name: 'Singles', price: 1, hasFree: false },
+                    { id: 'doubles', name: 'Doubles', price: 2, hasFree: false }
+                ]
+            };
+        }
         this.currentStep = 1;
         this.totalSteps = 6;
         
@@ -413,14 +436,14 @@ class BingoApp {
         // Load saved draft if exists
         this.loadDraft();
         
-        // Initialize UI components
+        // Initialize UI
         this.initializeTheme();
         this.initializeEventListeners();
         this.initializeDateField();
         this.initializePaperSalesTable();
         this.initializePOSSalesTable();
         
-        // Load pull-tab library with Excel column mapping
+        // Load pull-tab library
         await this.loadPullTabLibrary();
         
         // Setup online/offline detection
@@ -428,10 +451,6 @@ class BingoApp {
         
         // Process any pending sync items
         await this.processSyncQueue();
-        
-        // Check for updates periodically
-        this.checkForUpdates();
-        setInterval(() => this.checkForUpdates(), 5 * 60 * 1000); // Every 5 minutes
     }
     
     /**
@@ -1159,7 +1178,12 @@ function validateSection(sectionId) {
     }
 }
 
-// Initialize app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+/ Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.app = new BingoApp();
+    });
+} else {
+    // DOM is already loaded
     window.app = new BingoApp();
 });
