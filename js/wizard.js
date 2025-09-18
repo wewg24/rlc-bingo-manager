@@ -83,7 +83,6 @@ function updateStepDisplay() {
 
 // Validation functions for each step
 function validateSessionInfo() {
-    // Use the correct IDs that actually exist in your HTML
     const date = document.getElementById('session-date')?.value;
     const session = document.getElementById('session-type')?.value;
     const lion = document.getElementById('lion-charge')?.value;
@@ -101,7 +100,6 @@ function validateSessionInfo() {
     console.log('Session info validation passed');
     return true;
 }
-
 // Also fix the validateCurrentStep function to use correct step IDs:
 function validateCurrentStep() {
     const currentStepNum = window.app ? window.app.currentStep : 1;
