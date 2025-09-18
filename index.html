@@ -575,5 +575,182 @@
         }
     });
     </script>
+    <!-- Add this script block to the very bottom of your index.html file, right before </body> -->
+    <script>
+    // Navigation Fix v11.0.4
+    (function() {
+        console.log('Applying navigation fix...');
+        
+        // Initialize app state
+        if (!window.app) {
+            console.error('App not initialized - creating minimal app object');
+            window.app = {
+                currentStep: 1,
+                totalSteps: 6,
+                data: {
+                    occasion: {},
+                    paperBingo: {},
+                    posSales: {},
+                    electronic: {},
+                    games: [],
+                    pullTabs: [],
+                    moneyCount: { bingo: {}, pullTab: {} },
+                    financial: {}
+                }
+            };
+        }
+        
+        // Ensure we're on step 1
+        window.app.currentStep = 1;
+        
+        // Define navigation functions globally
+        window.nextStep = function() {
+            console.log('Next clicked - current step:', window.app.currentStep);
+            
+            // Basic validation
+            if (window.app.currentStep === 1) {
+                const date = document.getElementById('session-date')?.value;
+                const session = document.getElementById('session-type')?.value;
+                const lion = document.getElementById('lion-charge')?.value;
+                const people = document.getElementById('total-people')?.value;
+                
+                if (!date || !session || !lion || !people) {
+                    alert('Please fill in Date, Session, Lion in Charge, and Total People');
+                    return false;
+                }
+            }
+            
+            if (window.app.currentStep < window.app.totalSteps) {
+                window.app.currentStep++;
+                updateStepDisplay();
+            }
+        };
+        
+        window.previousStep = function() {
+            console.log('Previous clicked - current step:', window.app.currentStep);
+            if (window.app.currentStep > 1) {
+                window.app.currentStep--;
+                updateStepDisplay();
+            }
+        };
+        
+        window.updateStepDisplay = function() {
+            console.log('Updating display to step:', window.app.currentStep);
+            
+            // Hide all steps
+            document.querySelectorAll('.wizard-step, .step-content, [id^="step-"]').forEach(el => {
+                el.style.display = 'none';
+                el.classList.remove('active');
+            });
+            
+            // Show current step
+            const currentStep = document.getElementById(`step-${window.app.currentStep}`);
+            if (currentStep) {
+                currentStep.style.display = 'block';
+                currentStep.classList.add('active');
+            }
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((indicator, index) => {
+                indicator.classList.remove('active', 'completed');
+                if (index + 1 === window.app.currentStep) {
+                    indicator.classList.add('active');
+                } else if (index + 1 < window.app.currentStep) {
+                    indicator.classList.add('completed');
+                }
+            });
+            
+            // Update buttons
+            const prevBtn = document.querySelector('button:first-of-type, .button.secondary');
+            const nextBtn = document.querySelector('button:last-of-type, .button.primary');
+            
+            if (prevBtn) {
+                prevBtn.textContent = 'Previous';
+                prevBtn.style.display = window.app.currentStep === 1 ? 'none' : 'inline-block';
+                prevBtn.onclick = previousStep;
+            }
+            
+            if (nextBtn) {
+                if (window.app.currentStep === window.app.totalSteps) {
+                    nextBtn.textContent = 'Complete';
+                    nextBtn.onclick = function() {
+                        if (confirm('Submit this occasion?')) {
+                            alert('Submission function will be implemented');
+                            // submitOccasion();
+                        }
+                    };
+                } else {
+                    nextBtn.textContent = 'Next';
+                    nextBtn.onclick = nextStep;
+                }
+            }
+        };
+        
+        // Dark mode toggle
+        window.toggleTheme = function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.innerHTML = isDark ? '<span>☀️</span>' : '<span>🌙</span>';
+            }
+        };
+        
+        // Apply saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+        
+        // Initialize date picker
+        const dateInput = document.getElementById('session-date');
+        if (dateInput) {
+            dateInput.type = 'date';
+            
+            // Set today as default
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+            
+            // Auto-select session for Mondays
+            dateInput.addEventListener('change', function(e) {
+                const selectedDate = new Date(e.target.value + 'T12:00:00');
+                
+                if (selectedDate.getDay() === 1) { // Monday
+                    const firstDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+                    let firstMonday = new Date(firstDay);
+                    
+                    while (firstMonday.getDay() !== 1) {
+                        firstMonday.setDate(firstMonday.getDate() + 1);
+                    }
+                    
+                    const weekNumber = Math.floor((selectedDate.getDate() - firstMonday.getDate()) / 7) + 1;
+                    
+                    const sessionMap = {
+                        1: '5-1',
+                        2: '6-2', 
+                        3: '7-3',
+                        4: '8-4',
+                        5: '5-1'
+                    };
+                    
+                    const sessionSelect = document.getElementById('session-type');
+                    if (sessionSelect && sessionMap[weekNumber]) {
+                        sessionSelect.value = sessionMap[weekNumber];
+                        console.log('Auto-selected session:', sessionMap[weekNumber]);
+                    }
+                }
+            });
+        }
+        
+        // Fix initial button state
+        setTimeout(() => {
+            updateStepDisplay();
+            console.log('Navigation fix applied successfully');
+        }, 100);
+        
+    })();
+    </script>
 </body>
 </html>
