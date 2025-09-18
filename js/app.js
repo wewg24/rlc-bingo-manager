@@ -1114,13 +1114,13 @@ function getCurrentSection() {
 }
 
 function getNextSection(currentSectionId) {
-    const sections = ['basicInfo', 'doorSales', 'sessionGames', 'pullTabs', 'specialEvents', 'fiftyFifty', 'moneyCount', 'summary'];
+    const sections = ['basicInfo', 'doorSales', 'sessionGames', 'pullTabs', 'specialEvents', 'moneyCount', 'summary'];
     const currentIndex = sections.indexOf(currentSectionId);
     return currentIndex >= 0 && currentIndex < sections.length - 1 ? sections[currentIndex + 1] : null;
 }
 
 function getPreviousSection(currentSectionId) {
-    const sections = ['basicInfo', 'doorSales', 'sessionGames', 'pullTabs', 'specialEvents', 'fiftyFifty', 'moneyCount', 'summary'];
+    const sections = ['basicInfo', 'doorSales', 'sessionGames', 'pullTabs', 'specialEvents', 'moneyCount', 'summary'];
     const currentIndex = sections.indexOf(currentSectionId);
     return currentIndex > 0 ? sections[currentIndex - 1] : null;
 }
