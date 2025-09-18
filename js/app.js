@@ -852,42 +852,98 @@ class BingoApp {
      * Load pull-tab library from backend or cache
      * Maps Excel columns to expected structure
      */
-    async loadPullTabLibrary(forceReload = false) {
+    async function loadPullTabLibrary() {
         try {
-            if (this.isOnline && (forceReload || !localStorage.getItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY))) {
-                const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
-                const data = await response.json();
-                
-                if (data.success && data.games) {
-                    // Map Excel column names to consistent structure
-                    this.pullTabLibrary = data.games.map(game => ({
-                        name: game.Game || game.name || '',
-                        form: game.Form || game.form || '',
-                        count: game[' Count '] || game.Count || game.count || 0,
-                        price: game.Price || game.price || 1,
-                        profit: game.IdealProfit || game.profit || 0,
-                        url: game.URL || game.url || null
-                    }));
-                    
-                    localStorage.setItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY, JSON.stringify(this.pullTabLibrary));
-                    localStorage.setItem('lastLibraryUpdate', new Date().toISOString());
-                    return;
-                }
-            }
+            const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
+            const data = await response.json();
             
-            // Load from cache
-            const cached = localStorage.getItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY);
-            if (cached) {
-                this.pullTabLibrary = JSON.parse(cached);
-            } else {
-                // If no cache and offline, use minimal defaults
-                this.pullTabLibrary = this.getDefaultPullTabGames();
+            if (data.success && data.games) {
+                // Store library with proper mapping
+                window.pullTabLibrary = data.games.map(game => {
+                    // Handle both array and object formats from backend
+                    if (Array.isArray(game)) {
+                        return {
+                            name: game[0],
+                            form: game[1],
+                            count: game[2],
+                            price: game[3],
+                            profit: game[4],
+                            url: game[5] || '',
+                            identifier: `${game[0]}_${game[1]}`
+                        };
+                    } else {
+                        return {
+                            name: game.name || game.Game,
+                            form: game.form || game.Form,
+                            count: game.count || game.Count || game[' Count '],
+                            price: game.price || game.Price || 1,
+                            profit: game.profit || game.IdealProfit || game.Profit,
+                            url: game.url || game.URL || '',
+                            identifier: `${game.name || game.Game}_${game.form || game.Form}`
+                        };
+                    }
+                });
+                
+                // Populate dropdowns
+                populatePullTabDropdowns();
             }
         } catch (error) {
             console.error('Error loading pull-tab library:', error);
-            // Load from cache or defaults on error
-            const cached = localStorage.getItem(CONFIG.STORAGE_KEYS.PULL_TAB_LIBRARY);
-            this.pullTabLibrary = cached ? JSON.parse(cached) : this.getDefaultPullTabGames();
+        }
+    }
+    function populatePullTabDropdowns() {
+        const dropdowns = document.querySelectorAll('.pulltab-select');
+        
+        dropdowns.forEach(select => {
+            // Clear existing options except the first
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Add library games
+            window.pullTabLibrary.forEach(game => {
+                const option = document.createElement('option');
+                option.value = game.identifier;
+                option.textContent = `${game.name} (${game.form})`;
+                option.dataset.tickets = game.count;
+                option.dataset.price = game.price;
+                option.dataset.profit = game.profit;
+                select.appendChild(option);
+            });
+        });
+    }
+    function handlePullTabSelection(selectElement) {
+        const selectedValue = selectElement.value;
+        if (!selectedValue || selectedValue === 'No Game') return;
+        
+        const row = selectElement.closest('tr');
+        const game = window.pullTabLibrary.find(g => g.identifier === selectedValue);
+        
+        if (game && row) {
+            // Auto-populate fields
+            const serialInput = row.querySelector('.serial-input');
+            const ticketsCell = row.querySelector('.tickets-cell');
+            const pricesCell = row.querySelector('.prices-cell');
+            const ticketsSoldCell = row.querySelector('.tickets-sold-cell');
+            const prizesPaidCell = row.querySelector('.prizes-cell');
+            const profitCell = row.querySelector('.profit-cell');
+            const idealProfitCell = row.querySelector('.ideal-profit-cell');
+            
+            // Set values
+            if (ticketsCell) ticketsCell.textContent = game.count;
+            if (pricesCell) pricesCell.textContent = `$${game.price}`;
+            
+            // Calculate ideal values
+            const idealSales = game.count * game.price;
+            const idealPrizes = idealSales - game.profit;
+            
+            if (ticketsSoldCell) ticketsSoldCell.textContent = `$${idealSales.toFixed(2)}`;
+            if (prizesPaidCell) prizesPaidCell.textContent = `$${idealPrizes.toFixed(2)}`;
+            if (profitCell) profitCell.textContent = `$${game.profit.toFixed(2)}`;
+            if (idealProfitCell) idealProfitCell.textContent = `$${game.profit.toFixed(2)}`;
+            
+            // Trigger totals calculation
+            calculatePullTabTotals();
         }
     }
     
@@ -901,7 +957,74 @@ class BingoApp {
             {name: 'Black Jack 200', form: '6779P', count: 300, price: 1, profit: 100}
         ];
     }
+    function deletePullTabRow(button) {
+        const row = button.closest('tr');
+        if (row && confirm('Delete this pull-tab game?')) {
+            row.remove();
+            calculatePullTabTotals();
+        }
+    }
+    function addSpecialEventRow() {
+        const tbody = document.getElementById('special-events-body');
+        if (!tbody) return;
+        
+        const rowId = 'special-' + Date.now();
+        const row = document.createElement('tr');
+        row.className = 'special-event-row';
+        row.id = rowId;
+        
+        row.innerHTML = `
+            <td>
+                <select class="special-event-select" onchange="handleSpecialEventSelection(this)">
+                    <option value="">Select Special Event...</option>
+                    <option value="Fire Fighters 599">Fire Fighters 599 ($960)</option>
+                    <option value="Race Horse Downs 250">Race Horse Downs 250 ($1000)</option>
+                    <option value="Dig Life 200">Dig Life 200 ($300)</option>
+                    <option value="Gum Drops 400">Gum Drops 400 ($600)</option>
+                    <option value="Bubble Gum 400">Bubble Gum 400 ($600)</option>
+                    <option value="custom">Custom Event...</option>
+                </select>
+                <input type="text" class="event-name-input" style="display:none;" placeholder="Event name">
+            </td>
+            <td><input type="text" class="event-serial-input" placeholder="Serial #"></td>
+            <td class="event-tickets-cell">0</td>
+            <td class="event-sales-cell">$0.00</td>
+            <td><input type="number" class="event-prizes-input" min="0" step="0.01" value="0"></td>
+            <td class="event-profit-cell">$0.00</td>
+            <td><button onclick="deleteSpecialEvent(this)" class="remove-btn">×</button></td>
+        `;
+        
+        tbody.appendChild(row);
+    }
     
+    function handleSpecialEventSelection(selectElement) {
+        const row = selectElement.closest('tr');
+        const nameInput = row.querySelector('.event-name-input');
+        const ticketsCell = row.querySelector('.event-tickets-cell');
+        const salesCell = row.querySelector('.event-sales-cell');
+        
+        if (selectElement.value === 'custom') {
+            nameInput.style.display = 'block';
+            selectElement.style.display = 'none';
+        } else if (selectElement.value) {
+            // Parse the value to get tickets amount
+            const match = selectElement.value.match(/\$(\d+)/);
+            if (match) {
+                const amount = parseInt(match[1]);
+                ticketsCell.textContent = amount;
+                salesCell.textContent = `$${amount.toFixed(2)}`;
+            }
+            calculatePullTabTotals();
+        }
+    }
+    
+    function deleteSpecialEvent(button) {
+        const row = button.closest('tr');
+        if (row && confirm('Delete this special event?')) {
+            row.remove();
+            calculatePullTabTotals();
+        }
+    }
     /**
      * Get default games for session type
      */
@@ -1048,7 +1171,199 @@ class BingoApp {
         }
     }
 }
+function calculateFinalTotals() {
+    // Paper Bingo Sales
+    let bingoSales = 0;
+    const paperTypes = document.querySelectorAll('[id$="-sold"]');
+    paperTypes.forEach(cell => {
+        const count = parseInt(cell.textContent) || 0;
+        const typeId = cell.id.replace('-sold', '');
+        const price = getPaperPrice(typeId);
+        bingoSales += count * price;
+    });
+    
+    // POS Door Sales
+    let posSales = 0;
+    document.querySelectorAll('[id$="-total"]').forEach(cell => {
+        const amount = parseFloat(cell.textContent.replace('$', '')) || 0;
+        posSales += amount;
+    });
+    
+    // Electronic Sales
+    const electronicSales = (window.app?.data?.electronic?.total) || 0;
+    
+    // Total Bingo Sales
+    const totalBingoSales = bingoSales + posSales + electronicSales;
+    
+    // Pull-Tab Sales and Prizes (INCLUDING Special Events)
+    let pullTabSales = 0;
+    let pullTabPrizes = 0;
+    
+    // Regular pull-tab games
+    document.querySelectorAll('.pulltab-row').forEach(row => {
+        const salesAmount = parseFloat(row.querySelector('.tickets-sold-cell')?.textContent?.replace('$', '')) || 0;
+        const prizesAmount = parseFloat(row.querySelector('.prizes-cell')?.textContent?.replace('$', '')) || 0;
+        pullTabSales += salesAmount;
+        pullTabPrizes += prizesAmount;
+    });
+    
+    // Special events
+    document.querySelectorAll('.special-event-row').forEach(row => {
+        const salesAmount = parseFloat(row.querySelector('.event-sales-cell')?.textContent?.replace('$', '')) || 0;
+        const prizesAmount = parseFloat(row.querySelector('.event-prizes-input')?.value) || 0;
+        pullTabSales += salesAmount;
+        pullTabPrizes += prizesAmount;
+    });
+    
+    // Bingo Prizes
+    const bingoPrizes = parseFloat(document.getElementById('total-bingo-prizes')?.textContent?.replace('$', '')) || 0;
+    
+    // Gross Sales
+    const grossSales = totalBingoSales + pullTabSales;
+    
+    // Total Prizes
+    const totalPrizes = bingoPrizes + pullTabPrizes;
+    
+    // Cash Deposit
+    const bingoDrawer = parseFloat(document.getElementById('bingo-total')?.textContent?.replace('$', '')) || 0;
+    const ptDrawer = parseFloat(document.getElementById('pt-total')?.textContent?.replace('$', '')) || 0;
+    const cashDeposit = bingoDrawer + ptDrawer;
+    
+    // Actual Profit
+    const actualProfit = cashDeposit - 1000; // Less $1000 startup
+    
+    // Update display
+    document.getElementById('review-bingo-sales').textContent = `$${totalBingoSales.toFixed(2)}`;
+    document.getElementById('review-pulltab-sales').textContent = `$${pullTabSales.toFixed(2)}`;
+    document.getElementById('review-gross-sales').textContent = `$${grossSales.toFixed(2)}`;
+    document.getElementById('review-bingo-prizes').textContent = `$${bingoPrizes.toFixed(2)}`;
+    document.getElementById('review-pulltab-prizes').textContent = `$${pullTabPrizes.toFixed(2)}`;
+    document.getElementById('review-total-prizes').textContent = `$${totalPrizes.toFixed(2)}`;
+    document.getElementById('review-cash-deposit').textContent = `$${cashDeposit.toFixed(2)}`;
+    document.getElementById('review-actual-profit').textContent = `$${actualProfit.toFixed(2)}`;
+    
+    // Calculate ideal profit
+    const idealProfit = grossSales - totalPrizes;
+    document.getElementById('review-ideal-profit').textContent = `$${idealProfit.toFixed(2)}`;
+    
+    // Over/Short
+    const overShort = actualProfit - idealProfit;
+    document.getElementById('review-over-short').textContent = `$${overShort.toFixed(2)}`;
+    
+    // Performance metrics
+    document.getElementById('metric-attendance').textContent = document.getElementById('total-people')?.value || '0';
+    document.getElementById('metric-gross-sales').textContent = `$${grossSales.toFixed(2)}`;
+    document.getElementById('metric-net-profit').textContent = `$${actualProfit.toFixed(2)}`;
+    
+    const attendance = parseInt(document.getElementById('total-people')?.value) || 1;
+    const perPlayer = grossSales / attendance;
+    document.getElementById('metric-per-player').textContent = `$${perPlayer.toFixed(2)}`;
+}
 
+function getPaperPrice(typeId) {
+    const prices = {
+        'eb': 5,    // Early Bird
+        '6f': 10,   // Six Face
+        '9f': 15,   // Nine Face Solid
+        '9fs': 10,  // Nine Face Stripe
+        '3f': 1,    // Three Face
+        '18f': 5    // Eighteen Face
+    };
+    return prices[typeId] || 0;
+}
+async function submitOccasion() {
+    if (!validateAllSteps()) {
+        alert('Please complete all required fields');
+        return;
+    }
+    
+    // Gather all data
+    const occasionData = {
+        occasion: window.app.data.occasion,
+        paperBingo: window.app.data.paperBingo,
+        posSales: window.app.data.posSales,
+        electronic: window.app.data.electronic,
+        games: window.app.data.games,
+        pullTabs: window.app.data.pullTabs,
+        moneyCount: window.app.data.moneyCount,
+        financial: window.app.data.financial,
+        timestamp: new Date().toISOString()
+    };
+    
+    try {
+        // Show loading state
+        const submitBtn = document.querySelector('[onclick="submitOccasion()"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+        }
+        
+        // Send to backend
+        const response = await fetch(CONFIG.API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                action: 'saveOccasion',
+                data: JSON.stringify(occasionData)
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Clear local draft
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.DRAFT_DATA);
+            
+            // Show success message
+            alert('Occasion submitted successfully!');
+            
+            // Reset wizard
+            window.location.reload();
+        } else {
+            throw new Error(result.error || 'Submission failed');
+        }
+    } catch (error) {
+        console.error('Error submitting occasion:', error);
+        
+        // Add to sync queue for later
+        const queue = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]');
+        queue.push({
+            action: 'saveOccasion',
+            data: occasionData,
+            timestamp: new Date().toISOString()
+        });
+        localStorage.setItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE, JSON.stringify(queue));
+        
+        alert('Saved offline. Will sync when connection is restored.');
+    } finally {
+        const submitBtn = document.querySelector('[onclick="submitOccasion()"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Occasion';
+        }
+    }
+}
+
+function validateAllSteps() {
+    // Check each step has minimum required data
+    const required = {
+        occasion: ['date', 'sessionType', 'lionInCharge'],
+        games: [], // Games are auto-populated
+        financial: []
+    };
+    
+    for (const [section, fields] of Object.entries(required)) {
+        for (const field of fields) {
+            if (!window.app.data[section]?.[field]) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
 // Global functions for onclick handlers - Browser compatible
 function closeMenu() {
     window.app?.closeMenu();
@@ -1075,6 +1390,30 @@ function showHelp() {
 }
 
 // Initialize app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.app = new BingoApp();
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize date picker
+    initializeDatePicker();
+    
+    // Initialize game calculations
+    initializeGameCalculations();
+    
+    // Load pull-tab library
+    loadPullTabLibrary();
+    
+    // Set up pull-tab dropdown handlers
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('pulltab-select')) {
+            handlePullTabSelection(e.target);
+        }
+    });
+    
+    // Initialize POS items with correct order
+    if (typeof CONFIG !== 'undefined') {
+        CONFIG.POS_ITEMS = CORRECTED_POS_ITEMS;
+    }
+    
+    // Re-render POS table if it exists
+    if (window.app && typeof window.app.initializePOSSalesTable === 'function') {
+        window.app.initializePOSSalesTable();
+    }
 });
