@@ -1,4 +1,6 @@
 // Offline functionality
+if (typeof OfflineManager === 'undefined') {
+
 class OfflineManager {
     constructor() {
         this.db = null;
@@ -130,3 +132,11 @@ if ('serviceWorker' in navigator) {
             .catch(error => console.log('SW registration failed:', error));
     });
 }
+window.OfflineManager = OfflineManager;
+
+// Initialize only if not already initialized
+if (!window.offlineManager) {
+    window.offlineManager = new OfflineManager();
+}
+
+} // End of if (typeof OfflineManager === 'undefined')
