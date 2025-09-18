@@ -1424,3 +1424,229 @@ document.addEventListener('DOMContentLoaded', function() {
         window.app.initializePOSSalesTable();
     }
 });
+// CRITICAL FIX: Add this to the END of app.js or create a new init.js file
+// This ensures proper initialization after all scripts are loaded
+
+// Wait for all scripts to be loaded
+window.addEventListener('load', function() {
+    console.log('Starting full initialization...');
+    
+    // Check if app exists, if not create it
+    if (!window.app) {
+        console.log('Creating app instance...');
+        window.app = new BingoApp();
+    }
+    
+    // Ensure we're on step 1, not step 6
+    if (window.app.currentStep === 6 || !window.app.currentStep) {
+        console.log('Resetting to step 1...');
+        window.app.currentStep = 1;
+    }
+    
+    // Force display of step 1 content
+    const initializeSteps = () => {
+        // Hide all steps first
+        document.querySelectorAll('.wizard-step').forEach((step, index) => {
+            step.style.display = 'none';
+            step.classList.remove('active');
+        });
+        
+        // Show step 1
+        const step1 = document.getElementById('step-1');
+        if (step1) {
+            step1.style.display = 'block';
+            step1.classList.add('active');
+            console.log('Step 1 displayed');
+        } else {
+            console.error('Step 1 element not found!');
+        }
+        
+        // Update step indicators
+        document.querySelectorAll('.step').forEach((indicator, index) => {
+            indicator.classList.remove('active', 'completed');
+            if (index === 0) {
+                indicator.classList.add('active');
+            }
+        });
+        
+        // Fix navigation buttons
+        const prevBtn = document.querySelector('button:has-text("Previous"), button[onclick*="previous"]');
+        const nextBtn = document.querySelector('button:has-text("Complete"), button[onclick*="next"]');
+        
+        // For first step, hide Previous and show Next
+        if (prevBtn) {
+            prevBtn.style.display = 'none';
+        }
+        
+        if (nextBtn) {
+            nextBtn.textContent = 'Next';
+            nextBtn.onclick = function() {
+                if (typeof nextStep === 'function') {
+                    nextStep();
+                } else {
+                    console.error('nextStep function not found');
+                }
+            };
+        }
+    };
+    
+    // Initialize steps
+    initializeSteps();
+    
+    // Initialize date picker if the function exists
+    if (typeof initializeDatePicker === 'function') {
+        initializeDatePicker();
+        console.log('Date picker initialized');
+    }
+    
+    // Initialize game calculations if the function exists  
+    if (typeof initializeGameCalculations === 'function') {
+        initializeGameCalculations();
+        console.log('Game calculations initialized');
+    }
+    
+    // Load pull-tab library
+    if (typeof loadPullTabLibrary === 'function') {
+        loadPullTabLibrary();
+        console.log('Loading pull-tab library...');
+    } else if (window.app && typeof window.app.loadPullTabLibrary === 'function') {
+        window.app.loadPullTabLibrary();
+        console.log('Loading pull-tab library from app...');
+    }
+    
+    // Make navigation functions globally available
+    window.nextStep = function() {
+        console.log('Next step clicked');
+        if (!validateCurrentStep()) {
+            return false;
+        }
+        
+        saveStepData();
+        
+        if (window.app.currentStep < window.app.totalSteps) {
+            window.app.currentStep++;
+            updateStepDisplay();
+            loadStepData();
+        }
+    };
+    
+    window.previousStep = function() {
+        console.log('Previous step clicked');
+        if (window.app.currentStep > 1) {
+            saveStepData();
+            window.app.currentStep--;
+            updateStepDisplay();
+            loadStepData();
+        }
+    };
+    
+    // Ensure updateStepDisplay function exists globally
+    window.updateStepDisplay = function() {
+        console.log('Updating step display to step', window.app.currentStep);
+        
+        // Hide all steps
+        document.querySelectorAll('.wizard-step').forEach(step => {
+            step.style.display = 'none';
+            step.classList.remove('active');
+        });
+        
+        // Show current step
+        const currentStepElement = document.getElementById(`step-${window.app.currentStep}`);
+        if (currentStepElement) {
+            currentStepElement.style.display = 'block';
+            currentStepElement.classList.add('active');
+        }
+        
+        // Update step indicators
+        document.querySelectorAll('.step').forEach((indicator, index) => {
+            const stepNum = index + 1;
+            indicator.classList.remove('active', 'completed');
+            
+            if (stepNum === window.app.currentStep) {
+                indicator.classList.add('active');
+            } else if (stepNum < window.app.currentStep) {
+                indicator.classList.add('completed');
+            }
+        });
+        
+        // Update navigation buttons
+        const prevBtn = document.querySelector('button:contains("Previous"), button[onclick*="previous"]') ||
+                       document.querySelector('.wizard-navigation button:first-child');
+        const nextBtn = document.querySelector('button:contains("Next"), button:contains("Complete"), button[onclick*="next"]') ||
+                       document.querySelector('.wizard-navigation button:last-child');
+        
+        if (prevBtn) {
+            prevBtn.style.display = window.app.currentStep === 1 ? 'none' : 'inline-block';
+            prevBtn.textContent = 'Previous';
+            prevBtn.onclick = previousStep;
+        }
+        
+        if (nextBtn) {
+            if (window.app.currentStep === window.app.totalSteps) {
+                nextBtn.textContent = 'Complete';
+                nextBtn.onclick = submitOccasion;
+            } else {
+                nextBtn.textContent = 'Next';
+                nextBtn.onclick = nextStep;
+            }
+        }
+    };
+    
+    // Placeholder validation functions if they don't exist
+    if (typeof validateCurrentStep === 'undefined') {
+        window.validateCurrentStep = function() {
+            console.log('Validation check for step', window.app.currentStep);
+            // Basic validation - can be enhanced
+            return true;
+        };
+    }
+    
+    if (typeof saveStepData === 'undefined') {
+        window.saveStepData = function() {
+            console.log('Saving data for step', window.app.currentStep);
+            // Save logic here
+        };
+    }
+    
+    if (typeof loadStepData === 'undefined') {
+        window.loadStepData = function() {
+            console.log('Loading data for step', window.app.currentStep);
+            // Load logic here
+        };
+    }
+    
+    if (typeof submitOccasion === 'undefined') {
+        window.submitOccasion = function() {
+            console.log('Submitting occasion...');
+            alert('Submit function needs to be implemented');
+        };
+    }
+    
+    console.log('Full initialization complete');
+    
+    // Log current state for debugging
+    console.log('Current state:', {
+        currentStep: window.app.currentStep,
+        totalSteps: window.app.totalSteps,
+        step1Element: document.getElementById('step-1'),
+        navigationButtons: {
+            previous: document.querySelector('button:contains("Previous")'),
+            next: document.querySelector('button:contains("Next")')
+        }
+    });
+});
+
+// Also add a fallback for button text selector
+document.addEventListener('DOMContentLoaded', function() {
+    // Polyfill for button text selection if needed
+    if (!document.querySelector('button:contains')) {
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.textContent.includes('Previous')) {
+                btn.classList.add('prev-button');
+            }
+            if (btn.textContent.includes('Next') || btn.textContent.includes('Complete')) {
+                btn.classList.add('next-button');
+            }
+        });
+    }
+});
