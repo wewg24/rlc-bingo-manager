@@ -31,7 +31,7 @@ class BingoApp {
         // Initialize the application
         this.init();
     }
-    
+    window.BingoApp = BingoApp;
     /**
      * Display the occasions list view
      * Stores current wizard state and loads historical occasions
