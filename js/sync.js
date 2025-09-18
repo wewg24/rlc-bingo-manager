@@ -1,11 +1,14 @@
 // Sync Manager
+if (typeof SyncManager === 'undefined') {
+
 class SyncManager {
     constructor() {
-        this.syncInProgress = false;
-        this.offlineManager = new OfflineManager();
+        this.queue = [];
+        this.syncing = false;
+        this.loadQueue();
     }
     
-    async syncData() {
+    loadQueue() {
         if (this.syncInProgress || !navigator.onLine) return;
         
         this.syncInProgress = true;
@@ -75,3 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const syncManager = new SyncManager();
     syncManager.startAutoSync();
 });
+window.SyncManager = SyncManager;
+
+// Initialize only if not already initialized
+if (!window.syncManager) {
+    window.syncManager = new SyncManager();
+}
+
+}
