@@ -577,74 +577,209 @@
     </script>
     <!-- Add this script block to the very bottom of your index.html file, right before </body> -->
     <script>
-    // Navigation Fix v11.0.4
+    // Critical UI Fixes v11.0.4
     (function() {
-        console.log('Applying navigation fix...');
+        console.log('Applying critical UI fixes...');
         
-        // Initialize app state
-        if (!window.app) {
-            console.error('App not initialized - creating minimal app object');
-            window.app = {
-                currentStep: 1,
-                totalSteps: 6,
-                data: {
-                    occasion: {},
-                    paperBingo: {},
-                    posSales: {},
-                    electronic: {},
-                    games: [],
-                    pullTabs: [],
-                    moneyCount: { bingo: {}, pullTab: {} },
-                    financial: {}
-                }
+        // 1. FIX HEADER NAVIGATION - Move Next button to proper location
+        const headerNext = document.querySelector('header .button, header button');
+        if (headerNext && headerNext.textContent.includes('Next')) {
+            headerNext.style.display = 'none';
+            console.log('Hidden misplaced header Next button');
+        }
+        
+        // Ensure hamburger menu is visible
+        const menuToggle = document.getElementById('menu-toggle');
+        if (menuToggle) {
+            menuToggle.style.display = 'block';
+            menuToggle.innerHTML = '☰';
+        }
+        
+        // Ensure theme toggle is visible
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.style.display = 'block';
+            themeToggle.innerHTML = localStorage.getItem('theme') === 'dark' ? '☀️' : '🌙';
+            themeToggle.onclick = function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                themeToggle.innerHTML = isDark ? '☀️' : '🌙';
             };
         }
         
-        // Ensure we're on step 1
-        window.app.currentStep = 1;
-        
-        // Define navigation functions globally
-        window.nextStep = function() {
-            console.log('Next clicked - current step:', window.app.currentStep);
+        // 2. FIX PROGRESSIVE PRIZE CALCULATION
+        function calculateProgressivePrize() {
+            const jackpot = parseFloat(document.getElementById('prog-jackpot')?.value) || 0;
+            const ballsNeeded = parseInt(document.getElementById('prog-balls')?.value) || 0;
+            const actualBalls = parseInt(document.getElementById('prog-actual-balls')?.value) || 0;
+            const consolation = parseFloat(document.getElementById('prog-consolation')?.value) || 200;
             
-            // Basic validation
-            if (window.app.currentStep === 1) {
-                const date = document.getElementById('session-date')?.value;
-                const session = document.getElementById('session-type')?.value;
-                const lion = document.getElementById('lion-charge')?.value;
-                const people = document.getElementById('total-people')?.value;
+            let prize = 0;
+            if (actualBalls > 0 && ballsNeeded > 0) {
+                prize = actualBalls <= ballsNeeded ? jackpot : consolation;
+            }
+            
+            const prizeField = document.getElementById('prog-prize');
+            if (prizeField) {
+                prizeField.value = prize;
+                prizeField.removeAttribute('readonly'); // Allow manual override if needed
+            }
+            
+            console.log('Progressive calculated:', { jackpot, ballsNeeded, actualBalls, prize });
+        }
+        
+        // Add event listener for progressive calculation
+        const progActualBalls = document.getElementById('prog-actual-balls');
+        if (progActualBalls) {
+            progActualBalls.addEventListener('input', calculateProgressivePrize);
+        }
+        
+        // Make Prize Awarded field editable
+        const progPrize = document.getElementById('prog-prize');
+        if (progPrize) {
+            progPrize.removeAttribute('readonly');
+            progPrize.type = 'number';
+            progPrize.step = '0.01';
+            progPrize.min = '0';
+        }
+        
+        // 3. FIX NAVIGATION BUTTONS
+        window.app = window.app || {
+            currentStep: 1,
+            totalSteps: 6,
+            data: {
+                occasion: {},
+                paperBingo: {},
+                posSales: {},
+                electronic: {},
+                games: [],
+                pullTabs: [],
+                moneyCount: { bingo: {}, pullTab: {} },
+                financial: {}
+            }
+        };
+        
+        // Get the actual navigation buttons (at bottom of form)
+        function fixNavigationButtons() {
+            // Find buttons in the wizard navigation area, not header
+            const wizardNav = document.querySelector('.wizard-navigation') || 
+                             document.querySelector('.step-navigation') ||
+                             document.querySelector('main');
+            
+            if (!wizardNav) return;
+            
+            let prevBtn = wizardNav.querySelector('button:first-of-type[onclick*="previous"]') ||
+                          wizardNav.querySelector('.button.secondary');
+            let nextBtn = wizardNav.querySelector('button:last-of-type[onclick*="next"]') ||
+                          wizardNav.querySelector('.button.primary:not(header *)');
+            
+            // Create navigation container if buttons don't exist
+            if (!prevBtn || !nextBtn) {
+                const navContainer = document.createElement('div');
+                navContainer.className = 'wizard-navigation';
+                navContainer.style.cssText = 'display: flex; justify-content: space-between; margin-top: 20px;';
                 
-                if (!date || !session || !lion || !people) {
-                    alert('Please fill in Date, Session, Lion in Charge, and Total People');
-                    return false;
+                prevBtn = document.createElement('button');
+                prevBtn.className = 'button secondary';
+                prevBtn.textContent = 'Previous';
+                
+                nextBtn = document.createElement('button');
+                nextBtn.className = 'button primary';
+                nextBtn.textContent = 'Next';
+                
+                navContainer.appendChild(prevBtn);
+                navContainer.appendChild(nextBtn);
+                
+                // Add to the current step content
+                const currentStep = document.getElementById(`step-${window.app.currentStep}`);
+                if (currentStep) {
+                    currentStep.appendChild(navContainer);
                 }
             }
             
-            if (window.app.currentStep < window.app.totalSteps) {
-                window.app.currentStep++;
-                updateStepDisplay();
+            // Update button states
+            if (prevBtn) {
+                prevBtn.style.display = window.app.currentStep === 1 ? 'none' : 'inline-block';
+                prevBtn.onclick = function() {
+                    if (window.app.currentStep > 1) {
+                        saveCurrentStepData();
+                        window.app.currentStep--;
+                        showStep(window.app.currentStep);
+                    }
+                };
             }
-        };
-        
-        window.previousStep = function() {
-            console.log('Previous clicked - current step:', window.app.currentStep);
-            if (window.app.currentStep > 1) {
-                window.app.currentStep--;
-                updateStepDisplay();
+            
+            if (nextBtn) {
+                nextBtn.textContent = window.app.currentStep === 6 ? 'Complete' : 'Next';
+                nextBtn.onclick = function() {
+                    // Validate current step
+                    if (validateCurrentStep()) {
+                        saveCurrentStepData();
+                        if (window.app.currentStep < 6) {
+                            window.app.currentStep++;
+                            showStep(window.app.currentStep);
+                        } else {
+                            // Submit
+                            alert('Ready to submit! (Implementation needed)');
+                        }
+                    }
+                };
             }
-        };
+        }
         
-        window.updateStepDisplay = function() {
-            console.log('Updating display to step:', window.app.currentStep);
+        // Validation function
+        function validateCurrentStep() {
+            if (window.app.currentStep === 1) {
+                const required = ['session-date', 'session-type', 'lion-charge', 'total-people'];
+                for (let fieldId of required) {
+                    const field = document.getElementById(fieldId);
+                    if (!field || !field.value) {
+                        alert(`Please fill in: ${fieldId.replace('-', ' ').replace('lion charge', 'Lion in Charge')}`);
+                        field?.focus();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        // Save current step data
+        function saveCurrentStepData() {
+            if (window.app.currentStep === 1) {
+                window.app.data.occasion = {
+                    date: document.getElementById('session-date')?.value,
+                    sessionType: document.getElementById('session-type')?.value,
+                    lionInCharge: document.getElementById('lion-charge')?.value,
+                    totalPeople: document.getElementById('total-people')?.value,
+                    birthdays: document.getElementById('birthdays')?.value || 0,
+                    progressive: {
+                        jackpot: document.getElementById('prog-jackpot')?.value,
+                        ballsNeeded: document.getElementById('prog-balls')?.value,
+                        actualBalls: document.getElementById('prog-actual-balls')?.value,
+                        consolation: document.getElementById('prog-consolation')?.value,
+                        prize: document.getElementById('prog-prize')?.value,
+                        paidByCheck: document.getElementById('prog-check')?.checked
+                    }
+                };
+            }
+        }
+        
+        // Show specific step
+        function showStep(stepNum) {
+            console.log('Showing step:', stepNum);
             
             // Hide all steps
-            document.querySelectorAll('.wizard-step, .step-content, [id^="step-"]').forEach(el => {
-                el.style.display = 'none';
-                el.classList.remove('active');
-            });
+            for (let i = 1; i <= 6; i++) {
+                const step = document.getElementById(`step-${i}`);
+                if (step) {
+                    step.style.display = 'none';
+                    step.classList.remove('active');
+                }
+            }
             
             // Show current step
-            const currentStep = document.getElementById(`step-${window.app.currentStep}`);
+            const currentStep = document.getElementById(`step-${stepNum}`);
             if (currentStep) {
                 currentStep.style.display = 'block';
                 currentStep.classList.add('active');
@@ -653,104 +788,77 @@
             // Update step indicators
             document.querySelectorAll('.step').forEach((indicator, index) => {
                 indicator.classList.remove('active', 'completed');
-                if (index + 1 === window.app.currentStep) {
+                if (index + 1 === stepNum) {
                     indicator.classList.add('active');
-                } else if (index + 1 < window.app.currentStep) {
+                } else if (index + 1 < stepNum) {
                     indicator.classList.add('completed');
                 }
             });
             
-            // Update buttons
-            const prevBtn = document.querySelector('button:first-of-type, .button.secondary');
-            const nextBtn = document.querySelector('button:last-of-type, .button.primary');
-            
-            if (prevBtn) {
-                prevBtn.textContent = 'Previous';
-                prevBtn.style.display = window.app.currentStep === 1 ? 'none' : 'inline-block';
-                prevBtn.onclick = previousStep;
-            }
-            
-            if (nextBtn) {
-                if (window.app.currentStep === window.app.totalSteps) {
-                    nextBtn.textContent = 'Complete';
-                    nextBtn.onclick = function() {
-                        if (confirm('Submit this occasion?')) {
-                            alert('Submission function will be implemented');
-                            // submitOccasion();
-                        }
-                    };
-                } else {
-                    nextBtn.textContent = 'Next';
-                    nextBtn.onclick = nextStep;
-                }
-            }
-        };
-        
-        // Dark mode toggle
-        window.toggleTheme = function() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            
-            const themeToggle = document.getElementById('theme-toggle');
-            if (themeToggle) {
-                themeToggle.innerHTML = isDark ? '<span>☀️</span>' : '<span>🌙</span>';
-            }
-        };
-        
-        // Apply saved theme
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
+            // Fix navigation buttons for this step
+            fixNavigationButtons();
         }
         
-        // Initialize date picker
-        const dateInput = document.getElementById('session-date');
-        if (dateInput) {
-            dateInput.type = 'date';
-            
-            // Set today as default
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.value = today;
-            
-            // Auto-select session for Mondays
-            dateInput.addEventListener('change', function(e) {
-                const selectedDate = new Date(e.target.value + 'T12:00:00');
-                
-                if (selectedDate.getDay() === 1) { // Monday
-                    const firstDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-                    let firstMonday = new Date(firstDay);
-                    
-                    while (firstMonday.getDay() !== 1) {
-                        firstMonday.setDate(firstMonday.getDate() + 1);
-                    }
-                    
-                    const weekNumber = Math.floor((selectedDate.getDate() - firstMonday.getDate()) / 7) + 1;
-                    
-                    const sessionMap = {
-                        1: '5-1',
-                        2: '6-2', 
-                        3: '7-3',
-                        4: '8-4',
-                        5: '5-1'
-                    };
-                    
-                    const sessionSelect = document.getElementById('session-type');
-                    if (sessionSelect && sessionMap[weekNumber]) {
-                        sessionSelect.value = sessionMap[weekNumber];
-                        console.log('Auto-selected session:', sessionMap[weekNumber]);
-                    }
-                }
+        // 4. BIRTHDAY BOGO CALCULATION
+        const birthdayInput = document.getElementById('birthdays');
+        if (birthdayInput) {
+            birthdayInput.addEventListener('input', function() {
+                const count = parseInt(this.value) || 0;
+                console.log('Birthday BOGO count:', count);
+                // This would trigger free paper calculations
+                // Implementation depends on your paper sales setup
             });
         }
         
-        // Fix initial button state
+        // Apply initial fixes
         setTimeout(() => {
-            updateStepDisplay();
-            console.log('Navigation fix applied successfully');
+            fixNavigationButtons();
+            showStep(1);
+            console.log('Critical UI fixes applied');
         }, 100);
         
     })();
     </script>
+    
+    <!-- ADD THIS CSS TO FIX LAYOUT ISSUES -->
+    <style>
+    /* Fix navigation button positioning */
+    .wizard-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        padding: 20px 0;
+        border-top: 1px solid #ddd;
+    }
+    
+    /* Ensure header buttons don't interfere */
+    header button.primary {
+        display: none !important;
+    }
+    
+    /* Fix step content display */
+    .wizard-step {
+        min-height: 400px;
+    }
+    
+    /* Dark mode fixes */
+    .dark-mode .wizard-navigation {
+        border-top-color: #444;
+    }
+    
+    /* Progressive section styling */
+    .progressive-section input[type="number"] {
+        background: white;
+        border: 1px solid #ccc;
+        padding: 8px;
+        border-radius: 4px;
+    }
+    
+    .dark-mode .progressive-section input[type="number"] {
+        background: #2a2a2a;
+        color: white;
+        border-color: #555;
+    }
+    </style>
 </body>
 </html>
