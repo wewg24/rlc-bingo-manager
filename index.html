@@ -2,27 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>RLC Bingo Manager</title>
-    <script src="config.js"></script>
-    <!-- Cache control meta tags -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=11.0.4">
-    <link rel="stylesheet" href="css/wizard.css?v=11.0.4">
-    <link rel="stylesheet" href="css/dark-mode.css?v=11.0.4">
-    
-    <!-- PWA Manifest -->
+    <!-- Simple CSS loading without versions -->
+    <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
     
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="50x50" href="assets/icon-50.png">
-    <link rel="apple-touch-icon" href="assets/icon-50.png">
+    <!-- PWA meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
     <!-- Header -->
@@ -530,12 +522,52 @@
         </div>
     </main>
 
-    <!-- Scripts -->
-    <script src="js/config.js?v=11.0.4"></script>
-    <script src="js/app.js?v=11.0.4"></script>
-    <script src="js/wizard.js?v=11.0.4"></script>
-    <script src="js/calculations.js?v=11.0.4"></script>
-    <script src="js/offline.js?v=11.0.4"></script>
-    <script src="js/sync.js?v=11.0.4"></script>
+    <!-- 
+    INLINE CONFIG AND INITIALIZATION
+    No external config.js file needed - everything is right here
+    -->
+    <script>
+    // Configuration - defined inline, not in a separate file
+    const CONFIG = {
+        VERSION: '11.0.5',
+        API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
+        STORAGE_KEYS: {
+            DRAFT_DATA: 'bingo_draft',
+            PULL_TAB_LIBRARY: 'pulltab_library',
+            SYNC_QUEUE: 'sync_queue',
+            THEME: 'theme_preference'
+        },
+        PAPER_TYPES: [
+            { id: 'eb', name: 'Early Bird', price: 5, hasFree: true },
+            { id: '3f', name: '3 Face', price: 1, hasFree: false },
+            { id: '6f', name: '6 Face', price: 10, hasFree: true },
+            { id: '9fs', name: '9 Face Solid', price: 15, hasFree: false },
+            { id: '9fst', name: '9 Face Stripe', price: 10, hasFree: false },
+            { id: 'singles', name: 'Singles', price: 1, hasFree: false },
+            { id: 'doubles', name: 'Doubles', price: 2, hasFree: false }
+        ],
+        POS_ITEMS: [
+            { id: 'dauber', name: 'Dauber', price: 2, category: 'misc' },
+            { id: 'birthday', name: 'Birthday Pack', price: 0, category: 'misc' },
+            { id: 'small-blue', name: 'Small Blue Electronic', price: 40, category: 'electronic' },
+            { id: 'large-green', name: 'Large Green Electronic', price: 65, category: 'electronic' }
+        ]
+    };
+
+    // Make CONFIG globally available
+    window.CONFIG = CONFIG;
+    <!-- Load your scripts without version parameters -->
+    <script src="app.js"></script>
+    <script src="wizard.js"></script>
+    <script src="offline.js"></script>
+    <script src="sync.js"></script>
+    <!-- Simple service worker registration -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker registered'))
+            .catch(err => console.error('Service Worker registration failed:', err));
+    }
+    </script>
 </body>
 </html>
