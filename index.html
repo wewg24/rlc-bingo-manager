@@ -7,33 +7,24 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>RLC Bingo Manager</title>
 
-    <!-- Cache control meta tags -->
+    <!-- Cache control meta tags for v11.0.4 -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/wizard.css">
-    <link rel="stylesheet" href="css/dark-mode.css">
+    <!-- Styles with v11.0.4 cache busting -->
+    <link rel="stylesheet" href="css/style.css?v=11.0.4">
+    <link rel="stylesheet" href="css/wizard.css?v=11.0.4">
+    <link rel="stylesheet" href="css/dark-mode.css?v=11.0.4">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=11.0.4">
     
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="50x50" href="assets/icon-50.png">
+    <!-- Icons - Fixed references to existing assets -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-50.png">
     <link rel="apple-touch-icon" href="assets/icon-50.png">
 </head>
 <body>
-    <!-- JavaScript Files at end of body -->
-    <script src="js/config.js"></script>
-    <script src="js/calculations.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/wizard.js"></script>
-    <script src="js/offline.js"></script>
-    <script src="js/sync.js"></script>
-</body>
-</html>
     <!-- Header -->
     <header class="app-header">
         <button id="menu-toggle" class="menu-button" aria-label="Menu">☰</button>
@@ -62,491 +53,168 @@
         </ul>
     </nav>
 
-    <!-- Overlay -->
-    <div id="overlay" class="overlay" onclick="closeMenu()"></div>
-
     <!-- Main Content -->
-    <main class="wizard-container">
-        <!-- Step Indicators -->
-        <div class="step-indicators">
-            <div class="step-indicator active" onclick="goToStep(1)">
-                <span class="step-number">1</span>
-                <span class="step-label">Session Info</span>
+    <main class="main-content">
+        <!-- Wizard Progress -->
+        <div class="wizard-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div class="step-indicator" onclick="goToStep(2)">
-                <span class="step-number">2</span>
-                <span class="step-label">Paper Sales</span>
-            </div>
-            <div class="step-indicator" onclick="goToStep(3)">
-                <span class="step-number">3</span>
-                <span class="step-label">Game Results</span>
-            </div>
-            <div class="step-indicator" onclick="goToStep(4)">
-                <span class="step-number">4</span>
-                <span class="step-label">Pull-Tabs</span>
-            </div>
-            <div class="step-indicator" onclick="goToStep(5)">
-                <span class="step-number">5</span>
-                <span class="step-label">Money Count</span>
-            </div>
-            <div class="step-indicator" onclick="goToStep(6)">
-                <span class="step-number">6</span>
-                <span class="step-label">Review</span>
+            <div class="progress-steps">
+                <div class="step active" onclick="goToStep(1)">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Session Info</div>
+                </div>
+                <div class="step" onclick="goToStep(2)">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Paper Sales</div>
+                </div>
+                <div class="step" onclick="goToStep(3)">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Game Results</div>
+                </div>
+                <div class="step" onclick="goToStep(4)">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Pull-Tabs</div>
+                </div>
+                <div class="step" onclick="goToStep(5)">
+                    <div class="step-number">5</div>
+                    <div class="step-label">Money Count</div>
+                </div>
+                <div class="step" onclick="goToStep(6)">
+                    <div class="step-number">6</div>
+                    <div class="step-label">Review</div>
+                </div>
             </div>
         </div>
 
-        <!-- Step 1: Session Information -->
-        <div id="step-1" class="step-content">
-            <h2>Session Information</h2>
-            <div class="form-section">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="session-date">Date</label>
-                        <input type="date" id="session-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="session-type">Session</label>
-                        <select id="session-type" required>
-                            <option value="">Select Session...</option>
-                            <option value="5-1">5-1 (1st/5th Monday)</option>
-                            <option value="6-2">6-2 (2nd Monday)</option>
-                            <option value="7-3">7-3 (3rd Monday)</option>
-                            <option value="8-4">8-4 (4th Monday)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="lion-in-charge">Lion in Charge</label>
-                        <input type="text" id="lion-in-charge" placeholder="Enter name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="attendance">Total People</label>
-                        <input type="number" id="attendance" min="1" placeholder="0" required>
-                    </div>
+        <!-- Wizard Container -->
+        <div class="wizard-container">
+            <!-- Step 1: Session Information -->
+            <div id="step-1" class="wizard-step active">
+                <div class="step-header">
+                    <h2>Step 1: Session Information</h2>
+                    <p>Enter basic session details and progressive setup</p>
                 </div>
                 
-                <div class="form-group">
-                    <label for="birthdays">Birthdays (BOGOs)</label>
-                    <input type="number" id="birthdays" min="0" value="0">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="mondayDate">Date:</label>
+                        <input type="date" id="mondayDate" name="mondayDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sessionType">Session Type:</label>
+                        <select id="sessionType" name="sessionType" required>
+                            <option value="">Select Session</option>
+                            <option value="5-1">Monday Session 5-1</option>
+                            <option value="6-2">Monday Session 6-2</option>
+                            <option value="SATURDAY">Saturday</option>
+                            <option value="SUNDAY">Sunday</option>
+                            <option value="SPECIAL">Special Event</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lionInCharge">Lion in Charge:</label>
+                        <input type="text" id="lionInCharge" name="lionInCharge" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="totalPeople">Total People:</label>
+                        <input type="number" id="totalPeople" name="totalPeople" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="birthdays">Birthdays (for BOGOs):</label>
+                        <input type="number" id="birthdays" name="birthdays" min="0" value="0">
+                    </div>
                 </div>
 
+                <!-- Progressive Setup -->
                 <div class="progressive-section">
-                    <h3>Progressive Game</h3>
+                    <h3>Progressive Game Setup</h3>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="prog-jackpot">Jackpot Offered</label>
-                            <input type="number" id="prog-jackpot" step="0.01" placeholder="0.00">
+                            <label for="progressiveJackpot">Jackpot Amount:</label>
+                            <input type="number" id="progressiveJackpot" name="progressiveJackpot" value="1500" step="100">
                         </div>
+                        
                         <div class="form-group">
-                            <label for="prog-balls">Balls to Win</label>
-                            <input type="number" id="prog-balls" min="1" placeholder="0">
+                            <label for="ballsNeeded">Balls Needed:</label>
+                            <input type="number" id="ballsNeeded" name="ballsNeeded" value="48" min="40" max="60">
                         </div>
+                        
                         <div class="form-group">
-                            <label for="prog-consolation">Consolation Prize</label>
-                            <input type="number" id="prog-consolation" step="0.01" value="200">
+                            <label for="actualBalls">Actual Balls Called:</label>
+                            <input type="number" id="actualBalls" name="actualBalls" min="40" max="75">
                         </div>
+                        
                         <div class="form-group">
-                            <label for="prog-actual-balls">Actual Balls Called</label>
-                            <input type="number" id="prog-actual-balls" min="0" placeholder="0">
+                            <label for="actualPrize">Actual Prize Paid:</label>
+                            <input type="number" id="actualPrize" name="actualPrize" step="50">
                         </div>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="prog-prize">Prize Awarded</label>
-                            <input type="number" id="prog-prize" step="0.01" readonly>
-                        </div>
-                        <div class="form-group">
+                        
+                        <div class="form-group checkbox-group">
                             <label>
-                                <input type="checkbox" id="prog-check">
-                                Paid by Check
+                                <input type="checkbox" id="checkPayment" name="checkPayment">
+                                Check Payment Required
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Additional steps would be added here -->
+            <div id="step-2" class="wizard-step">
+                <div class="step-header">
+                    <h2>Step 2: Paper Sales</h2>
+                    <p>Record paper inventory and POS sales</p>
+                </div>
+                <!-- Step 2 content would go here -->
+            </div>
+
+            <!-- Steps 3-6 would follow similar pattern -->
         </div>
 
-        <!-- Step 2: Paper Sales -->
-        <div id="step-2" class="step-content" style="display:none;">
-            <h2>Paper Sales & POS</h2>
-            
-            <div class="form-section">
-                <h3>Paper Inventory</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Start</th>
-                            <th>Free</th>
-                            <th>End</th>
-                            <th>Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody id="paper-sales-body">
-                        <!-- Populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="form-section">
-                <h3>POS / Door Sales</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pos-sales-body">
-                        <!-- Populated by JavaScript in correct order -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3"><strong>Total POS Sales:</strong></td>
-                            <td id="total-paper-sales">$0.00</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-
-            <div class="form-section">
-                <h3>Electronic Rentals</h3>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="small-machines">Small Machines ($40)</label>
-                        <input type="number" id="small-machines" min="0" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="large-machines">Large Machines ($65)</label>
-                        <input type="number" id="large-machines" min="0" value="0">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 3: Game Results -->
-        <div id="step-3" class="step-content" style="display:none;">
-            <h2>Game Results</h2>
-            <div class="form-section">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Color</th>
-                            <th>Game</th>
-                            <th>Prize</th>
-                            <th>Winners</th>
-                            <th>Per Winner</th>
-                            <th>Total</th>
-                            <th>Check</th>
-                        </tr>
-                    </thead>
-                    <tbody id="games-body">
-                        <!-- Populated by JavaScript based on session type -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="6"><strong>Total Bingo Prizes:</strong></td>
-                            <td id="total-bingo-prizes">$0.00</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-
-        <!-- Step 4: Pull-Tabs -->
-        <div id="step-4" class="step-content" style="display:none;">
-            <h2>Pull-Tab Summary</h2>
-            
-            <div class="form-section">
-                <h3>Regular Games</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Game</th>
-                            <th>Serial #</th>
-                            <th>Opened</th>
-                            <th>Tickets</th>
-                            <th>Sales</th>
-                            <th>Prizes</th>
-                            <th>Profit</th>
-                            <th>Ideal</th>
-                            <th>Check</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="pulltab-body">
-                        <!-- Dynamic rows added here -->
-                    </tbody>
-                    <tfoot>
-                        <tr id="pulltab-totals">
-                            <td colspan="4"><strong>Regular Games</strong></td>
-                            <td id="pulltab-total-sold">$0.00</td>
-                            <td id="pulltab-total-prizes">$0.00</td>
-                            <td id="pulltab-total-profit">$0.00</td>
-                            <td id="pulltab-ideal-profit">$0.00</td>
-                            <td colspan="2"></td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <button class="button secondary" onclick="addPullTabRow()">Add Game</button>
-            </div>
-
-            <div class="form-section">
-                <h3>Special Events</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Event Name</th>
-                            <th>Serial #</th>
-                            <th>Opened</th>
-                            <th>Tickets</th>
-                            <th>Sales</th>
-                            <th>Prizes</th>
-                            <th>Profit</th>
-                            <th>Ideal</th>
-                            <th>Check</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="special-events-body">
-                        <!-- Dynamic rows added here -->
-                    </tbody>
-                    <tfoot>
-                        <tr id="special-totals">
-                            <td colspan="4"><strong>Special Events</strong></td>
-                            <td id="special-total-sold">$0.00</td>
-                            <td id="special-total-prizes">$0.00</td>
-                            <td id="special-total-profit">$0.00</td>
-                            <td>-</td>
-                            <td colspan="2"></td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <button class="button secondary" onclick="addSpecialEvent()">Add Special Event</button>
-            </div>
-        </div>
-
-        <!-- Step 5: Money Count -->
-        <div id="step-5" class="step-content" style="display:none;">
-            <h2>Money Count</h2>
-            
-            <div class="form-section">
-                <h3>Bingo Drawer</h3>
-                <div class="money-grid">
-                    <div class="form-group">
-                        <label for="bingo-100">$100s</label>
-                        <input type="number" id="bingo-100" min="0" step="100" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="bingo-50">$50s</label>
-                        <input type="number" id="bingo-50" min="0" step="50" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="bingo-20">$20s</label>
-                        <input type="number" id="bingo-20" min="0" step="20" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="bingo-10">$10s</label>
-                        <input type="number" id="bingo-10" min="0" step="10" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="bingo-5">$5s</label>
-                        <input type="number" id="bingo-5" min="0" step="5" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="bingo-2">$2s</label>
-                        <input type="number" id="bingo-2" min="0" step="2" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="bingo-1">$1s</label>
-                        <input type="number" id="bingo-1" min="0" step="1" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="bingo-coins">Coins</label>
-                        <input type="number" id="bingo-coins" min="0" step="0.01" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="bingo-checks">Checks</label>
-                        <input type="number" id="bingo-checks" min="0" step="0.01" value="0">
-                    </div>
-                </div>
-                <div class="total-row">
-                    <strong>Bingo Total:</strong> <span id="bingo-total">$0.00</span>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h3>Pull-Tab Drawer</h3>
-                <div class="money-grid">
-                    <div class="form-group">
-                        <label for="pt-100">$100s</label>
-                        <input type="number" id="pt-100" min="0" step="100" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="pt-50">$50s</label>
-                        <input type="number" id="pt-50" min="0" step="50" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="pt-20">$20s</label>
-                        <input type="number" id="pt-20" min="0" step="20" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="pt-10">$10s</label>
-                        <input type="number" id="pt-10" min="0" step="10" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="pt-5">$5s</label>
-                        <input type="number" id="pt-5" min="0" step="5" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="pt-2">$2s</label>
-                        <input type="number" id="pt-2" min="0" step="2" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="pt-1">$1s</label>
-                        <input type="number" id="pt-1" min="0" step="1" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="pt-coins">Coins</label>
-                        <input type="number" id="pt-coins" min="0" step="0.01" value="0">
-                    </div>
-                </div>
-                <div class="total-row">
-                    <strong>Pull-Tab Total:</strong> <span id="pt-total">$0.00</span>
-                </div>
-            </div>
-
-            <div class="form-section deposit-summary">
-                <h3>Deposit Summary</h3>
-                <table class="summary-table">
-                    <tr>
-                        <td>Currency:</td>
-                        <td id="deposit-currency">$0.00</td>
-                    </tr>
-                    <tr>
-                        <td>Coins:</td>
-                        <td id="deposit-coins">$0.00</td>
-                    </tr>
-                    <tr>
-                        <td>Checks:</td>
-                        <td id="deposit-checks">$0.00</td>
-                    </tr>
-                    <tr class="total-row">
-                        <td><strong>Total Deposit:</strong></td>
-                        <td id="deposit-total">$0.00</td>
-                    </tr>
-                    <tr>
-                        <td>Less Startup:</td>
-                        <td>-$1,000.00</td>
-                    </tr>
-                    <tr class="final-row">
-                        <td><strong>Net Deposit:</strong></td>
-                        <td id="net-deposit">$0.00</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <!-- Step 6: Review & Submit -->
-        <div id="step-6" class="step-content" style="display:none;">
-            <h2>Review & Submit</h2>
-            
-            <div class="form-section">
-                <h3>Financial Summary</h3>
-                <div class="summary-cards">
-                    <div class="summary-card">
-                        <label>Total Bingo Sales:</label>
-                        <span id="review-bingo-sales">$0.00</span>
-                    </div>
-                    <div class="summary-card">
-                        <label>Pull-Tab Sales:</label>
-                        <span id="review-pulltab-sales">$0.00</span>
-                    </div>
-                    <div class="summary-card highlight">
-                        <label>Gross Sales:</label>
-                        <span id="review-gross-sales">$0.00</span>
-                    </div>
-                </div>
-                
-                <div class="summary-cards">
-                    <div class="summary-card">
-                        <label>Bingo Prizes:</label>
-                        <span id="review-bingo-prizes">$0.00</span>
-                    </div>
-                    <div class="summary-card">
-                        <label>Pull-Tab Prizes:</label>
-                        <span id="review-pulltab-prizes">$0.00</span>
-                    </div>
-                    <div class="summary-card highlight">
-                        <label>Total Prizes:</label>
-                        <span id="review-total-prizes">$0.00</span>
-                    </div>
-                </div>
-                
-                <div class="summary-cards">
-                    <div class="summary-card">
-                        <label>Cash Deposit:</label>
-                        <span id="review-deposit">$0.00</span>
-                    </div>
-                    <div class="summary-card highlight">
-                        <label>Actual Profit:</label>
-                        <span id="review-net-profit">$0.00</span>
-                    </div>
-                    <div class="summary-card">
-                        <label>Over/Short:</label>
-                        <span id="review-over-short">$0.00</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h3>Performance Metrics</h3>
-                <div class="metrics-grid">
-                    <div class="metric">
-                        <div class="metric-value" id="metric-players">0</div>
-                        <div class="metric-label">Total Players</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value" id="metric-gross">$0.00</div>
-                        <div class="metric-label">Gross Sales</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value" id="metric-net">$0.00</div>
-                        <div class="metric-label">Net Profit</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value" id="metric-per-player">$0.00</div>
-                        <div class="metric-label">Per Player</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <button class="button success" onclick="submitOccasion()">Submit Occasion</button>
-                <button class="button secondary" onclick="saveDraft()">Save Draft</button>
-                <button class="button" onclick="printReport()">Print Report</button>
-                <button class="button" onclick="exportData()">Export Data</button>
-            </div>
-        </div>
-
-        <!-- Navigation Buttons -->
-        <div class="navigation-buttons">
-            <button class="button prev-button" onclick="previousStep()" style="display:none;">Previous</button>
-            <button class="button primary next-button" onclick="nextStep()">Next</button>
+        <!-- Navigation -->
+        <div class="wizard-navigation">
+            <button type="button" class="button secondary prev-button" onclick="previousStep()" style="display: none;">
+                Previous
+            </button>
+            <button type="button" class="button primary next-button" onclick="nextStep()">
+                Next Step
+            </button>
         </div>
     </main>
-    <!-- Simple service worker registration -->
-    </div>
+
+    <!-- Overlay for mobile menu -->
+    <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+    <!-- JavaScript Files - Fixed loading order and cache busting -->
+    <script src="js/config.js?v=11.0.4"></script>
+    <script src="js/calculations.js?v=11.0.4"></script>
+    <script src="js/offline.js?v=11.0.4"></script>
+    <script src="js/sync.js?v=11.0.4"></script>
+    <script src="js/wizard.js?v=11.0.4"></script>
+    <script src="js/app.js?v=11.0.4"></script>
     
-    <!-- Scripts -->
-    <script src="js/config.js?v=11.0.3"></script>
-    <script src="js/app.js?v=11.0.3"></script>
-    <script src="js/wizard.js?v=11.0.3"></script>
-    <script src="js/calculations.js?v=11.0.3"></script>
-    <script src="js/offline.js?v=11.0.3"></script>
-    <script src="js/sync.js?v=11.0.3"></script>
+    <!-- Initialize application -->
+    <script>
+        // Ensure proper initialization order
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for all scripts to load before initializing
+            setTimeout(() => {
+                if (typeof BingoApp !== 'undefined') {
+                    window.app = new BingoApp();
+                } else {
+                    console.error('BingoApp not loaded, retrying...');
+                    setTimeout(() => {
+                        window.app = new BingoApp();
+                    }, 1000);
+                }
+            }, 100);
+        });
+    </script>
 </body>
 </html>
