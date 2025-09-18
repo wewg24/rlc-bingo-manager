@@ -139,4 +139,4 @@ if (!window.offlineManager) {
     window.offlineManager = new OfflineManager();
 }
 
-} // End of if (typeof OfflineManager === 'undefined')
+}
