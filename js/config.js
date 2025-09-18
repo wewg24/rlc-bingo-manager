@@ -1,43 +1,49 @@
-// Configuration
+// Remove any existing CONFIG declaration and use this single source
 const CONFIG = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
-    APP_NAME: 'RLC Bingo Manager',
-    VERSION: '11.0.4',
-    
-    STORAGE_KEYS: {
-        CURRENT_SESSION: 'rlc_current_session',
-        DRAFT_DATA: 'rlc_draft_data',
-        SYNC_QUEUE: 'rlc_sync_queue',
-        THEME: 'rlc_theme',
-        PULL_TAB_LIBRARY: 'rlc_pulltab_library'
+    SPREADSHEET_ID: '1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc',
+    SHEET_NAMES: {
+        occasions: 'Occasions',
+        sessionGames: 'SessionGames',
+        pullTabUsage: 'PullTabUsage',
+        pullTabLibrary: 'PullTabLibrary',
+        doorSales: 'DoorSales',
+        moneyCount: 'MoneyCount',
+        fiftyFifty: 'FiftyFifty',
+        metrics: 'Metrics'
     },
-    
     SESSION_TYPES: {
-        '5-1': '1st/5th Monday',
-        '6-2': '2nd Monday',
-        '7-3': '3rd Monday',
-        '8-4': '4th Monday'
+        MONDAY: 'Monday',
+        SATURDAY: 'Saturday',
+        SUNDAY: 'Sunday',
+        SPECIAL: 'Special'
     },
-    
-    PAPER_TYPES: [
-        { id: 'eb', name: 'Early Birds', hasFree: true },
-        { id: '6f', name: '6 Face', hasFree: true },
-        { id: '9fs', name: '9 Face Solid Border', hasFree: false },
-        { id: '9fst', name: '9 Face Stripe Border', hasFree: false },
-        { id: 'p3', name: 'Progressive 3 Face ($1)', hasFree: false },
-        { id: 'p18', name: 'Progressive 18 Face ($5)', hasFree: false }
-    ],
-    
-    POS_ITEMS: [
-        { id: '6face', name: '6 Face', price: 10 },
-        { id: '9solid', name: '9 Face Solid', price: 15 },
-        { id: '9stripe', name: '9 Face Stripe', price: 10 },
-        { id: 'birthday', name: 'Birthday Pack (BOGO)', price: 0 },
-        { id: 'prog18', name: 'Progressive 18 Face', price: 5 },
-        { id: 'prog3', name: 'Progressive 3 Face', price: 1 },
-        { id: 'letterx', name: 'Letter X Extra', price: 1 },
-        { id: 'number7', name: 'Number 7 Extra', price: 1 },
-        { id: 'coverall', name: 'Coverall Extra', price: 1 },
-        { id: 'ebd', name: 'Early Bird Double', price: 5 }
-    ]
+    // POS Items configuration with proper categorization
+    POS_ITEMS: {
+        ELECTRONIC: [
+            { name: 'Units - Small Blue', price: 5.00, category: 'Electronic' },
+            { name: 'Units - Large Blue', price: 10.00, category: 'Electronic' },
+            { name: 'Units - Large Green', price: 20.00, category: 'Electronic' },
+            { name: 'Units - Large Orange', price: 30.00, category: 'Electronic' },
+            { name: 'Units - Large Pink', price: 50.00, category: 'Electronic' }
+        ],
+        MISCELLANEOUS: [
+            { name: 'Daubers', price: 3.00, category: 'Miscellaneous' },
+            { name: 'Lapboards', price: 2.00, category: 'Miscellaneous' },
+            { name: 'Markers', price: 1.00, category: 'Miscellaneous' }
+        ],
+        PAPER: [
+            { name: 'Booklets - Single', price: 1.00, category: 'Paper' },
+            { name: 'Booklets - Double', price: 2.00, category: 'Paper' },
+            { name: 'Booklets - Triple', price: 3.00, category: 'Paper' },
+            { name: 'Quickies - 3 on 1', price: 1.00, category: 'Paper' },
+            { name: 'Quickies - 3 on 3', price: 3.00, category: 'Paper' },
+            { name: 'Quickies - 3 on 6', price: 5.00, category: 'Paper' },
+            { name: 'Quickies - 3 on 9', price: 10.00, category: 'Paper' }
+        ]
+    }
 };
+
+// Export for module systems if needed
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = CONFIG;
+}
