@@ -102,12 +102,13 @@ function updatePrizePerWinner(inputElement) {
 }
 
 function initializePullTabHandlers() {
-    const pullTabSelect = document.getElementById('pullTabLibrarySelect');
+    // Load the library when the page loads
+    loadPullTabLibraryOptions();
     
-    if (pullTabSelect) {
-        pullTabSelect.addEventListener('change', function() {
-            populatePullTabFields(this.value);
-        });
+    // Add event listener for adding new pull-tab rows
+    const addPullTabBtn = document.getElementById('addPullTabBtn');
+    if (addPullTabBtn) {
+        addPullTabBtn.addEventListener('click', addPullTabRow);
     }
     
     // Add delete functionality for pull-tab rows
@@ -117,7 +118,43 @@ function initializePullTabHandlers() {
         }
     });
 }
-
+/**
+ * Load pull-tab library options from backend
+ * This fetches the 152 games from your PullTabLibrary class
+ */
+function loadPullTabLibraryOptions() {
+    google.script.run
+        .withSuccessHandler(function(games) {
+            // Store library in memory for quick access
+            window.pullTabLibrary = games;
+            
+            // Populate any existing select elements
+            document.querySelectorAll('.pulltab-select').forEach(select => {
+                populatePullTabSelect(select, games);
+            });
+        })
+        .withFailureHandler(function(error) {
+            console.error('Failed to load pull-tab library:', error);
+            showNotification('Failed to load pull-tab library', 'error');
+        })
+        .getPullTabLibrary();
+}
+/**
+ * Populate a select element with pull-tab options
+ */
+function populatePullTabSelect(selectElement, games) {
+    selectElement.innerHTML = '<option value="">Select Pull-Tab Game</option>';
+    
+    games.forEach(game => {
+        const option = document.createElement('option');
+        // Create a unique ID from game name and form number
+        option.value = `${game.name}_${game.form}`;
+        // Display: Game Name (Form: XXXX) - $Profit profit
+        option.textContent = `${game.name} (Form: ${game.form}) - $${game.profit} profit`;
+        option.dataset.game = JSON.stringify(game);
+        selectElement.appendChild(option);
+    });
+}
 function updateFinancialSummary() {
     let totalRevenue = 0;
     let totalPrizes = 0;
@@ -261,45 +298,92 @@ function submitOccasion() {
         .submitOccasion(occasionData);
 }
 
-function populatePullTabFields(pullTabId) {
-    if (!pullTabId) return;
+/**
+ * Populate pull-tab fields when a game is selected
+ * Uses the actual PullTabLibrary data structure
+ */
+function populatePullTabFields(rowId, selectElement) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
     
-    // Fetch pull-tab data from library
-    google.script.run
-        .withSuccessHandler(function(pullTabData) {
-            if (pullTabData) {
-                document.getElementById('pullTabTickets').value = pullTabData.tickets || '';
-                document.getElementById('pullTabPrizes').value = pullTabData.prizes || '';
-                document.getElementById('pullTabRevenue').value = pullTabData.revenue || '';
-                document.getElementById('pullTabProfitPerCase').value = pullTabData.profitPerCase || '';
-            }
-        })
-        .withFailureHandler(function(error) {
-            console.error('Failed to load pull-tab data:', error);
-            showNotification('Failed to load pull-tab data', 'error');
-        })
-        .getPullTabById(pullTabId);
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    if (!selectedOption || !selectedOption.dataset.game) {
+        // Clear fields if no selection
+        row.querySelector('.pulltab-count').value = '';
+        row.querySelector('.pulltab-gross').value = '';
+        row.querySelector('.pulltab-profit').value = '';
+        return;
+    }
+    
+    const gameData = JSON.parse(selectedOption.dataset.game);
+    
+    // Populate fields based on PullTabLibrary structure
+    // gameData has: name, form, count, price, profit, url
+    
+    const countField = row.querySelector('.pulltab-count');
+    const grossField = row.querySelector('.pulltab-gross');
+    const profitField = row.querySelector('.pulltab-profit');
+    const prizesPaidField = row.querySelector('.pulltab-prizes-paid');
+    
+    // Set ticket count
+    countField.value = gameData.count;
+    
+    // Calculate gross sales (count * price)
+    const grossSales = gameData.count * gameData.price;
+    grossField.value = grossSales.toFixed(2);
+    
+    // Set ideal profit
+    profitField.value = gameData.profit;
+    
+    // Calculate ideal prizes (gross sales - profit)
+    const idealPrizes = grossSales - gameData.profit;
+    prizesPaidField.placeholder = `Prizes (Ideal: $${idealPrizes})`;
+    
+    // Add event listener to recalculate profit when prizes are entered
+    prizesPaidField.oninput = function() {
+        const actualPrizes = parseFloat(this.value) || 0;
+        const actualProfit = grossSales - actualPrizes;
+        profitField.value = actualProfit.toFixed(2);
+        updateFinancialSummary();
+    };
+    
+    updateFinancialSummary();
 }
 
+/**
+ * Add a new pull-tab row with proper field structure
+ */
 function addPullTabRow() {
     const container = document.getElementById('pullTabGames');
+    const rowId = 'pulltab-row-' + Date.now();
+    
     const newRow = document.createElement('div');
     newRow.className = 'pulltab-row';
+    newRow.id = rowId;
     newRow.innerHTML = `
-        <select class="pulltab-select">
+        <select class="pulltab-select" onchange="populatePullTabFields('${rowId}', this)">
             <option value="">Select Pull-Tab Game</option>
         </select>
-        <input type="number" class="pulltab-tickets" placeholder="Tickets" readonly>
-        <input type="number" class="pulltab-prizes" placeholder="Prizes" readonly>
-        <input type="number" class="pulltab-revenue" placeholder="Revenue" readonly>
-        <button type="button" class="delete-pulltab-btn" onclick="deletePullTabRow(this)">Delete</button>
+        <input type="text" class="pulltab-serial" placeholder="Serial #">
+        <input type="number" class="pulltab-count" placeholder="Tickets" readonly>
+        <input type="number" class="pulltab-gross" placeholder="Gross Sales" readonly>
+        <input type="number" class="pulltab-prizes-paid" placeholder="Prizes Paid">
+        <input type="number" class="pulltab-profit" placeholder="Net Profit" readonly>
+        <button type="button" class="delete-pulltab-btn">Delete</button>
     `;
+    
     container.appendChild(newRow);
     
-    // Populate the select options
-    loadPullTabLibrary(newRow.querySelector('.pulltab-select'));
+    // Populate the select with options if library is already loaded
+    if (window.pullTabLibrary) {
+        const select = newRow.querySelector('.pulltab-select');
+        populatePullTabSelect(select, window.pullTabLibrary);
+    }
 }
 
+/**
+ * Delete a pull-tab row
+ */
 function deletePullTabRow(button) {
     const row = button.closest('.pulltab-row');
     if (row && confirm('Are you sure you want to delete this pull-tab game?')) {
@@ -857,43 +941,6 @@ function showValidationError(message) {
     
     // Remove after 5 seconds
     setTimeout(() => errorDiv.remove(), 5000);
-}
-
-// Pull-tab specific functions
-function addPullTabRow() {
-    const tbody = document.getElementById('pulltab-body');
-    if (!tbody) return;
-    
-    const row = document.createElement('tr');
-    row.className = 'pulltab-row';
-    
-    // Create game select with options from library
-    const gameOptions = window.app.pullTabLibrary.map(game => 
-        `<option value="${game.name}" data-form="${game.form}" data-count="${game.count}" 
-                data-price="${game.price}" data-profit="${game.profit}">
-            ${game.name} - ${game.form}
-        </option>`
-    ).join('');
-    
-    row.innerHTML = `
-        <td>
-            <select class="game-select" onchange="updatePullTabRow(this)">
-                <option value="">Select Game...</option>
-                ${gameOptions}
-            </select>
-        </td>
-        <td><input type="text" class="serial-input" placeholder="Serial #"></td>
-        <td><input type="number" class="opened-input" value="1" min="0" max="1"></td>
-        <td class="tickets-cell">0</td>
-        <td class="tickets-sold-cell">$0.00</td>
-        <td class="prizes-cell">$0.00</td>
-        <td class="profit-cell">$0.00</td>
-        <td class="ideal-profit-cell">$0.00</td>
-        <td><input type="checkbox" class="check-payment"></td>
-        <td><button onclick="removePullTabRow(this)" class="remove-btn">×</button></td>
-    `;
-    
-    tbody.appendChild(row);
 }
 
 function updatePullTabRow(selectElement) {
