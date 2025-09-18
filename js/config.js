@@ -29,15 +29,23 @@ const CONFIG = {
     ],
     
     POS_ITEMS: [
-        { id: '6face', name: '6 Face', price: 10 },
-        { id: '9solid', name: '9 Face Solid', price: 15 },
-        { id: '9stripe', name: '9 Face Stripe', price: 10 },
-        { id: 'birthday', name: 'Birthday Pack (BOGO)', price: 0 },
-        { id: 'prog18', name: 'Progressive 18 Face', price: 5 },
-        { id: 'prog3', name: 'Progressive 3 Face', price: 1 },
-        { id: 'letterx', name: 'Letter X Extra', price: 1 },
-        { id: 'number7', name: 'Number 7 Extra', price: 1 },
-        { id: 'coverall', name: 'Coverall Extra', price: 1 },
-        { id: 'ebd', name: 'Early Bird Double', price: 5 }
+        // Electronic category first
+        { id: 'small-electronic', name: 'Small Electronic (27 reg)', price: 40, category: 'Electronic' },
+        { id: 'large-electronic', name: 'Large Electronic (45 reg)', price: 65, category: 'Electronic' },
+        
+        // Miscellaneous category
+        { id: 'dauber', name: 'Dauber', price: 2, category: 'Miscellaneous' },
+        
+        // Paper category (alphabetical)
+        { id: 'birthday', name: 'Birthday Pack', price: 0, category: 'Paper' },
+        { id: 'coverall', name: 'Coverall Extra', price: 1, category: 'Paper' },
+        { id: 'double-action', name: 'Early Bird Double', price: 5, category: 'Paper' },
+        { id: 'letter-x', name: 'Letter X Extra', price: 1, category: 'Paper' },
+        { id: 'number7', name: 'Number 7 Extra', price: 1, category: 'Paper' },
+        { id: '18-face-prog', name: 'Progressive 18 Face', price: 5, category: 'Paper' },
+        { id: '3-face-prog', name: 'Progressive 3 Face', price: 1, category: 'Paper' },
+        { id: '6-face', name: 'Six Face', price: 10, category: 'Paper' },
+        { id: '9-face-solid', name: 'Nine Face Solid', price: 15, category: 'Paper' },
+        { id: '9-face-stripe', name: 'Nine Face Stripe', price: 10, category: 'Paper' }
     ]
 };
