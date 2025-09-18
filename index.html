@@ -2,219 +2,86 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>RLC Bingo Manager</title>
-
-    <!-- Cache control meta tags for v11.0.4 -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <!-- Styles with v11.0.4 cache busting -->
-    <link rel="stylesheet" href="css/style.css?v=11.0.4">
-    <link rel="stylesheet" href="css/wizard.css?v=11.0.4">
-    <link rel="stylesheet" href="css/dark-mode.css?v=11.0.4">
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json?v=11.0.4">
-    
-    <!-- Icons - Fixed references to existing assets -->
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-50.png">
-    <link rel="apple-touch-icon" href="assets/icon-50.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLC Bingo Manager v11.0.4</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        .status-online { color: green; }
+        .status-offline { color: red; }
+        .wizard-step { display: inline-block; padding: 10px; margin: 5px; border: 1px solid #ccc; }
+        .wizard-step.active { background: #007bff; color: white; }
+        .wizard-step.completed { background: #28a745; color: white; }
+        .step-content { display: none; padding: 20px; }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="app-header">
-        <button id="menu-toggle" class="menu-button" aria-label="Menu">☰</button>
-        <h1>RLC Bingo Manager</h1>
-        <div class="header-controls">
-            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-                <span class="theme-icon">🌙</span>
-            </button>
-            <span class="status-indicator" id="status-indicator">●</span>
-            <span class="status-text" id="status-text">Online</span>
-        </div>
-    </header>
+    <div id="app">
+        <header>
+            <h1>RLC Bingo Manager</h1>
+            <span id="onlineStatus">Checking...</span>
+        </header>
 
-    <!-- Side Menu -->
-    <nav id="side-menu" class="side-menu">
-        <div class="menu-header">
-            <h2>Menu</h2>
-            <button onclick="closeMenu()" class="close-button">×</button>
-        </div>
-        <ul class="menu-list">
-            <li><button onclick="showOccasions()">Recent Occasions</button></li>
-            <li><button onclick="showReports()">Reports</button></li>
-            <li><button onclick="showPullTabLibrary()">Pull-Tab Library</button></li>
-            <li><button onclick="showAdmin()">Administration</button></li>
-            <li><button onclick="showHelp()">Help</button></li>
-        </ul>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Wizard Progress -->
-        <div class="wizard-progress">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-steps">
-                <div class="step active" onclick="goToStep(1)">
-                    <div class="step-number">1</div>
-                    <div class="step-label">Session Info</div>
-                </div>
-                <div class="step" onclick="goToStep(2)">
-                    <div class="step-number">2</div>
-                    <div class="step-label">Paper Sales</div>
-                </div>
-                <div class="step" onclick="goToStep(3)">
-                    <div class="step-number">3</div>
-                    <div class="step-label">Game Results</div>
-                </div>
-                <div class="step" onclick="goToStep(4)">
-                    <div class="step-number">4</div>
-                    <div class="step-label">Pull-Tabs</div>
-                </div>
-                <div class="step" onclick="goToStep(5)">
-                    <div class="step-number">5</div>
-                    <div class="step-label">Money Count</div>
-                </div>
-                <div class="step" onclick="goToStep(6)">
-                    <div class="step-number">6</div>
-                    <div class="step-label">Review</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Wizard Container -->
         <div class="wizard-container">
-            <!-- Step 1: Session Information -->
-            <div id="step-1" class="wizard-step active">
-                <div class="step-header">
-                    <h2>Step 1: Session Information</h2>
-                    <p>Enter basic session details and progressive setup</p>
-                </div>
-                
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="mondayDate">Date:</label>
-                        <input type="date" id="mondayDate" name="mondayDate" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="sessionType">Session Type:</label>
-                        <select id="sessionType" name="sessionType" required>
-                            <option value="">Select Session</option>
-                            <option value="5-1">Monday Session 5-1</option>
-                            <option value="6-2">Monday Session 6-2</option>
-                            <option value="SATURDAY">Saturday</option>
-                            <option value="SUNDAY">Sunday</option>
-                            <option value="SPECIAL">Special Event</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="lionInCharge">Lion in Charge:</label>
-                        <input type="text" id="lionInCharge" name="lionInCharge" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="totalPeople">Total People:</label>
-                        <input type="number" id="totalPeople" name="totalPeople" min="0" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="birthdays">Birthdays (for BOGOs):</label>
-                        <input type="number" id="birthdays" name="birthdays" min="0" value="0">
-                    </div>
-                </div>
-
-                <!-- Progressive Setup -->
-                <div class="progressive-section">
-                    <h3>Progressive Game Setup</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="progressiveJackpot">Jackpot Amount:</label>
-                            <input type="number" id="progressiveJackpot" name="progressiveJackpot" value="1500" step="100">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="ballsNeeded">Balls Needed:</label>
-                            <input type="number" id="ballsNeeded" name="ballsNeeded" value="48" min="40" max="60">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="actualBalls">Actual Balls Called:</label>
-                            <input type="number" id="actualBalls" name="actualBalls" min="40" max="75">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="actualPrize">Actual Prize Paid:</label>
-                            <input type="number" id="actualPrize" name="actualPrize" step="50">
-                        </div>
-                        
-                        <div class="form-group checkbox-group">
-                            <label>
-                                <input type="checkbox" id="checkPayment" name="checkPayment">
-                                Check Payment Required
-                            </label>
-                        </div>
-                    </div>
-                </div>
+            <div class="wizard-steps">
+                <div class="wizard-step">Session Info</div>
+                <div class="wizard-step">Paper Sales</div>
+                <div class="wizard-step">Game Results</div>
+                <div class="wizard-step">Pull-Tabs</div>
+                <div class="wizard-step">Money Count</div>
+                <div class="wizard-step">Review</div>
             </div>
-
-            <!-- Additional steps would be added here -->
-            <div id="step-2" class="wizard-step">
-                <div class="step-header">
-                    <h2>Step 2: Paper Sales</h2>
-                    <p>Record paper inventory and POS sales</p>
-                </div>
-                <!-- Step 2 content would go here -->
+            
+            <h2 id="stepTitle">Session Info</h2>
+            
+            <div class="wizard-content">
+                <!-- Step content will be dynamically loaded here -->
             </div>
-
-            <!-- Steps 3-6 would follow similar pattern -->
+            
+            <div class="wizard-navigation">
+                <button id="prevStepBtn">Previous</button>
+                <button id="nextStepBtn">Next</button>
+            </div>
         </div>
+    </div>
 
-        <!-- Navigation -->
-        <div class="wizard-navigation">
-            <button type="button" class="button secondary prev-button" onclick="previousStep()" style="display: none;">
-                Previous
-            </button>
-            <button type="button" class="button primary next-button" onclick="nextStep()">
-                Next Step
-            </button>
-        </div>
-    </main>
-
-    <!-- Overlay for mobile menu -->
-    <div class="overlay" id="overlay" onclick="closeMenu()"></div>
-
-    <!-- JavaScript Files - Fixed loading order and cache busting -->
-    <script src="js/config.js?v=11.0.4"></script>
-    <script src="js/calculations.js?v=11.0.4"></script>
-    <script src="js/offline.js?v=11.0.4"></script>
-    <script src="js/sync.js?v=11.0.4"></script>
-    <script src="js/wizard.js?v=11.0.4"></script>
-    <script src="js/app.js?v=11.0.4"></script>
+    <!-- Load existing working modules first -->
+    <script src="js/config.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/offline.js"></script>
+    
+    <!-- Load BingoApp module -->
+    <script src="js/modules/BingoApp.js"></script>
     
     <!-- Initialize application -->
     <script>
-        // Ensure proper initialization order
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wait for all scripts to load before initializing
-            setTimeout(() => {
-                if (typeof BingoApp !== 'undefined') {
-                    window.app = new BingoApp();
-                } else {
-                    console.error('BingoApp not loaded, retrying...');
-                    setTimeout(() => {
-                        window.app = new BingoApp();
-                    }, 1000);
+        // Wait for all scripts to load
+        window.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Verify BingoApp is available
+                if (typeof BingoApp === 'undefined') {
+                    throw new Error('BingoApp module failed to load');
                 }
-            }, 100);
+                
+                // Create and initialize the app
+                window.bingoApp = new BingoApp({
+                    version: '11.0.4'
+                });
+                
+                console.log('RLC Bingo Manager started successfully');
+                
+            } catch (error) {
+                console.error('Failed to start application:', error);
+                document.getElementById('app').innerHTML = 
+                    '<div class="error">Failed to load application. Please refresh the page.</div>';
+            }
         });
+        
+        // Register service worker for offline functionality
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.error('Service Worker registration failed:', err));
+        }
     </script>
 </body>
 </html>
