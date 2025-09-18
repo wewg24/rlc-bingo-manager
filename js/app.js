@@ -1074,6 +1074,91 @@ function showHelp() {
     window.app?.showHelp();
 }
 
+function initializeAdminNavigation() {
+    const nextBtn = document.getElementById('adminNextBtn');
+    const prevBtn = document.getElementById('adminPrevBtn');
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const currentSection = getCurrentSection();
+            const nextSection = getNextSection(currentSection);
+            
+            if (nextSection) {
+                // Validate current section before proceeding
+                if (validateSection(currentSection)) {
+                    navigateToSection(nextSection);
+                } else {
+                    showNotification('Please complete all required fields', 'warning');
+                }
+            }
+        });
+    }
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const currentSection = getCurrentSection();
+            const prevSection = getPreviousSection(currentSection);
+            
+            if (prevSection) {
+                navigateToSection(prevSection);
+            }
+        });
+    }
+}
+
+function getCurrentSection() {
+    const visibleSection = document.querySelector('.wizard-section:not(.hidden)');
+    return visibleSection ? visibleSection.id : null;
+}
+
+function getNextSection(currentSectionId) {
+    const sections = ['basicInfo', 'doorSales', 'sessionGames', 'pullTabs', 'specialEvents', 'fiftyFifty', 'moneyCount', 'summary'];
+    const currentIndex = sections.indexOf(currentSectionId);
+    return currentIndex >= 0 && currentIndex < sections.length - 1 ? sections[currentIndex + 1] : null;
+}
+
+function getPreviousSection(currentSectionId) {
+    const sections = ['basicInfo', 'doorSales', 'sessionGames', 'pullTabs', 'specialEvents', 'fiftyFifty', 'moneyCount', 'summary'];
+    const currentIndex = sections.indexOf(currentSectionId);
+    return currentIndex > 0 ? sections[currentIndex - 1] : null;
+}
+
+function navigateToSection(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.wizard-section').forEach(section => {
+        section.classList.add('hidden');
+    });
+    
+    // Show target section
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.remove('hidden');
+        
+        // Update progress indicator
+        updateProgressIndicator(sectionId);
+        
+        // Scroll to top
+        window.scrollTo(0, 0);
+    }
+}
+
+function validateSection(sectionId) {
+    switch(sectionId) {
+        case 'basicInfo':
+            return document.getElementById('mondayDate').value && 
+                   document.getElementById('sessionType').value;
+        case 'doorSales':
+            return true; // Optional section
+        case 'sessionGames':
+            // Check if at least one game is added
+            return document.querySelectorAll('.game-row').length > 0;
+        default:
+            return true;
+    }
+}
+
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new BingoApp();
