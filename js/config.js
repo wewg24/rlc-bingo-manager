@@ -1,8 +1,13 @@
 // RLC Bingo Manager Configuration
 // Version: 11.0.4
 // Single source of truth for all configuration settings
+// FIXED: Prevents redeclaration errors when multiple versions load
 
-// Remove any conflicting CONFIG declarations from other files
+// Prevent CONFIG redeclaration by checking if already exists
+if (typeof window !== 'undefined' && window.CONFIG) {
+    console.warn('CONFIG already exists, skipping redefinition to prevent errors');
+} else {
+
 const CONFIG = {
     // Core API Configuration
     API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
@@ -96,17 +101,12 @@ const CONFIG = {
     }
 };
 
-// Prevent redeclaration by checking if already exists
+// Safe global assignment
 if (typeof window !== 'undefined') {
-    // Browser environment
-    if (window.CONFIG) {
-        console.warn('CONFIG already exists, merging configurations');
-        Object.assign(window.CONFIG, CONFIG);
-    } else {
-        window.CONFIG = CONFIG;
-    }
+    // Browser environment - assign to window
+    window.CONFIG = CONFIG;
 } else if (typeof global !== 'undefined') {
-    // Node.js environment
+    // Node.js environment - assign to global
     global.CONFIG = CONFIG;
 }
 
@@ -115,5 +115,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = CONFIG;
 }
 
-// Log configuration load
+// Log successful configuration load
 console.log(`RLC Bingo Manager Config v${CONFIG.VERSION} loaded`);
+
+} // End of redeclaration prevention check
