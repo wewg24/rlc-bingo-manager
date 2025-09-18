@@ -3,18 +3,21 @@
 // No more version complications
 // =====================================
 
-const CACHE_NAME = 'rlc-bingo-cache';
+const CACHE_NAME = 'rlc-bingo-cache-v1';
 
-// Only cache essential files
 const urlsToCache = [
-  './',
-  './index.html',
-  './styles.css',
-  './app.js',
-  './wizard.js',
-  './offline.js',
-  './sync.js',
-  './manifest.json'
+    './',
+    './index.html',
+    './css/style.css',
+    './css/wizard.css', 
+    './css/dark-mode.css',
+    './js/config.js',
+    './js/app.js',
+    './js/calculations.js',
+    './js/wizard.js',
+    './js/offline.js',
+    './js/sync.js',
+    './manifest.json'
 ];
 
 self.addEventListener('install', event => {
