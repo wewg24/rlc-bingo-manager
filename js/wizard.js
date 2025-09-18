@@ -196,12 +196,7 @@ function updateFinancialSummary() {
     eventPrizes.forEach(input => {
         totalPrizes += parseFloat(input.value) || 0;
     });
-    
-    // 50/50 Raffle
-    const fiftyFiftyRevenue = parseFloat(document.getElementById('fiftyFiftyRevenue')?.value) || 0;
-    totalRevenue += fiftyFiftyRevenue;
-    totalPrizes += fiftyFiftyRevenue / 2; // 50% goes to prizes
-    
+     
     // Update summary display
     document.getElementById('summaryTotalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
     document.getElementById('summaryTotalPrizes').textContent = `$${totalPrizes.toFixed(2)}`;
