@@ -1,4 +1,87 @@
 // All calculation functions
+function initializeGameCalculations() {
+    // Add event delegation for dynamically added game rows
+    document.addEventListener('input', function(e) {
+        // Check if it's a winner count input
+        if (e.target.classList.contains('winner-count')) {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            
+            const winnersInput = e.target;
+            const prizePerInput = row.querySelector('.prize-per');
+            const gameTotalCell = row.querySelector('.game-total');
+            
+            if (prizePerInput && gameTotalCell) {
+                const winners = parseInt(winnersInput.value) || 1;
+                const prizePerWinner = parseFloat(prizePerInput.value) || 0;
+                const total = winners * prizePerWinner;
+                
+                // Update total display
+                gameTotalCell.textContent = `$${total.toFixed(2)}`;
+                
+                // Update the prize per winner for split prizes (non-progressive only)
+                if (!prizePerInput.hasAttribute('readonly')) {
+                    // For regular games, the prize amount should remain constant
+                    // The total changes based on number of winners
+                    gameTotalCell.textContent = `$${total.toFixed(2)}`;
+                }
+                
+                // Recalculate overall totals
+                calculateTotalBingoPrizes();
+            }
+        }
+        
+        // Check if it's a prize per winner input
+        if (e.target.classList.contains('prize-per')) {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            
+            const winnersInput = row.querySelector('.winner-count');
+            const prizePerInput = e.target;
+            const gameTotalCell = row.querySelector('.game-total');
+            
+            if (winnersInput && gameTotalCell) {
+                const winners = parseInt(winnersInput.value) || 1;
+                const prizePerWinner = parseFloat(prizePerInput.value) || 0;
+                const total = winners * prizePerWinner;
+                
+                gameTotalCell.textContent = `$${total.toFixed(2)}`;
+                calculateTotalBingoPrizes();
+            }
+        }
+    });
+}
+
+function calculateTotalBingoPrizes() {
+    let total = 0;
+    let checkTotal = 0;
+    
+    document.querySelectorAll('.game-total').forEach(cell => {
+        const amount = parseFloat(cell.textContent.replace('$', '')) || 0;
+        total += amount;
+        
+        // Check if paid by check
+        const row = cell.closest('tr');
+        const checkBox = row?.querySelector('.check-payment');
+        if (checkBox && checkBox.checked) {
+            checkTotal += amount;
+        }
+    });
+    
+    // Update display
+    const totalElement = document.getElementById('total-bingo-prizes');
+    if (totalElement) {
+        totalElement.textContent = `$${total.toFixed(2)}`;
+    }
+    
+    // Store in app data
+    if (window.app) {
+        window.app.data.financial = window.app.data.financial || {};
+        window.app.data.financial.bingoPrizesPaid = total;
+        window.app.data.financial.prizesPaidByCheck = checkTotal;
+    }
+}
+
 function addPullTabRow() {
     const tbody = document.getElementById('pulltab-body');
     if (!tbody) return;
