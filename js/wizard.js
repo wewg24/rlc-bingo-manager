@@ -82,62 +82,46 @@ function updateStepDisplay() {
 }
 
 // Validation functions for each step
+function validateSessionInfo() {
+    // Use the correct IDs that actually exist in your HTML
+    const date = document.getElementById('session-date')?.value;
+    const session = document.getElementById('session-type')?.value;
+    const lion = document.getElementById('lion-charge')?.value;
+    
+    if (!date || !session || !lion) {
+        console.log('Validation failed - missing:', {
+            date: !!date,
+            session: !!session, 
+            lion: !!lion
+        });
+        alert('Please fill in all required session information');
+        return false;
+    }
+    
+    console.log('Session info validation passed');
+    return true;
+}
+
+// Also fix the validateCurrentStep function to use correct step IDs:
 function validateCurrentStep() {
-    switch (window.app.currentStep) {
-        case 1:
+    const currentStepNum = window.app ? window.app.currentStep : 1;
+    
+    switch(currentStepNum) {
+        case 1: // Session Info
             return validateSessionInfo();
-        case 2:
+        case 2: // Paper Sales
             return validatePaperSales();
-        case 3:
+        case 3: // Game Results
             return validateGameResults();
-        case 4:
-            return validatePullTabs();
-        case 5:
+        case 4: // Pull-Tabs
+            return true; // Optional step
+        case 5: // Money Count
             return validateMoneyCount();
-        case 6:
-            return true; // Review step, no validation needed
+        case 6: // Review
+            return true;
         default:
             return true;
     }
-}
-
-function validateSessionInfo() {
-    // Get elements with proper null checking
-    const dateInput = document.getElementById('session-date');
-    const sessionSelect = document.getElementById('session-type');
-    const lionInput = document.getElementById('lion-in-charge');
-    const attendanceInput = document.getElementById('attendance');
-    
-    // Check if elements exist before accessing values
-    if (!dateInput || !sessionSelect || !lionInput || !attendanceInput) {
-        console.error('Missing required session info elements');
-        showValidationError('Required form elements are missing. Please refresh the page.');
-        return false;
-    }
-    
-    // Validate each field
-    if (!dateInput.value) {
-        showValidationError('Please select a date for the session.');
-        return false;
-    }
-    
-    if (!sessionSelect.value) {
-        showValidationError('Please select a session type.');
-        return false;
-    }
-    
-    if (!lionInput.value.trim()) {
-        showValidationError('Please enter the Lion in Charge name.');
-        return false;
-    }
-    
-    const attendance = parseInt(attendanceInput.value);
-    if (isNaN(attendance) || attendance < 1) {
-        showValidationError('Please enter a valid attendance count.');
-        return false;
-    }
-    
-    return true;
 }
 
 function validatePaperSales() {
