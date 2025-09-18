@@ -3,15 +3,24 @@ class SyncManager {
     constructor() {
         this.queue = [];
         this.syncing = false;
+        this.syncInProgress = false;
+        this.offlineManager = window.offlineManager;
         this.loadQueue();
     }
     
-    loadQueue() {
+    // FIX: Make loadQueue an async function
+    async loadQueue() {
         if (this.syncInProgress || !navigator.onLine) return;
         
         this.syncInProgress = true;
         
         try {
+            // Ensure offline manager is available
+            if (!this.offlineManager) {
+                console.warn('Offline manager not available for sync');
+                return;
+            }
+            
             const queue = await this.offlineManager.getSyncQueue();
             
             for (const item of queue) {
@@ -39,12 +48,19 @@ class SyncManager {
                 console.log('All items synced successfully');
             }
             
+        } catch (error) {
+            console.error('Error in loadQueue:', error);
         } finally {
             this.syncInProgress = false;
         }
     }
     
     async removeFromQueue(id) {
+        if (!this.offlineManager || !this.offlineManager.db) {
+            console.warn('Database not available for queue removal');
+            return;
+        }
+        
         return new Promise((resolve, reject) => {
             const request = this.offlineManager.db
                 .transaction(['sync_queue'], 'readwrite')
@@ -54,6 +70,23 @@ class SyncManager {
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);
         });
+    }
+    
+    // FIX: Make syncData an async function
+    async syncData() {
+        if (!navigator.onLine || this.syncInProgress) return;
+        
+        this.syncInProgress = true;
+        console.log('Starting sync process...');
+        
+        try {
+            await this.loadQueue();
+            console.log('Sync process completed');
+        } catch (error) {
+            console.error('Sync process failed:', error);
+        } finally {
+            this.syncInProgress = false;
+        }
     }
     
     startAutoSync() {
@@ -71,13 +104,16 @@ class SyncManager {
     }
 }
 
-// Initialize sync manager
+// FIX: Proper initialization with error handling
 document.addEventListener('DOMContentLoaded', () => {
-    const syncManager = new SyncManager();
-    syncManager.startAutoSync();
+    try {
+        if (!window.syncManager) {
+            window.syncManager = new SyncManager();
+            window.syncManager.startAutoSync();
+        }
+    } catch (error) {
+        console.error('Failed to initialize sync manager:', error);
+    }
 });
-window.SyncManager = SyncManager;
 
-// Initialize only if not already initialized
-if (!window.syncManager) {
-    window.syncManager = new SyncManager();
+window.SyncManager = SyncManager;
