@@ -1,5 +1,4 @@
 // Offline functionality
-if (typeof OfflineManager === 'undefined') {
 
 class OfflineManager {
     constructor() {
@@ -137,6 +136,3 @@ window.OfflineManager = OfflineManager;
 // Initialize only if not already initialized
 if (!window.offlineManager) {
     window.offlineManager = new OfflineManager();
-}
-
-}
