@@ -1,27 +1,30 @@
+// =====================================
+// manifest.json - SIMPLIFIED MANIFEST
+// No version parameters in URLs
+// =====================================
 {
   "name": "RLC Bingo Manager",
   "short_name": "RLC Bingo",
-  "description": "Complete bingo occasion management system",
-  "start_url": "/rlc-bingo-manager/",
-  "scope": "/rlc-bingo-manager/",
+  "description": "Richmond Lions Club Bingo Manager",
+  "start_url": "./",
   "display": "standalone",
-  "background_color": "#2c3e50",
-  "theme_color": "#3498db",
-  "orientation": "any",
+  "theme_color": "#2c3e50",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "/rlc-bingo-manager/assets/icons/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/rlc-bingo-manager/assets/icons/icon-512.png",
-      "sizes": "512x512",
+      "src": "icon-50.png",
+      "sizes": "50x50",
       "type": "image/png"
     },
     {
-      "src": "/rlc-bingo-manager/assets/icons/icon-50.png",
-      "sizes": "50x50",
+      "src": "icon-512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
