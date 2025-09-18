@@ -1168,5 +1168,5 @@ if (!window.app) {
     });
 }
 
-} // End of if (typeof BingoApp === 'undefined')
+}
 
