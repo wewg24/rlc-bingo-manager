@@ -5,82 +5,263 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RLC Bingo Manager v11.0.4</title>
     <link rel="manifest" href="manifest.json">
-    <style>
-        .status-online { color: green; }
-        .status-offline { color: red; }
-        .wizard-step { display: inline-block; padding: 10px; margin: 5px; border: 1px solid #ccc; }
-        .wizard-step.active { background: #007bff; color: white; }
-        .wizard-step.completed { background: #28a745; color: white; }
-        .step-content { display: none; padding: 20px; }
-    </style>
+    <link rel="stylesheet" href="css/style.css?v=11.0.4">
+    <link rel="stylesheet" href="css/wizard.css?v=11.0.4">
+    <link rel="stylesheet" href="css/dark-mode.css?v=11.0.4">
+    <meta name="theme-color" content="#007bff">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
 </head>
 <body>
     <div id="app">
-        <header>
-            <h1>RLC Bingo Manager</h1>
-            <span id="onlineStatus">Checking...</span>
+        <header class="app-header">
+            <div class="header-content">
+                <h1>RLC Bingo Manager</h1>
+                <div class="header-controls">
+                    <span id="onlineStatus" class="status-indicator">Checking...</span>
+                    <button id="themeToggle" class="theme-toggle" title="Toggle Theme">🌙</button>
+                </div>
+            </div>
         </header>
 
-        <div class="wizard-container">
-            <div class="wizard-steps">
-                <div class="wizard-step">Session Info</div>
-                <div class="wizard-step">Paper Sales</div>
-                <div class="wizard-step">Game Results</div>
-                <div class="wizard-step">Pull-Tabs</div>
-                <div class="wizard-step">Money Count</div>
-                <div class="wizard-step">Review</div>
+        <main class="wizard-container">
+            <!-- Progress Indicator -->
+            <div class="wizard-progress">
+                <div class="wizard-steps">
+                    <div class="wizard-step" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Session Info</span>
+                    </div>
+                    <div class="wizard-step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Paper Sales</span>
+                    </div>
+                    <div class="wizard-step" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Game Results</span>
+                    </div>
+                    <div class="wizard-step" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="step-label">Pull-Tabs</span>
+                    </div>
+                    <div class="wizard-step" data-step="5">
+                        <span class="step-number">5</span>
+                        <span class="step-label">Money Count</span>
+                    </div>
+                    <div class="wizard-step" data-step="6">
+                        <span class="step-number">6</span>
+                        <span class="step-label">Review</span>
+                    </div>
+                </div>
             </div>
             
-            <h2 id="stepTitle">Session Info</h2>
+            <!-- Step Title -->
+            <div class="step-header">
+                <h2 id="stepTitle">Session Information</h2>
+                <p id="stepDescription">Enter basic session details and progressive setup</p>
+            </div>
             
+            <!-- Wizard Content -->
             <div class="wizard-content">
-                <!-- Step content will be dynamically loaded here -->
+                <!-- Step 1: Session Information -->
+                <div class="step-content" id="step1" style="display: block;">
+                    <form class="step-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sessionDate">Date:</label>
+                                <input type="date" id="sessionDate" name="sessionDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionType">Session Type:</label>
+                                <select id="sessionType" name="sessionType" required>
+                                    <option value="">Select Session</option>
+                                    <option value="5-1">5-1 (1st/5th Monday)</option>
+                                    <option value="6-2">6-2 (2nd/6th Monday)</option>
+                                    <option value="SATURDAY">Saturday</option>
+                                    <option value="SUNDAY">Sunday</option>
+                                    <option value="SPECIAL">Special Event</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="lionInCharge">Lion in Charge:</label>
+                                <input type="text" id="lionInCharge" name="lionInCharge" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="totalPeople">Total People:</label>
+                                <input type="number" id="totalPeople" name="totalPeople" min="0" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="birthdays">Birthdays (BOGOs):</label>
+                            <input type="number" id="birthdays" name="birthdays" min="0" value="0">
+                        </div>
+                        
+                        <!-- Progressive Game Setup -->
+                        <div class="progressive-section">
+                            <h3>Progressive Game Setup</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="jackpotAmount">Jackpot Amount:</label>
+                                    <input type="number" id="jackpotAmount" name="jackpotAmount" step="0.01" value="1500">
+                                </div>
+                                <div class="form-group">
+                                    <label for="ballsNeeded">Balls Needed:</label>
+                                    <input type="number" id="ballsNeeded" name="ballsNeeded" min="1" max="75" value="48">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="actualBalls">Actual Balls Called:</label>
+                                    <input type="number" id="actualBalls" name="actualBalls" min="1" max="75">
+                                </div>
+                                <div class="form-group">
+                                    <label for="actualPrize">Actual Prize Paid:</label>
+                                    <input type="number" id="actualPrize" name="actualPrize" step="0.01">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="paidByCheck" name="paidByCheck">
+                                    Paid by Check
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 2: Paper Sales -->
+                <div class="step-content" id="step2" style="display: none;">
+                    <div class="step-form">
+                        <h3>Paper Inventory & Sales</h3>
+                        <p>Complete paper sales information will be loaded here...</p>
+                        <!-- Paper sales form will be populated by wizard.js -->
+                    </div>
+                </div>
+
+                <!-- Step 3: Game Results -->
+                <div class="step-content" id="step3" style="display: none;">
+                    <div class="step-form">
+                        <h3>Session Game Results</h3>
+                        <p>Game results will be loaded based on session type...</p>
+                        <!-- Game results form will be populated by wizard.js -->
+                    </div>
+                </div>
+
+                <!-- Step 4: Pull-Tabs -->
+                <div class="step-content" id="step4" style="display: none;">
+                    <div class="step-form">
+                        <h3>Pull-Tab Games</h3>
+                        <p>Pull-tab management interface will be loaded here...</p>
+                        <!-- Pull-tab form will be populated by wizard.js -->
+                    </div>
+                </div>
+
+                <!-- Step 5: Money Count -->
+                <div class="step-content" id="step5" style="display: none;">
+                    <div class="step-form">
+                        <h3>Money Count & Reconciliation</h3>
+                        <p>Money counting interface will be loaded here...</p>
+                        <!-- Money count form will be populated by wizard.js -->
+                    </div>
+                </div>
+
+                <!-- Step 6: Review & Submit -->
+                <div class="step-content" id="step6" style="display: none;">
+                    <div class="step-form">
+                        <h3>Review & Submit</h3>
+                        <div id="reviewSummary">
+                            <p>Complete session summary will be displayed here...</p>
+                        </div>
+                        
+                        <div class="submit-actions">
+                            <button type="button" id="saveDraftBtn" class="btn btn-secondary">Save Draft</button>
+                            <button type="button" id="printReportBtn" class="btn btn-secondary">Print Report</button>
+                            <button type="button" id="exportDataBtn" class="btn btn-secondary">Export Data</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             
+            <!-- Navigation -->
             <div class="wizard-navigation">
-                <button id="prevStepBtn">Previous</button>
-                <button id="nextStepBtn">Next</button>
+                <button type="button" id="prevStepBtn" class="btn btn-secondary" style="display: none;">Previous</button>
+                <button type="button" id="nextStepBtn" class="btn btn-primary">Next Step</button>
             </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p id="loadingMessage">Loading...</p>
         </div>
     </div>
 
-    <!-- Load existing working modules first -->
-    <script src="js/config.js"></script>
-    <script src="js/sync.js"></script>
-    <script src="js/offline.js"></script>
+    <!-- Scripts - CRITICAL LOADING ORDER -->
+    <!-- 1. Load existing working modules first -->
+    <script src="js/config.js?v=11.0.4"></script>
+    <script src="js/sync.js?v=11.0.4"></script>
+    <script src="js/offline.js?v=11.0.4"></script>
     
-    <!-- Load BingoApp module -->
-    <script src="js/modules/BingoApp.js"></script>
+    <!-- 2. Load BingoApp after dependencies -->
+    <script src="js/modules/BingoApp.js?v=11.0.4"></script>
     
-    <!-- Initialize application -->
+    <!-- 3. Initialize application -->
     <script>
-        // Wait for all scripts to load
-        window.addEventListener('DOMContentLoaded', function() {
-            try {
-                // Verify BingoApp is available
-                if (typeof BingoApp === 'undefined') {
-                    throw new Error('BingoApp module failed to load');
+        // Wait for DOM and all scripts to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing application...');
+            
+            // Add a small delay to ensure all modules are fully loaded
+            setTimeout(() => {
+                try {
+                    // Verify BingoApp is available
+                    if (typeof BingoApp === 'undefined') {
+                        throw new Error('BingoApp module failed to load');
+                    }
+                    
+                    console.log('Creating BingoApp instance...');
+                    
+                    // Create and initialize the app
+                    window.bingoApp = new BingoApp({
+                        version: '11.0.4'
+                    });
+                    
+                    console.log('RLC Bingo Manager started successfully');
+                    
+                } catch (error) {
+                    console.error('Failed to start application:', error);
+                    
+                    // Show user-friendly error
+                    document.getElementById('app').innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: red;">
+                            <h2>Application Error</h2>
+                            <p>Failed to load RLC Bingo Manager.</p>
+                            <p><strong>Error:</strong> ${error.message}</p>
+                            <button onclick="location.reload()" style="padding: 10px 20px; margin: 10px;">
+                                Refresh Page
+                            </button>
+                        </div>
+                    `;
                 }
-                
-                // Create and initialize the app
-                window.bingoApp = new BingoApp({
-                    version: '11.0.4'
-                });
-                
-                console.log('RLC Bingo Manager started successfully');
-                
-            } catch (error) {
-                console.error('Failed to start application:', error);
-                document.getElementById('app').innerHTML = 
-                    '<div class="error">Failed to load application. Please refresh the page.</div>';
-            }
+            }, 100); // Small delay to ensure module initialization
         });
         
         // Register service worker for offline functionality
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker registered'))
-                .catch(err => console.error('Service Worker registration failed:', err));
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js?v=11.0.4')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully');
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
         }
     </script>
 </body>
