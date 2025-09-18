@@ -25,6 +25,63 @@
     <link rel="apple-touch-icon" href="assets/icon-50.png">
 </head>
 <body>
+    <script>
+    // CRITICAL DATA STRUCTURE FIX - Add right after <body> tag
+    window.app = {
+        currentStep: 1,
+        totalSteps: 6,
+        data: {
+            occasion: {},
+            paperBingo: {},
+            posSales: {},
+            electronic: {},
+            games: [],
+            pullTabs: [],
+            moneyCount: { bingo: {}, pullTab: {} },
+            financial: {}
+        },
+        saveDraft: function() {
+            localStorage.setItem('bingo_draft', JSON.stringify(this.data));
+        }
+    };
+    
+    // Fix hamburger menu
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menu-toggle');
+        const sideMenu = document.getElementById('side-menu');
+        const overlay = document.getElementById('overlay');
+        
+        if (menuToggle) {
+            menuToggle.onclick = function() {
+                if (sideMenu) sideMenu.classList.add('active');
+                if (overlay) overlay.classList.add('active');
+            };
+        }
+        
+        if (overlay) {
+            overlay.onclick = function() {
+                if (sideMenu) sideMenu.classList.remove('active');
+                this.classList.remove('active');
+            };
+        }
+        
+        // Progressive auto-calculation
+        const progActual = document.getElementById('prog-actual-balls');
+        if (progActual) {
+            progActual.addEventListener('input', function() {
+                const jackpot = parseFloat(document.getElementById('prog-jackpot')?.value) || 0;
+                const ballsNeeded = parseInt(document.getElementById('prog-balls')?.value) || 0;
+                const actualBalls = parseInt(this.value) || 0;
+                const consolation = parseFloat(document.getElementById('prog-consolation')?.value) || 200;
+                
+                if (actualBalls > 0 && ballsNeeded > 0) {
+                    const prize = actualBalls <= ballsNeeded ? jackpot : consolation;
+                    document.getElementById('prog-prize').value = prize;
+                }
+            });
+        }
+    });
+    </script>
     <div id="app">
         <!-- Header -->
         <header class="app-header">
