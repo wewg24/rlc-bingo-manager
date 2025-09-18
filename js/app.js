@@ -1,35 +1,13 @@
 // Main Application Logic for RLC Bingo Manager
 // Version 11.0.4 - Fixed syntax errors and pull tab library integration
 
+if (typeof BingoApp === 'undefined') {
+
+// Your existing BingoApp class here:
 class BingoApp {
     constructor() {
-        // Initialize with defaults if CONFIG isn't defined yet
-        if (typeof CONFIG === 'undefined') {
-            console.warn('CONFIG not defined, using defaults');
-            window.CONFIG = {
-                VERSION: '11.0.5',
-                API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
-                STORAGE_KEYS: {
-                    DRAFT_DATA: 'bingo_draft',
-                    PULL_TAB_LIBRARY: 'pulltab_library',
-                    SYNC_QUEUE: 'sync_queue',
-                    THEME: 'theme_preference'
-                },
-                PAPER_TYPES: [
-                    { id: 'eb', name: 'Early Bird', price: 5, hasFree: true },
-                    { id: '3f', name: '3 Face', price: 1, hasFree: false },
-                    { id: '6f', name: '6 Face', price: 10, hasFree: true },
-                    { id: '9fs', name: '9 Face Solid', price: 15, hasFree: false },
-                    { id: '9fst', name: '9 Face Stripe', price: 10, hasFree: false },
-                    { id: 'singles', name: 'Singles', price: 1, hasFree: false },
-                    { id: 'doubles', name: 'Doubles', price: 2, hasFree: false }
-                ]
-            };
-        }
         this.currentStep = 1;
         this.totalSteps = 6;
-        
-        // Initialize comprehensive data structure
         this.data = {
             occasion: {},
             paperBingo: {},
@@ -43,15 +21,9 @@ class BingoApp {
             },
             financial: {}
         };
-        
-        // Pull Tab Library array - will be populated from Excel data
         this.pullTabLibrary = [];
-        
-        // Application state
         this.isDarkMode = localStorage.getItem(CONFIG.STORAGE_KEYS.THEME) === 'dark';
         this.isOnline = navigator.onLine;
-        
-        // Initialize the application
         this.init();
     }
     
@@ -1187,3 +1159,14 @@ if (document.readyState === 'loading') {
     // DOM is already loaded
     window.app = new BingoApp();
 });
+window.BingoApp = BingoApp;
+
+// Initialize only once
+if (!window.app) {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.app = new BingoApp();
+    });
+}
+
+} // End of if (typeof BingoApp === 'undefined')
+
