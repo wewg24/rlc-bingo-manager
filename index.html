@@ -539,12 +539,14 @@
         </div>
     </main>
     <!-- Simple service worker registration -->
-    <script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('Service Worker registered'))
-            .catch(err => console.error('Service Worker registration failed:', err));
-    }
-    </script>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/config.js?v=11.0.3"></script>
+    <script src="js/app.js?v=11.0.3"></script>
+    <script src="js/wizard.js?v=11.0.3"></script>
+    <script src="js/calculations.js?v=11.0.3"></script>
+    <script src="js/offline.js?v=11.0.3"></script>
+    <script src="js/sync.js?v=11.0.3"></script>
 </body>
 </html>
