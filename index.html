@@ -918,5 +918,58 @@
         border-color: #555;
     }
     </style>
+    <script>
+    // IMMEDIATE FIX - Define missing global functions
+    window.showOccasions = function() {
+        if (window.app && window.app.showOccasions) {
+            window.app.showOccasions();
+        } else {
+            alert('Occasions view not available');
+        }
+    }
+    
+    window.showReports = function() {
+        if (window.app && window.app.showReports) {
+            window.app.showReports();
+        } else {
+            alert('Reports view not available');
+        }
+    }
+    
+    window.showPullTabLibrary = function() {
+        if (window.app && window.app.showPullTabLibrary) {
+            window.app.showPullTabLibrary();
+        } else {
+            alert('Pull-Tab Library view not available');
+        }
+    }
+    
+    window.showAdmin = function() {
+        if (window.app && window.app.showAdmin) {
+            window.app.showAdmin();
+        } else {
+            alert('Admin view not available');
+        }
+    }
+    
+    window.showHelp = function() {
+        if (window.app && window.app.showHelp) {
+            window.app.showHelp();
+        } else {
+            alert('Help view not available');
+        }
+    }
+    
+    window.closeMenu = function() {
+        document.getElementById('side-menu')?.classList.remove('active');
+        document.getElementById('overlay')?.classList.remove('active');
+    }
+    
+    // Ensure BingoApp is instantiated
+    if (typeof BingoApp !== 'undefined' && !window.app) {
+        console.log('Creating BingoApp instance...');
+        window.app = new BingoApp();
+    }
+    </script>
 </body>
 </html>
