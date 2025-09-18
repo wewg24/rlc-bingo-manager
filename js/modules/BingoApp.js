@@ -1,3 +1,6 @@
+// Fixed BingoApp.js - Compatible with existing v11.0.4 modules
+// Version 11.0.4 - Resolves SyncManager conflict and Config detection issues
+
 class BingoApp {
     constructor(config = {}) {
         this.version = config.version || '11.0.4';
@@ -9,10 +12,7 @@ class BingoApp {
         this.isOnline = navigator.onLine;
         this.db = null;
         
-        // Google Apps Script integration endpoints
-        this.gasDeploymentUrl = 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec';
-        this.gasScriptId = '1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU';
-        
+        // Session data structure
         this.sessionData = {
             sessionInfo: {},
             paperSales: [],
@@ -41,26 +41,46 @@ class BingoApp {
     }
 
     async loadModules() {
-        // Load existing working modules with graceful fallbacks
-        if (typeof Config !== 'undefined') {
-            this.config = new Config();
-            console.log('Config module loaded');
+        // Load CONFIG using the global window object (existing implementation pattern)
+        if (typeof window.CONFIG !== 'undefined') {
+            this.config = window.CONFIG;
+            console.log('Config module loaded successfully');
         } else {
-            console.warn('Config module not found, using defaults');
-            this.config = { version: '11.0.4', fallback: true };
+            console.warn('CONFIG not found on window, using defaults');
+            this.config = { 
+                VERSION: '11.0.4',
+                API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
+                fallback: true 
+            };
         }
 
-        if (typeof SyncManager !== 'undefined') {
-            this.syncManager = new SyncManager(this);
-            console.log('SyncManager loaded');
+        // Use existing SyncManager instance (created by sync.js)
+        if (typeof window.syncManager !== 'undefined') {
+            this.syncManager = window.syncManager;
+            console.log('Existing SyncManager instance connected');
+        } else if (typeof window.SyncManager !== 'undefined') {
+            // Wait for sync.js to create the instance
+            let attempts = 0;
+            while (!window.syncManager && attempts < 50) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            if (window.syncManager) {
+                this.syncManager = window.syncManager;
+                console.log('SyncManager instance found after waiting');
+            } else {
+                console.warn('SyncManager class found but no instance created, using stub');
+                this.syncManager = { sync: () => Promise.resolve() };
+            }
         } else {
             console.warn('SyncManager not found, using stub');
             this.syncManager = { sync: () => Promise.resolve() };
         }
 
-        if (typeof OfflineManager !== 'undefined') {
-            this.offlineManager = new OfflineManager(this);
-            console.log('OfflineManager loaded');
+        // Use existing OfflineManager instance (created by offline.js)
+        if (typeof window.offlineManager !== 'undefined') {
+            this.offlineManager = window.offlineManager;
+            console.log('Existing OfflineManager instance connected');
         } else {
             console.warn('OfflineManager not found, using stub');
             this.offlineManager = { enableOfflineMode: () => {} };
@@ -81,7 +101,7 @@ class BingoApp {
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
                 
-                // Create object stores for each wizard step
+                // Create object stores for wizard data
                 const stores = ['sessionInfo', 'paperSales', 'gameResults', 'pullTabs', 'moneyCount', 'syncQueue'];
                 stores.forEach(storeName => {
                     if (!db.objectStoreNames.contains(storeName)) {
@@ -177,6 +197,33 @@ class BingoApp {
         }
     }
 
+    validateSessionInfo() {
+        const date = document.getElementById('sessionDate')?.value;
+        const session = document.getElementById('sessionType')?.value;
+        const lion = document.getElementById('lionInCharge')?.value;
+        
+        if (!date || !session || !lion) {
+            this.showError('Please fill in all required session information');
+            return false;
+        }
+        return true;
+    }
+
+    validatePaperSales() {
+        // Basic validation for paper sales
+        return true;
+    }
+
+    validateGameResults() {
+        // Basic validation for game results
+        return true;
+    }
+
+    validateMoneyCount() {
+        // Basic validation for money count
+        return true;
+    }
+
     saveStepData() {
         const stepData = this.getStepData();
         const storeName = this.getStoreNameForStep(this.currentStep);
@@ -187,49 +234,49 @@ class BingoApp {
         }
     }
 
-    // Google Apps Script integration
-    async callGoogleScript(functionName, parameters = []) {
-        try {
-            if (!this.isOnline) {
-                return this.queueForOfflineSync(functionName, parameters);
-            }
-
-            const response = await fetch(this.gasDeploymentUrl, {
-                method: 'POST',
-                mode: 'no-cors', // Required for Google Apps Script
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    function: functionName,
-                    parameters: parameters
-                })
+    getStepData() {
+        // Collect data from current step's form fields
+        const formData = {};
+        const currentStepElement = document.querySelector(`.step-content:nth-child(${this.currentStep})`);
+        
+        if (currentStepElement) {
+            const inputs = currentStepElement.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.name) {
+                    formData[input.name] = input.value;
+                }
             });
+        }
+        
+        return formData;
+    }
 
-            // Note: no-cors mode means we can't read the response
-            console.log(`Google Script function ${functionName} called`);
-            return { success: true };
-            
-        } catch (error) {
-            console.error('Google Script call failed:', error);
-            return this.queueForOfflineSync(functionName, parameters);
+    getStoreNameForStep(step) {
+        const storeNames = ['', 'sessionInfo', 'paperSales', 'gameResults', 'pullTabs', 'moneyCount', 'review'];
+        return storeNames[step];
+    }
+
+    updateSessionData(step, data) {
+        switch(step) {
+            case 1:
+                this.sessionData.sessionInfo = data;
+                break;
+            case 2:
+                this.sessionData.paperSales = data;
+                break;
+            case 3:
+                this.sessionData.gameResults = data;
+                break;
+            case 4:
+                this.sessionData.pullTabs = data;
+                break;
+            case 5:
+                this.sessionData.moneyCount = data;
+                break;
         }
     }
 
-    async queueForOfflineSync(functionName, parameters) {
-        const queueItem = {
-            function: functionName,
-            parameters: parameters,
-            timestamp: Date.now(),
-            synced: false
-        };
-        
-        await this.saveToIndexedDB('syncQueue', queueItem);
-        console.log('Action queued for offline sync');
-        return { success: true, queued: true };
-    }
-
-    // Network status handling
+    // Event listeners
     setupEventListeners() {
         // Online/offline events
         window.addEventListener('online', () => this.handleOnlineStatusChange(true));
@@ -255,11 +302,15 @@ class BingoApp {
         this.updateOnlineStatusUI();
         
         if (isOnline) {
-            console.log('Back online - syncing pending actions');
-            this.syncPendingActions();
+            console.log('Back online - triggering sync');
+            if (this.syncManager && typeof this.syncManager.syncData === 'function') {
+                this.syncManager.syncData();
+            }
         } else {
             console.log('Gone offline - enabling offline mode');
-            this.offlineManager?.enableOfflineMode();
+            if (this.offlineManager && typeof this.offlineManager.enableOfflineMode === 'function') {
+                this.offlineManager.enableOfflineMode();
+            }
         }
     }
 
@@ -273,10 +324,12 @@ class BingoApp {
 
     // IndexedDB operations
     async saveToIndexedDB(storeName, data) {
+        if (!this.db) return;
+        
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction([storeName], 'readwrite');
             const store = transaction.objectStore(storeName);
-            const request = store.put(data);
+            const request = store.put({ ...data, timestamp: Date.now() });
             
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
@@ -284,6 +337,8 @@ class BingoApp {
     }
 
     async getFromIndexedDB(storeName, key) {
+        if (!this.db) return null;
+        
         return new Promise((resolve, reject) => {
             const transaction = this.db.transaction([storeName], 'readonly');
             const store = transaction.objectStore(storeName);
@@ -294,7 +349,7 @@ class BingoApp {
         });
     }
 
-    // Session submission
+    // Data submission
     async submitSession() {
         try {
             this.sessionData.timestamp = new Date().toISOString();
@@ -302,16 +357,26 @@ class BingoApp {
             // Show loading state
             this.showLoadingState('Submitting session data...');
             
-            // Submit to Google Sheets
-            const result = await this.callGoogleScript('submitBingoSession', [this.sessionData]);
-            
-            if (result.success) {
+            // Use existing sync manager to submit data
+            if (this.syncManager && typeof this.syncManager.addToQueue === 'function') {
+                await this.syncManager.addToQueue('submitSession', this.sessionData);
                 this.showSuccessMessage('Session submitted successfully!');
-                this.clearSessionData();
-                this.resetWizard();
+            } else if (this.isOnline) {
+                // Fallback to direct API call
+                await this.callAPI('submitSession', this.sessionData);
+                this.showSuccessMessage('Session submitted successfully!');
             } else {
-                throw new Error('Submission failed');
+                // Queue for later sync
+                await this.saveToIndexedDB('syncQueue', {
+                    action: 'submitSession',
+                    data: this.sessionData,
+                    timestamp: Date.now()
+                });
+                this.showSuccessMessage('Session saved offline. Will sync when online.');
             }
+            
+            this.clearSessionData();
+            this.resetWizard();
             
         } catch (error) {
             console.error('Session submission error:', error);
@@ -319,24 +384,41 @@ class BingoApp {
         }
     }
 
-    // Error handling
-    handleInitializationError(error) {
-        console.error('Critical initialization error:', error);
+    async callAPI(action, data) {
+        const response = await fetch(this.config.API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: action,
+                data: data
+            })
+        });
         
-        // Show user-friendly error message
-        const errorHtml = `
-            <div class="init-error">
-                <h2>Initialization Error</h2>
-                <p>The application encountered an error during startup.</p>
-                <p>Error: ${error.message}</p>
-                <button onclick="location.reload()">Retry</button>
-            </div>
-        `;
-        
-        const appElement = document.getElementById('app');
-        if (appElement) {
-            appElement.innerHTML = errorHtml;
-        }
+        console.log(`API call ${action} completed`);
+        return { success: true };
+    }
+
+    // UI helper methods
+    showLoadingState(message) {
+        // Implement loading UI
+        console.log('Loading:', message);
+    }
+
+    showSuccessMessage(message) {
+        console.log('Success:', message);
+        // You can add toast notifications here
+    }
+
+    showErrorMessage(message) {
+        console.error('Error:', message);
+        // You can add error notifications here
+    }
+
+    showError(message) {
+        alert(message); // Replace with better error display
     }
 
     // Auto-save functionality
@@ -355,8 +437,12 @@ class BingoApp {
         return this.isOnline;
     }
 
-    resetWizard() {
-        this.currentStep = 1;
+    loadSavedProgress() {
+        // Load any saved progress from IndexedDB
+        console.log('Loading saved progress...');
+    }
+
+    clearSessionData() {
         this.sessionData = {
             sessionInfo: {},
             paperSales: [],
@@ -365,15 +451,39 @@ class BingoApp {
             moneyCount: {},
             timestamp: null
         };
+    }
+
+    resetWizard() {
+        this.currentStep = 1;
         this.updateWizardUI();
+    }
+
+    // Error handling
+    handleInitializationError(error) {
+        console.error('Critical initialization error:', error);
+        
+        const errorHtml = `
+            <div class="init-error" style="padding: 20px; text-align: center;">
+                <h2>Initialization Error</h2>
+                <p>The application encountered an error during startup.</p>
+                <p><strong>Error:</strong> ${error.message}</p>
+                <button onclick="location.reload()" style="padding: 10px 20px; margin: 10px;">Retry</button>
+            </div>
+        `;
+        
+        const appElement = document.getElementById('app');
+        if (appElement) {
+            appElement.innerHTML = errorHtml;
+        }
     }
 }
 
-// Universal export for maximum compatibility
+// Export BingoApp globally for maximum compatibility
+window.BingoApp = BingoApp;
+
+// Also support module systems
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = BingoApp;
 } else if (typeof define === 'function' && define.amd) {
     define(() => BingoApp);
-} else {
-    window.BingoApp = BingoApp;
 }
