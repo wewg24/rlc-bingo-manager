@@ -19,6 +19,335 @@ function nextStep() {
     }
 }
 
+function initializeDatePicker() {
+    const mondayDateInput = document.getElementById('mondayDate');
+    
+    if (mondayDateInput) {
+        // Set input type to date if not already
+        mondayDateInput.type = 'date';
+        
+        // Set default to next Monday if empty
+        if (!mondayDateInput.value) {
+            const today = new Date();
+            const dayOfWeek = today.getDay();
+            const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek) % 7;
+            const nextMonday = new Date(today);
+            nextMonday.setDate(today.getDate() + daysUntilMonday);
+            mondayDateInput.value = nextMonday.toISOString().split('T')[0];
+        }
+        
+        // Add event listener for automatic session type selection
+        mondayDateInput.addEventListener('change', function() {
+            updateSessionType(this.value);
+        });
+    }
+}
+
+function updateSessionType(dateString) {
+    const date = new Date(dateString);
+    const dayOfWeek = date.getDay();
+    const sessionTypeSelect = document.getElementById('sessionType');
+    
+    if (sessionTypeSelect) {
+        switch(dayOfWeek) {
+            case 1: // Monday
+                sessionTypeSelect.value = CONFIG.SESSION_TYPES.MONDAY;
+                break;
+            case 6: // Saturday
+                sessionTypeSelect.value = CONFIG.SESSION_TYPES.SATURDAY;
+                break;
+            case 0: // Sunday
+                sessionTypeSelect.value = CONFIG.SESSION_TYPES.SUNDAY;
+                break;
+            default:
+                sessionTypeSelect.value = CONFIG.SESSION_TYPES.SPECIAL;
+        }
+        
+        // Trigger change event
+        sessionTypeSelect.dispatchEvent(new Event('change'));
+    }
+}
+
+function initializeSessionGamesHandlers() {
+    const gamesContainer = document.getElementById('sessionGames');
+    
+    if (gamesContainer) {
+        gamesContainer.addEventListener('input', function(e) {
+            if (e.target.classList.contains('game-winners') || 
+                e.target.classList.contains('game-prize')) {
+                updatePrizePerWinner(e.target);
+            }
+        });
+    }
+}
+
+function updatePrizePerWinner(inputElement) {
+    const row = inputElement.closest('.game-row');
+    if (!row) return;
+    
+    const winnersInput = row.querySelector('.game-winners');
+    const prizeInput = row.querySelector('.game-prize');
+    const prizePerWinnerInput = row.querySelector('.game-prize-per-winner');
+    
+    if (winnersInput && prizeInput && prizePerWinnerInput) {
+        const winners = parseInt(winnersInput.value) || 1;
+        const totalPrize = parseFloat(prizeInput.value) || 0;
+        
+        const prizePerWinner = winners > 0 ? (totalPrize / winners) : 0;
+        prizePerWinnerInput.value = prizePerWinner.toFixed(2);
+        
+        // Update financial summary
+        updateFinancialSummary();
+    }
+}
+
+function initializePullTabHandlers() {
+    const pullTabSelect = document.getElementById('pullTabLibrarySelect');
+    
+    if (pullTabSelect) {
+        pullTabSelect.addEventListener('change', function() {
+            populatePullTabFields(this.value);
+        });
+    }
+    
+    // Add delete functionality for pull-tab rows
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-pulltab-btn')) {
+            deletePullTabRow(e.target);
+        }
+    });
+}
+
+function updateFinancialSummary() {
+    let totalRevenue = 0;
+    let totalPrizes = 0;
+    
+    // Door Sales (POS items)
+    const posInputs = document.querySelectorAll('.pos-item-quantity');
+    posInputs.forEach(input => {
+        const quantity = parseInt(input.value) || 0;
+        const price = parseFloat(input.dataset.itemPrice) || 0;
+        totalRevenue += quantity * price;
+    });
+    
+    // Session Games
+    const gamePrizes = document.querySelectorAll('.game-prize');
+    gamePrizes.forEach(input => {
+        totalPrizes += parseFloat(input.value) || 0;
+    });
+    
+    // Pull-Tabs
+    const pullTabRevenues = document.querySelectorAll('.pulltab-revenue');
+    const pullTabPrizes = document.querySelectorAll('.pulltab-prizes');
+    
+    pullTabRevenues.forEach(input => {
+        totalRevenue += parseFloat(input.value) || 0;
+    });
+    
+    pullTabPrizes.forEach(input => {
+        totalPrizes += parseFloat(input.value) || 0;
+    });
+    
+    // Special Events
+    const eventRevenues = document.querySelectorAll('.event-revenue');
+    const eventPrizes = document.querySelectorAll('.event-prizes');
+    
+    eventRevenues.forEach(input => {
+        totalRevenue += parseFloat(input.value) || 0;
+    });
+    
+    eventPrizes.forEach(input => {
+        totalPrizes += parseFloat(input.value) || 0;
+    });
+    
+    // 50/50 Raffle
+    const fiftyFiftyRevenue = parseFloat(document.getElementById('fiftyFiftyRevenue')?.value) || 0;
+    totalRevenue += fiftyFiftyRevenue;
+    totalPrizes += fiftyFiftyRevenue / 2; // 50% goes to prizes
+    
+    // Update summary display
+    document.getElementById('summaryTotalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+    document.getElementById('summaryTotalPrizes').textContent = `$${totalPrizes.toFixed(2)}`;
+    document.getElementById('summaryNetProfit').textContent = `$${(totalRevenue - totalPrizes).toFixed(2)}`;
+    
+    // Update profit margin
+    const profitMargin = totalRevenue > 0 ? ((totalRevenue - totalPrizes) / totalRevenue * 100) : 0;
+    document.getElementById('summaryProfitMargin').textContent = `${profitMargin.toFixed(1)}%`;
+}
+
+function saveDraft() {
+    const occasionData = collectFormData();
+    occasionData.status = 'Draft';
+    occasionData.savedAt = new Date().toISOString();
+    
+    google.script.run
+        .withSuccessHandler(function(result) {
+            showNotification('Draft saved successfully', 'success');
+            localStorage.setItem('lastDraftId', result.id);
+        })
+        .withFailureHandler(function(error) {
+            console.error('Failed to save draft:', error);
+            showNotification('Failed to save draft', 'error');
+        })
+        .saveDraft(occasionData);
+}
+
+function loadDraft(draftId) {
+    google.script.run
+        .withSuccessHandler(function(draftData) {
+            if (draftData) {
+                populateFormWithData(draftData);
+                showNotification('Draft loaded successfully', 'success');
+            }
+        })
+        .withFailureHandler(function(error) {
+            console.error('Failed to load draft:', error);
+            showNotification('Failed to load draft', 'error');
+        })
+        .getDraft(draftId);
+}
+
+function populateFormWithData(data) {
+    // Basic fields
+    document.getElementById('mondayDate').value = data.mondayDate || '';
+    document.getElementById('sessionType').value = data.sessionType || '';
+    
+    // POS items
+    if (data.posItems) {
+        data.posItems.forEach(item => {
+            const input = document.querySelector(`[data-item-name="${item.name}"]`);
+            if (input) {
+                input.value = item.quantity;
+            }
+        });
+    }
+    
+    // Session games
+    if (data.sessionGames) {
+        const container = document.getElementById('sessionGames');
+        container.innerHTML = '';
+        data.sessionGames.forEach(game => {
+            addGameRow(game);
+        });
+    }
+    
+    // Recalculate totals
+    calculatePOSTotals();
+    updateFinancialSummary();
+}
+
+function submitOccasion() {
+    const occasionData = collectFormData();
+    occasionData.status = 'Submitted';
+    occasionData.submittedAt = new Date().toISOString();
+    
+    // Validate data
+    const validation = validateOccasionData(occasionData);
+    if (!validation.isValid) {
+        showNotification(`Validation failed: ${validation.errors.join(', ')}`, 'error');
+        return;
+    }
+    
+    google.script.run
+        .withSuccessHandler(function(result) {
+            showNotification('Occasion submitted successfully', 'success');
+            resetForm();
+            window.location.href = '#summary';
+        })
+        .withFailureHandler(function(error) {
+            console.error('Failed to submit occasion:', error);
+            showNotification('Failed to submit occasion', 'error');
+        })
+        .submitOccasion(occasionData);
+}
+
+function populatePullTabFields(pullTabId) {
+    if (!pullTabId) return;
+    
+    // Fetch pull-tab data from library
+    google.script.run
+        .withSuccessHandler(function(pullTabData) {
+            if (pullTabData) {
+                document.getElementById('pullTabTickets').value = pullTabData.tickets || '';
+                document.getElementById('pullTabPrizes').value = pullTabData.prizes || '';
+                document.getElementById('pullTabRevenue').value = pullTabData.revenue || '';
+                document.getElementById('pullTabProfitPerCase').value = pullTabData.profitPerCase || '';
+            }
+        })
+        .withFailureHandler(function(error) {
+            console.error('Failed to load pull-tab data:', error);
+            showNotification('Failed to load pull-tab data', 'error');
+        })
+        .getPullTabById(pullTabId);
+}
+
+function addPullTabRow() {
+    const container = document.getElementById('pullTabGames');
+    const newRow = document.createElement('div');
+    newRow.className = 'pulltab-row';
+    newRow.innerHTML = `
+        <select class="pulltab-select">
+            <option value="">Select Pull-Tab Game</option>
+        </select>
+        <input type="number" class="pulltab-tickets" placeholder="Tickets" readonly>
+        <input type="number" class="pulltab-prizes" placeholder="Prizes" readonly>
+        <input type="number" class="pulltab-revenue" placeholder="Revenue" readonly>
+        <button type="button" class="delete-pulltab-btn" onclick="deletePullTabRow(this)">Delete</button>
+    `;
+    container.appendChild(newRow);
+    
+    // Populate the select options
+    loadPullTabLibrary(newRow.querySelector('.pulltab-select'));
+}
+
+function deletePullTabRow(button) {
+    const row = button.closest('.pulltab-row');
+    if (row && confirm('Are you sure you want to delete this pull-tab game?')) {
+        row.remove();
+        updateFinancialSummary();
+    }
+}
+
+function initializeSpecialEventsHandlers() {
+    const addSpecialEventBtn = document.getElementById('addSpecialEventBtn');
+    const specialEventSelect = document.getElementById('specialEventLibrarySelect');
+    
+    if (addSpecialEventBtn && specialEventSelect) {
+        addSpecialEventBtn.addEventListener('click', function() {
+            const selectedEvent = specialEventSelect.value;
+            if (selectedEvent) {
+                addSpecialEventFromLibrary(selectedEvent);
+            } else {
+                showNotification('Please select a special event from the library', 'warning');
+            }
+        });
+    }
+}
+
+function addSpecialEventFromLibrary(eventId) {
+    google.script.run
+        .withSuccessHandler(function(eventData) {
+            if (eventData) {
+                const container = document.getElementById('specialEvents');
+                const newEvent = document.createElement('div');
+                newEvent.className = 'special-event-row';
+                newEvent.innerHTML = `
+                    <input type="text" value="${eventData.name}" class="event-name">
+                    <input type="number" value="${eventData.revenue}" class="event-revenue">
+                    <input type="number" value="${eventData.prizes}" class="event-prizes">
+                    <button type="button" onclick="this.parentElement.remove(); updateFinancialSummary();">Remove</button>
+                `;
+                container.appendChild(newEvent);
+                updateFinancialSummary();
+            }
+        })
+        .withFailureHandler(function(error) {
+            console.error('Failed to load special event:', error);
+            showNotification('Failed to load special event', 'error');
+        })
+        .getSpecialEventById(eventId);
+}
+
 function previousStep() {
     if (window.app && window.app.currentStep > 1) {
         saveStepData(); // Save before going back
@@ -732,6 +1061,63 @@ function calculateFinalTotals() {
     // Calculate over/short
     const overShort = totalDeposit - 1000 - netProfit; // Minus startup cash
     document.getElementById('review-over-short').textContent = `$${overShort.toFixed(2)}`;
+}
+
+function populatePOSItems() {
+    const posItemsContainer = document.getElementById('posItems');
+    if (!posItemsContainer) return;
+    
+    posItemsContainer.innerHTML = '';
+    
+    // Create sections in correct order: Electronic → Miscellaneous → Paper
+    const categories = ['ELECTRONIC', 'MISCELLANEOUS', 'PAPER'];
+    
+    categories.forEach(category => {
+        const items = CONFIG.POS_ITEMS[category];
+        if (!items || items.length === 0) return;
+        
+        // Create category section
+        const categorySection = document.createElement('div');
+        categorySection.className = 'pos-category-section';
+        categorySection.innerHTML = `<h4>${category.charAt(0) + category.slice(1).toLowerCase()}</h4>`;
+        
+        // Sort items alphabetically within category
+        const sortedItems = [...items].sort((a, b) => a.name.localeCompare(b.name));
+        
+        sortedItems.forEach(item => {
+            const itemRow = document.createElement('div');
+            itemRow.className = 'pos-item-row';
+            itemRow.innerHTML = `
+                <div class="pos-item-name">${item.name}</div>
+                <div class="pos-item-price">$${item.price.toFixed(2)}</div>
+                <input type="number" 
+                       class="pos-item-quantity" 
+                       data-item-name="${item.name}" 
+                       data-item-price="${item.price}"
+                       data-item-category="${item.category}"
+                       min="0" 
+                       value="0" 
+                       onchange="calculatePOSTotals()">
+            `;
+            categorySection.appendChild(itemRow);
+        });
+        
+        posItemsContainer.appendChild(categorySection);
+    });
+}
+
+function calculatePOSTotals() {
+    const quantityInputs = document.querySelectorAll('.pos-item-quantity');
+    let total = 0;
+    
+    quantityInputs.forEach(input => {
+        const quantity = parseInt(input.value) || 0;
+        const price = parseFloat(input.dataset.itemPrice) || 0;
+        total += quantity * price;
+    });
+    
+    document.getElementById('posTotal').textContent = `$${total.toFixed(2)}`;
+    updateFinancialSummary();
 }
 
 // Submit occasion
