@@ -1279,14 +1279,21 @@ async function submitOccasion() {
     
     // Gather all data
     const occasionData = {
-        occasion: window.app.data.occasion,
-        paperBingo: window.app.data.paperBingo,
-        posSales: window.app.data.posSales,
-        electronic: window.app.data.electronic,
-        games: window.app.data.games,
-        pullTabs: window.app.data.pullTabs,
-        moneyCount: window.app.data.moneyCount,
-        financial: window.app.data.financial,
+        occasion: {
+            date: '2025-01-17',
+            sessionType: '5-1',
+            lionInCharge: 'John Smith',
+            attendance: 97,
+            birthdays: 3,
+            progressive: { /* progressive data */ }
+        },
+        paperBingo: { /* paper sales data */ },
+        posSales: { /* door sales data */ },
+        electronic: { /* electronic rentals */ },
+        games: [ /* array of game results */ ],
+        pullTabs: [ /* array of pull-tab games */ ],
+        moneyCount: { /* money drawer counts */ },
+        financial: { /* calculated totals */ },
         timestamp: new Date().toISOString()
     };
     
