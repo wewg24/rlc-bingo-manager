@@ -237,43 +237,116 @@ class BingoApp {
     /**
      * Load pull-tab library from backend
      */
-    async loadPullTabLibrary() {
+    async loadPullTabLibrary(forceReload = false) {
         try {
-            const response = await fetch(CONFIG.API_URL + '?path=pull-tab-library');
-            const data = await response.json();
+            console.log('Loading pull-tab library from backend...');
             
-            if (data.success && data.games) {
-                this.pullTabLibrary = data.games;
-                
-                // Cache locally if offline manager available
-                if (window.offlineManager) {
-                    await window.offlineManager.savePullTabLibrary(data.games);
-                }
-                
-                console.log('Pull-tab library loaded:', data.games.length, 'games');
-            } else {
-                console.warn('Failed to load pull-tab library from server');
-                
-                // Try loading from local cache
-                if (window.offlineManager) {
-                    this.pullTabLibrary = await window.offlineManager.getPullTabLibrary();
-                    console.log('Loaded pull-tab library from cache:', this.pullTabLibrary.length, 'games');
+            // Try multiple API endpoints that the backend supports
+            const endpoints = [
+                CONFIG.API_URL + '?path=pulltab-library',
+                CONFIG.API_URL + '?path=pulltabs',
+                CONFIG.API_URL + '?action=get_pull_tab_library'
+            ];
+            
+            let response = null;
+            let data = null;
+            
+            // Try each endpoint until one works
+            for (const endpoint of endpoints) {
+                try {
+                    console.log(`Trying endpoint: ${endpoint}`);
+                    response = await fetch(endpoint);
+                    
+                    if (response.ok) {
+                        data = await response.json();
+                        console.log('API Response:', data);
+                        
+                        if (data.success && data.games && data.games.length > 0) {
+                            console.log(`✅ Pull-tab library loaded successfully: ${data.games.length} games`);
+                            this.pullTabLibrary = data.games;
+                            
+                            // Cache locally if offline manager available
+                            if (window.offlineManager) {
+                                await window.offlineManager.savePullTabLibrary(data.games);
+                            }
+                            
+                            return; // Success - exit the function
+                        }
+                    }
+                } catch (endpointError) {
+                    console.warn(`Endpoint ${endpoint} failed:`, endpointError);
+                    continue; // Try next endpoint
                 }
             }
-        } catch (error) {
-            console.error('Error loading pull-tab library:', error);
+            
+            // If we get here, all endpoints failed
+            console.warn('All API endpoints failed, trying local cache...');
             
             // Try loading from local cache as fallback
             if (window.offlineManager) {
                 try {
-                    this.pullTabLibrary = await window.offlineManager.getPullTabLibrary();
-                    console.log('Loaded pull-tab library from cache as fallback:', this.pullTabLibrary.length, 'games');
+                    const cachedLibrary = await window.offlineManager.getPullTabLibrary();
+                    if (cachedLibrary && cachedLibrary.length > 0) {
+                        this.pullTabLibrary = cachedLibrary;
+                        console.log(`📱 Loaded pull-tab library from cache: ${cachedLibrary.length} games`);
+                        return;
+                    }
                 } catch (cacheError) {
                     console.error('Error loading from cache:', cacheError);
                 }
             }
+            
+            // If everything fails, create a minimal fallback library
+            console.warn('⚠️ Creating fallback pull-tab library');
+            this.pullTabLibrary = this.createFallbackLibrary();
+            
+        } catch (error) {
+            console.error('Critical error loading pull-tab library:', error);
+            
+            // Create minimal fallback
+            this.pullTabLibrary = this.createFallbackLibrary();
         }
     }
+
+    /**
+ * Create a minimal fallback library when backend is unavailable
+ */
+createFallbackLibrary() {
+    return [
+        {
+            name: 'Generic Pull-Tab $100',
+            form: 'TEMP001',
+            count: 150,
+            price: 1,
+            profit: 50,
+            url: '',
+            idealSales: 150,
+            idealPrizes: 100,
+            profitPercent: '33.3'
+        },
+        {
+            name: 'Generic Pull-Tab $200',
+            form: 'TEMP002', 
+            count: 300,
+            price: 1,
+            profit: 100,
+            url: '',
+            idealSales: 300,
+            idealPrizes: 200,
+            profitPercent: '33.3'
+        },
+        {
+            name: 'Generic Pull-Tab $400',
+            form: 'TEMP003',
+            count: 600,
+            price: 1,
+            profit: 200,
+            url: '',
+            idealSales: 600,
+            idealPrizes: 400,
+            profitPercent: '33.3'
+        }
+    ];
     
     /**
      * Setup connection monitoring
