@@ -6,17 +6,27 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>RLC Bingo Manager</title>
-    <!-- Simple CSS loading without versions -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2c3e50">
     
-    <!-- PWA meta tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/wizard.css">
+    <link rel="stylesheet" href="css/dark-mode.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
+    <!-- Your HTML content -->
+    
+    <!-- JavaScript Files at end of body -->
+    <script src="js/config.js"></script>
+    <script src="js/calculations.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/wizard.js"></script>
+    <script src="js/offline.js"></script>
+    <script src="js/sync.js"></script>
+</body>
+</html>
     <!-- Header -->
     <header class="app-header">
         <button id="menu-toggle" class="menu-button" aria-label="Menu">☰</button>
@@ -553,14 +563,14 @@
             { id: 'large-green', name: 'Large Green Electronic', price: 65, category: 'electronic' }
         ]
     };
-
+    </script>
     // Make CONFIG globally available
     window.CONFIG = CONFIG;
     <!-- Load your scripts without version parameters -->
-    <script src="app.js"></script>
-    <script src="wizard.js"></script>
-    <script src="offline.js"></script>
-    <script src="sync.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/wizard.js"></script>
+    <script src="js/offline.js"></script>
+    <script src="js/sync.js"></script>
     <!-- Simple service worker registration -->
     <script>
     if ('serviceWorker' in navigator) {
