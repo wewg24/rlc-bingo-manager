@@ -1,6 +1,4 @@
 // Sync Manager
-if (typeof SyncManager === 'undefined') {
-
 class SyncManager {
     constructor() {
         this.queue = [];
@@ -83,6 +81,3 @@ window.SyncManager = SyncManager;
 // Initialize only if not already initialized
 if (!window.syncManager) {
     window.syncManager = new SyncManager();
-}
-
-}
