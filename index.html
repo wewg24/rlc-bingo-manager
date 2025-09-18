@@ -264,5 +264,17 @@
             });
         }
     </script>
+    <!-- EMERGENCY FIX: Add this script block to your index.html right before </body> -->
+<script>
+// Minimal BingoApp definition to fix the "not defined" error
+window.BingoApp = function() {
+    console.log('BingoApp emergency fix loaded');
+    return this;
+};
+
+// Simple initialization 
+window.bingoApp = new BingoApp();
+console.log('Emergency BingoApp instance created');
+</script>
 </body>
 </html>
