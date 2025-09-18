@@ -1,23 +1,24 @@
-// sw.js - Updated with cache versioning
-const CACHE_VERSION = 'v11.0.4';
-const CACHE_NAME = `rlc-bingo-${CACHE_VERSION}`;
+// =====================================
+// sw.js - SIMPLIFIED SERVICE WORKER
+// No more version complications
+// =====================================
 
+const CACHE_NAME = 'rlc-bingo-cache';
+
+// Only cache essential files
 const urlsToCache = [
-  '/rlc-bingo-manager/',
-  '/rlc-bingo-manager/index.html',
-  '/rlc-bingo-manager/css/style.css',
-  '/rlc-bingo-manager/css/wizard.css',
-  '/rlc-bingo-manager/css/dark-mode.css',
-  '/rlc-bingo-manager/js/config.js',
-  '/rlc-bingo-manager/js/app.js',
-  '/rlc-bingo-manager/js/wizard.js',
-  '/rlc-bingo-manager/js/calculations.js',
-  '/rlc-bingo-manager/js/offline.js',
-  '/rlc-bingo-manager/js/sync.js'
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './wizard.js',
+  './offline.js',
+  './sync.js',
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
-  // Skip waiting to activate new service worker immediately
+  // Take control immediately
   self.skipWaiting();
   
   event.waitUntil(
@@ -27,37 +28,39 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  // Clean up old caches
+  // Clean up any old caches
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          // Delete all caches that don't match current version
-          if (cacheName.startsWith('rlc-bingo-') && cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+          if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => {
-      // Take control of all pages immediately
-      return self.clients.claim();
     })
   );
+  // Take control of all pages
+  return self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
+  // Network first, fall back to cache for offline
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then(response => {
-        // Always fetch index.html fresh to check for updates
-        if (event.request.url.includes('index.html') || 
-            event.request.url.endsWith('/')) {
-          return fetch(event.request);
+        // If we got a good response, update the cache
+        if (response && response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        
-        // Return cached version or fetch new
-        return response || fetch(event.request);
+        return response;
+      })
+      .catch(() => {
+        // If network fails, try cache
+        return caches.match(event.request);
       })
   );
 });
