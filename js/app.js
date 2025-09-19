@@ -2,6 +2,11 @@
 // Version 11.0.4 - Fully refactored with proper global scope and initialization
 class BingoApp {
     constructor() {
+        if (typeof CONFIG === 'undefined') {
+            console.error('CONFIG not loaded! Check script loading order.');
+            throw new Error('CONFIG dependency missing');
+        }
+        
         this.currentStep = 1;
         this.totalSteps = 6;
         
