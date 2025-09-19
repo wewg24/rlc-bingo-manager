@@ -121,7 +121,7 @@ class OfflineManager {
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         // Detect if we're on GitHub Pages and adjust path accordingly
-        const swPath = window.location.hostname === 'wewg24.github.io' 
+        const swPath = (window.location.hostname === 'wewg24.github.io' || window.location.pathname.includes('/rlc-bingo-manager/'))
             ? '/rlc-bingo-manager/sw.js' 
             : '/sw.js';
             
