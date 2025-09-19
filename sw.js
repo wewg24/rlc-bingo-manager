@@ -13,7 +13,10 @@ const urlsToCache = [
   '/rlc-bingo-manager/js/wizard.js',
   '/rlc-bingo-manager/js/calculations.js',
   '/rlc-bingo-manager/js/offline.js',
-  '/rlc-bingo-manager/js/sync.js'
+  '/rlc-bingo-manager/js/sync.js',
+  '/rlc-bingo-manager/js/init.js',
+  '/rlc-bingo-manager/manifest.json',
+  '/rlc-bingo-manager/version.json'
 ];
 
 self.addEventListener('install', event => {
