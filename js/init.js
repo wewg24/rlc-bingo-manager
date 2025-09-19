@@ -16,33 +16,6 @@
         return window.app;
     }
     
-    // 2. INITIALIZE PULL-TAB LIBRARY GLOBALLY
-    // Handle both array and object formats from backend
-    window.pullTabLibrary = data.games.map(game => {
-        if (Array.isArray(game)) {
-            return {
-                name: game[0],
-                form: game[1], 
-                count: game[2],
-                price: game[3],
-                profit: game[4],
-                url: game[5] || '',
-                identifier: `${game[0]}_${game[1]}`
-            };
-        } else {
-            // Backend returns lowercase property names
-            return {
-                name: game.name,
-                form: game.form,
-                count: game.count || 0,
-                price: game.price || 1,
-                profit: game.profit || 0,
-                url: game.url || '',
-                identifier: `${game.name}_${game.form}`
-            };
-        }
-    });
-    
     async function initializePullTabLibrary() {
         try {
             const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
