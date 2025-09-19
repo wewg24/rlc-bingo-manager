@@ -610,29 +610,6 @@
     <script src="js/offline.js?v=11.0.4"></script>
     <script src="js/sync.js?v=11.0.4"></script>
     <script src="js/init.js?v=11.0.4"></script>
-    <script>
-    // Force display of step 1
-    window.addEventListener('load', function() {
-        // Reset to step 1
-        if (window.app) {
-            window.app.currentStep = 1;
-        }
-        
-        // Show step 1 content
-        const allSteps = document.querySelectorAll('.wizard-step');
-        console.log('Found', allSteps.length, 'wizard steps');
-        
-        allSteps.forEach(step => step.style.display = 'none');
-        
-        const step1 = document.getElementById('step-1');
-        if (step1) {
-            step1.style.display = 'block';
-            step1.classList.add('active');
-        } else {
-            console.error('CRITICAL: No step-1 element found!');
-        }
-    });
-    </script>
     <!-- Add this script block to the very bottom of your index.html file, right before </body> -->
     <script>
     // Critical UI Fixes v11.0.4
