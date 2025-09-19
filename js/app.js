@@ -20,7 +20,7 @@ class BingoApp {
             financial: {}
         };
         
-        // Pull Tab Library array - will be populated from Excel data
+        // Pull Tab Library array - will be populated from Google Sheets data
         this.pullTabLibrary = [];
         
         // Application state
@@ -125,8 +125,8 @@ class BingoApp {
     }
     
     /**
-     * Display pull-tab library with proper Excel data mapping
-     * Maps Excel columns: Game, Form, Count, Price, IdealProfit
+     * Display pull-tab library with proper Google Sheets data mapping
+     * Maps Google Sheets columns: Game, Form, Count, Price, Profit
      */
     showPullTabLibrary() {
         this.closeMenu();
@@ -137,12 +137,12 @@ class BingoApp {
         // Generate library table HTML with proper field mapping
         const libraryHTML = this.pullTabLibrary && this.pullTabLibrary.length > 0
             ? this.pullTabLibrary.slice(0, 50).map(game => {
-                // Map Excel column names to display values
-                const gameName = game.Game || game.name || '';
-                const formNumber = game.Form || game.form || '';
-                const ticketCount = game[' Count '] || game.Count || game.count || 0;
-                const ticketPrice = game.Price || game.price || 1;
-                const idealProfit = game.IdealProfit || game.profit || 0;
+                // Map Google Sheets data to display values
+                const gameName = game.name || '';
+                const formNumber = game.form || '';
+                const ticketCount = game.count || 0;
+                const ticketPrice = game.price || 1;
+                const idealProfit = game.profit || 0;
                 
                 return `
                     <tr>
@@ -418,7 +418,7 @@ class BingoApp {
         this.initializePaperSalesTable();
         this.initializePOSSalesTable();
         
-        // Load pull-tab library with Excel column mapping
+        // Load pull-tab library with Google Sheets column mapping
         await this.loadPullTabLibrary();
         
         // Setup online/offline detection
@@ -878,7 +878,7 @@ class BingoApp {
     
     /**
      * Load pull-tab library from backend or cache
-     * Maps Excel columns to expected structure
+     * Maps Google Sheets columns to expected structure
      */
     async loadPullTabLibrary(forceReload = false) {
         try {
@@ -886,7 +886,7 @@ class BingoApp {
             const data = await response.json();
             
             if (data.success && data.games) {
-                // Store library with proper mapping
+                // Store library with proper mapping for Google Sheets data
                 this.pullTabLibrary = data.games.map(game => {
                     // Handle both array and object formats from backend
                     if (Array.isArray(game)) {
@@ -900,14 +900,15 @@ class BingoApp {
                             identifier: `${game[0]}_${game[1]}`
                         };
                     } else {
+                        // Backend returns objects with lowercase properties
                         return {
-                            name: game.name || game.Game,
-                            form: game.form || game.Form,
-                            count: game.count || game.Count || game[' Count '],
-                            price: game.price || game.Price || 1,
-                            profit: game.profit || game.IdealProfit || game.Profit,
-                            url: game.url || game.URL || '',
-                            identifier: `${game.name || game.Game}_${game.form || game.Form}`
+                            name: game.name,
+                            form: game.form,
+                            count: game.count || 0,
+                            price: game.price || 1,
+                            profit: game.profit || 0,
+                            url: game.url || '',
+                            identifier: `${game.name}_${game.form}`
                         };
                     }
                 });
@@ -920,8 +921,7 @@ class BingoApp {
             // Use default games if API fails
             this.pullTabLibrary = this.getDefaultPullTabGames();
         }
-    }
-    
+    }    
     /**
      * Get default pull-tab games if library unavailable
      */
