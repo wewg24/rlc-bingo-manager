@@ -1,3 +1,14 @@
+// Ensure CONFIG is available
+if (typeof CONFIG === 'undefined') {
+    console.error('CONFIG not available in calculations.js');
+    // Define fallback
+    window.CONFIG = {
+        STORAGE_KEYS: {
+            SYNC_QUEUE: 'rlc_sync_queue',
+            DRAFT_DATA: 'rlc_draft_data'
+        }
+    };
+}
 // All calculation functions
 function initializeGameCalculations() {
     // Add event delegation for dynamically added game rows
