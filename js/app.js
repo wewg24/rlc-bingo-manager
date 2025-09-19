@@ -385,7 +385,10 @@ class BingoApp {
      */
     async checkVersion() {
         try {
-            const response = await fetch('/version.json?t=' + Date.now());
+            const basePath = window.location.pathname.includes('/rlc-bingo-manager/') 
+                ? '/rlc-bingo-manager' 
+                : '';
+            const response = await fetch(`${basePath}/version.json?t=` + Date.now());
             const data = await response.json();
             
             const currentVersion = localStorage.getItem('app_version');
