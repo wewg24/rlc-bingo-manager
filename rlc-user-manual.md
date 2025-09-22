@@ -65,8 +65,8 @@ The RLC Bingo Manager is a modern Progressive Web Application designed specifica
 #### Top Header
 The header shows three important elements:
 - **Theme Toggle** (🌙/☀️): Switch between dark and light modes
-- **Menu Button** (☰): Access additional features and reports
-- **Connection Status**: 
+- **Menu Button** (☰): Access occasions list, reports, and export features
+- **Connection Status**:
   - 🟢 Online: Connected to internet
   - 🔴 Offline: Working locally (will sync later)
 
