@@ -1,6 +1,6 @@
 // Configuration
 const CONFIG = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbzQj-363T7fBf198d6e5uooia0fTLq1dNcdaVcjABZNz9EElL4cZhLXEz2DdfH0YzAYcA/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbwBUJTMGyenEXkCqbmfnmrPPYMui-wflcmtSkI1-TLhY3QIb771mtXYnFO57d9ISyGntA/exec',
     APP_NAME: 'RLC Bingo Manager',
     VERSION: '11.0.4',
     
