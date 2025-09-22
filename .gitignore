@@ -1,0 +1,31 @@
+# Google Apps Script files (belong only in Google Apps Script, not GitHub)
+.clasp.json
+.clasp.json.backup
+.claspignore
+Main.js
+DataPersistence.js
+DraftManagement.js
+Initialize.js
+MoneyCount.js
+PullTabLibrary.js
+ErrorHandler.js
+appsscript.json
+
+# Node modules
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
