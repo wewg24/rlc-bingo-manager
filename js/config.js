@@ -29,10 +29,6 @@ const CONFIG = {
     ],
     
     POS_ITEMS: [
-        // Electronic category first
-        { id: 'small-electronic', name: 'Small Electronic (27 reg)', price: 40, category: 'Electronic' },
-        { id: 'large-electronic', name: 'Large Electronic (45 reg)', price: 65, category: 'Electronic' },
-        
         // Miscellaneous category
         { id: 'dauber', name: 'Dauber', price: 2, category: 'Miscellaneous' },
         

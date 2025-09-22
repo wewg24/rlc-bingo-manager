@@ -204,16 +204,19 @@ function saveSessionInfo() {
         date: document.getElementById('session-date')?.value,
         sessionType: document.getElementById('session-type')?.value,
         lionInCharge: document.getElementById('lion-charge')?.value,
-        attendance: parseInt(document.getElementById('total-people')?.value) || 0,
+        totalPeople: parseInt(document.getElementById('total-people')?.value) || 0, // Backend expects 'totalPeople'
         birthdays: parseInt(document.getElementById('birthdays')?.value) || 0,
-        progressive: {
-            jackpot: parseFloat(document.getElementById('prog-jackpot')?.value) || 0,
-            ballsNeeded: parseInt(document.getElementById('prog-balls')?.value) || 0,
-            actualBalls: parseInt(document.getElementById('prog-actual-balls')?.value) || 0,
-            consolation: parseFloat(document.getElementById('prog-consolation')?.value) || 200,
-            prizeAwarded: parseFloat(document.getElementById('prog-prize')?.value) || 0,
-            paidByCheck: document.getElementById('prog-check')?.checked || false
-        }
+        createdBy: 'Current User' // Backend expects this field
+    };
+
+    // Progressive data structure aligned with backend expectations
+    window.app.data.progressive = {
+        jackpot: parseFloat(document.getElementById('prog-jackpot')?.value) || 0,
+        ballsNeeded: parseInt(document.getElementById('prog-balls')?.value) || 0,
+        consolation: parseFloat(document.getElementById('prog-consolation')?.value) || 200,
+        actualBalls: parseInt(document.getElementById('prog-actual-balls')?.value) || 0,
+        actualPrize: parseFloat(document.getElementById('prog-prize')?.value) || 0, // Backend expects 'actualPrize'
+        checkPayment: document.getElementById('prog-check')?.checked || false // Backend expects 'checkPayment'
     };
 }
 
@@ -250,6 +253,11 @@ function savePaperSales() {
         largeTotal: largeMachines * 65,
         total: (smallMachines * 40) + (largeMachines * 65)
     };
+
+    // Trigger financial calculations update
+    if (window.app && typeof window.app.calculateComprehensiveFinancials === 'function') {
+        window.app.calculateComprehensiveFinancials();
+    }
 }
 
 function saveGameResults() {
@@ -260,68 +268,101 @@ function saveGameResults() {
             const winners = parseInt(row.querySelector('.winner-count')?.value) || 0;
             const prizePerWinner = parseFloat(row.querySelector('.prize-per')?.value) || 0;
             const checkPaid = row.querySelector('.check-payment')?.checked || false;
-            
+
+            // Get game details from the row
+            const colorCell = row.cells[1];
+            const gameNameCell = row.cells[2];
+            const basePrizeCell = row.cells[3];
+
             games.push({
-                num: gameNum,
+                number: parseInt(gameNum), // Backend expects 'number' not 'num'
+                color: colorCell?.textContent || '',
+                name: gameNameCell?.textContent || '',
+                prize: parseFloat(basePrizeCell?.textContent?.replace('$', '')) || 0,
                 winners,
                 prizePerWinner,
-                totalPrize: winners * prizePerWinner,
-                paidByCheck: checkPaid
+                totalPayout: winners * prizePerWinner, // Backend expects 'totalPayout'
+                checkPayment: checkPaid // Backend expects 'checkPayment'
             });
         }
     });
-    
+
     window.app.data.games = games;
+
+    // Trigger bingo prize calculations and comprehensive financials
+    if (window.app && typeof window.app.calculateTotalBingoPrizes === 'function') {
+        window.app.calculateTotalBingoPrizes();
+    }
 }
 
 function savePullTabs() {
     const pullTabs = [];
-    
+
     // Regular games
     document.querySelectorAll('.pulltab-row').forEach(row => {
         const gameSelect = row.querySelector('.pulltab-select');
         const serialInput = row.querySelector('.serial-input');
-        
+
         if (gameSelect && gameSelect.value && gameSelect.value !== 'No Game') {
             const tickets = parseInt(row.querySelector('.tickets-cell')?.textContent) || 0;
+            const ticketsSold = parseFloat(row.querySelector('.tickets-sold-cell')?.textContent?.replace('$', '')) || 0;
             const prizes = parseFloat(row.querySelector('.prizes-cell')?.textContent?.replace('$', '')) || 0;
-            const profit = parseFloat(row.querySelector('.profit-cell')?.textContent?.replace('$', '')) || 0;
-            
+            const idealProfit = parseFloat(row.querySelector('.ideal-profit-cell')?.textContent?.replace('$', '')) || 0;
+            const netProfit = ticketsSold - prizes;
+            const checkPayment = row.querySelector('.check-payment')?.checked || false;
+
             pullTabs.push({
-                game: gameSelect.value,
-                serial: serialInput?.value || '',
+                gameName: gameSelect.value, // Backend expects 'gameName'
+                serialNumber: serialInput?.value || '', // Backend expects 'serialNumber'
+                price: tickets > 0 ? ticketsSold / tickets : 1, // Calculate price per ticket
                 tickets,
-                prizes,
-                profit,
-                isSpecial: false
+                sales: ticketsSold, // Backend expects 'sales'
+                idealProfit,
+                prizesPaid: prizes, // Backend expects 'prizesPaid'
+                netProfit,
+                isSpecialEvent: false, // Backend expects 'isSpecialEvent'
+                checkPayment
             });
         }
     });
-    
+
     // Special events
     document.querySelectorAll('.special-event-row').forEach(row => {
         const nameSelect = row.querySelector('.special-event-select');
         const nameInput = row.querySelector('.event-name-input');
+        const serialInput = row.querySelector('.event-serial-input');
         const name = nameInput?.value || nameSelect?.options[nameSelect?.selectedIndex]?.text || '';
         const ticketsCell = row.querySelector('.event-tickets-cell');
+        const salesCell = row.querySelector('.event-sales-cell');
         const prizesInput = row.querySelector('.event-prizes-input');
-        
+
         if (name && name !== 'Select Special Event...') {
             const tickets = parseInt(ticketsCell?.textContent) || 0;
+            const sales = parseFloat(salesCell?.textContent?.replace('$', '')) || 0;
             const prizes = parseFloat(prizesInput?.value) || 0;
-            
+            const netProfit = sales - prizes;
+
             pullTabs.push({
-                game: name,
-                serial: '',
+                gameName: name,
+                serialNumber: serialInput?.value || '',
+                price: tickets > 0 ? sales / tickets : 1,
                 tickets,
-                prizes,
-                profit: tickets - prizes,
-                isSpecial: true
+                sales,
+                idealProfit: 0, // Special events don't have ideal profit
+                prizesPaid: prizes,
+                netProfit,
+                isSpecialEvent: true,
+                checkPayment: false // Special events typically don't pay by check
             });
         }
     });
-    
+
     window.app.data.pullTabs = pullTabs;
+
+    // Trigger financial calculations update
+    if (window.app && typeof window.app.calculateComprehensiveFinancials === 'function') {
+        window.app.calculateComprehensiveFinancials();
+    }
 }
 
 function saveMoneyCount() {

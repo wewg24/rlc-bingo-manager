@@ -1,0 +1,92 @@
+The goal of this project is to allow the closet worker on the night of the occasion (or the admin on or after) to record the information contained in the RLC Bingo Forms:
+* RLC - Money Summary Sheet.pdf
+* RLC - Bingo Occasion Report.pdf
+* RLC - Pulltab Nightly Summary.pdf
+and then depending on which Monday of the Month...
+* RLC - Bingo Games Sheet - Session 5-1.pdf (1st and 5th Monday - POS Session 5)
+* RLC - Bingo Games Sheet - Session 6-2.pdf (2nd Monday - POS Session 6)
+* RLC - Bingo Games Sheet - Session 7-3.pdf (3rd Monday - POS Session 7)
+* RLC - Bingo Games Sheet - Session 8-4.pdf (4th Monday - POS Session 8)
+
+Bingo is scheduled on Monday nights. Doors open at 4:00 pm, Pulltab "Bingo Event Style" Games start at 5:00 pm and the regular Bingo session starts at 6:45 pm.
+
+Pulltabs (varies) - Not Listed on Games Sheet having been played prior
+Early Bird Bingo (3 Games) - Game #s 1-3 on Games Sheet
+Regular Bingo (12 Games) - Game #s 4-8, 10-12, 14-17 on Games Sheet
+Progressive Bingo (1 Game) - Game # 13 on Session Games Sheet
+Special Event Pulltab (1 Game) - Game # 9 on Session Games Sheet
+
+Money Summary Sheet 
+Collates the totals from the Pull-tabs drawer cash turn-in to the closet (usually as the Early Bird Bingo games are starting) having been checked and recounted by the closet worker and the Bingo Drawer cash turn-in counted by the closet worker (upon the payout of the last bingo game of the occasion) all in preparation for completing the deposit slip for the deposit of all cash to the Bingo bank account at Town& Country Bank - South Branch in Rolla.
+
+Bingo Occasion Report
+Was originally designed to record the starting and ending counts of each of the paper bingo products sold for the occasion as well as any electronic bingo machines, daubers and any "Extra" sheets sold by the floor workers for the three higher payout ($250, $250 & $500) regular bingo games.  The closet worker is to complete all sections including transferring totals from the "Pulltab Nightly Summary" form and totaling up to match the Money Summary Sheet and was originally designed to work as a double check that the entries were recorded correctly and all monies are accounted for. History: This form read slightly different (as originally designed by Pete Schmidt, an Engineering Management Professor, now retired, from Missouri S&T) when all bingo products were paper sheets only (no electronic games and not POS system) and it made perfect sense allowing the closet worker to complete the entire form and be able to easily ascertain the correctness of the entries and if there were large discrepancies, often the closet worker could inspect the folded up floor worker aprons and find cash stuffed in the pockets having not been turned in by accident.  Long after Pete stopped running bingo for the Lions Club, electronic machines were added and with them came a computer and POS system, primarily to load the session games on the electronic gaming devices but with the ancillary POS portion of the system.  The paper forms were kept in nearly the same format only having added the two types of electronic games to the sheet labeled "Small Machines" and "Large Machines".  The Small Machines are loaded with the session's games (27 faces of regular bingo and 18 faces of the progressive game) and are referred to in the POS system as "27reg18pro" having a unit price of $0.00 and the loaded Small Machines are sold via the POS as the product with the same name, for whatever reason, "27reg18pro" having a unit price of $40.00.  Because the difference in unit price within the system, these show up as different rows in the resulting Door Sales Summary document produced at the end of the night by the closet worker having been printed from the POS system.  The Large Machines are loaded with the session's games (45 faces of regular bingo and 36 faces of the progressive game) and are referred to in the POS system as "45reg36pro" having a unit price of $0.00 and the loaded Large Machines are sold via the POS as the product with the same name, for whatever reason, "45reg36pro" having a unit price of $65.00. 
+
+On the door sales summary report there are 8 columns of data separated into three sections: "Electronic Bingo", "Miscellaneous" and "Paper".  The Columns being Item, Price, Sold, Total Sales, Voided, Voided Sales, Net, and Net Sales.
+
+In the Electronic Bingo Section, there should be the following rows (Item, Price and Description):
+27reg18pro $0.00 - These are the small machines that were loaded
+27reg18pro $40.00 - These are the small machines that were sold
+45reg36pro $0.00 - These are the large machines that were loaded
+45reg36pro $65.00 - These are the large machines that were sold
+B LC Lions - Number of Electronic Regular Bingo Faces Sold (for MGC access)
+LC Progressive Brown - Number of Electronic Progressive Bingo Faces Sold (for MGC access)
+
+In the Miscellaneous Section, there should be the following row (Item, Price and Description):
+Dauber $2.00 - paper bingo marking ink blotters
+
+In the Paper Section, there should be the following rows (Item, Price and Description):
+6 Face $10.00 - 6 Face - 12 Sheet Paper Regular Bingo Pack
+9 Face Solid $15.00 - 9 Face - 12 Sheet Paper Regular Bingo Pack (1st 9 faced purchased by an individual player)
+9 Face Stripe $10.00 - 9 Face - 12 Sheet Paper Regular Bingo Pack (Subsequent 9 faced purchased by an individual player)
+Birthday Pack $0.00 - During the week of the players Birthday that can get a BOGO promotion that provides an Early Bird Double pack and a 6 Face pack, but the player bust purchase at least the same to qualify.  (The player may choose to purchase a 9 face instead of a 6 face in order to qualify)
+Coverall Extra $1.00 - Extra Sheets for Game # 17 (Aqua) sold by floor workers (the game is included with purchase packs, hence why these are referred to as extras)
+Early Bird Double $5.00 - (Qty 2) 6 Face - 3 Sheet Paper Early Bird Bingo Packs
+Early Bird Single $3.00 - (Qty 1) 6 Face - 3 Sheet Paper Bingo Packs - Not usually sold, but are in the POS System
+Early Bird Triple $8.00 - (Qty 3) 6 Face - 3 Sheet Paper Bingo Packs - Not usually sold, but are in the POS System
+Letter X Extra $1.00 - Extra Sheets for Game # 8 (Pink) sold by floor workers (the game is included with purchase packs, hence why these are referred to as extras)
+Number 7 Extra $1.00 - Extra Sheets for Game # 5 (Orange) sold by floor workers (the game is included with purchase packs, hence why these are referred to as extras)
+Progressive 18 Face $5.00 - 18 Face - 1 Sheet Paper Progressive Bingo (Game # 13 - Progressive Diamond)
+Progressive 3 Face $1.00 - 3 Face - 1 Sheet Paper Progressive Bingo (Game # 13 - Progressive Diamond)
+
+Pulltab Nightly Summary
+The Lion in charge of the Pulltabs table starts their drawer with $550 of the total $1,000 in startup cash.  They along with their floor workers sell "Bingo Event Style" pull-tab games prior to the regular bingo session.  They also sell the Pulltabs for the "Special Event" pull tab game that is played after the intermission "listed as game 9 on the session games sheet". All Pulltab games sold/played are recorded on this sheet including the special event game. Currently, they record the game name, serial number, ideal profit and sales for each game.  Once they feel comfortable in their proceeds being able to cover remaining prizes and for change making, the Pulltab table turns in their $55o in startup cash to the closet worker who then comingles it with the regular bingo drawer cash to be counted up at the end of the session.  After the last Pulltab game played prior to the start of the early bird games has its winner paid out and after the floor workers complete the sales of the Special Event Pulltab game tickets, the Lion in charge then counts the drawer and completes the "Money turned in" and subtotals portions of the form.
+
+These forms were designed well and made complete sense when we ran a paper only session.  Since then, they have been modified to account for changes in the number of games played, prizes paid and adding the electronic bingo machine sales.  These modifications did not always make sense, and many changes contained typographical errors.
+
+I would like to update these forms and streamline them so that they are less cumbersome, are more intuitive and provide the closet worker with meaningful information.  That being said, I do not think that it is important to include the paper hard counts and entries can be made directly from the door sales summary report, assuming the closet worker correctly enters the products into the POS while making sales.  Because that is not always the case and mistakes can be made, we should, in fact, include the hard counts (beginning and end) for the paper products sold from the closet (not by floor workers).
+
+Can you analyze the process and assist in redesigning these forms so that they, by in large, maintain the same structure so that they are familiar to the closet worker but fixing the glaring typos and formatting and subtotaling nonsense?
+
+For now, let's focus on redesigning the paper forms and then we will turn our attention to aligning the current implementation of the Google/GitHub reporting and management tool.
+
+Additional information:  The calculating html forms can have place setter text and should fully auto calculate and include a print paper form button to print and non-calculating version without placeholder text and there should also be a print completed form button to print the calculated form. It would be great to have both versions as the closet and pull-tab workers could utilize the paper forms during the session and then the closet worker could collate the information from the handwritten paper forms into the calculating versions and then printing them at the end of the night.  Could the html have three tabs: Pull-Tab Nightly Summary, Money Summary Sheet, and Bingo Occasion Report in a single html file instead of separate files but yet be able to print separate sheets similar to the existing forms?
+
+Money Summary Sheet
+* The calculating version should only need the amounts (no counts) for each category and should auto calculate.
+* The non-calculating version should only have blank amounts (no counts) and include Letter Labes (such as "A.", "B.", "C.", etc.) for any items on the sheet used in calculations so that it is easier to record and calculate by hand. Be mindful of formatting so that rows and columns logically align.
+* Eliminate the "Town & Country Bank - South Branch - Account: Bingo Operations" line and replace with instructive information such as: 
+   * "Remember to write a check for next week's startup cash and include in the bank bag along with the cash deposit and deposit slip."
+      * Pay to the order: "T&C Bank for Bingo Cash"
+      * Amount: $1,000.00
+      * Memo: "For Bingo [enter date of next session m/d/yy]"
+Make sure currency categories are: $100's, $50's    , $20's, $10's, $5's, $2's, $1's, Dollar Coins, Hald Dollars, Quarters, Dimes, Nickels, Pennies
+Drawer Categories are: Bingo, Pull-Tabs, and Total
+
+Checks are accepted on a case by case and very rare basis and will need a place to account for them in the Bingo and Total drawer categories only. The deposit slip requires a split out of Currency, Coin and Checks when filled in manually.
+
+Bingo Occasion Report
+Session should be either: "5-1", "6-2", "7-3" or "8-4" and could be better displayed as:
+* Manual Version: Options to circle?
+* Calculating Version: Radio buttons?
+Birthday BOGOs, Early Birds and 6 Faced need to be accounted for in both versions...
+* Manual Version: need a column to enter the "Free" sheets for correct calculation of the beginning and end counts so that the sold amount is correct, remembering that every Birthday BOGO results in (1) 6 Face and (1) Early Bird Double (door sales summary) a/k/a (2) Early Birds (Occasion Report).
+* Calculating Version: the same but automatically calculated.
+* Birthday Pack (BOGO) should not be listed in the Miscellaneous section, only Daubers
+The items tracked in the "PAPER BINGO SALES (Record Beginning & Ending Counts)" section should only track the Start Count, Free (6 Face & Early Birds), End Count and resulting Sold columns.  Do not include the "Total Sales" column.  They should also be listed in the "FROM POS DOOR SALES SUMMARY (Direct Entry)" section and that is where their Net Sales will be calculated.  The Paper Counts section should only be used in variance/offage analysis. In the paper counts section, refer the early bird sheets as "Early Birds", and they should be referred to in the Door Sales Summary Direct Entry section as "Early Bird Double".
+
+Pull-Tab Nightly Summary - Same thing: manual/calculating versions.  Manual will be used by pull-tab table, and the calculating will be used by the closet worker when verifying and then printing
+Remove "Session" as it has no meaning for them and they need more room... Allow for 15 min and 20 if space allows and additionally the special event
+Default Price should be $1.00 per ticket on calculating version but be able to be edited.
+
+All calculating versions should have a quantity and print button that prints the manual version in the quantity entered.  Currently, the workers are making copies of copies of copies.  Hence why the scans are such bad quality. If you include the print functions, detail how that will need implemented.  If the print function works, do not need separate manual version artifact.

@@ -882,6 +882,116 @@ class BingoApp {
         
         this.data.financial.totalCashDeposit = totalDeposit;
         this.data.financial.actualProfit = netDeposit;
+
+        // Trigger comprehensive financial calculations
+        this.calculateComprehensiveFinancials();
+    }
+
+    /**
+     * Calculate comprehensive financial totals for metrics
+     */
+    calculateComprehensiveFinancials() {
+        // Initialize financial object if not exists
+        this.data.financial = this.data.financial || {};
+
+        // Calculate total paper sales
+        let totalPaperSales = 0;
+        Object.values(this.data.paperBingo || {}).forEach(paper => {
+            const sold = paper.sold || 0;
+            const price = this.getPaperPrice(paper.type); // Need to implement
+            totalPaperSales += sold * price;
+        });
+
+        // Calculate POS sales total
+        let totalPosSales = 0;
+        Object.values(this.data.posSales || {}).forEach(item => {
+            totalPosSales += item.total || 0;
+        });
+
+        // Electronic sales total
+        const electronicSales = (this.data.electronic?.total) || 0;
+
+        // Calculate pull-tab totals
+        let pullTabSales = 0;
+        let pullTabPrizes = 0;
+        let specialEventSales = 0;
+        let specialEventPrizes = 0;
+
+        (this.data.pullTabs || []).forEach(pt => {
+            if (pt.isSpecial) {
+                specialEventSales += pt.tickets || 0;
+                specialEventPrizes += pt.prizes || 0;
+            } else {
+                pullTabSales += pt.tickets || 0;
+                pullTabPrizes += pt.prizes || 0;
+            }
+        });
+
+        // Progressive and regular bingo prizes already calculated in calculateTotalBingoPrizes
+        const bingoPrizes = this.data.financial.bingoPrizesPaid || 0;
+        const checkPrizes = this.data.financial.prizesPaidByCheck || 0;
+
+        // Calculate gross sales
+        const grossSales = totalPaperSales + totalPosSales + electronicSales + pullTabSales + specialEventSales;
+
+        // Calculate total prizes
+        const totalPrizes = bingoPrizes + pullTabPrizes + specialEventPrizes;
+
+        // Update financial object with all calculated values
+        Object.assign(this.data.financial, {
+            totalBingoSales: totalPaperSales + electronicSales,
+            totalPosSales: totalPosSales,
+            pullTabSales,
+            specialEventSales,
+            grossSales,
+            bingoPrizesPaid: bingoPrizes,
+            pullTabPrizesPaid: pullTabPrizes,
+            specialEventPrizesPaid: specialEventPrizes,
+            totalPrizesPaid: totalPrizes,
+            prizesPaidByCheck: checkPrizes,
+            // actualProfit and totalCashDeposit are set by calculateMoneyTotals
+            idealProfit: grossSales - totalPrizes - 1000, // Less startup cash
+            overShort: (this.data.financial.actualProfit || 0) - (grossSales - totalPrizes - 1000)
+        });
+
+        // Update metrics display if on review step
+        this.updateMetricsDisplay();
+    }
+
+    /**
+     * Update metrics display elements
+     */
+    updateMetricsDisplay() {
+        const financial = this.data.financial;
+        const elements = {
+            'metric-gross-sales': financial.grossSales,
+            'metric-total-prizes': financial.totalPrizesPaid,
+            'metric-actual-profit': financial.actualProfit,
+            'metric-ideal-profit': financial.idealProfit,
+            'metric-over-short': financial.overShort
+        };
+
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element && typeof value === 'number') {
+                element.textContent = `$${value.toFixed(2)}`;
+            }
+        });
+    }
+
+    /**
+     * Get paper price by type (helper function)
+     */
+    getPaperPrice(paperType) {
+        const prices = {
+            'eb': 10,      // Early Birds
+            '6f': 10,      // 6 Face
+            '9fs': 15,     // 9 Face Solid
+            '9fst': 10,    // 9 Face Stripe
+            'p3': 1,       // Progressive 3 Face
+            'p18': 5       // Progressive 18 Face
+        };
+        return prices[paperType] || 0;
     }
     
     /**
