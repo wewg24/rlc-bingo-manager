@@ -261,6 +261,10 @@ The system tracks:
 - Implemented cache busting strategy
 - Added version checking system
 - Enhanced service worker update logic
+- Complete wizard-based 6-step workflow
+- Occasions list view for historical data
+- Enhanced navigation with progress indicators
+- Real-time financial variance detection
 
 ### v11.0.1
 - Implemented complete wizard UI
