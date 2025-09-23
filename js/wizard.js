@@ -103,8 +103,8 @@ function validateCurrentStep() {
     const currentStepNum = window.app ? window.app.currentStep : 1;
     
     switch(currentStepNum) {
-        case 1: // Session Info
-            return validateSessionInfo();
+        case 1: // Occasion Info
+            return validateOccasionInfo();
         case 2: // Paper Sales
             return validatePaperSales();
         case 3: // Game Results
@@ -120,7 +120,7 @@ function validateCurrentStep() {
     }
 }
 
-function validateSessionInfo() {
+function validateOccasionInfo() {
     const date = document.getElementById('occasion-date')?.value;
     const session = document.getElementById('session-type')?.value;
     const lion = document.getElementById('lion-charge')?.value;
@@ -131,7 +131,7 @@ function validateSessionInfo() {
         return false;
     }
     
-    console.log('Session info validation passed');
+    console.log('Occasion info validation passed');
     return true;
 }
 
