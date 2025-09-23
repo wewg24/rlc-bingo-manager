@@ -44,7 +44,7 @@ class BingoApp {
         this.closeMenu();
         
         // Store current wizard state for recovery
-        occasionStorage.setItem('wizardState', JSON.stringify({
+        localStorage.setItem('wizardState', JSON.stringify({
             step: this.currentStep || 1,
             data: this.data
         }));
@@ -304,7 +304,7 @@ class BingoApp {
      */
     returnToWizard() {
         // Restore wizard state if available
-        const savedState = occasionStorage.getItem('wizardState');
+        const savedState = localStorage.getItem('wizardState');
         if (savedState) {
             const state = JSON.parse(savedState);
             this.data = state.data;
@@ -346,7 +346,7 @@ class BingoApp {
         if (confirm('This will clear all local data including drafts and sync queue. Are you sure?')) {
             if (confirm('This action cannot be undone. Continue?')) {
                 localStorage.clear();
-                occasionStorage.clear();
+                localStorage.clear();
                 alert('Local data cleared. Refreshing...');
                 window.location.reload();
             }
