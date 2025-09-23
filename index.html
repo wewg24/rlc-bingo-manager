@@ -557,7 +557,7 @@
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3>Pull-Tab Library Management</h3>
-                    <button class="btn success" onclick="addPullTabGame()">Add New Game</button>
+                    <button class="btn success" onclick="adminApp.addNewPullTabGame()">Add New Game</button>
                 </div>
 
                 <div style="margin-bottom: 20px;">
@@ -1002,6 +1002,7 @@
                 console.log('Pull-tab library API response:', result); // Debug logging
 
                 if (result.success && result.games && Array.isArray(result.games)) {
+                    this.pullTabLibrary = result.games; // Store for access by other functions
                     this.renderPullTabTable(result.games);
                 } else {
                     console.warn('Invalid pull-tab library response:', result);
@@ -1061,7 +1062,130 @@
                 { name: 'Gold Rush', price: 5, count: 100, profit: 1.75, form: 'A-GR-100', url: '' }
             ];
 
+            this.pullTabLibrary = mockLibrary; // Store for access by other functions
             this.renderPullTabTable(mockLibrary);
+        }
+
+        viewPullTabDetails(gameIndex) {
+            // Get the current games array (either from API or mock)
+            const games = this.pullTabLibrary || [];
+            const game = games[gameIndex];
+
+            if (!game) {
+                this.showAlert('Game not found', 'error');
+                return;
+            }
+
+            // Create a simple modal showing game details
+            const detailsHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="pull-tab-details-modal">
+                    <div class="card" style="max-width: 500px; width: 90%; max-height: 80%; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Pull-Tab Game Details</h3>
+                            <button onclick="document.getElementById('pull-tab-details-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                        </div>
+
+                        <div style="display: grid; gap: 15px;">
+                            <div><strong>Game Name:</strong> ${game.name || 'Unknown'}</div>
+                            <div><strong>Form Number:</strong> ${game.form || 'N/A'}</div>
+                            <div><strong>Ticket Price:</strong> $${parseFloat(game.price) || 0}</div>
+                            <div><strong>Tickets per Game:</strong> ${parseInt(game.count) || 0}</div>
+                            <div><strong>Expected Profit:</strong> $${parseFloat(game.profit) || 0}</div>
+                            <div><strong>Profit Percentage:</strong> ${game.price > 0 ? Math.round((game.profit / game.price) * 100) : 0}%</div>
+                            ${game.url ? `<div><strong>PDF Document:</strong> <a href="${game.url}" target="_blank" class="btn secondary">View PDF</a></div>` : ''}
+                        </div>
+
+                        <div style="margin-top: 20px; text-align: right;">
+                            <button onclick="document.getElementById('pull-tab-details-modal').remove()" class="btn secondary">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', detailsHtml);
+        }
+
+        addNewPullTabGame() {
+            // Create modal for adding new pull-tab game
+            const addGameHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="add-pull-tab-modal">
+                    <div class="card" style="max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Add New Pull-Tab Game</h3>
+                            <button onclick="document.getElementById('add-pull-tab-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                        </div>
+
+                        <form id="add-pull-tab-form">
+                            <div class="form-group">
+                                <label for="new-game-name">Game Name *</label>
+                                <input type="text" id="new-game-name" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="new-game-form">Form Number *</label>
+                                <input type="text" id="new-game-form" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="new-game-price">Ticket Price *</label>
+                                <input type="number" id="new-game-price" class="form-control" step="0.01" min="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="new-game-count">Tickets per Game *</label>
+                                <input type="number" id="new-game-count" class="form-control" min="1" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="new-game-profit">Expected Profit *</label>
+                                <input type="number" id="new-game-profit" class="form-control" step="0.01" min="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="new-game-url">PDF URL (optional)</label>
+                                <input type="url" id="new-game-url" class="form-control" placeholder="https://...">
+                            </div>
+
+                            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                                <button type="button" class="btn secondary" onclick="document.getElementById('add-pull-tab-modal').remove()">Cancel</button>
+                                <button type="submit" class="btn success">Add Game</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', addGameHtml);
+
+            // Handle form submission
+            document.getElementById('add-pull-tab-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveNewPullTabGame();
+            });
+        }
+
+        saveNewPullTabGame() {
+            const formData = {
+                name: document.getElementById('new-game-name').value,
+                form: document.getElementById('new-game-form').value,
+                price: parseFloat(document.getElementById('new-game-price').value),
+                count: parseInt(document.getElementById('new-game-count').value),
+                profit: parseFloat(document.getElementById('new-game-profit').value),
+                url: document.getElementById('new-game-url').value || ''
+            };
+
+            // For now, just show success message since backend doesn't have add functionality yet
+            this.showAlert('New game added successfully! (Note: This is currently a demo - backend integration needed)', 'success');
+            document.getElementById('add-pull-tab-modal').remove();
+
+            // TODO: Implement actual API call to add game to backend
+            // await fetch(`${CONFIG.API_URL}`, {
+            //     method: 'POST',
+            //     body: new URLSearchParams({
+            //         action: 'add-pull-tab-game',
+            //         data: JSON.stringify(formData)
+            //     })
+            // });
         }
 
         createSession() {
