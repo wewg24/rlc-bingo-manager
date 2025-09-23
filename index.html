@@ -702,20 +702,7 @@
                 this.toggleTheme();
             });
 
-            // Session form
-            document.getElementById('session-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.saveSession();
-            });
-
-            // Modal close buttons
-            document.getElementById('modal-close-x').addEventListener('click', () => {
-                this.closeSessionModal();
-            });
-
-            document.getElementById('modal-cancel').addEventListener('click', () => {
-                this.closeSessionModal();
-            });
+            // Session form and modal buttons will be bound after admin interface is shown
         }
 
         checkAuthentication() {
@@ -759,6 +746,28 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('admin-interface').classList.remove('hidden');
             this.loadDashboard();
+            this.bindAdminEventListeners();
+        }
+
+        bindAdminEventListeners() {
+            // Prevent duplicate bindings
+            if (this.adminEventsBound) return;
+            this.adminEventsBound = true;
+
+            // Session form
+            document.getElementById('session-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveSession();
+            });
+
+            // Modal close buttons
+            document.getElementById('modal-close-x').addEventListener('click', () => {
+                this.closeSessionModal();
+            });
+
+            document.getElementById('modal-cancel').addEventListener('click', () => {
+                this.closeSessionModal();
+            });
         }
 
         toggleTheme() {
