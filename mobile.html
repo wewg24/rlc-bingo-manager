@@ -73,21 +73,33 @@
             console.log('API Response:', result);
             console.log('API Response JSON:', JSON.stringify(result, null, 2));
 
+            // Check different possible response structures
             if (result.success && result.data) {
+                // Expected structure: { success: true, data: {...} }
                 const occasionData = result.data;
-                console.log('Loaded occasion data:', occasionData);
-
-                // Populate the form with existing data
+                console.log('Loaded occasion data from result.data:', occasionData);
                 populateFormWithData(occasionData);
-
-                // Store the original data in app.data
                 window.app.data = occasionData;
 
-                // Update submit button text
                 const submitBtn = document.querySelector('button[onclick="submitOccasion()"]');
                 if (submitBtn) {
                     submitBtn.textContent = 'Update Occasion';
                 }
+            } else if (result.success && result.occasions && result.occasions.length > 0) {
+                // Alternative structure: { success: true, occasions: [...] }
+                const occasionData = result.occasions[0];
+                console.log('Loaded occasion data from result.occasions[0]:', occasionData);
+                populateFormWithData(occasionData);
+                window.app.data = occasionData;
+
+                const submitBtn = document.querySelector('button[onclick="submitOccasion()"]');
+                if (submitBtn) {
+                    submitBtn.textContent = 'Update Occasion';
+                }
+            } else if (result.success && result.games) {
+                // API is returning games instead of occasion data - this indicates an API issue
+                console.error('API returned games data instead of occasion data. This suggests the backend needs to be updated.');
+                alert('Backend API issue: The get occasion endpoint is returning game data instead of occasion data. Please check the Google Apps Script backend.');
             } else {
                 console.error('Failed to load occasion. Full response:', result);
                 console.error('Full response JSON:', JSON.stringify(result, null, 2));
