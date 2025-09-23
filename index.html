@@ -1044,7 +1044,7 @@
                         <td>${game.form || 'N/A'}</td>
                         <td><span class="status active">Active</span></td>
                         <td>
-                            <button class="btn" onclick="adminApp.editPullTab('${game.id || index}')">Edit</button>
+                            <button class="btn" onclick="adminApp.editPullTab('${index}')">Edit</button>
                             <button class="btn secondary" onclick="adminApp.viewPullTabDetails('${index}')">View</button>
                             ${game.url ? `<button class="btn secondary" onclick="window.open('${game.url}', '_blank')">PDF</button>` : ''}
                         </td>
@@ -1322,7 +1322,7 @@
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: new URLSearchParams({
-                        path: 'delete-session',
+                        action: 'delete-session',
                         sessionId: sessionId
                     })
                 });
@@ -1769,18 +1769,18 @@
             URL.revokeObjectURL(url);
         }
 
-        editPullTab(gameId) {
-            // Find the game in the real pull-tab library
-            const game = this.pullTabLibrary.find(g => g.id == gameId);
+        editPullTab(gameIndex) {
+            // Find the game in the real pull-tab library by index
+            const game = this.pullTabLibrary[gameIndex];
             if (game) {
-                const modal = this.createEditPullTabModal(game);
+                const modal = this.createEditPullTabModal(game, gameIndex);
                 document.body.appendChild(modal);
             } else {
                 this.showAlert('Pull-tab game not found', 'error');
             }
         }
 
-        createEditPullTabModal(game) {
+        createEditPullTabModal(game, gameIndex) {
             const modal = document.createElement('div');
             modal.id = 'edit-pulltab-modal';
             modal.style.cssText = `
@@ -1847,19 +1847,22 @@
 
             modal.querySelector('#edit-pulltab-form').addEventListener('submit', (e) => {
                 e.preventDefault();
-                this.savePullTabEdit(game.id, modal);
+                this.savePullTabEdit(gameIndex, modal);
             });
 
             return modal;
         }
 
-        async savePullTabEdit(gameId, modal) {
+        async savePullTabEdit(gameIndex, modal) {
             const formData = new FormData(modal.querySelector('form'));
 
             try {
+                // Get the current game data
+                const currentGame = this.pullTabLibrary[gameIndex];
+
                 // Prepare data for API call
                 const gameData = {
-                    id: gameId,
+                    index: gameIndex,
                     name: formData.get('name'),
                     price: parseFloat(formData.get('price')),
                     count: parseInt(formData.get('count')),
@@ -1868,7 +1871,7 @@
                     url: formData.get('url') || ''
                 };
 
-                console.log('Saving pull-tab edit for game:', gameId, gameData);
+                console.log('Saving pull-tab edit for game index:', gameIndex, gameData);
 
                 // Call backend API to update the game
                 const response = await fetch(CONFIG.API_URL, {
@@ -1877,9 +1880,9 @@
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: new URLSearchParams({
-                        path: 'update-pulltab',
-                        gameId: gameId,
-                        gameData: JSON.stringify(gameData)
+                        action: 'update-pull-tab-game',
+                        gameIndex: gameIndex,
+                        data: JSON.stringify(gameData)
                     })
                 });
 
