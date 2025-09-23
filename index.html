@@ -823,7 +823,7 @@
                     console.log('Processing occasion:', occasion); // Debug logging
 
                     // Clean and validate the occasion ID
-                    const occasionId = occasion['Occasion ID'];
+                    const occasionId = occasion.id || occasion['Occasion ID'];
                     if (!occasionId || typeof occasionId !== 'string') {
                         console.warn('Invalid occasion ID:', occasionId);
                         return null; // Skip invalid records
