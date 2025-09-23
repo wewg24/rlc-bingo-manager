@@ -1109,6 +1109,21 @@
         }
 
         generateOfflineHTML(libraryData, configData, version, includeForms) {
+            const sessionTypesOptions = Object.entries(configData.SESSION_TYPES || {})
+                .map(([key, value]) => `<option value="${key}">${value}</option>`)
+                .join('');
+
+            const libraryRows = libraryData.map(game => `
+                <tr>
+                    <td>${game.name}</td>
+                    <td>$${game.ticketPrice}</td>
+                    <td>${game.ticketsPerGame}</td>
+                    <td>${game.idealProfitPercent}%</td>
+                    <td>${game.manufacturer}</td>
+                    <td>${game.formNumber}</td>
+                </tr>
+            `).join('');
+
             return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1174,9 +1189,7 @@
                         <div class="form-group">
                             <label>Session Type</label>
                             <select class="form-control" required>
-                                ${Object.entries(configData.SESSION_TYPES || {}).map(([key, value]) =>
-                                    `<option value="${key}">${value}</option>`
-                                ).join('')}
+                                ${sessionTypesOptions}
                             </select>
                         </div>
                         <div class="form-group">
@@ -1213,16 +1226,7 @@
                         </tr>
                     </thead>
                     <tbody id="library-table">
-                        ${libraryData.map(game => `
-                            <tr>
-                                <td>${game.name}</td>
-                                <td>$${game.ticketPrice}</td>
-                                <td>${game.ticketsPerGame}</td>
-                                <td>${game.idealProfitPercent}%</td>
-                                <td>${game.manufacturer}</td>
-                                <td>${game.formNumber}</td>
-                            </tr>
-                        `).join('')}
+                        ${libraryRows}
                     </tbody>
                 </table>
             </div>
@@ -1449,12 +1453,12 @@
 
                         <div class="form-group">
                             <label>Tickets per Game</label>
-                            <input type="number" class="form-control" value="${game.ticketsPerGame}" required min="1">
+                            <input type="number" class="form-control" value="${game.ticketsPerGame || ''}" required min="1">
                         </div>
 
                         <div class="form-group">
                             <label>Ideal Profit %</label>
-                            <input type="number" class="form-control" value="${game.idealProfitPercent}" required min="0" max="100" step="0.1">
+                            <input type="number" class="form-control" value="${game.idealProfitPercent || ''}" required min="0" max="100" step="0.1">
                         </div>
 
                         <div class="form-group">
