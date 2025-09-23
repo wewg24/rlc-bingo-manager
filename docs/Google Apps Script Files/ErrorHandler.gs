@@ -5,7 +5,7 @@ function handleError(error, context) {
         context: context,
         error: error.toString(),
         stack: error.stack,
-        user: Session.getActiveUser().getEmail()
+        user: Occasion.getActiveUser().getEmail()
     };
     
     // Log to console
@@ -50,3 +50,4 @@ function withErrorHandling(fn, context) {
         }
     };
 }
+
