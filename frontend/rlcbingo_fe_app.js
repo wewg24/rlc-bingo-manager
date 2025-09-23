@@ -26,13 +26,21 @@ class RLCBingoAPI {
    * Initialize API with authentication
    */
   async initWithAuth() {
-    if (typeof RLCBingoAuth !== 'undefined') {
-      this.token = await RLCBingoAuth.getToken();
+    // Try to use configured token first
+    if (typeof RLC_BINGO_CONFIG !== 'undefined' && RLC_BINGO_CONFIG.github.token && RLC_BINGO_CONFIG.github.token !== 'TOKEN_HERE') {
+      this.token = RLC_BINGO_CONFIG.github.token;
+      console.log('Using configured token');
+      return;
+    }
+
+    // Fallback to auth instance if available
+    if (typeof RLCBingoAuthInstance !== 'undefined') {
+      this.token = await RLCBingoAuthInstance.getToken();
       if (!this.token) {
         throw new Error('GitHub token required for API access');
       }
     } else {
-      throw new Error('RLCBingoAuth not loaded');
+      throw new Error('No authentication method available');
     }
   }
 

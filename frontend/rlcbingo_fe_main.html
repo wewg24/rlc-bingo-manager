@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    <!-- Load JavaScript files -->
+    <!-- Load JavaScript files in correct order -->
     <script src="rlcbingo_fe_config.js"></script>
     <script src="rlcbingo_fe_auth.js"></script>
     <script src="rlcbingo_fe_app.js"></script>
@@ -118,21 +118,35 @@
         // Initialize the wizard when page loads
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                await initializeWizard();
+                // Wait a bit for all scripts to load
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                if (typeof initializeWizard !== 'undefined') {
+                    await initializeWizard();
+                } else {
+                    console.error('Wizard not loaded');
+                }
+
                 await checkSystemStatus();
             } catch (error) {
                 console.error('Initialization error:', error);
                 document.getElementById('system-status').textContent = 'Error: ' + error.message;
+                alert('System initialization failed: ' + error.message);
             }
         });
 
         async function checkSystemStatus() {
             try {
-                const status = await RLCBingo.getStatus();
-                document.getElementById('system-status').textContent =
-                    status.success ? 'Connected ✅' : 'Error ❌';
+                if (typeof RLCBingo !== 'undefined') {
+                    const status = await RLCBingo.getStatus();
+                    document.getElementById('system-status').textContent =
+                        status.success ? 'Connected ✅' : 'Error ❌';
+                } else {
+                    document.getElementById('system-status').textContent = 'API Not Loaded ❌';
+                }
             } catch (error) {
                 document.getElementById('system-status').textContent = 'Connection Failed ❌';
+                console.error('Status check error:', error);
             }
         }
     </script>

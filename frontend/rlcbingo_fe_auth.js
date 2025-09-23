@@ -128,4 +128,4 @@ class RLCBingoAuth {
 }
 
 // Global auth instance
-const RLCBingoAuth = new RLCBingoAuth();
+const RLCBingoAuthInstance = new RLCBingoAuth();
