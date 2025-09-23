@@ -1,10 +1,23 @@
-Google Sheets ID: 1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc
-Script ID: 1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU
-Version 26 on Sep 23, 2025, 12:16 PM
-Deployment ID: AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A
-Web app URL: https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec
-Execute as: Me(wewg24@gmail.com)
-Who has access: Anyone
-Library: https://script.google.com/macros/library/d/1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU/26
-PHOTOS_FOLDER_ID: 1g0lfGUqI_dCeqv41ZxLaTyZqDAXt5Iyv
-SPREADSHEET_ID: 1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc
+# RLC Bingo Manager - Google Apps Script Deployment Info
+
+## Current Deployment (Updated 2025-09-23)
+- **Google Sheets ID**: 1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc
+- **Script ID**: 1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU
+- **Version**: 26+ (Auto-incremented via clasp push)
+- **Deployment ID**: AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A
+- **Web App URL**: https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec
+- **Execute as**: Me(wewg24@gmail.com)
+- **Access**: Anyone
+- **Library URL**: https://script.google.com/macros/library/d/1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU/26
+
+## Configuration
+- **Photos Folder ID**: 1g0lfGUqI_dCeqv41ZxLaTyZqDAXt5Iyv
+- **Spreadsheet ID**: 1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc
+
+## Development Workflow
+- **Edit**: Use `clasp` CLI - files sync'd to project root (Main.js, etc.)
+- **Deploy**: Run `clasp push` to update Google Apps Script
+- **View**: Use Google Apps Script editor URL above
+
+## Note
+Google Apps Script source files are no longer stored in /docs - use clasp for editing.

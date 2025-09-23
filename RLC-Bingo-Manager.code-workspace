@@ -33,6 +33,25 @@
       "bradlc.vscode-tailwindcss"
     ]
   },
+  "claude_project_context": {
+    "project_config_file": "PROJECT-CONFIG.json",
+    "critical_config_file": "CRITICAL-CONFIG.md",
+    "key_documentation": [
+      "CRITICAL-CONFIG.md",
+      "docs/system-overview.md",
+      "docs/process-narrative.md",
+      "docs/OriginalVarrative.txt",
+      "DEV-SETUP.md"
+    ],
+    "architecture_summary": "Frontend: HTML5/JS on GitHub Pages, Backend: Google Apps Script, Data: Google Sheets",
+    "CRITICAL_SPREADSHEET_ID": "1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc",
+    "validation_rules": [
+      "ALWAYS verify spreadsheet ID before deploying Google Apps Script",
+      "NEVER change production IDs without user approval",
+      "ALWAYS test API endpoints after configuration changes",
+      "READ CRITICAL-CONFIG.md before touching Google Apps Script"
+    ]
+  },
   "tasks": {
     "version": "2.0.0",
     "tasks": [
@@ -40,6 +59,19 @@
         "label": "Sync with Google Apps Script",
         "type": "shell",
         "command": "clasp pull",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Validate Configuration",
+        "type": "shell",
+        "command": "powershell -ExecutionPolicy Bypass -File .\\scripts\\validate-config.ps1",
         "group": "build",
         "presentation": {
           "echo": true,
@@ -60,7 +92,8 @@
           "focus": false,
           "panel": "shared"
         },
-        "problemMatcher": []
+        "problemMatcher": [],
+        "dependsOn": "Validate Configuration"
       },
       {
         "label": "Check Git Status",
