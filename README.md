@@ -75,7 +75,7 @@ A modern Progressive Web Application (PWA) for managing bingo occasions with com
 
 ### Wizard Workflow
 ```
-Step 1: Session Info → Step 2: Paper Sales → Step 3: Game Results
+Step 1: Occasion Info → Step 2: Paper Sales → Step 3: Game Results
     ↓                      ↓                      ↓
 Date, Type, Lion      Inventory, POS        17 Session Games
 Progressive Setup     Electronic Sales       Prize Calculations
@@ -89,7 +89,7 @@ Special Events       Deposit Calculation     Performance Metrics
 ### System Components
 ```
 Frontend (PWA) - Wizard Interface
-├── Session Information (Progressive tracking)
+├── Occasion Information (Progressive tracking)
 ├── Paper Bingo Sales (BOGO calculations)
 ├── Session Games (Auto-populated by type)
 ├── Pull-Tab Management (Library integration)
@@ -165,7 +165,7 @@ rlc-bingo-manager/
 ## 🎮 Key Features Explained
 
 ### Wizard-Based Data Entry
-The application guides users through a logical workflow that matches the actual session process. Each step validates before allowing progression, ensuring data completeness. The wizard remembers your position if you need to go back, and all data is auto-saved locally.
+The application guides users through a logical workflow that matches the actual occasion process. Each step validates before allowing progression, ensuring data completeness. The wizard remembers your position if you need to go back, and all data is auto-saved locally.
 
 ### Birthday BOGO System
 When you enter the number of birthdays in Step 1, the system automatically:
@@ -176,7 +176,7 @@ When you enter the number of birthdays in Step 1, the system automatically:
 
 ### Progressive Prize Calculation
 The progressive game dynamically calculates prizes based on:
-- Current jackpot amount (carried from previous session)
+- Current jackpot amount (carried from previous occasion)
 - Balls required to win (default: 48)
 - Actual balls called when won
 - Automatic determination of jackpot vs. consolation prize
