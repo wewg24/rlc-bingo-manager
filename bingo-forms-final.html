@@ -839,7 +839,7 @@
                 <div class="section-content">
                     <div class="occasion-info-box">
                         <strong>Instructions:</strong> Remember to write a check for next week's startup cash and include in the bank bag along with the cash deposit and deposit slip.<br>
-                        <strong>Pay to:</strong> "T&C Bank for Bingo Cash" | <strong>Amount:</strong> $1,000.00 | <strong>Memo:</strong> "For Bingo [enter date of next session m/d/yy]"
+                        <strong>Pay to:</strong> "T&C Bank for Bingo Cash" | <strong>Amount:</strong> $1,000.00 | <strong>Memo:</strong> "For Bingo [enter date of next occasion m/d/yy]"
                     </div>
 
                     <table>
@@ -1746,7 +1746,7 @@
             document.getElementById('metrics_deposit').value = deposit.toFixed(2);
             document.getElementById('metrics_profit_per_player').value = profitPerPlayer.toFixed(2);
 
-            // Update session details
+            // Update occasion details
             document.getElementById('metrics_date').value = document.getElementById('occasion_date').value || '';
             document.getElementById('metrics_occasion').value = document.getElementById('occasion_type').value || '';
             document.getElementById('metrics_players').value = document.getElementById('total_players').value || '';
@@ -1864,7 +1864,7 @@
 
             localStorage.setItem('bingoFormsData', JSON.stringify(data));
             localStorage.setItem('bingoFormsTimestamp', new Date().toISOString());
-            alert('Session data saved successfully!');
+            alert('Occasion data saved successfully!');
         }
 
         function loadData() {
@@ -1872,7 +1872,7 @@
             const timestamp = localStorage.getItem('bingoFormsTimestamp');
 
             if (Object.keys(data).length === 0) {
-                alert('No saved session data found.');
+                alert('No saved occasion data found.');
                 return;
             }
 
@@ -1896,7 +1896,7 @@
             updateOccasionDisplay();
 
             const savedDate = timestamp ? new Date(timestamp).toLocaleString() : 'Unknown';
-            alert(`Session data loaded successfully!\nSaved: ${savedDate}`);
+            alert(`Occasion data loaded successfully!\nSaved: ${savedDate}`);
         }
 
         function generateSMS() {
