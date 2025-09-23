@@ -585,7 +585,7 @@
         </div>
 
         <!-- Session Entry/Edit Modal -->
-        <div id="session-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div id="session-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center;">
             <div class="card" style="max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3 id="session-modal-title">New Session</h3>
@@ -1164,7 +1164,7 @@
             });
         }
 
-        saveNewPullTabGame() {
+        async saveNewPullTabGame() {
             const formData = {
                 name: document.getElementById('new-game-name').value,
                 form: document.getElementById('new-game-form').value,
@@ -1174,21 +1174,34 @@
                 url: document.getElementById('new-game-url').value || ''
             };
 
-            // For now, just show success message since backend doesn't have add functionality yet
-            this.showAlert('New game added successfully! (Note: This is currently a demo - backend integration needed)', 'success');
-            document.getElementById('add-pull-tab-modal').remove();
+            try {
+                const response = await fetch(`${CONFIG.API_URL}`, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'add-pull-tab-game',
+                        data: JSON.stringify(formData)
+                    })
+                });
 
-            // TODO: Implement actual API call to add game to backend
-            // await fetch(`${CONFIG.API_URL}`, {
-            //     method: 'POST',
-            //     body: new URLSearchParams({
-            //         action: 'add-pull-tab-game',
-            //         data: JSON.stringify(formData)
-            //     })
-            // });
+                const result = await response.json();
+
+                if (result.success) {
+                    this.showAlert('New game added successfully!', 'success');
+                    document.getElementById('add-pull-tab-modal').remove();
+
+                    // Refresh the pull-tab library to show the new game
+                    await this.loadPullTabLibrary();
+                } else {
+                    this.showAlert(`Error adding game: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error adding pull-tab game:', error);
+                this.showAlert('Error adding game. Please try again.', 'error');
+            }
         }
 
         createSession() {
+            this.currentEditingSessionId = null; // Reset editing state
             document.getElementById('session-modal-title').textContent = 'New Session';
             document.getElementById('session-form').reset();
             document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
@@ -1198,6 +1211,7 @@
         editSession(sessionId) {
             const session = this.sessions.find(s => s.id == sessionId);
             if (session) {
+                this.currentEditingSessionId = sessionId;
                 document.getElementById('session-modal-title').textContent = 'Edit Session';
                 document.getElementById('modal-date').value = session.date;
                 document.getElementById('modal-session-type').value = session.sessionType;
@@ -1209,44 +1223,34 @@
 
         async saveSession() {
             const formData = {
-                occasion: {
-                    date: document.getElementById('modal-date').value,
-                    sessionType: document.getElementById('modal-session-type').value,
-                    lionInCharge: document.getElementById('modal-lion').value,
-                    totalPlayers: 0,
-                    status: document.getElementById('modal-status').value || 'Draft'
-                }
+                date: document.getElementById('modal-date').value,
+                sessionType: document.getElementById('modal-session-type').value,
+                lionInCharge: document.getElementById('modal-lion').value,
+                totalPlayers: 0,
+                status: document.getElementById('modal-status').value || 'Draft'
             };
 
+            // If editing existing session, include the session ID
+            if (this.currentEditingSessionId) {
+                formData.sessionId = this.currentEditingSessionId;
+            }
+
             try {
-                // Use existing save-occasion action since save-session isn't available yet
+                const action = this.currentEditingSessionId ? 'update-session' : 'save-session';
                 const response = await fetch(CONFIG.API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({
-                        action: 'save-occasion',
+                        action: action,
                         data: JSON.stringify(formData)
                     })
                 });
 
                 const result = await response.json();
                 if (result.success && result.data && result.data.success) {
-                    // Add to local sessions array
-                    const newSession = {
-                        id: result.data.occasionId,
-                        date: formData.occasion.date,
-                        sessionType: formData.occasion.sessionType,
-                        lionInCharge: formData.occasion.lionInCharge,
-                        totalPlayers: 0,
-                        totalRevenue: 0,
-                        netProfit: 0,
-                        status: formData.occasion.status
-                    };
-
-                    this.sessions.push(newSession);
                     this.closeSessionModal();
-                    this.loadSessionsTable(); // Refresh the sessions view
-                    this.showAlert('Session saved successfully!', 'success');
+                    await this.loadSessions(); // Refresh sessions from backend
+                    this.showAlert(this.currentEditingSessionId ? 'Session updated successfully!' : 'Session saved successfully!', 'success');
                 } else {
                     this.showAlert('Error saving session: ' + (result.error || result.data?.error || 'Unknown error'), 'error');
                 }
@@ -1261,6 +1265,8 @@
             if (modal) {
                 modal.style.display = 'none';
             }
+            // Reset editing state
+            this.currentEditingSessionId = null;
         }
 
         showAlert(message, type = 'info') {
@@ -1318,13 +1324,88 @@
             }
         }
 
-        viewSession(sessionId) {
-            const session = this.sessions.find(s => s.id == sessionId);
-            if (session) {
-                // Open mobile interface with session data pre-filled
-                const mobileUrl = `mobile.html?sessionId=${sessionId}`;
-                window.open(mobileUrl, '_blank');
+        async viewSession(sessionId) {
+            try {
+                // Fetch complete session data from backend
+                const response = await fetch(`${CONFIG.API_URL}?path=occasion&id=${sessionId}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    this.showSessionDetails(result.data);
+                } else {
+                    this.showAlert('Error loading session details: ' + (result.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error viewing session:', error);
+                this.showAlert('Network error loading session details', 'error');
             }
+        }
+
+        showSessionDetails(sessionData) {
+            const session = sessionData.occasion || {};
+            const detailsHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="session-details-modal">
+                    <div class="card" style="max-width: 800px; width: 90%; max-height: 80%; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Session Details</h3>
+                            <button onclick="document.getElementById('session-details-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                        </div>
+
+                        <div class="grid grid-2">
+                            <div>
+                                <h4>Basic Information</h4>
+                                <p><strong>Date:</strong> ${session['Date'] ? new Date(session['Date']).toLocaleDateString() : 'N/A'}</p>
+                                <p><strong>Session Type:</strong> ${session['Session Type'] || 'N/A'}</p>
+                                <p><strong>Lion in Charge:</strong> ${session['Lion in Charge'] || 'N/A'}</p>
+                                <p><strong>Total Players:</strong> ${session['Total Players'] || 0}</p>
+                                <p><strong>Status:</strong> ${session['Status'] || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <h4>Financial Summary</h4>
+                                <p><strong>Total Revenue:</strong> $${(session['Total Revenue'] || 0).toLocaleString()}</p>
+                                <p><strong>Net Profit:</strong> $${(session['Net Profit'] || 0).toLocaleString()}</p>
+                                <p><strong>Progressive Jackpot:</strong> $${(session['Progressive Jackpot'] || 0).toLocaleString()}</p>
+                                <p><strong>Progressive Balls:</strong> ${session['Progressive Balls'] || 0}</p>
+                            </div>
+                        </div>
+
+                        ${sessionData.games && sessionData.games.length > 0 ? `
+                            <div style="margin-top: 20px;">
+                                <h4>Game Results</h4>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Game #</th>
+                                            <th>Color</th>
+                                            <th>Game Name</th>
+                                            <th>Prize</th>
+                                            <th>Winners</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${sessionData.games.map(game => `
+                                            <tr>
+                                                <td>${game.number}</td>
+                                                <td>${game.color}</td>
+                                                <td>${game.name}</td>
+                                                <td>$${game.prize}</td>
+                                                <td>${game.winners}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : ''}
+
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button class="btn secondary" onclick="document.getElementById('session-details-modal').remove()">Close</button>
+                            <button class="btn" onclick="document.getElementById('session-details-modal').remove(); adminApp.editSession('${session['Occasion ID']}')">Edit Session</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', detailsHtml);
         }
 
         generateOfflineApp() {
