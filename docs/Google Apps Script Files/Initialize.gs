@@ -66,7 +66,7 @@ function initializeSheets() {
   const sheetDefinitions = {
     'Occasions': {
       headers: [
-        'Occasion ID', 'Date', 'Session Type', 'Lion in Charge', 'Total Players',
+        'Occasion ID', 'Date', 'Occasion Type', 'Lion in Charge', 'Total Players',
         'Birthdays', 'Progressive Jackpot', 'Progressive Balls', 'Progressive Consolation',
         'Progressive Actual', 'Progressive Prize', 'Check Payment', 'Created', 'Created By', 'Status'
       ],
