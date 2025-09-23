@@ -1384,7 +1384,7 @@
             e.preventDefault();
             saveSessionData();
         });
-    </script>
+    <\/script>
 </body>
 </html>`;
         }
@@ -1426,7 +1426,8 @@
                 align-items: center; justify-content: center;
             `;
 
-            modal.innerHTML = `
+            // Build form HTML with proper variable interpolation
+            const formHTML = `
                 <div class="card" style="max-width: 500px; width: 90%; max-height: 80%; overflow-y: auto;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3>Edit Pull-Tab Game</h3>
@@ -1436,7 +1437,7 @@
                     <form id="edit-pulltab-form">
                         <div class="form-group">
                             <label>Game Name</label>
-                            <input type="text" class="form-control" value="${game.name}" required>
+                            <input type="text" class="form-control" value="${game.name || ''}" required>
                         </div>
 
                         <div class="form-group">
@@ -1474,7 +1475,7 @@
 
                         <div class="form-group">
                             <label>Form Number</label>
-                            <input type="text" class="form-control" value="${game.formNumber}" required>
+                            <input type="text" class="form-control" value="${game.formNumber || ''}" required>
                         </div>
 
                         <div class="form-group">
@@ -1493,6 +1494,8 @@
                     </form>
                 </div>
             `;
+
+            modal.innerHTML = formHTML;
 
             modal.querySelector('#edit-pulltab-form').addEventListener('submit', (e) => {
                 e.preventDefault();
