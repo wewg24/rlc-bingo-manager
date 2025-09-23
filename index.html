@@ -1044,7 +1044,8 @@
                         <td>${game.form || 'N/A'}</td>
                         <td><span class="status active">Active</span></td>
                         <td>
-                            <button class="btn" onclick="adminApp.viewPullTabDetails('${index}')">View</button>
+                            <button class="btn" onclick="adminApp.editPullTab('${game.id || index}')">Edit</button>
+                            <button class="btn secondary" onclick="adminApp.viewPullTabDetails('${index}')">View</button>
                             ${game.url ? `<button class="btn secondary" onclick="window.open('${game.url}', '_blank')">PDF</button>` : ''}
                         </td>
                     `;
@@ -1314,13 +1315,31 @@
             }
 
             try {
-                // For now, just remove from local array since delete-session isn't implemented yet
-                this.sessions = this.sessions.filter(s => s.id != sessionId);
-                this.loadSessionsTable();
-                this.showAlert('Session deleted successfully! (Local only until backend is updated)', 'warning');
+                // Call backend API to delete the session
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        path: 'delete-session',
+                        sessionId: sessionId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Remove from local array and refresh table
+                    this.sessions = this.sessions.filter(s => s.id != sessionId);
+                    this.loadSessionsTable();
+                    this.showAlert('Session deleted successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Failed to delete session');
+                }
             } catch (error) {
                 console.error('Error deleting session:', error);
-                this.showAlert('Error deleting session', 'error');
+                this.showAlert('Error deleting session: ' + error.message, 'error');
             }
         }
 
@@ -1751,17 +1770,13 @@
         }
 
         editPullTab(gameId) {
-            // Find the game and open edit modal
-            const mockLibrary = [
-                { id: 1, name: 'Lucky 7s', ticketPrice: 1, ticketsPerGame: 300, idealProfitPercent: 25, manufacturer: 'Arrow', formNumber: 'A7-300', status: 'Active' },
-                { id: 2, name: 'Cash Explosion', ticketPrice: 2, ticketsPerGame: 200, idealProfitPercent: 30, manufacturer: 'Bingo King', formNumber: 'BK-CE-200', status: 'Active' },
-                { id: 3, name: 'Gold Rush', ticketPrice: 5, ticketsPerGame: 100, idealProfitPercent: 35, manufacturer: 'Arrow', formNumber: 'A-GR-100', status: 'Discontinued' }
-            ];
-
-            const game = mockLibrary.find(g => g.id == gameId);
+            // Find the game in the real pull-tab library
+            const game = this.pullTabLibrary.find(g => g.id == gameId);
             if (game) {
                 const modal = this.createEditPullTabModal(game);
                 document.body.appendChild(modal);
+            } else {
+                this.showAlert('Pull-tab game not found', 'error');
             }
         }
 
@@ -1785,54 +1800,39 @@
                     <form id="edit-pulltab-form">
                         <div class="form-group">
                             <label>Game Name</label>
-                            <input type="text" class="form-control" value="${game.name || ''}" required>
+                            <input type="text" name="name" class="form-control" value="${game.name || ''}" required>
                         </div>
 
                         <div class="form-group">
                             <label>Ticket Price</label>
-                            <select class="form-control" required>
-                                <option value="0.25" ${game.ticketPrice == 0.25 ? 'selected' : ''}>$0.25</option>
-                                <option value="0.50" ${game.ticketPrice == 0.50 ? 'selected' : ''}>$0.50</option>
-                                <option value="1" ${game.ticketPrice == 1 ? 'selected' : ''}>$1.00</option>
-                                <option value="2" ${game.ticketPrice == 2 ? 'selected' : ''}>$2.00</option>
-                                <option value="5" ${game.ticketPrice == 5 ? 'selected' : ''}>$5.00</option>
-                                <option value="10" ${game.ticketPrice == 10 ? 'selected' : ''}>$10.00</option>
+                            <select name="price" class="form-control" required>
+                                <option value="0.25" ${game.price == 0.25 ? 'selected' : ''}>$0.25</option>
+                                <option value="0.50" ${game.price == 0.50 ? 'selected' : ''}>$0.50</option>
+                                <option value="1" ${game.price == 1 ? 'selected' : ''}>$1.00</option>
+                                <option value="2" ${game.price == 2 ? 'selected' : ''}>$2.00</option>
+                                <option value="5" ${game.price == 5 ? 'selected' : ''}>$5.00</option>
+                                <option value="10" ${game.price == 10 ? 'selected' : ''}>$10.00</option>
                             </select>
                         </div>
 
                         <div class="form-group">
                             <label>Tickets per Game</label>
-                            <input type="number" class="form-control" value="${game.ticketsPerGame || ''}" required min="1">
+                            <input type="number" name="count" class="form-control" value="${game.count || ''}" required min="1">
                         </div>
 
                         <div class="form-group">
-                            <label>Ideal Profit %</label>
-                            <input type="number" class="form-control" value="${game.idealProfitPercent || ''}" required min="0" max="100" step="0.1">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Manufacturer</label>
-                            <select class="form-control" required>
-                                <option value="Arrow" ${game.manufacturer === 'Arrow' ? 'selected' : ''}>Arrow</option>
-                                <option value="Bingo King" ${game.manufacturer === 'Bingo King' ? 'selected' : ''}>Bingo King</option>
-                                <option value="Pickle Cards" ${game.manufacturer === 'Pickle Cards' ? 'selected' : ''}>Pickle Cards</option>
-                                <option value="Houdini" ${game.manufacturer === 'Houdini' ? 'selected' : ''}>Houdini</option>
-                                <option value="Other" ${game.manufacturer === 'Other' ? 'selected' : ''}>Other</option>
-                            </select>
+                            <label>Expected Profit ($)</label>
+                            <input type="number" name="profit" class="form-control" value="${game.profit || ''}" required min="0" step="0.01">
                         </div>
 
                         <div class="form-group">
                             <label>Form Number</label>
-                            <input type="text" class="form-control" value="${game.formNumber || ''}" required>
+                            <input type="text" name="form" class="form-control" value="${game.form || ''}" required>
                         </div>
 
                         <div class="form-group">
-                            <label>Status</label>
-                            <select class="form-control">
-                                <option value="Active" ${game.status === 'Active' ? 'selected' : ''}>Active</option>
-                                <option value="Discontinued" ${game.status === 'Discontinued' ? 'selected' : ''}>Discontinued</option>
-                                <option value="Special Event" ${game.status === 'Special Event' ? 'selected' : ''}>Special Event</option>
-                            </select>
+                            <label>PDF URL (optional)</label>
+                            <input type="url" name="url" class="form-control" value="${game.url || ''}" placeholder="https://...">
                         </div>
 
                         <div style="display: flex; gap: 10px; justify-content: flex-end;">
@@ -1853,13 +1853,49 @@
             return modal;
         }
 
-        savePullTabEdit(gameId, modal) {
+        async savePullTabEdit(gameId, modal) {
             const formData = new FormData(modal.querySelector('form'));
-            console.log('Saving pull-tab edit for game:', gameId);
 
-            modal.remove();
-            this.loadPullTabLibrary(); // Refresh the library
-            this.showAlert('Pull-tab game updated successfully!', 'success');
+            try {
+                // Prepare data for API call
+                const gameData = {
+                    id: gameId,
+                    name: formData.get('name'),
+                    price: parseFloat(formData.get('price')),
+                    count: parseInt(formData.get('count')),
+                    profit: parseFloat(formData.get('profit')),
+                    form: formData.get('form'),
+                    url: formData.get('url') || ''
+                };
+
+                console.log('Saving pull-tab edit for game:', gameId, gameData);
+
+                // Call backend API to update the game
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        path: 'update-pulltab',
+                        gameId: gameId,
+                        gameData: JSON.stringify(gameData)
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    modal.remove();
+                    this.loadPullTabLibrary(); // Refresh the library
+                    this.showAlert('Pull-tab game updated successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Failed to update pull-tab game');
+                }
+            } catch (error) {
+                console.error('Error saving pull-tab edit:', error);
+                this.showAlert('Error updating pull-tab game: ' + error.message, 'error');
+            }
         }
 
         async deletePullTab(gameId) {
