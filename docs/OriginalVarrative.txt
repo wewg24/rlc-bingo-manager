@@ -86,7 +86,7 @@ Birthday BOGOs, Early Birds and 6 Faced need to be accounted for in both version
 The items tracked in the "PAPER BINGO SALES (Record Beginning & Ending Counts)" section should only track the Start Count, Free (6 Face & Early Birds), End Count and resulting Sold columns.  Do not include the "Total Sales" column.  They should also be listed in the "FROM POS DOOR SALES SUMMARY (Direct Entry)" section and that is where their Net Sales will be calculated.  The Paper Counts section should only be used in variance/offage analysis. In the paper counts section, refer the early bird sheets as "Early Birds", and they should be referred to in the Door Sales Summary Direct Entry section as "Early Bird Double".
 
 Pull-Tab Nightly Summary - Same thing: manual/calculating versions.  Manual will be used by pull-tab table, and the calculating will be used by the closet worker when verifying and then printing
-Remove "Session" as it has no meaning for them and they need more room... Allow for 15 min and 20 if space allows and additionally the special event
+Remove "Occasion" as it has no meaning for them and they need more room... Allow for 15 min and 20 if space allows and additionally the special event
 Default Price should be $1.00 per ticket on calculating version but be able to be edited.
 
 All calculating versions should have a quantity and print button that prints the manual version in the quantity entered.  Currently, the workers are making copies of copies of copies.  Hence why the scans are such bad quality. If you include the print functions, detail how that will need implemented.  If the print function works, do not need separate manual version artifact.
