@@ -937,7 +937,7 @@
             document.getElementById('session-modal-title').textContent = 'New Session';
             document.getElementById('session-form').reset();
             document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('session-modal').classList.remove('hidden');
+            document.getElementById('session-modal').style.display = 'flex';
         }
 
         editSession(sessionId) {
@@ -948,7 +948,7 @@
                 document.getElementById('modal-session-type').value = session.sessionType;
                 document.getElementById('modal-lion').value = session.lionInCharge;
                 document.getElementById('modal-status').value = session.status;
-                document.getElementById('session-modal').classList.remove('hidden');
+                document.getElementById('session-modal').style.display = 'flex';
             }
         }
 
@@ -1004,7 +1004,7 @@
         closeSessionModal() {
             const modal = document.getElementById('session-modal');
             if (modal) {
-                modal.classList.add('hidden');
+                modal.style.display = 'none';
             }
         }
 
