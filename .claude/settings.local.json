@@ -14,7 +14,9 @@
       "WebSearch",
       "Bash(git pull:*)",
       "Bash(git stash push:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(npm install:*)",
+      "Bash(clasp:*)"
     ],
     "deny": [],
     "ask": []
