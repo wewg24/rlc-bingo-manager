@@ -589,7 +589,7 @@
             <div class="card" style="max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3 id="session-modal-title">New Session</h3>
-                    <button onclick="closeSessionModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                    <button id="modal-close-x" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
                 </div>
 
                 <form id="session-form">
@@ -623,7 +623,7 @@
                     </div>
 
                     <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                        <button type="button" class="btn secondary" onclick="closeSessionModal()">Cancel</button>
+                        <button type="button" id="modal-cancel" class="btn secondary">Cancel</button>
                         <button type="submit" class="btn success">Save Session</button>
                     </div>
                 </form>
@@ -706,6 +706,15 @@
             document.getElementById('session-form').addEventListener('submit', (e) => {
                 e.preventDefault();
                 this.saveSession();
+            });
+
+            // Modal close buttons
+            document.getElementById('modal-close-x').addEventListener('click', () => {
+                this.closeSessionModal();
+            });
+
+            document.getElementById('modal-cancel').addEventListener('click', () => {
+                this.closeSessionModal();
             });
         }
 
@@ -1517,14 +1526,14 @@
         adminApp = new AdminInterface();
     });
 
-    function showDashboard() { adminApp.showDashboard(); }
-    function showSessions() { adminApp.showSessions(); }
-    function showReports() { adminApp.showReports(); }
-    function showLibrary() { adminApp.showLibrary(); }
-    function generateOfflineApp() { adminApp.generateOfflineApp(); }
-    function createSession() { adminApp.createSession(); }
-    function closeSessionModal() { adminApp.closeSessionModal(); }
-    function buildOfflineApp() { adminApp.buildOfflineApp(); }
+    function showDashboard() { if (adminApp) adminApp.showDashboard(); }
+    function showSessions() { if (adminApp) adminApp.showSessions(); }
+    function showReports() { if (adminApp) adminApp.showReports(); }
+    function showLibrary() { if (adminApp) adminApp.showLibrary(); }
+    function generateOfflineApp() { if (adminApp) adminApp.generateOfflineApp(); }
+    function createSession() { if (adminApp) adminApp.createSession(); }
+    function closeSessionModal() { if (adminApp) adminApp.closeSessionModal(); }
+    function buildOfflineApp() { if (adminApp) adminApp.buildOfflineApp(); }
 
     // Report generation functions
     function generateMonthlyReport() {
