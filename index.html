@@ -377,7 +377,7 @@
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+                <input type="password" id="password" class="form-control" placeholder="Enter password" autocomplete="current-password" required>
             </div>
 
             <button type="submit" class="btn success" style="width: 100%;">Login</button>
@@ -754,20 +754,43 @@
             if (this.adminEventsBound) return;
             this.adminEventsBound = true;
 
+            console.log('Binding admin event listeners...');
+
             // Session form
-            document.getElementById('session-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.saveSession();
-            });
+            const sessionForm = document.getElementById('session-form');
+            if (sessionForm) {
+                sessionForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    console.log('Session form submitted');
+                    this.saveSession();
+                });
+                console.log('Session form listener bound');
+            } else {
+                console.error('session-form element not found');
+            }
 
             // Modal close buttons
-            document.getElementById('modal-close-x').addEventListener('click', () => {
-                this.closeSessionModal();
-            });
+            const closeX = document.getElementById('modal-close-x');
+            if (closeX) {
+                closeX.addEventListener('click', () => {
+                    console.log('Close X clicked');
+                    this.closeSessionModal();
+                });
+                console.log('Close X listener bound');
+            } else {
+                console.error('modal-close-x element not found');
+            }
 
-            document.getElementById('modal-cancel').addEventListener('click', () => {
-                this.closeSessionModal();
-            });
+            const cancelBtn = document.getElementById('modal-cancel');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    console.log('Cancel button clicked');
+                    this.closeSessionModal();
+                });
+                console.log('Cancel button listener bound');
+            } else {
+                console.error('modal-cancel element not found');
+            }
         }
 
         toggleTheme() {
@@ -989,7 +1012,14 @@
         }
 
         closeSessionModal() {
-            document.getElementById('session-modal').classList.add('hidden');
+            console.log('closeSessionModal called');
+            const modal = document.getElementById('session-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                console.log('Modal hidden successfully');
+            } else {
+                console.error('session-modal element not found');
+            }
         }
 
         showAlert(message, type = 'info') {
