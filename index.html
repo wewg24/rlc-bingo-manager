@@ -818,19 +818,32 @@
             console.log('API Response:', result); // Debug logging
 
             if (result.success && result.occasions && Array.isArray(result.occasions)) {
-                // Convert API data to admin interface format with better validation
+                // Convert API data to admin interface format with correct field mapping
                 this.sessions = result.occasions.map(occasion => {
                     console.log('Processing occasion:', occasion); // Debug logging
 
                     return {
-                        id: occasion.occasionId || occasion.id || `temp_${Date.now()}`,
-                        date: this.validateDate(occasion.date) || new Date().toISOString().split('T')[0],
-                        sessionType: occasion.sessionType || 'Unknown',
-                        lionInCharge: occasion.lionInCharge || 'N/A',
-                        totalPlayers: parseInt(occasion.totalPeople) || 0,
-                        totalRevenue: parseFloat(occasion.totalRevenue) || 0,
-                        netProfit: parseFloat(occasion.netProfit) || 0,
-                        status: occasion.status || 'Draft'
+                        id: occasion['Occasion ID'] || `temp_${Date.now()}`,
+                        date: this.validateDate(occasion['Date']) || new Date().toISOString().split('T')[0],
+                        sessionType: occasion['Session Type'] || 'Unknown',
+                        lionInCharge: occasion['Lion in Charge'] || 'N/A',
+                        totalPlayers: parseInt(occasion['Total Players']) || 0,
+                        // For now, use 0 for revenue/profit until we have those fields calculated
+                        totalRevenue: 0,
+                        netProfit: 0,
+                        status: occasion['Status'] || 'Draft',
+                        // Store additional fields for reference
+                        progressive: {
+                            jackpot: parseFloat(occasion['Progressive Jackpot']) || 0,
+                            balls: parseInt(occasion['Progressive Balls']) || 0,
+                            consolation: parseFloat(occasion['Progressive Consolation']) || 0,
+                            actual: parseFloat(occasion['Progressive Actual']) || 0,
+                            prize: parseFloat(occasion['Progressive Prize']) || 0,
+                            checkPayment: occasion['Check Payment'] || false
+                        },
+                        birthdays: parseInt(occasion['Birthdays']) || 0,
+                        created: occasion['Created'],
+                        createdBy: occasion['Created By']
                     };
                 }).filter(session => session.id); // Remove any invalid sessions
             } else {
