@@ -39,7 +39,7 @@
             </p>
 
             <div style="margin: 30px 0;">
-                <a href="rlcbingo_fe_admin.html" class="btn btn-primary">
+                <a href="rlcbingo_fe_admin_simple.html" class="btn btn-primary">
                     📊 Admin Interface
                 </a>
                 <p style="margin: 10px 0; font-size: 14px; color: #666;">
@@ -48,7 +48,7 @@
             </div>
 
             <div style="margin: 30px 0;">
-                <a href="rlcbingo_fe_main.html" class="btn btn-success">
+                <a href="rlcbingo_fe_main_simple.html" class="btn btn-success">
                     ✨ Create New Occasion
                 </a>
                 <p style="margin: 10px 0; font-size: 14px; color: #666;">
@@ -61,7 +61,7 @@
                     📱 Mobile Game Manager
                 </a>
                 <p style="margin: 10px 0; font-size: 14px; color: #666;">
-                    Manage games during bingo events
+                    Manage games during bingo events (coming soon)
                 </p>
             </div>
 
@@ -71,25 +71,19 @@
         </div>
     </div>
 
-    <!-- Load JavaScript files -->
-    <script src="rlcbingo_fe_config.js"></script>
-    <script src="rlcbingo_fe_auth.js"></script>
-    <script src="rlcbingo_fe_app.js"></script>
+    <!-- Load simplified JavaScript -->
+    <script src="rlcbingo_fe_simple.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            await checkSystemStatus();
-        });
-
-        async function checkSystemStatus() {
             try {
-                const status = await RLCBingo.getStatus();
+                const status = await checkSystemStatus();
                 document.getElementById('system-status').textContent =
                     status.success ? 'Connected ✅' : 'Error ❌';
             } catch (error) {
                 document.getElementById('system-status').textContent = 'Connection Failed ❌';
             }
-        }
+        });
     </script>
 </body>
 </html>
