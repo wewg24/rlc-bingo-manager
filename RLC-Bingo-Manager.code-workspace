@@ -1,0 +1,113 @@
+{
+  "folders": [
+    {
+      "name": "RLC Bingo Manager",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "git.autofetch": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    "workbench.startupEditor": "readme",
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "typescript.preferences.quoteStyle": "single",
+    "javascript.preferences.quoteStyle": "single",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "anthropic.claude-code",
+      "ms-vscode.vscode-typescript-next",
+      "ms-vscode.vscode-json",
+      "github.vscode-pull-request-github",
+      "github.copilot",
+      "bradlc.vscode-tailwindcss"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Sync with Google Apps Script",
+        "type": "shell",
+        "command": "clasp pull",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Deploy to Google Apps Script",
+        "type": "shell",
+        "command": "clasp push",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Check Git Status",
+        "type": "shell",
+        "command": "git status",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Push to GitHub",
+        "type": "shell",
+        "command": "git push origin main",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Full Sync (GitHub + Google Apps Script)",
+        "dependsOrder": "sequence",
+        "dependsOn": [
+          "Sync with Google Apps Script",
+          "Check Git Status"
+        ]
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Open Live Site",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/scripts/open-live-site.js",
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+}
