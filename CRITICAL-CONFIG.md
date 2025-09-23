@@ -33,14 +33,31 @@ Before making ANY changes to Google Apps Script configuration:
 - [ ] Verify editing/saving occasions works
 - [ ] Check that session types display as "5-1", not dates
 
+## 🚀 MANDATORY DEPLOYMENT CHECKLIST
+**CRITICAL**: After making Google Apps Script changes, ALWAYS complete ALL steps:
+
+1. [ ] **Push code**: `clasp push` (uploads code to Google Apps Script)
+2. [ ] **Deploy changes**: `clasp deploy` (makes changes LIVE on web app)
+3. [ ] **Test API**: Verify `{WEB_APP_URL}?path=occasions` returns updated data
+4. [ ] **Test frontend**: Check live site at https://wewg24.github.io/rlc-bingo-manager/
+5. [ ] **Verify data consistency**: Session types should be "5-1" format, not timestamps
+6. [ ] **Update version**: Record deployment version and status below
+
+**⚠️ WARNING**: `clasp push` only uploads code. You MUST run `clasp deploy` to make changes live!
+
 ## 🚫 NEVER CHANGE THESE VALUES WITHOUT:
 1. ✅ User approval
 2. ✅ Full backup of current working state
 3. ✅ Testing plan for rollback
 4. ✅ Verification that new values are correct
 
-## 📍 LAST KNOWN WORKING STATE
-- **Date**: 2025-09-23
-- **Version**: 31
-- **Status**: WORKING - Occasions load correctly, no CORS errors
+## 📍 DEPLOYMENT HISTORY
+- **2025-09-23 v32**: DEPLOYED - Fixed data mapping inconsistencies, session type normalization
+- **2025-09-23 v31**: WORKING - Occasions load correctly, no CORS errors
 - **Validator**: bill.wiggins@phelps-county-bank.com
+
+## 📝 DEPLOYMENT LOG
+| Date | Version | Action | Status | Changes Made |
+|------|---------|--------|--------|--------------|
+| 2025-09-23 | v32 | DEPLOYED | ✅ LIVE | Fixed session type mapping, robust property access |
+| 2025-09-23 | v31 | DEPLOYED | ✅ LIVE | CORS fixes, configuration safeguards |

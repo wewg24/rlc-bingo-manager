@@ -82,7 +82,7 @@
         "problemMatcher": []
       },
       {
-        "label": "Deploy to Google Apps Script",
+        "label": "Push Code to Google Apps Script",
         "type": "shell",
         "command": "clasp push",
         "group": "build",
@@ -94,6 +94,29 @@
         },
         "problemMatcher": [],
         "dependsOn": "Validate Configuration"
+      },
+      {
+        "label": "Deploy Google Apps Script (MAKE LIVE)",
+        "type": "shell",
+        "command": "clasp deploy",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": [],
+        "dependsOn": "Push Code to Google Apps Script"
+      },
+      {
+        "label": "COMPLETE DEPLOYMENT (Push + Deploy + Test)",
+        "dependsOrder": "sequence",
+        "dependsOn": [
+          "Validate Configuration",
+          "Push Code to Google Apps Script",
+          "Deploy Google Apps Script (MAKE LIVE)"
+        ]
       },
       {
         "label": "Check Git Status",
