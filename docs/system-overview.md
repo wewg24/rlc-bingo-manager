@@ -93,7 +93,7 @@ RLC Bingo Manager/ (ID: 13y-jTy3lcFazALyI4DrmeaQx8kLkCY-a)
 }
 ```
 
-### Session Configuration
+### Occasion Configuration
 | Session Type | Schedule | Games | Description |
 |--------------|----------|-------|-------------|
 | **5-1** | 1st/5th Monday | 17 games | Standard configuration |
@@ -137,7 +137,7 @@ RLC Bingo Manager/ (ID: 13y-jTy3lcFazALyI4DrmeaQx8kLkCY-a)
    - Contextual action buttons
 
 4. **Report Generation System**
-   - PDF generation for session summaries
+   - PDF generation for occasion summaries
    - Email-friendly formatting templates
    - Native share button integration
    - Export capabilities for multiple formats
@@ -153,8 +153,8 @@ RLC Bingo Manager/ (ID: 13y-jTy3lcFazALyI4DrmeaQx8kLkCY-a)
 ### Administrative Structure
 ```
 /admin
-├── Session Management
-│   ├── View/Edit Past Sessions
+├── Occasion Management
+│   ├── View/Edit Past Occasions
 │   │   ├── Search by date range
 │   │   ├── Filter by session type
 │   │   └── Bulk edit capabilities
@@ -190,7 +190,7 @@ RLC Bingo Manager/ (ID: 13y-jTy3lcFazALyI4DrmeaQx8kLkCY-a)
 │   │   └── Audit documentation
 │   ├── Performance Metrics
 │   │   ├── Attendance tracking
-│   │   ├── Revenue per session
+│   │   ├── Revenue per occasion
 │   │   └── Prize-to-sales ratios
 │   └── Custom Date Ranges
 │       ├── Flexible reporting periods
@@ -218,8 +218,8 @@ RLC Bingo Manager/ (ID: 13y-jTy3lcFazALyI4DrmeaQx8kLkCY-a)
 // Complete form data structure in browser localStorage
 {
   draftOccasion: {
-    // Current session being entered
-    sessionInfo: {},
+    // Current occasion being entered
+    occasionInfo: {},
     paperSales: {},
     gameResults: {},
     pullTabs: {},
@@ -237,7 +237,7 @@ RLC Bingo Manager/ (ID: 13y-jTy3lcFazALyI4DrmeaQx8kLkCY-a)
   ],
   cachedLibrary: {
     pullTabGames: [],
-    sessionConfigs: {},
+    occasionConfigs: {},
     lastUpdated: '2025-09-22T09:00:00Z'
   }
 }
@@ -272,7 +272,7 @@ RLC Bingo Manager/ (ID: 13y-jTy3lcFazALyI4DrmeaQx8kLkCY-a)
 - **Offline Ready**: Full functionality without connection
 
 ### Storage Requirements
-- **Typical Session**: ~5MB local storage
+- **Typical Occasion**: ~5MB local storage
 - **Complete Cache**: ~15MB for full offline capability
 - **Photo Storage**: Handled via Google Drive API
 
