@@ -1,0 +1,10 @@
+# GitHub token security
+rlcbingo_fe_config.js
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+.DS_Store
+Thumbs.db
