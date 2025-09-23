@@ -1,0 +1,134 @@
+name: Process RLC Bingo Occasion Data
+
+on:
+  repository_dispatch:
+    types: [save_occasion, delete_occasion]
+  workflow_dispatch:
+    inputs:
+      test_data:
+        description: 'Test data to process'
+        required: false
+
+jobs:
+  process-data:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Process occasion data
+      run: |
+        node -e "
+        const fs = require('fs');
+        const path = require('path');
+
+        // Get event data
+        const eventType = '${{ github.event.action }}' || 'save_occasion';
+        const payload = ${{ toJSON(github.event.client_payload) }} || {};
+
+        console.log('Processing event:', eventType);
+        console.log('Payload:', JSON.stringify(payload, null, 2));
+
+        // Ensure data directories exist
+        if (!fs.existsSync('data')) fs.mkdirSync('data');
+        if (!fs.existsSync('data/occasions')) fs.mkdirSync('data/occasions');
+
+        if (eventType === 'save_occasion') {
+          // Generate occasion ID
+          const occasionId = payload.id || 'OCC_' + Date.now();
+
+          // Create occasion object
+          const occasion = {
+            id: occasionId,
+            created: new Date().toISOString(),
+            modified: new Date().toISOString(),
+            date: payload.date,
+            sessionType: payload.sessionType,
+            lionInCharge: payload.lionInCharge,
+            totalPlayers: parseInt(payload.totalPlayers) || 0,
+            posSales: payload.posSales || {},
+            status: payload.status || 'Active'
+          };
+
+          // Save individual occasion file
+          fs.writeFileSync(
+            path.join('data/occasions', occasionId + '.json'),
+            JSON.stringify(occasion, null, 2)
+          );
+
+          // Update occasions index
+          let occasions = [];
+          const indexPath = 'data/occasions.json';
+          if (fs.existsSync(indexPath)) {
+            occasions = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+          }
+
+          // Remove existing entry if updating
+          occasions = occasions.filter(o => o.id !== occasionId);
+
+          // Add new entry
+          occasions.push({
+            id: occasionId,
+            date: occasion.date,
+            sessionType: occasion.sessionType,
+            lionInCharge: occasion.lionInCharge,
+            totalPlayers: occasion.totalPlayers,
+            status: occasion.status,
+            modified: occasion.modified
+          });
+
+          // Sort by date (newest first)
+          occasions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+          // Save updated index
+          fs.writeFileSync(indexPath, JSON.stringify({
+            lastUpdated: new Date().toISOString(),
+            count: occasions.length,
+            occasions: occasions
+          }, null, 2));
+
+          console.log('✅ Saved occasion:', occasionId);
+
+        } else if (eventType === 'delete_occasion') {
+          const occasionId = payload.id;
+
+          // Delete individual file
+          const filePath = path.join('data/occasions', occasionId + '.json');
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+
+          // Update index
+          const indexPath = 'data/occasions.json';
+          if (fs.existsSync(indexPath)) {
+            let data = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+            data.occasions = data.occasions.filter(o => o.id !== occasionId);
+            data.count = data.occasions.length;
+            data.lastUpdated = new Date().toISOString();
+
+            fs.writeFileSync(indexPath, JSON.stringify(data, null, 2));
+          }
+
+          console.log('✅ Deleted occasion:', occasionId);
+        }
+        "
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "RLC Bingo Bot"
+        git add data/
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update occasion data - $(date)"
+          git push
+        fi
