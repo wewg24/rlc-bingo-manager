@@ -61,9 +61,9 @@ function doGet(e) {
         break;
         
       case 'session-games':
-      case 'occasion-games':
-        const occasionType = e.parameter.occasionType || e.parameter.sessionType || e.parameter.session;
-        const gamesResult = dm.getOccasionGames(occasionType);
+      case 'session-games':
+        const sessionType = e.parameter.sessionType || e.parameter.sessionType || e.parameter.session;
+        const gamesResult = dm.getSessionGames(sessionType);
         response.success = gamesResult.success;
         response.games = gamesResult.games || [];
         break;
@@ -88,7 +88,7 @@ function doGet(e) {
       default:
         response.error = 'Invalid path: ' + path;
         response.availablePaths = [
-          'status', 'pulltabs', 'session-games', 'occasion-games', 'occasions', 'occasion'
+          'status', 'pulltabs', 'session-games', 'occasions', 'occasion'
         ];
     }
   } catch (error) {
@@ -123,18 +123,18 @@ function doPost(e) {
         response.success = response.data.success;
         break;
 
-      case 'save-session':
-        response.data = dm.saveSession(data);
+      case 'save-occasion':
+        response.data = dm.saveOccasion(data);
         response.success = response.data.success;
         break;
 
-      case 'get-sessions':
-        response.data = dm.getSessions();
+      case 'get-occasions':
+        response.data = dm.getOccasions();
         response.success = true;
         break;
 
-      case 'delete-session':
-        response.data = dm.deleteSession(e.parameter.sessionId);
+      case 'delete-occasion':
+        response.data = dm.deleteOccasion(e.parameter.occasionId);
         response.success = response.data.success;
         break;
 
@@ -210,9 +210,9 @@ class DataManager {
   }
   
   /**
-   * Get occasion games configuration
+   * Get session games configuration
    */
-  getOccasionGames(occasionType) {
+  getOccasionGames(sessionType) {
     const configs = {
       '5-1': [
         {num: 1, color: 'Early Bird', game: 'Hard Way Bingo No Free Space', prize: 100},
@@ -290,7 +290,7 @@ class DataManager {
     
     return {
       success: true,
-      games: configs[occasionType] || configs['5-1']
+      games: configs[sessionType] || configs['5-1']
     };
   }
   
@@ -311,7 +311,7 @@ class DataManager {
       occasionSheet.appendRow([
         occasionId,                                    // Occasion ID
         occasion.date || occasion.mondayDate,          // Date
-        occasion.occasionType || occasion.sessionType, // Occasion Type
+        session.sessionType || session.sessionType, // Session Type
         occasion.lionInCharge,                         // Lion in Charge
         parseInt(occasion.totalPlayers) || 0,          // Total Players
         parseInt(occasion.birthdays) || 0,             // Birthdays
@@ -782,16 +782,16 @@ class DataManager {
   }
 
   /**
-   * Save a simple session record for admin interface
+   * Save a simple occasion record for admin interface
    */
-  saveSession(data) {
+  saveOccasion(data) {
     try {
-      const sessionId = 'SES_' + new Date().getTime();
+      const occasionId = 'SES_' + new Date().getTime();
       const sheet = this.getOrCreateSheet(CONFIG.SHEETS.OCCASIONS);
 
-      // Add session with basic info
+      // Add occasion with basic info
       sheet.appendRow([
-        sessionId,                    // Occasion ID
+        occasionId,                    // Occasion ID
         data.date,                    // Date
         data.sessionType,             // Session Type
         data.lionInCharge,            // Lion in Charge
@@ -808,17 +808,17 @@ class DataManager {
         new Date(),                  // Modified
         data.totalRevenue || 0,      // Total Revenue
         data.netProfit || 0,         // Net Profit
-        Session.getActiveUser().getEmail(), // User
+        Occasion.getActiveUser().getEmail(), // User
         ''                          // Notes
       ]);
 
       return {
         success: true,
-        sessionId: sessionId,
-        message: 'Session saved successfully'
+        occasionId: occasionId,
+        message: 'Occasion saved successfully'
       };
     } catch (error) {
-      console.error('Error saving session:', error);
+      console.error('Error saving occasion:', error);
       return {
         success: false,
         error: error.toString()
@@ -827,22 +827,22 @@ class DataManager {
   }
 
   /**
-   * Get all sessions for admin interface
+   * Get all occasions for admin interface
    */
-  getSessions() {
+  getOccasions() {
     try {
       const sheet = this.ss.getSheetByName(CONFIG.SHEETS.OCCASIONS);
       if (!sheet) {
-        return { success: true, sessions: [] };
+        return { success: true, occasions: [] };
       }
 
       const data = sheet.getDataRange().getValues();
       if (data.length <= 1) {
-        return { success: true, sessions: [] };
+        return { success: true, occasions: [] };
       }
 
       const headers = data.shift();
-      const sessions = data.map(row => {
+      const occasions = data.map(row => {
         return {
           id: row[0],
           date: row[1],
@@ -855,9 +855,9 @@ class DataManager {
         };
       });
 
-      return { success: true, sessions: sessions };
+      return { success: true, occasions: occasions };
     } catch (error) {
-      console.error('Error getting sessions:', error);
+      console.error('Error getting occasions:', error);
       return {
         success: false,
         error: error.toString()
@@ -866,9 +866,9 @@ class DataManager {
   }
 
   /**
-   * Delete a session
+   * Delete a occasion
    */
-  deleteSession(sessionId) {
+  deleteOccasion(occasionId) {
     try {
       const sheet = this.ss.getSheetByName(CONFIG.SHEETS.OCCASIONS);
       if (!sheet) {
@@ -877,21 +877,21 @@ class DataManager {
 
       const data = sheet.getDataRange().getValues();
       for (let i = 1; i < data.length; i++) {
-        if (data[i][0] === sessionId) {
+        if (data[i][0] === occasionId) {
           sheet.deleteRow(i + 1);
           return {
             success: true,
-            message: 'Session deleted successfully'
+            message: 'Occasion deleted successfully'
           };
         }
       }
 
       return {
         success: false,
-        error: 'Session not found'
+        error: 'Occasion not found'
       };
     } catch (error) {
-      console.error('Error deleting session:', error);
+      console.error('Error deleting occasion:', error);
       return {
         success: false,
         error: error.toString()
@@ -938,3 +938,4 @@ function setup() {
 
 // NOTE: Sheet initialization is handled by Initialize.js
 // Removed duplicate initializeSheets function to avoid conflicts
+
