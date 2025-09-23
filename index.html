@@ -1227,7 +1227,13 @@
                 this.currentEditingSessionId = sessionId;
                 document.getElementById('session-modal-title').textContent = 'Edit Session';
                 document.getElementById('modal-date').value = session.date;
-                document.getElementById('modal-session-type').value = session.sessionType;
+
+                // Find the session type key that matches the stored value
+                const sessionTypeKey = Object.keys(CONFIG.SESSION_TYPES).find(key =>
+                    CONFIG.SESSION_TYPES[key] === session.sessionType
+                ) || session.sessionType;
+                document.getElementById('modal-session-type').value = sessionTypeKey;
+
                 document.getElementById('modal-lion').value = session.lionInCharge;
                 document.getElementById('modal-status').value = session.status;
                 document.getElementById('session-modal').style.display = 'flex';
@@ -1235,17 +1241,26 @@
         }
 
         async saveSession() {
+            // Map frontend field names to Google Sheets column names
+            const sessionTypeKey = document.getElementById('modal-session-type').value;
             const formData = {
-                date: document.getElementById('modal-date').value,
-                sessionType: document.getElementById('modal-session-type').value,
-                lionInCharge: document.getElementById('modal-lion').value,
-                totalPlayers: 0,
-                status: document.getElementById('modal-status').value || 'Draft'
+                'Date': document.getElementById('modal-date').value,
+                'Session Type': CONFIG.SESSION_TYPES[sessionTypeKey] || sessionTypeKey,
+                'Lion in Charge': document.getElementById('modal-lion').value,
+                'Total Players': 0,
+                'Status': document.getElementById('modal-status').value || 'Draft',
+                'Birthdays': 0,
+                'Progressive Jackpot': 0,
+                'Progressive Balls': 0,
+                'Progressive Consolation': 0,
+                'Progressive Actual': 0,
+                'Progressive Prize': 0,
+                'Check Payment': false
             };
 
             // If editing existing session, include the session ID
             if (this.currentEditingSessionId) {
-                formData.sessionId = this.currentEditingSessionId;
+                formData['Occasion ID'] = this.currentEditingSessionId;
             }
 
             try {
@@ -1336,7 +1351,7 @@
                     },
                     body: new URLSearchParams({
                         action: 'save-session', // Use save with delete flag
-                        sessionId: sessionId,
+                        'Occasion ID': sessionId,
                         delete: 'true'
                     })
                 });
