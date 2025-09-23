@@ -70,6 +70,8 @@
             const response = await fetch(`${CONFIG.API_URL}?path=occasions&action=get&id=${occasionId}`);
             const result = await response.json();
 
+            console.log('API Response:', result);
+
             if (result.success && result.data) {
                 const occasionData = result.data;
                 console.log('Loaded occasion data:', occasionData);
@@ -86,8 +88,9 @@
                     submitBtn.textContent = 'Update Occasion';
                 }
             } else {
-                console.error('Failed to load occasion:', result.error);
-                alert('Failed to load occasion data for editing.');
+                console.error('Failed to load occasion. Full response:', result);
+                console.error('Error details:', result.error || 'No error details provided');
+                alert(`Failed to load occasion data for editing. ${result.error || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error loading occasion:', error);

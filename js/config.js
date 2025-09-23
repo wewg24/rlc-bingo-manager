@@ -31,7 +31,7 @@ const CONFIG = {
     POS_ITEMS: [
         // Miscellaneous category
         { id: 'dauber', name: 'Dauber', price: 2, category: 'Miscellaneous' },
-        
+
         // Paper category (alphabetical)
         { id: 'birthday', name: 'Birthday Pack', price: 0, category: 'Paper' },
         { id: 'coverall', name: 'Coverall Extra', price: 1, category: 'Paper' },
@@ -43,5 +43,14 @@ const CONFIG = {
         { id: '6-face', name: 'Six Face', price: 10, category: 'Paper' },
         { id: '9-face-solid', name: 'Nine Face Solid', price: 15, category: 'Paper' },
         { id: '9-face-stripe', name: 'Nine Face Stripe', price: 10, category: 'Paper' }
+    ],
+
+    MANUAL_COUNT_ITEMS: [
+        { id: 'eb', name: 'Early Birds', hasFree: true },
+        { id: '6f', name: '6 Face', hasFree: true },
+        { id: '9fs', name: '9 Face Solid Border', hasFree: false },
+        { id: '9fst', name: '9 Face Stripe Border', hasFree: false },
+        { id: 'p3', name: 'Progressive 3 Face ($1)', hasFree: false },
+        { id: 'p18', name: 'Progressive 18 Face ($5)', hasFree: false }
     ]
 };
