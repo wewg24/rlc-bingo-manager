@@ -815,23 +815,42 @@
             const response = await fetch(`${CONFIG.API_URL}?path=occasions`);
             const result = await response.json();
 
-            if (result.success && result.occasions) {
-                // Convert API data to admin interface format
-                this.sessions = result.occasions.map(occasion => ({
-                    id: occasion.occasionId,
-                    date: occasion.date,
-                    sessionType: occasion.sessionType,
-                    lionInCharge: occasion.lionInCharge,
-                    totalPlayers: occasion.totalPeople || 0,
-                    totalRevenue: occasion.totalRevenue || 0,
-                    netProfit: occasion.netProfit || 0,
-                    status: occasion.status || 'Draft'
-                }));
+            console.log('API Response:', result); // Debug logging
+
+            if (result.success && result.occasions && Array.isArray(result.occasions)) {
+                // Convert API data to admin interface format with better validation
+                this.sessions = result.occasions.map(occasion => {
+                    console.log('Processing occasion:', occasion); // Debug logging
+
+                    return {
+                        id: occasion.occasionId || occasion.id || `temp_${Date.now()}`,
+                        date: this.validateDate(occasion.date) || new Date().toISOString().split('T')[0],
+                        sessionType: occasion.sessionType || 'Unknown',
+                        lionInCharge: occasion.lionInCharge || 'N/A',
+                        totalPlayers: parseInt(occasion.totalPeople) || 0,
+                        totalRevenue: parseFloat(occasion.totalRevenue) || 0,
+                        netProfit: parseFloat(occasion.netProfit) || 0,
+                        status: occasion.status || 'Draft'
+                    };
+                }).filter(session => session.id); // Remove any invalid sessions
             } else {
-                throw new Error('No occasions data received');
+                console.warn('Invalid API response:', result);
+                throw new Error('No valid occasions data received');
             }
 
             this.updateDashboardStats();
+        }
+
+        validateDate(dateStr) {
+            if (!dateStr) return null;
+
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) {
+                console.warn('Invalid date:', dateStr);
+                return null;
+            }
+
+            return dateStr;
         }
 
         generateQRCode() {
@@ -911,22 +930,53 @@
             const tbody = document.getElementById('sessions-table');
             tbody.innerHTML = '';
 
-            this.sessions.forEach(session => {
+            if (!this.sessions || this.sessions.length === 0) {
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td>${new Date(session.date).toLocaleDateString()}</td>
-                    <td>${CONFIG.SESSION_TYPES[session.sessionType] || session.sessionType}</td>
-                    <td>${session.lionInCharge || 'N/A'}</td>
-                    <td>${session.totalPlayers || 0}</td>
-                    <td>$${(session.totalRevenue || 0).toLocaleString()}</td>
-                    <td>$${(session.netProfit || 0).toLocaleString()}</td>
-                    <td><span class="status ${session.status.toLowerCase()}">${session.status}</span></td>
-                    <td>
-                        <button class="btn" onclick="adminApp.editSession('${session.id}')">Edit</button>
-                        <button class="btn secondary" onclick="adminApp.viewSession('${session.id}')">View</button>
-                        <button class="btn danger" onclick="adminApp.deleteSession('${session.id}')">Delete</button>
+                    <td colspan="8" style="text-align: center; padding: 20px; color: #666;">
+                        No sessions found. Click "New Session" to create one.
                     </td>
                 `;
+                return;
+            }
+
+            this.sessions.forEach(session => {
+                try {
+                    const row = tbody.insertRow();
+
+                    // Format date safely
+                    const formatDate = (dateStr) => {
+                        try {
+                            const date = new Date(dateStr);
+                            return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleDateString();
+                        } catch (e) {
+                            return 'Invalid Date';
+                        }
+                    };
+
+                    // Format currency safely
+                    const formatCurrency = (value) => {
+                        const num = parseFloat(value) || 0;
+                        return `$${num.toLocaleString()}`;
+                    };
+
+                    row.innerHTML = `
+                        <td>${formatDate(session.date)}</td>
+                        <td>${CONFIG.SESSION_TYPES[session.sessionType] || session.sessionType || 'Unknown'}</td>
+                        <td>${session.lionInCharge || 'N/A'}</td>
+                        <td>${parseInt(session.totalPlayers) || 0}</td>
+                        <td>${formatCurrency(session.totalRevenue)}</td>
+                        <td>${formatCurrency(session.netProfit)}</td>
+                        <td><span class="status ${(session.status || 'draft').toLowerCase()}">${session.status || 'Draft'}</span></td>
+                        <td>
+                            <button class="btn" onclick="adminApp.editSession('${session.id}')">Edit</button>
+                            <button class="btn secondary" onclick="adminApp.viewSession('${session.id}')">View</button>
+                            <button class="btn danger" onclick="adminApp.deleteSession('${session.id}')">Delete</button>
+                        </td>
+                    `;
+                } catch (error) {
+                    console.error('Error rendering session row:', session, error);
+                }
             });
         }
 
