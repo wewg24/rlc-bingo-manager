@@ -61,7 +61,7 @@ function saveOccasionRecord(spreadsheet, occasionId, data) {
         data.totalRevenue || 0,
         data.totalPrizes || 0,
         data.netProfit || 0,
-        Session.getActiveUser().getEmail(),
+        Occasion.getActiveUser().getEmail(),
         data.notes || ''
     ];
     
@@ -85,4 +85,5 @@ function findRowByOccasionId(sheet, occasionId) {
         }
     }
     return -1;
+
 }
