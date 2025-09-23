@@ -28,8 +28,6 @@ function saveOccasion(occasionData) {
             saveMoneyCount(occasionId, occasionData.moneyCount);
         }
         
-        // FiftyFifty removed - not used in RLC sessions
-        
         // Calculate and save metrics
         calculateAndSaveMetrics(occasionId, occasionData);
         
@@ -87,3 +85,4 @@ function findRowByOccasionId(sheet, occasionId) {
     return -1;
 
 }
+
