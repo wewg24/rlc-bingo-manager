@@ -584,51 +584,7 @@
             </div>
         </div>
 
-        <!-- Occasion Entry/Edit Modal -->
-        <div id="occasion-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center;">
-            <div class="card" style="max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3 id="occasion-modal-title">New Occasion</h3>
-                    <button id="modal-close-x" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
-                </div>
-
-                <form id="occasion-form">
-                    <div class="form-group">
-                        <label for="modal-date">Date</label>
-                        <input type="date" id="modal-date" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modal-session-type">Bingo Occasion</label>
-                        <select id="modal-session-type" class="form-control" required>
-                            <option value="">Select...</option>
-                            <option value="5-1">5-1 (1st/5th Monday)</option>
-                            <option value="6-2">6-2 (2nd Monday)</option>
-                            <option value="7-3">7-3 (3rd Monday)</option>
-                            <option value="8-4">8-4 (4th Monday)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modal-lion">Lion in Charge</label>
-                        <input type="text" id="modal-lion" class="form-control" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="modal-status">Status</label>
-                        <select id="modal-status" class="form-control">
-                            <option value="Draft">Draft</option>
-                            <option value="Completed">Completed</option>
-                        </select>
-                    </div>
-
-                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                        <button type="button" id="modal-cancel" class="btn secondary">Cancel</button>
-                        <button type="submit" class="btn success">Save Occasion</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <!-- Removed inadequate modal form - use mobile version instead -->
 
         <!-- Offline App Generator -->
         <div id="offline-generator" class="card hidden">
@@ -754,33 +710,7 @@
             if (this.adminEventsBound) return;
             this.adminEventsBound = true;
 
-            // Occasion form
-            const occasionForm = document.getElementById('occasion-form');
-            if (occasionForm) {
-                occasionForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.saveOccasion();
-                });
-            }
-
-            // Modal close buttons
-            const closeX = document.getElementById('modal-close-x');
-            if (closeX) {
-                closeX.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.closeOccasionModal();
-                });
-            }
-
-            const cancelBtn = document.getElementById('modal-cancel');
-            if (cancelBtn) {
-                cancelBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.closeOccasionModal();
-                });
-            }
+            // No modal event listeners needed - using mobile version for create/edit
         }
 
         toggleTheme() {
@@ -1027,9 +957,17 @@
                         return `$${num.toLocaleString()}`;
                     };
 
+                    // Display session type properly - handle both formats
+                    let displaySessionType = occasion.sessionType || 'Unknown';
+                    if (CONFIG.SESSION_TYPES[occasion.sessionType]) {
+                        // It's a key like "5-1", show the full name
+                        displaySessionType = CONFIG.SESSION_TYPES[occasion.sessionType];
+                    }
+                    // If it's already a full name like "1st/5th Monday", use it as-is
+
                     row.innerHTML = `
                         <td>${formatDate(occasion.date)}</td>
-                        <td>${CONFIG.SESSION_TYPES[occasion.sessionType] || occasion.sessionType || 'Unknown'}</td>
+                        <td>${displaySessionType}</td>
                         <td>${occasion.lionInCharge || 'N/A'}</td>
                         <td>${parseInt(occasion.totalPlayers) || 0}</td>
                         <td>${formatCurrency(occasion.totalRevenue)}</td>
@@ -1256,122 +1194,19 @@
         }
 
         createOccasion() {
-            this.currentEditingOccasionId = null; // Reset editing state
-            document.getElementById('occasion-modal-title').textContent = 'New Occasion';
-            document.getElementById('occasion-form').reset();
-            document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('occasion-modal').style.display = 'flex';
+            // Redirect to mobile version for complete occasion entry
+            window.open('./mobile.html', '_blank');
         }
 
         editOccasion(occasionId) {
-            const occasion = this.occasions.find(o => o.id == occasionId);
-            if (occasion) {
-                this.currentEditingOccasionId = occasionId;
-                document.getElementById('occasion-modal-title').textContent = 'Edit Occasion';
-                document.getElementById('modal-date').value = occasion.date;
-
-                // Session type is now stored as a key (like "5-1"), so use it directly
-                // If it's somehow a full name, convert it back to key
-                let sessionTypeKey = occasion.sessionType;
-                if (CONFIG.SESSION_TYPES[sessionTypeKey]) {
-                    // It's already a valid key
-                    sessionTypeKey = occasion.sessionType;
-                } else {
-                    // It might be a full name, find the key
-                    sessionTypeKey = Object.keys(CONFIG.SESSION_TYPES).find(key =>
-                        CONFIG.SESSION_TYPES[key] === occasion.sessionType
-                    ) || occasion.sessionType;
-                }
-                document.getElementById('modal-session-type').value = sessionTypeKey;
-
-                document.getElementById('modal-lion').value = occasion.lionInCharge || '';
-                document.getElementById('modal-status').value = occasion.status || 'Draft';
-                document.getElementById('occasion-modal').style.display = 'flex';
-            }
+            // Redirect to mobile version with pre-populated data for complete editing
+            const editUrl = `./mobile.html?edit=${occasionId}`;
+            window.open(editUrl, '_blank');
         }
 
-        async saveOccasion() {
-            const sessionTypeKey = document.getElementById('modal-session-type').value;
-            const sessionTypeLabel = CONFIG.SESSION_TYPES[sessionTypeKey] || sessionTypeKey;
+        // saveOccasion removed - using mobile version for complete data entry
 
-            // Create data structure with proper field mapping to Google Sheets
-            const occasionData = {
-                occasion: {
-                    date: document.getElementById('modal-date').value,
-                    sessionType: sessionTypeLabel, // Backend expects the full label for Google Sheets
-                    lionInCharge: document.getElementById('modal-lion').value.trim(),
-                    totalPeople: 0,
-                    birthdays: 0,
-                    createdBy: 'Admin Interface'
-                },
-                paperBingo: {},
-                posSales: {},
-                electronic: {
-                    smallMachines: 0,
-                    largeMachines: 0,
-                    smallTotal: 0,
-                    largeTotal: 0,
-                    total: 0
-                },
-                games: [],
-                pullTabs: [],
-                moneyCount: {
-                    bingo: {},
-                    pullTab: {}
-                },
-                progressive: {
-                    jackpot: 0,
-                    ballsNeeded: 0,
-                    consolation: 200,
-                    actualBalls: 0,
-                    actualPrize: 0,
-                    checkPayment: false
-                },
-                financial: {}
-            };
-
-            // Add status and ID fields for occasion management
-            occasionData.status = document.getElementById('modal-status').value || 'Draft';
-
-            // If editing existing occasion, include the occasion ID
-            if (this.currentEditingOccasionId) {
-                occasionData.occasionId = this.currentEditingOccasionId;
-                occasionData.isUpdate = true;
-            }
-
-            try {
-                const response = await fetch(CONFIG.API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        action: 'save-occasion',
-                        data: JSON.stringify(occasionData)
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    this.closeOccasionModal();
-                    await this.loadRealData(); // Refresh occasions from backend
-                    this.loadOccasionsTable(); // Refresh the table display
-                    this.showAlert(this.currentEditingOccasionId ? 'Occasion updated successfully!' : 'Occasion saved successfully!', 'success');
-                } else {
-                    this.showAlert('Error saving occasion: ' + (result.message || result.error || 'Unknown error'), 'error');
-                }
-            } catch (error) {
-                console.error('Error saving occasion:', error);
-                this.showAlert('Network error saving occasion', 'error');
-            }
-        }
-
-        closeOccasionModal() {
-            const modal = document.getElementById('occasion-modal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            // Reset editing state
-            this.currentEditingOccasionId = null;
-        }
+        // closeOccasionModal removed - not using modals anymore
 
         showAlert(message, type = 'info') {
             // Create alert element if it doesn't exist
@@ -1481,14 +1316,12 @@
             ) || 'Unknown';
 
             // Convert session type to display format
-            let displaySessionType = sessionTypeValue;
+            let displaySessionType = sessionTypeValue || 'Unknown';
             if (CONFIG.SESSION_TYPES[sessionTypeValue]) {
                 // It's a key like "5-1", convert to display name
                 displaySessionType = CONFIG.SESSION_TYPES[sessionTypeValue];
-            } else {
-                // It's already a display name or unknown
-                displaySessionType = sessionTypeValue;
             }
+            // If it's already a display name like "1st/5th Monday", use it as-is
 
             const lionInCharge = this.cleanString(
                 occasion.lionInCharge ||
