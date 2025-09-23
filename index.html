@@ -769,21 +769,10 @@
 
         async loadDashboard() {
             try {
-                // Load sessions from backend
-                const response = await fetch(CONFIG.API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ action: 'get-sessions' })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    this.sessions = data.sessions || [];
-                    this.updateDashboardStats();
-                }
+                // For now, use mock data since get-sessions isn't implemented yet
+                this.loadMockData();
             } catch (error) {
                 console.error('Error loading dashboard:', error);
-                // Use mock data for demo
                 this.loadMockData();
             }
 
@@ -934,39 +923,46 @@
 
         async saveSession() {
             const formData = {
-                date: document.getElementById('modal-date').value,
-                sessionType: document.getElementById('modal-session-type').value,
-                lionInCharge: document.getElementById('modal-lion').value,
-                status: document.getElementById('modal-status').value,
-                totalPlayers: 0,
-                totalRevenue: 0,
-                netProfit: 0
+                occasion: {
+                    date: document.getElementById('modal-date').value,
+                    sessionType: document.getElementById('modal-session-type').value,
+                    lionInCharge: document.getElementById('modal-lion').value,
+                    totalPlayers: 0,
+                    status: document.getElementById('modal-status').value || 'Draft'
+                }
             };
 
             try {
-                // Save to backend
+                // Use existing save-occasion action since save-session isn't available yet
                 const response = await fetch(CONFIG.API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({
-                        action: 'save-session',
+                        action: 'save-occasion',
                         data: JSON.stringify(formData)
                     })
                 });
 
                 const result = await response.json();
-                if (result.success) {
-                    // Add to local sessions array if new
-                    if (!this.sessions.find(s => s.id === result.sessionId)) {
-                        formData.id = result.sessionId;
-                        this.sessions.push(formData);
-                    }
+                if (result.success && result.data && result.data.success) {
+                    // Add to local sessions array
+                    const newSession = {
+                        id: result.data.occasionId,
+                        date: formData.occasion.date,
+                        sessionType: formData.occasion.sessionType,
+                        lionInCharge: formData.occasion.lionInCharge,
+                        totalPlayers: 0,
+                        totalRevenue: 0,
+                        netProfit: 0,
+                        status: formData.occasion.status
+                    };
 
+                    this.sessions.push(newSession);
                     this.closeSessionModal();
-                    this.showSessions(); // Refresh the sessions view
+                    this.loadSessionsTable(); // Refresh the sessions view
                     this.showAlert('Session saved successfully!', 'success');
                 } else {
-                    this.showAlert('Error saving session: ' + (result.error || 'Unknown error'), 'error');
+                    this.showAlert('Error saving session: ' + (result.error || result.data?.error || 'Unknown error'), 'error');
                 }
             } catch (error) {
                 console.error('Error saving session:', error);
@@ -1023,27 +1019,13 @@
             }
 
             try {
-                const response = await fetch(CONFIG.API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        action: 'delete-session',
-                        sessionId: sessionId
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    // Remove from local sessions array
-                    this.sessions = this.sessions.filter(s => s.id != sessionId);
-                    this.loadSessionsTable();
-                    this.showAlert('Session deleted successfully!', 'success');
-                } else {
-                    this.showAlert('Error deleting session: ' + (result.error || 'Unknown error'), 'error');
-                }
+                // For now, just remove from local array since delete-session isn't implemented yet
+                this.sessions = this.sessions.filter(s => s.id != sessionId);
+                this.loadSessionsTable();
+                this.showAlert('Session deleted successfully! (Local only until backend is updated)', 'warning');
             } catch (error) {
                 console.error('Error deleting session:', error);
-                this.showAlert('Network error deleting session', 'error');
+                this.showAlert('Error deleting session', 'error');
             }
         }
 
