@@ -1,8 +1,8 @@
 # RLC Bingo Process Narrative & Operational Workflows
 
-## Session Operational Timeline
+## Occasion Operational Timeline
 
-### Pre-Session Preparation (5:00 PM)
+### Pre-Occasion Preparation (5:00 PM)
 
 #### Form Preparation Protocol
 1. **Pull-Tab Worker Responsibilities**
@@ -17,7 +17,7 @@
 
 2. **Closet Worker Responsibilities**
    - Print comprehensive form set from system:
-     - **Bingo Occasion Report**: Main session tracking document
+     - **Bingo Occasion Report**: Main occasion tracking document
      - **Session Games Sheet**: 17-game prize tracking form
      - **Money Summary Sheet**: Denomination counting worksheet
    - Distribute forms to appropriate workstations
@@ -28,7 +28,7 @@
 - **Bingo Closet**: Computer access, forms organization, receipt storage
 - **Entry System**: Device selection (tablet/desktop), network connectivity check
 
-### During Session Operations (5:00 PM - 9:00 PM)
+### During Occasion Operations (5:00 PM - 9:00 PM)
 
 #### Pull-Tab Station Operations (5:00 PM Start)
 
@@ -36,7 +36,7 @@
 1. **Serial Number Documentation**
    - Record opening serial number for each new game
    - Note closing serial number when game depleted
-   - Track partial games carried over to next session
+   - Track partial games carried over to next occasion
    - Document any damaged or voided tickets
 
 2. **Sales Transaction Recording**
@@ -85,7 +85,7 @@
    - Track progressive game details:
      - Balls called when won
      - Actual prize amount distributed
-     - Next session's starting jackpot amount
+     - Next occasion's starting jackpot amount
    - Note any irregularities or disputes
 
 2. **Electronic Machine Management**
@@ -98,9 +98,9 @@
    - Monitor balls called during progressive game
    - Calculate prize amounts based on balls called
    - Update progressive tracking sheet
-   - Prepare information for next session's jackpot amount
+   - Prepare information for next occasion's jackpot amount
 
-### Post-Session Processing (9:00 PM - 10:00 PM)
+### Post-Occasion Processing (9:00 PM - 10:00 PM)
 
 #### Final Count Procedures
 
@@ -113,7 +113,7 @@
 
 2. **Closet Final Processing**
    - Count all remaining paper inventory by type
-   - Calculate sheets sold during session
+   - Calculate sheets sold during occasion
    - Verify POS totals against actual cash collected
    - Complete money drawer reconciliation worksheet
 
@@ -134,8 +134,8 @@
 
 2. **File Organization Protocol**
    - Upload photos to designated Google Drive folder
-   - Folder structure: `/Bingo/Sessions/[YYYY-MM-DD]/`
-   - File naming convention: `[FormType]_[Session]_[Date].jpg`
+   - Folder structure: `/Bingo/Occasions/[YYYY-MM-DD]/`
+   - File naming convention: `[FormType]_[Occasion]_[Date].jpg`
    - Examples:
      - `PullTabSummary_5-1_2025-09-22.jpg`
      - `OccasionReport_5-1_2025-09-22.jpg`
@@ -159,7 +159,7 @@
    - Hamburger menu provides access to occasions and reports
 
 2. **Guided Data Entry Process - 6-Step Wizard**
-   - **Step 1 - Session Information**:
+   - **Step 1 - Occasion Information**:
      - Date auto-populated with session type detection
      - Enter Lion in charge and total attendance
      - Input progressive game details (jackpot, balls needed)
@@ -203,7 +203,7 @@
 
 4. **Automated Processing**
    - Data saves to Google Sheets backend immediately upon submission
-   - PDF report generates automatically with complete session details
+   - PDF report generates automatically with complete occasion details
    - Email summary distributed to officers and board members
    - Financial data aggregated into monthly and yearly summaries
 
@@ -222,13 +222,13 @@
 
 3. **Offline Report Generation**
    - PDF report generates locally using browser capabilities
-   - Report includes all session details and calculations
+   - Report includes all occasion details and calculations
    - Print-ready format for immediate hard copy creation
    - Local storage maintains data for later online sync
 
 4. **Data Backup Protocol**
    - Save complete HTML data file to USB drive
-   - Export session data as JSON backup file
+   - Export occasion data as JSON backup file
    - Create printed backup of critical information
    - Schedule upload when internet connection available
 
@@ -261,7 +261,7 @@
    - Complete offline functionality on mobile devices
    - Background sync when connection restored
    - Local photo storage with automatic cloud upload
-   - Battery optimization for extended session use
+   - Battery optimization for extended occasion use
 
 ### Deposit Preparation Workflow (10:00 PM)
 
@@ -274,12 +274,12 @@
 
 2. **Physical Cash Organization**
    - Bundle cash by denomination according to bank requirements
-   - Separate startup cash ($1,000) for next session
+   - Separate startup cash ($1,000) for next occasion
    - Organize checks with deposit slip documentation
    - Prepare tamper-evident bank deposit bag
 
 3. **Documentation Completion**
-   - Print final session report for club records
+   - Print final occasion report for club records
    - Create deposit verification worksheet
    - Generate MGC compliance documentation
    - Prepare email summary for club officers
@@ -293,7 +293,7 @@
 #### Compliance and Audit Trail
 1. **Missouri Gaming Commission Requirements**
    - Verify all required data fields are completed
-   - Confirm session configurations match approved formats
+   - Confirm occasion configurations match approved formats
    - Validate prize calculations within legal limits
    - Generate audit trail documentation
 
@@ -322,18 +322,18 @@
    - Review original handwritten forms for transcription errors
    - Verify mathematical calculations on source documents
    - Check for missing transactions or duplicate entries
-   - Consult with workers involved in session operations
+   - Consult with workers involved in occasion operations
 
 3. **Resolution Documentation**
    - Record all findings and corrective actions taken
    - Update digital records with accurate information
-   - Note resolution in session comments for audit trail
+   - Note resolution in occasion comments for audit trail
    - Notify club officers of significant discrepancies
 
 ### Technical Troubleshooting
 1. **System Connectivity Issues**
    - Switch to offline mode if internet problems occur
-   - Complete session entry using local capabilities
+   - Complete occasion entry using local capabilities
    - Schedule sync for later when connectivity restored
    - Maintain paper backup until digital sync confirmed
 
@@ -353,13 +353,13 @@
 
 ### New Worker Orientation
 1. **System Familiarization**
-   - Complete practice session with sample data
+   - Complete practice occasion with sample data
    - Review all form types and their purposes
    - Practice both online and offline entry procedures
    - Understand photo documentation requirements
 
 2. **Process Training**
-   - Shadow experienced worker for complete session
+   - Shadow experienced worker for complete occasion
    - Practice each role (pull-tab and closet operations)
    - Learn troubleshooting procedures for common issues
    - Understand compliance and audit requirements
@@ -379,7 +379,7 @@
 
 2. **System Updates and Maintenance**
    - Regular review of pull-tab game library updates
-   - Seasonal adjustments to session configurations
+   - Seasonal adjustments to occasion configurations
    - Software updates and feature enhancements
    - User interface improvements based on feedback
 
@@ -389,4 +389,4 @@
    - Improve error detection and prevention capabilities
    - Enhance reporting and analysis functionality
 
-This comprehensive process narrative ensures consistent, accurate, and compliant operations for all RLC Bingo sessions while maintaining flexibility for various operational scenarios and technical capabilities.
+This comprehensive process narrative ensures consistent, accurate, and compliant operations for all RLC Bingo occasions while maintaining flexibility for various operational scenarios and technical capabilities.
