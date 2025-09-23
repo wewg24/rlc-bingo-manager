@@ -993,33 +993,75 @@
             });
         }
 
-        loadPullTabLibrary() {
-            // Mock pull-tab data
-            const mockLibrary = [
-                { id: 1, name: 'Lucky 7s', ticketPrice: 1, ticketsPerGame: 300, idealProfitPercent: 25, manufacturer: 'Arrow', formNumber: 'A7-300', status: 'Active' },
-                { id: 2, name: 'Cash Explosion', ticketPrice: 2, ticketsPerGame: 200, idealProfitPercent: 30, manufacturer: 'Bingo King', formNumber: 'BK-CE-200', status: 'Active' },
-                { id: 3, name: 'Gold Rush', ticketPrice: 5, ticketsPerGame: 100, idealProfitPercent: 35, manufacturer: 'Arrow', formNumber: 'A-GR-100', status: 'Discontinued' }
-            ];
+        async loadPullTabLibrary() {
+            try {
+                // Load real pull-tab library data from API
+                const response = await fetch(`${CONFIG.API_URL}?path=pulltabs`);
+                const result = await response.json();
 
+                console.log('Pull-tab library API response:', result); // Debug logging
+
+                if (result.success && result.games && Array.isArray(result.games)) {
+                    this.renderPullTabTable(result.games);
+                } else {
+                    console.warn('Invalid pull-tab library response:', result);
+                    this.loadMockPullTabLibrary();
+                }
+            } catch (error) {
+                console.error('Error loading pull-tab library:', error);
+                this.loadMockPullTabLibrary();
+            }
+        }
+
+        renderPullTabTable(games) {
             const tbody = document.getElementById('library-table');
             tbody.innerHTML = '';
 
-            mockLibrary.forEach(game => {
+            if (!games || games.length === 0) {
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td>${game.name}</td>
-                    <td>$${game.ticketPrice}</td>
-                    <td>${game.ticketsPerGame}</td>
-                    <td>${game.idealProfitPercent}%</td>
-                    <td>${game.manufacturer}</td>
-                    <td>${game.formNumber}</td>
-                    <td><span class="status ${game.status.toLowerCase()}">${game.status}</span></td>
-                    <td>
-                        <button class="btn" onclick="adminApp.editPullTab('${game.id}')">Edit</button>
-                        <button class="btn danger" onclick="adminApp.deletePullTab('${game.id}')">Delete</button>
+                    <td colspan="8" style="text-align: center; padding: 20px; color: #666;">
+                        No pull-tab games found in library.
                     </td>
                 `;
+                return;
+            }
+
+            games.forEach((game, index) => {
+                try {
+                    const row = tbody.insertRow();
+
+                    // Calculate profit percentage if possible
+                    const profitPercent = game.price > 0 ? Math.round((game.profit / game.price) * 100) : 0;
+
+                    row.innerHTML = `
+                        <td>${game.name || 'Unknown Game'}</td>
+                        <td>$${parseFloat(game.price) || 0}</td>
+                        <td>${parseInt(game.count) || 0}</td>
+                        <td>${profitPercent}%</td>
+                        <td>Unknown</td>
+                        <td>${game.form || 'N/A'}</td>
+                        <td><span class="status active">Active</span></td>
+                        <td>
+                            <button class="btn" onclick="adminApp.viewPullTabDetails('${index}')">View</button>
+                            ${game.url ? `<button class="btn secondary" onclick="window.open('${game.url}', '_blank')">PDF</button>` : ''}
+                        </td>
+                    `;
+                } catch (error) {
+                    console.error('Error rendering pull-tab row:', game, error);
+                }
             });
+        }
+
+        loadMockPullTabLibrary() {
+            // Fallback mock data if API fails
+            const mockLibrary = [
+                { name: 'Lucky 7s', price: 1, count: 300, profit: 0.25, form: 'A7-300', url: '' },
+                { name: 'Cash Explosion', price: 2, count: 200, profit: 0.60, form: 'BK-CE-200', url: '' },
+                { name: 'Gold Rush', price: 5, count: 100, profit: 1.75, form: 'A-GR-100', url: '' }
+            ];
+
+            this.renderPullTabTable(mockLibrary);
         }
 
         createSession() {
