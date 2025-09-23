@@ -444,7 +444,7 @@
 
                 <div class="card">
                     <h3>Mobile Access</h3>
-                    <p>Scan QR code for mobile session entry:</p>
+                    <p>Scan QR code for mobile occasion entry:</p>
                     <div class="qr-container">
                         <div class="qr-code" id="mobile-qr">
                             <!-- QR code will be generated here -->
@@ -480,7 +480,7 @@
         </div>
 
         <!-- Occasions View -->
-        <div id="sessions-view" class="view hidden">
+        <div id="occasions-view" class="view hidden">
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3>Occasion Management</h3>
@@ -491,7 +491,7 @@
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Bingo Session</th>
+                            <th>Bingo Occasion</th>
                             <th>Lion in Charge</th>
                             <th>Players</th>
                             <th>Revenue</th>
@@ -500,7 +500,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="sessions-table">
+                    <tbody id="occasions-table">
                         <!-- Occasions will be loaded here -->
                     </tbody>
                 </table>
@@ -584,22 +584,22 @@
             </div>
         </div>
 
-        <!-- Session Entry/Edit Modal -->
-        <div id="session-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center;">
+        <!-- Occasion Entry/Edit Modal -->
+        <div id="occasion-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center;">
             <div class="card" style="max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3 id="session-modal-title">New Session</h3>
+                    <h3 id="occasion-modal-title">New Occasion</h3>
                     <button id="modal-close-x" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
                 </div>
 
-                <form id="session-form">
+                <form id="occasion-form">
                     <div class="form-group">
                         <label for="modal-date">Date</label>
                         <input type="date" id="modal-date" class="form-control" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="modal-session-type">Bingo Session</label>
+                        <label for="modal-session-type">Bingo Occasion</label>
                         <select id="modal-session-type" class="form-control" required>
                             <option value="">Select...</option>
                             <option value="5-1">5-1 (1st/5th Monday)</option>
@@ -624,7 +624,7 @@
 
                     <div style="display: flex; gap: 10px; justify-content: flex-end;">
                         <button type="button" id="modal-cancel" class="btn secondary">Cancel</button>
-                        <button type="submit" class="btn success">Save Session</button>
+                        <button type="submit" class="btn success">Save Occasion</button>
                     </div>
                 </form>
             </div>
@@ -633,7 +633,7 @@
         <!-- Offline App Generator -->
         <div id="offline-generator" class="card hidden">
             <h3>Generate Offline App</h3>
-            <p>Create a standalone offline application with current pull-tab library and session configurations.</p>
+            <p>Create a standalone offline application with current pull-tab library and occasion configurations.</p>
 
             <div class="form-group">
                 <label for="offline-version">Version</label>
@@ -650,7 +650,7 @@
             <div class="form-group">
                 <label>
                     <input type="checkbox" id="include-configs" checked>
-                    Include Session Configurations
+                    Include Occasion Configurations
                 </label>
             </div>
 
@@ -702,7 +702,7 @@
                 this.toggleTheme();
             });
 
-            // Session form and modal buttons will be bound after admin interface is shown
+            // Occasion form and modal buttons will be bound after admin interface is shown
         }
 
         checkAuthentication() {
@@ -754,12 +754,12 @@
             if (this.adminEventsBound) return;
             this.adminEventsBound = true;
 
-            // Session form
-            const sessionForm = document.getElementById('session-form');
-            if (sessionForm) {
-                sessionForm.addEventListener('submit', (e) => {
+            // Occasion form
+            const occasionForm = document.getElementById('occasion-form');
+            if (occasionForm) {
+                occasionForm.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    this.saveSession();
+                    this.saveOccasion();
                 });
             }
 
@@ -769,7 +769,7 @@
                 closeX.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    this.closeSessionModal();
+                    this.closeOccasionModal();
                 });
             }
 
@@ -778,7 +778,7 @@
                 cancelBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    this.closeSessionModal();
+                    this.closeOccasionModal();
                 });
             }
         }
@@ -858,7 +858,7 @@
                         created: occasion['Created'],
                         createdBy: occasion['Created By']
                     };
-                }).filter(session => session !== null && session.id); // Remove any invalid sessions
+                }).filter(occasion => occasion !== null && occasion.id); // Remove any invalid occasions
             } else {
                 console.warn('Invalid API response:', result);
                 throw new Error('No valid occasions data received');
@@ -907,7 +907,7 @@
         }
 
         loadMockData() {
-            this.sessions = [
+            this.occasions = [
                 { id: 1, date: '2024-01-15', sessionType: '5-1', lionInCharge: 'John Smith', totalPlayers: 45, totalRevenue: 2240, netProfit: 580, status: 'Completed' },
                 { id: 2, date: '2024-01-22', sessionType: '6-2', lionInCharge: 'Jane Doe', totalPlayers: 52, totalRevenue: 2680, netProfit: 720, status: 'Completed' },
                 { id: 3, date: '2024-01-29', sessionType: '7-3', lionInCharge: 'Bob Johnson', totalPlayers: 38, totalRevenue: 1920, netProfit: 450, status: 'Draft' }
@@ -916,12 +916,12 @@
         }
 
         updateDashboardStats() {
-            const totalOccasions = this.sessions.length;
-            const totalRevenue = this.sessions.reduce((sum, s) => sum + (s.totalRevenue || 0), 0);
-            const totalProfit = this.sessions.reduce((sum, s) => sum + (s.netProfit || 0), 0);
-            const avgPlayers = totalOccasions > 0 ? Math.round(this.sessions.reduce((sum, s) => sum + (s.totalPlayers || 0), 0) / totalOccasions) : 0;
+            const totalOccasions = this.occasions.length;
+            const totalRevenue = this.occasions.reduce((sum, s) => sum + (s.totalRevenue || 0), 0);
+            const totalProfit = this.occasions.reduce((sum, s) => sum + (s.netProfit || 0), 0);
+            const avgPlayers = totalOccasions > 0 ? Math.round(this.occasions.reduce((sum, s) => sum + (s.totalPlayers || 0), 0) / totalOccasions) : 0;
 
-            document.getElementById('total-sessions').textContent = totalOccasions;
+            document.getElementById('total-occasions').textContent = totalOccasions;
             document.getElementById('total-revenue').textContent = '$' + totalRevenue.toLocaleString();
             document.getElementById('total-profit').textContent = '$' + totalProfit.toLocaleString();
             document.getElementById('avg-players').textContent = avgPlayers;
@@ -935,7 +935,7 @@
 
         showOccasions() {
             this.hideAllViews();
-            document.getElementById('sessions-view').classList.remove('hidden');
+            document.getElementById('occasions-view').classList.remove('hidden');
             this.loadOccasionsTable();
         }
 
@@ -958,7 +958,7 @@
         }
 
         loadOccasionsTable() {
-            const tbody = document.getElementById('sessions-table');
+            const tbody = document.getElementById('occasions-table');
             tbody.innerHTML = '';
 
             if (!this.occasions || this.occasions.length === 0) {
@@ -992,21 +992,21 @@
                     };
 
                     row.innerHTML = `
-                        <td>${formatDate(session.date)}</td>
-                        <td>${CONFIG.SESSION_TYPES[session.sessionType] || session.sessionType || 'Unknown'}</td>
-                        <td>${session.lionInCharge || 'N/A'}</td>
-                        <td>${parseInt(session.totalPlayers) || 0}</td>
-                        <td>${formatCurrency(session.totalRevenue)}</td>
-                        <td>${formatCurrency(session.netProfit)}</td>
-                        <td><span class="status ${(session.status || 'draft').toLowerCase()}">${session.status || 'Draft'}</span></td>
+                        <td>${formatDate(occasion.date)}</td>
+                        <td>${CONFIG.SESSION_TYPES[occasion.sessionType] || occasion.sessionType || 'Unknown'}</td>
+                        <td>${occasion.lionInCharge || 'N/A'}</td>
+                        <td>${parseInt(occasion.totalPlayers) || 0}</td>
+                        <td>${formatCurrency(occasion.totalRevenue)}</td>
+                        <td>${formatCurrency(occasion.netProfit)}</td>
+                        <td><span class="status ${(occasion.status || 'draft').toLowerCase()}">${occasion.status || 'Draft'}</span></td>
                         <td>
-                            <button class="btn" onclick="adminApp.editSession('${session.id}')">Edit</button>
-                            <button class="btn secondary" onclick="adminApp.viewSession('${session.id}')">View</button>
-                            <button class="btn danger" onclick="adminApp.deleteSession('${session.id}')">Delete</button>
+                            <button class="btn" onclick="adminApp.editOccasion('${occasion.id}')">Edit</button>
+                            <button class="btn secondary" onclick="adminApp.viewOccasion('${occasion.id}')">View</button>
+                            <button class="btn danger" onclick="adminApp.deleteOccasion('${occasion.id}')">Delete</button>
                         </td>
                     `;
                 } catch (error) {
-                    console.error('Error rendering session row:', session, error);
+                    console.error('Error rendering occasion row:', occasion, error);
                 }
             });
         }
@@ -1221,17 +1221,17 @@
 
         createOccasion() {
             this.currentEditingOccasionId = null; // Reset editing state
-            document.getElementById('session-modal-title').textContent = 'New Occasion';
-            document.getElementById('session-form').reset();
+            document.getElementById('occasion-modal-title').textContent = 'New Occasion';
+            document.getElementById('occasion-form').reset();
             document.getElementById('modal-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('session-modal').style.display = 'flex';
+            document.getElementById('occasion-modal').style.display = 'flex';
         }
 
         editOccasion(occasionId) {
             const occasion = this.occasions.find(o => o.id == occasionId);
             if (occasion) {
                 this.currentEditingOccasionId = occasionId;
-                document.getElementById('session-modal-title').textContent = 'Edit Occasion';
+                document.getElementById('occasion-modal-title').textContent = 'Edit Occasion';
                 document.getElementById('modal-date').value = occasion.date;
 
                 // Find the session type key that matches the stored value
@@ -1242,7 +1242,7 @@
 
                 document.getElementById('modal-lion').value = occasion.lionInCharge;
                 document.getElementById('modal-status').value = occasion.status;
-                document.getElementById('session-modal').style.display = 'flex';
+                document.getElementById('occasion-modal').style.display = 'flex';
             }
         }
 
@@ -1321,7 +1321,7 @@
         }
 
         closeOccasionModal() {
-            const modal = document.getElementById('session-modal');
+            const modal = document.getElementById('occasion-modal');
             if (modal) {
                 modal.style.display = 'none';
             }
@@ -1368,15 +1368,15 @@
             }, 3000);
         }
 
-        async deleteSession(sessionId) {
-            if (!confirm('Are you sure you want to delete this session and all associated records?')) {
+        async deleteOccasion(occasionId) {
+            if (!confirm('Are you sure you want to delete this occasion and all associated records?')) {
                 return;
             }
 
             try {
                 // Create deletion data structure with cascade delete flag
                 const deleteData = {
-                    occasionId: sessionId,
+                    occasionId: occasionId,
                     isDelete: true,
                     cascadeDelete: true, // Delete all associated records
                     deletedBy: 'Admin Interface'
@@ -1397,64 +1397,64 @@
 
                 if (result.success) {
                     // Remove from local array and refresh table
-                    this.sessions = this.sessions.filter(s => s.id != sessionId);
+                    this.occasions = this.occasions.filter(s => s.id != occasionId);
                     this.loadOccasionsTable();
-                    this.showAlert('Session and all associated records deleted successfully!', 'success');
+                    this.showAlert('Occasion and all associated records deleted successfully!', 'success');
                 } else {
-                    throw new Error(result.message || result.error || 'Failed to delete session');
+                    throw new Error(result.message || result.error || 'Failed to delete occasion');
                 }
             } catch (error) {
-                console.error('Error deleting session:', error);
-                this.showAlert('Error deleting session: ' + error.message, 'error');
+                console.error('Error deleting occasion:', error);
+                this.showAlert('Error deleting occasion: ' + error.message, 'error');
             }
         }
 
-        async viewSession(sessionId) {
+        async viewOccasion(occasionId) {
             try {
-                // Fetch complete session data from backend
-                const response = await fetch(`${CONFIG.API_URL}?path=occasion&id=${sessionId}`);
+                // Fetch complete occasion data from backend
+                const response = await fetch(`${CONFIG.API_URL}?path=occasion&id=${occasionId}`);
                 const result = await response.json();
 
                 if (result.success && result.data) {
-                    this.showSessionDetails(result.data);
+                    this.showOccasionDetails(result.data);
                 } else {
-                    this.showAlert('Error loading session details: ' + (result.error || 'Unknown error'), 'error');
+                    this.showAlert('Error loading occasion details: ' + (result.error || 'Unknown error'), 'error');
                 }
             } catch (error) {
-                console.error('Error viewing session:', error);
-                this.showAlert('Network error loading session details', 'error');
+                console.error('Error viewing occasion:', error);
+                this.showAlert('Network error loading occasion details', 'error');
             }
         }
 
-        showSessionDetails(sessionData) {
-            const session = sessionData.occasion || {};
+        showOccasionDetails(occasionData) {
+            const occasion = occasionData.occasion || {};
             const detailsHtml = `
-                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="session-details-modal">
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="occasion-details-modal">
                     <div class="card" style="max-width: 800px; width: 90%; max-height: 80%; overflow-y: auto;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <h3>Session Details</h3>
-                            <button onclick="document.getElementById('session-details-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                            <h3>Occasion Details</h3>
+                            <button onclick="document.getElementById('occasion-details-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
                         </div>
 
                         <div class="grid grid-2">
                             <div>
                                 <h4>Basic Information</h4>
-                                <p><strong>Date:</strong> ${session['Date'] ? new Date(session['Date']).toLocaleDateString() : 'N/A'}</p>
-                                <p><strong>Session Type:</strong> ${session['Session Type'] || 'N/A'}</p>
-                                <p><strong>Lion in Charge:</strong> ${session['Lion in Charge'] || 'N/A'}</p>
-                                <p><strong>Total Players:</strong> ${session['Total Players'] || 0}</p>
-                                <p><strong>Status:</strong> ${session['Status'] || 'N/A'}</p>
+                                <p><strong>Date:</strong> ${occasion['Date'] ? new Date(occasion['Date']).toLocaleDateString() : 'N/A'}</p>
+                                <p><strong>Session Type:</strong> ${occasion['Session Type'] || 'N/A'}</p>
+                                <p><strong>Lion in Charge:</strong> ${occasion['Lion in Charge'] || 'N/A'}</p>
+                                <p><strong>Total Players:</strong> ${occasion['Total Players'] || 0}</p>
+                                <p><strong>Status:</strong> ${occasion['Status'] || 'N/A'}</p>
                             </div>
                             <div>
                                 <h4>Financial Summary</h4>
-                                <p><strong>Total Revenue:</strong> $${(session['Total Revenue'] || 0).toLocaleString()}</p>
-                                <p><strong>Net Profit:</strong> $${(session['Net Profit'] || 0).toLocaleString()}</p>
-                                <p><strong>Progressive Jackpot:</strong> $${(session['Progressive Jackpot'] || 0).toLocaleString()}</p>
-                                <p><strong>Progressive Balls:</strong> ${session['Progressive Balls'] || 0}</p>
+                                <p><strong>Total Revenue:</strong> $${(occasion['Total Revenue'] || 0).toLocaleString()}</p>
+                                <p><strong>Net Profit:</strong> $${(occasion['Net Profit'] || 0).toLocaleString()}</p>
+                                <p><strong>Progressive Jackpot:</strong> $${(occasion['Progressive Jackpot'] || 0).toLocaleString()}</p>
+                                <p><strong>Progressive Balls:</strong> ${occasion['Progressive Balls'] || 0}</p>
                             </div>
                         </div>
 
-                        ${sessionData.games && sessionData.games.length > 0 ? `
+                        ${occasionData.games && occasionData.games.length > 0 ? `
                             <div style="margin-top: 20px;">
                                 <h4>Game Results</h4>
                                 <table class="table">
@@ -1468,7 +1468,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        ${sessionData.games.map(game => `
+                                        ${occasionData.games.map(game => `
                                             <tr>
                                                 <td>${game.number}</td>
                                                 <td>${game.color}</td>
@@ -1483,8 +1483,8 @@
                         ` : ''}
 
                         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                            <button class="btn secondary" onclick="document.getElementById('session-details-modal').remove()">Close</button>
-                            <button class="btn" onclick="document.getElementById('session-details-modal').remove(); adminApp.editSession('${session['Occasion ID']}')">Edit Session</button>
+                            <button class="btn secondary" onclick="document.getElementById('occasion-details-modal').remove()">Close</button>
+                            <button class="btn" onclick="document.getElementById('occasion-details-modal').remove(); adminApp.editOccasion('${occasion['Occasion ID']}')">Edit Occasion</button>
                         </div>
                     </div>
                 </div>
@@ -1511,8 +1511,8 @@
                 // Get current pull-tab library data
                 const libraryData = includeLibrary ? await this.getPullTabLibraryData() : [];
 
-                // Get session configurations
-                const configData = includeConfigs ? await this.getSessionConfigs() : {};
+                // Get occasion configurations
+                const configData = includeConfigs ? await this.getOccasionConfigs() : {};
 
                 // Generate the offline HTML
                 const offlineHTML = this.generateOfflineHTML(libraryData, configData, version, includeForms);
@@ -1537,7 +1537,7 @@
             ];
         }
 
-        async getSessionConfigs() {
+        async getOccasionConfigs() {
             return {
                 SESSION_TYPES: CONFIG.SESSION_TYPES,
                 PAPER_TYPES: CONFIG.PAPER_TYPES,
@@ -1605,19 +1605,19 @@
         </div>
 
         <div class="nav no-print">
-            <button onclick="showView('session')" class="active">Session Entry</button>
+            <button onclick="showView('occasion')" class="active">Occasion Entry</button>
             <button onclick="showView('library')">Pull-Tab Library</button>
             <button onclick="showView('print')">Print Forms</button>
             <button onclick="showView('data')">Data Export</button>
         </div>
 
-        <!-- Session Entry View -->
-        <div id="session-view" class="view active">
+        <!-- Occasion Entry View -->
+        <div id="occasion-view" class="view active">
             <div class="card">
-                <h3>Session Data Entry</h3>
-                <p>Enter session data from printed forms. Data is stored in browser memory only.</p>
+                <h3>Occasion Data Entry</h3>
+                <p>Enter occasion data from printed forms. Data is stored in browser memory only.</p>
 
-                <form id="session-form">
+                <form id="occasion-form">
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
                         <div class="form-group">
                             <label>Date</label>
@@ -1639,8 +1639,8 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn success">Save Session Data</button>
-                    <button type="button" class="btn" onclick="printSessionReport()">Print Report</button>
+                    <button type="submit" class="btn success">Save Occasion Data</button>
+                    <button type="button" class="btn" onclick="printOccasionReport()">Print Report</button>
                 </form>
             </div>
         </div>
@@ -1692,11 +1692,11 @@
         <div id="data-view" class="view">
             <div class="card">
                 <h3>Data Export</h3>
-                <p>Export completed session data for upload to main system.</p>
+                <p>Export completed occasion data for upload to main system.</p>
 
                 <div style="margin: 20px 0;">
-                    <button class="btn" onclick="exportSessionData()">Export as JSON</button>
-                    <button class="btn" onclick="exportSessionCSV()">Export as CSV</button>
+                    <button class="btn" onclick="exportOccasionData()">Export as JSON</button>
+                    <button class="btn" onclick="exportOccasionCSV()">Export as CSV</button>
                     <button class="btn" onclick="clearAllData()">Clear All Data</button>
                 </div>
 
@@ -1711,7 +1711,7 @@
             pullTabLibrary: ${JSON.stringify(libraryData)},
             config: ${JSON.stringify(configData)},
             version: '${version}',
-            sessions: []
+            occasions: []
         };
 
         // Initialize offline app
@@ -1753,26 +1753,26 @@
             }
         }
 
-        function saveSessionData() {
+        function saveOccasionData() {
             // Save form data to memory
-            const formData = new FormData(document.getElementById('session-form'));
-            const sessionData = Object.fromEntries(formData);
-            sessionData.id = Date.now();
-            sessionData.timestamp = new Date().toISOString();
+            const formData = new FormData(document.getElementById('occasion-form'));
+            const occasionData = Object.fromEntries(formData);
+            occasionData.id = Date.now();
+            occasionData.timestamp = new Date().toISOString();
 
-            OFFLINE_DATA.sessions.push(sessionData);
-            alert('Session data saved to memory!');
+            OFFLINE_DATA.occasions.push(occasionData);
+            alert('Occasion data saved to memory!');
         }
 
-        function exportSessionData() {
+        function exportOccasionData() {
             const output = document.getElementById('export-output');
-            output.textContent = JSON.stringify(OFFLINE_DATA.sessions, null, 2);
+            output.textContent = JSON.stringify(OFFLINE_DATA.occasions, null, 2);
             output.style.display = 'block';
         }
 
         function clearAllData() {
-            if (confirm('Clear all session data? This cannot be undone.')) {
-                OFFLINE_DATA.sessions = [];
+            if (confirm('Clear all occasion data? This cannot be undone.')) {
+                OFFLINE_DATA.occasions = [];
                 alert('All data cleared.');
             }
         }
@@ -2006,9 +2006,9 @@
     function generateMonthlyReport() {
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
-        const monthOccasions = adminApp.sessions.filter(s => {
-            const sessionDate = new Date(s.date);
-            return sessionDate.getMonth() === currentMonth && sessionDate.getFullYear() === currentYear;
+        const monthOccasions = adminApp.occasions.filter(s => {
+            const occasionDate = new Date(s.date);
+            return occasionDate.getMonth() === currentMonth && occasionDate.getFullYear() === currentYear;
         });
 
         const report = generateReportHTML('Monthly Summary Report', monthOccasions, {
@@ -2021,7 +2021,7 @@
 
     function generateYearlyReport() {
         const currentYear = new Date().getFullYear();
-        const yearOccasions = adminApp.sessions.filter(s => {
+        const yearOccasions = adminApp.occasions.filter(s => {
             return new Date(s.date).getFullYear() === currentYear;
         });
 
@@ -2034,13 +2034,13 @@
     }
 
     function generateProfitLoss() {
-        const report = generateFinancialReport(adminApp.sessions, 'Profit & Loss Statement');
+        const report = generateFinancialReport(adminApp.occasions, 'Profit & Loss Statement');
         openReportWindow(report);
     }
 
     function generateTaxReport() {
         const currentYear = new Date().getFullYear();
-        const yearOccasions = adminApp.sessions.filter(s => {
+        const yearOccasions = adminApp.occasions.filter(s => {
             return new Date(s.date).getFullYear() === currentYear;
         });
 
@@ -2049,22 +2049,22 @@
     }
 
     function generateAttendanceReport() {
-        const report = generateAttendanceAnalysis(adminApp.sessions);
+        const report = generateAttendanceAnalysis(adminApp.occasions);
         openReportWindow(report);
     }
 
     function generateGameAnalysis() {
-        const report = generateGamePerformanceReport(adminApp.sessions);
+        const report = generateGamePerformanceReport(adminApp.occasions);
         openReportWindow(report);
     }
 
     function generatePullTabReport() {
-        const report = generatePullTabAnalysisReport(adminApp.sessions);
+        const report = generatePullTabAnalysisReport(adminApp.occasions);
         openReportWindow(report);
     }
 
     function generateVenueReport() {
-        const report = generateSessionComparisonReport(adminApp.sessions);
+        const report = generateOccasionComparisonReport(adminApp.occasions);
         openReportWindow(report);
     }
 
@@ -2078,9 +2078,9 @@
             return;
         }
 
-        const filteredOccasions = adminApp.sessions.filter(s => {
-            const sessionDate = new Date(s.date);
-            return sessionDate >= new Date(startDate) && sessionDate <= new Date(endDate);
+        const filteredOccasions = adminApp.occasions.filter(s => {
+            const occasionDate = new Date(s.date);
+            return occasionDate >= new Date(startDate) && occasionDate <= new Date(endDate);
         });
 
         let report;
@@ -2101,11 +2101,11 @@
     }
 
     // Report generation helper functions
-    function generateReportHTML(title, sessions, options = {}) {
-        const totalOccasions = sessions.length;
-        const totalRevenue = sessions.reduce((sum, s) => sum + (s.totalRevenue || 0), 0);
-        const totalProfit = sessions.reduce((sum, s) => sum + (s.netProfit || 0), 0);
-        const avgPlayers = totalOccasions > 0 ? Math.round(sessions.reduce((sum, s) => sum + (s.totalPlayers || 0), 0) / totalOccasions) : 0;
+    function generateReportHTML(title, occasions, options = {}) {
+        const totalOccasions = occasions.length;
+        const totalRevenue = occasions.reduce((sum, s) => sum + (s.totalRevenue || 0), 0);
+        const totalProfit = occasions.reduce((sum, s) => sum + (s.netProfit || 0), 0);
+        const avgPlayers = totalOccasions > 0 ? Math.round(occasions.reduce((sum, s) => sum + (s.totalPlayers || 0), 0) / totalOccasions) : 0;
 
         return `
         <!DOCTYPE html>
@@ -2170,7 +2170,7 @@
                     ${occasions.map(occasion => `
                         <tr>
                             <td>${new Date(occasion.date).toLocaleDateString()}</td>
-                            <td>${CONFIG.SESSION_TYPES[session.sessionType] || session.sessionType}</td>
+                            <td>${CONFIG.SESSION_TYPES[occasion.sessionType] || occasion.sessionType}</td>
                             <td>${occasion.lionInCharge || 'N/A'}</td>
                             <td>${occasion.totalPlayers || 0}</td>
                             <td>$${(occasion.totalRevenue || 0).toLocaleString()}</td>
