@@ -195,7 +195,7 @@
             gap: 15px;
         }
 
-        .session-info-box {
+        .occasion-info-box {
             background: #e3f2fd;
             border: 1px solid #2196f3;
             border-radius: 5px;
@@ -306,7 +306,7 @@
                 display: block;
             }
 
-            .session-info-box {
+            .occasion-info-box {
                 padding: 5px;
                 margin-bottom: 5px;
                 border: 1px solid #000;
@@ -341,48 +341,48 @@
             <br>
             <button class="btn btn-secondary" onclick="printCurrentTab()">Print Current Tab</button>
             <br>
-            <button class="btn btn-secondary" onclick="saveData()">Save Session</button>
-            <button class="btn btn-secondary" onclick="loadData()">Load Session</button>
+            <button class="btn btn-secondary" onclick="saveData()">Save Occasion</button>
+            <button class="btn btn-secondary" onclick="loadData()">Load Occasion</button>
             <br>
             <button class="btn btn-secondary" onclick="generateSMS()">Generate SMS</button>
         </div>
 
         <nav class="tabs">
-            <button class="tab-button active" onclick="showTab('setup')">Session Setup</button>
+            <button class="tab-button active" onclick="showTab('setup')">Occasion Setup</button>
             <button class="tab-button" onclick="showTab('counts')">Manual Counts</button>
             <button class="tab-button" onclick="showTab('door-sales')">Door Sales Entry</button>
-            <button class="tab-button" onclick="showTab('games')">Session Games</button>
+            <button class="tab-button" onclick="showTab('games')">Occasion Games</button>
             <button class="tab-button" onclick="showTab('pulltabs')">Pull-Tabs</button>
             <button class="tab-button" onclick="showTab('money')">Money Summary</button>
             <button class="tab-button" onclick="showTab('metrics')">Metrics & Summary</button>
         </nav>
 
-        <!-- Session Setup Tab -->
+        <!-- Occasion Setup Tab -->
         <div id="setup" class="tab-content active">
             <div class="form-section">
-                <div class="section-header">Session Setup & Basic Information</div>
+                <div class="section-header">Occasion Setup & Basic Information</div>
                 <div class="section-content">
-                    <div class="session-info-box">
-                        <h3>Current Session Info</h3>
-                        <div id="session-display">
+                    <div class="occasion-info-box">
+                        <h3>Current Occasion Info</h3>
+                        <div id="occasion-display">
                             <p><strong>Date:</strong> <span id="display-date">Not Set</span></p>
-                            <p><strong>Session:</strong> <span id="display-session">Not Set</span></p>
+                            <p><strong>Occasion:</strong> <span id="display-occasion">Not Set</span></p>
                             <p><strong>Progressive Jackpot:</strong> $<span id="display-jackpot">1000.00</span></p>
                         </div>
                     </div>
 
                     <div class="two-column">
                         <div>
-                            <h4>Session Information</h4>
+                            <h4>Occasion Information</h4>
                             <table>
                                 <tr>
-                                    <td><strong>Session Date:</strong></td>
-                                    <td><input type="date" id="session_date" onchange="autoSelectSession()"></td>
+                                    <td><strong>Occasion Date:</strong></td>
+                                    <td><input type="date" id="occasion_date" onchange="autoSelectOccasion()"></td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Session Type:</strong></td>
+                                    <td><strong>Occasion Type:</strong></td>
                                     <td>
-                                        <select id="session_type" onchange="updateSessionDisplay()">
+                                        <select id="occasion_type" onchange="updateOccasionDisplay()">
                                             <option value="">Auto-Select from Date</option>
                                             <option value="5-1">5-1 (1st & 5th Monday)</option>
                                             <option value="6-2">6-2 (2nd Monday)</option>
@@ -411,19 +411,19 @@
                             <table>
                                 <tr>
                                     <td><strong>Progressive Jackpot:</strong></td>
-                                    <td><input type="number" step="0.01" id="progressive_jackpot_setup" value="1000.00" onchange="updateSessionDisplay()"></td>
+                                    <td><input type="number" step="0.01" id="progressive_jackpot_setup" value="1000.00" onchange="updateOccasionDisplay()"></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Balls to Win Jackpot:</strong></td>
-                                    <td><input type="number" id="progressive_balls_setup" value="17" min="1" max="75" onchange="updateSessionDisplay()"></td>
+                                    <td><input type="number" id="progressive_balls_setup" value="17" min="1" max="75" onchange="updateOccasionDisplay()"></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Consolation Prize:</strong></td>
-                                    <td><input type="number" step="0.01" id="progressive_consolation_setup" value="200.00" onchange="updateSessionDisplay()"></td>
+                                    <td><input type="number" step="0.01" id="progressive_consolation_setup" value="200.00" onchange="updateOccasionDisplay()"></td>
                                 </tr>
                             </table>
 
-                            <h4 style="margin-top: 15px;">Session Statistics</h4>
+                            <h4 style="margin-top: 15px;">Occasion Statistics</h4>
                             <table>
                                 <tr>
                                     <td><strong>Total Players:</strong></td>
@@ -648,10 +648,10 @@
             </div>
         </div>
 
-        <!-- Session Games Tab -->
+        <!-- Occasion Games Tab -->
         <div id="games" class="tab-content">
             <div class="form-section">
-                <div class="section-header">Session Games Sheet - Prize Allocation</div>
+                <div class="section-header">Occasion Games Sheet - Prize Allocation</div>
                 <div class="section-content">
                     <h4>Early Bird Games (1-3)</h4>
                     <table>
@@ -837,7 +837,7 @@
             <div class="form-section">
                 <div class="section-header">Money Summary Sheet - Deposit Preparation</div>
                 <div class="section-content">
-                    <div class="session-info-box">
+                    <div class="occasion-info-box">
                         <strong>Instructions:</strong> Remember to write a check for next week's startup cash and include in the bank bag along with the cash deposit and deposit slip.<br>
                         <strong>Pay to:</strong> "T&C Bank for Bingo Cash" | <strong>Amount:</strong> $1,000.00 | <strong>Memo:</strong> "For Bingo [enter date of next session m/d/yy]"
                     </div>
@@ -945,7 +945,7 @@
         <!-- Metrics & Summary Tab -->
         <div id="metrics" class="tab-content">
             <div class="form-section">
-                <div class="section-header">Session Metrics & Reconciliation Summary</div>
+                <div class="section-header">Occasion Metrics & Reconciliation Summary</div>
                 <div class="section-content">
                     <h4>Financial Summary</h4>
                     <div class="two-column">
@@ -999,16 +999,16 @@
                         </table>
                     </div>
 
-                    <h4>Session Details</h4>
+                    <h4>Occasion Details</h4>
                     <div class="two-column">
                         <table>
                             <tr>
-                                <td><strong>Session Date:</strong></td>
+                                <td><strong>Occasion Date:</strong></td>
                                 <td><input type="text" id="metrics_date" readonly></td>
                             </tr>
                             <tr>
-                                <td><strong>Session Type:</strong></td>
-                                <td><input type="text" id="metrics_session" readonly></td>
+                                <td><strong>Occasion Type:</strong></td>
+                                <td><input type="text" id="metrics_occasion" readonly></td>
                             </tr>
                             <tr>
                                 <td><strong>Total Players:</strong></td>
@@ -1200,7 +1200,7 @@
         let pulltabGameCount = 15;
 
         // Session-specific game data based on legacy forms
-        const sessionGameData = {
+        const occasionGameData = {
             '5-1': {
                 games: {
                     4: {name: 'Regular Bingo or Outside 4 Corners (Blue)', color: 'Blue', prize: 100},
@@ -1267,21 +1267,21 @@
             }
         };
 
-        // Session Management
-        function autoSelectSession() {
-            const dateInput = document.getElementById('session_date');
-            const sessionSelect = document.getElementById('session_type');
+        // Occasion Management
+        function autoSelectOccasion() {
+            const dateInput = document.getElementById('occasion_date');
+            const occasionSelect = document.getElementById('occasion_type');
 
             if (dateInput.value) {
                 const selectedDate = new Date(dateInput.value);
-                const session = calculateSessionFromDate(selectedDate);
-                sessionSelect.value = session;
-                updateSessionDisplay();
-                updateAllFormsWithSession();
+                const occasion = calculateOccasionFromDate(selectedDate);
+                occasionSelect.value = occasion;
+                updateOccasionDisplay();
+                updateAllFormsWithOccasion();
             }
         }
 
-        function calculateSessionFromDate(date) {
+        function calculateOccasionFromDate(date) {
             const month = date.getMonth();
             const year = date.getFullYear();
 
@@ -1314,21 +1314,21 @@
             return '5-1'; // Default fallback
         }
 
-        function updateSessionDisplay() {
-            const date = document.getElementById('session_date').value;
-            const session = document.getElementById('session_type').value;
+        function updateOccasionDisplay() {
+            const date = document.getElementById('occasion_date').value;
+            const occasion = document.getElementById('occasion_type').value;
             const jackpot = document.getElementById('progressive_jackpot_setup').value;
 
             document.getElementById('display-date').textContent = date || 'Not Set';
-            document.getElementById('display-session').textContent = session || 'Not Set';
+            document.getElementById('display-occasion').textContent = occasion || 'Not Set';
             document.getElementById('display-jackpot').textContent = jackpot || '1000.00';
 
-            updateAllFormsWithSession();
+            updateAllFormsWithOccasion();
         }
 
-        function updateAllFormsWithSession() {
-            // Update all forms with session info
-            updateSessionGames(); // Update session games when session changes
+        function updateAllFormsWithOccasion() {
+            // Update all forms with occasion info
+            updateOccasionGames(); // Update occasion games when occasion changes
             updateMetrics();
         }
 
@@ -1406,7 +1406,13 @@
             let currentWinners = parseInt(winnersInput.value) || 1;
             currentWinners = Math.max(1, currentWinners + change);
             winnersInput.value = currentWinners;
-            calculateGamePrize(gameNum);
+
+            // Special handling for progressive game (game 13)
+            if (gameNum === 13) {
+                calculateProgressivePrize();
+            } else {
+                calculateGamePrize(gameNum);
+            }
         }
 
         function calculateGamePrize(gameNum) {
@@ -1479,12 +1485,12 @@
             const tbody = document.getElementById('regular_games_body');
             tbody.innerHTML = '';
 
-            // Get current session
-            const currentSession = document.getElementById('session_type').value || '5-1';
-            const sessionData = sessionGameData[currentSession] || sessionGameData['5-1'];
+            // Get current occasion
+            const currentOccasion = document.getElementById('occasion_type').value || '5-1';
+            const occasionData = occasionGameData[currentOccasion] || occasionGameData['5-1'];
 
             regularGames.forEach(gameNum => {
-                const gameData = sessionData.games[gameNum];
+                const gameData = occasionData.games[gameNum];
                 const row = tbody.insertRow();
                 row.innerHTML = `
                     <td>${gameNum}</td>
@@ -1503,10 +1509,10 @@
             regularGames.forEach(gameNum => calculateGamePrize(gameNum));
         }
 
-        function updateSessionGames() {
-            const selectedSession = document.getElementById('session_type').value;
-            if (selectedSession) {
-                initializeRegularGames(); // Reinitialize with new session data
+        function updateOccasionGames() {
+            const selectedOccasion = document.getElementById('occasion_type').value;
+            if (selectedOccasion) {
+                initializeRegularGames(); // Reinitialize with new occasion data
                 calculateGamesTotals(); // Recalculate totals
             }
         }
@@ -1526,13 +1532,25 @@
 
             if (selectedIndex !== '') {
                 const gameData = gameLibrary[selectedIndex];
+
+                // Populate all available fields from library
                 document.getElementById(`game_name_${gameId}`).value = gameData.name;
                 document.getElementById(`game_price_${gameId}`).value = gameData.pricePerTicket.toFixed(2);
 
-                // Set placeholder for expected values
-                document.getElementById(`game_tickets_${gameId}`).placeholder = `Tickets (max: ${gameData.totalTickets})`;
+                // Populate tickets field with total tickets from library
+                if (gameData.totalTickets) {
+                    document.getElementById(`game_tickets_${gameId}`).value = gameData.totalTickets;
+                }
 
-                // Auto-calculate if tickets are already entered
+                // Populate prizes field with ideal profit from library
+                if (gameData.idealProfit) {
+                    document.getElementById(`game_prizes_${gameId}`).value = gameData.idealProfit.toFixed(2);
+                }
+
+                // Set placeholder for reference
+                document.getElementById(`game_tickets_${gameId}`).placeholder = `Expected: ${gameData.totalTickets}`;
+
+                // Auto-calculate sales and profit
                 calculatePulltabGame(gameId);
             }
         }
@@ -1729,8 +1747,8 @@
             document.getElementById('metrics_profit_per_player').value = profitPerPlayer.toFixed(2);
 
             // Update session details
-            document.getElementById('metrics_date').value = document.getElementById('session_date').value || '';
-            document.getElementById('metrics_session').value = document.getElementById('session_type').value || '';
+            document.getElementById('metrics_date').value = document.getElementById('occasion_date').value || '';
+            document.getElementById('metrics_occasion').value = document.getElementById('occasion_type').value || '';
             document.getElementById('metrics_players').value = document.getElementById('total_players').value || '';
             document.getElementById('metrics_birthdays').value = document.getElementById('birthday_bogos').value || '';
             document.getElementById('metrics_bingo_worker').value = document.getElementById('bingo_worker').value || '';
@@ -1806,8 +1824,8 @@
         function generateFinalReport() {
             updateMetrics();
 
-            const date = document.getElementById('session_date').value;
-            const session = document.getElementById('session_type').value;
+            const date = document.getElementById('occasion_date').value;
+            const occasion = document.getElementById('occasion_type').value;
             const players = document.getElementById('total_players').value;
             const bingoSales = document.getElementById('metrics_bingo_sales').value;
             const pulltabSales = document.getElementById('metrics_pulltab_sales').value;
@@ -1817,7 +1835,7 @@
             const deposit = document.getElementById('metrics_deposit').value;
             const profitPerPlayer = document.getElementById('metrics_profit_per_player').value;
 
-            const message = `RLC Bingo ${date} Session ${session}: ${players} players, Bingo Sales $${bingoSales} (profit $${bingoProfit}), Pull-tab Sales $${pulltabSales} (profit $${pulltabProfit}), Total Profit $${totalProfit}, Deposit $${deposit}, $${profitPerPlayer}/player`;
+            const message = `RLC Bingo ${date} Occasion ${occasion}: ${players} players, Bingo Sales $${bingoSales} (profit $${bingoProfit}), Pull-tab Sales $${pulltabSales} (profit $${pulltabProfit}), Total Profit $${totalProfit}, Deposit $${deposit}, $${profitPerPlayer}/player`;
 
             navigator.clipboard.writeText(message).then(() => {
                 alert('Final report SMS copied to clipboard!\n\n' + message);
@@ -1875,7 +1893,7 @@
             calculateGamesTotals();
             calculatePulltabTotals();
             calculateMoney();
-            updateSessionDisplay();
+            updateOccasionDisplay();
 
             const savedDate = timestamp ? new Date(timestamp).toLocaleString() : 'Unknown';
             alert(`Session data loaded successfully!\nSaved: ${savedDate}`);
@@ -1888,8 +1906,8 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('session_date').value = today;
-            autoSelectSession();
+            document.getElementById('occasion_date').value = today;
+            autoSelectOccasion();
 
             initializePulltabGames();
             initializeRegularGames();
