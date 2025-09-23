@@ -80,7 +80,7 @@ class BingoApp {
             if (data.success && data.occasions) {
                 listContainer.innerHTML = data.occasions.map(occ => `
                     <div class="occasion-item">
-                        <strong>${occ.Date}</strong> - ${occ['Session Type']} - ${occ['Lion in Charge']}
+                        <strong>${occ.Date}</strong> - ${occ['Occasion Type']} - ${occ['Lion in Charge']}
                         <span class="occasion-status">${occ.Status}</span>
                     </div>
                 `).join('');
@@ -115,8 +115,8 @@ class BingoApp {
                         <button class="button" onclick="alert('MGC Form generation coming soon')">Generate</button>
                     </div>
                     <div class="report-card">
-                        <h3>Session Summary</h3>
-                        <p>Complete financial summary of current session</p>
+                        <h3>Occasion Summary</h3>
+                        <p>Complete financial summary of current occasion</p>
                         <button class="button" onclick="window.print()">Print Current</button>
                     </div>
                     <div class="report-card">
@@ -248,7 +248,7 @@ class BingoApp {
                 <div class="help-content">
                     <section>
                         <h3>Using the Wizard</h3>
-                        <p>The RLC Bingo Manager uses a 6-step wizard to guide you through recording each bingo session. 
+                        <p>The RLC Bingo Manager uses a 6-step wizard to guide you through recording each bingo occasion. 
                            Each step validates your entries before allowing you to proceed, ensuring complete and accurate data collection.</p>
                     </section>
                     
@@ -256,13 +256,13 @@ class BingoApp {
                         <h3>The Six Steps</h3>
                         <div class="help-steps">
                             <div class="help-step">
-                                <strong>1. Session Info:</strong> Enter the date, session type, attendance, and progressive game details.
+                                <strong>1. Occasion Info:</strong> Enter the date, occasion type, attendance, and progressive game details.
                             </div>
                             <div class="help-step">
                                 <strong>2. Paper Sales:</strong> Record beginning and ending inventory counts, POS sales, and electronic rentals.
                             </div>
                             <div class="help-step">
-                                <strong>3. Game Results:</strong> Enter winner counts for each of the 17 session games.
+                                <strong>3. Game Results:</strong> Enter winner counts for each of the 17 occasion games.
                             </div>
                             <div class="help-step">
                                 <strong>4. Pull-Tabs:</strong> Track each pull-tab game opened with serial numbers and prizes paid.
@@ -282,7 +282,7 @@ class BingoApp {
                             <li>The system auto-saves your progress locally as you type</li>
                             <li>You can work completely offline - data syncs when connected</li>
                             <li>Click any completed step number to go back and review</li>
-                            <li>Use dark mode (moon icon) for evening sessions</li>
+                            <li>Use dark mode (moon icon) for evening occasions</li>
                             <li>Pull-tab library contains ${this.pullTabLibrary.length} games for quick selection</li>
                         </ul>
                     </section>
@@ -322,7 +322,7 @@ class BingoApp {
         const exportData = {
             version: CONFIG.VERSION,
             exportDate: new Date().toISOString(),
-            currentSession: this.data,
+            currentOccasion: this.data,
             localStorage: { ...localStorage },
             pullTabLibrary: this.pullTabLibrary,
             syncQueue: JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]')
@@ -469,10 +469,10 @@ class BingoApp {
             menuToggle.addEventListener('click', () => this.openMenu());
         }
         
-        // Session type change
-        const sessionType = document.getElementById('session-type');
-        if (sessionType) {
-            sessionType.addEventListener('change', (e) => this.loadSessionGames(e.target.value));
+        // Occasion type change
+        const occasionType = document.getElementById('occasion-type');
+        if (occasionType) {
+            occasionType.addEventListener('change', (e) => this.loadOccasionGames(e.target.value));
         }
         
         // Birthday BOGO calculation
@@ -509,14 +509,14 @@ class BingoApp {
     }
     
     /**
-     * Initialize date field with auto-session detection
+     * Initialize date field with auto-occasion detection
      */
     initializeDateField() {
-        const dateField = document.getElementById('session-date');
+        const dateField = document.getElementById('occasion-date');
         if (dateField) {
             const today = new Date().toISOString().split('T')[0];
             dateField.value = today;
-            this.determineSession(today);
+            this.determineOccasion(today);
         }
     }
     
@@ -526,9 +526,9 @@ class BingoApp {
     initializePaperSalesTable() {
         const tbody = document.getElementById('paper-sales-body');
         if (!tbody) return;
-        
+
         tbody.innerHTML = '';
-        CONFIG.PAPER_TYPES.forEach(type => {
+        CONFIG.MANUAL_COUNT_ITEMS.forEach(type => {
             const row = tbody.insertRow();
             row.innerHTML = `
                 <td>${type.name}</td>
@@ -537,7 +537,7 @@ class BingoApp {
                 <td><input type="number" id="${type.id}-end" min="0" data-type="${type.id}"></td>
                 <td id="${type.id}-sold">0</td>
             `;
-            
+
             // Add event listeners for calculations
             row.querySelectorAll('input[type="number"]:not([readonly])').forEach(input => {
                 input.addEventListener('input', () => this.calculatePaperSales(type.id));
@@ -551,26 +551,51 @@ class BingoApp {
     initializePOSSalesTable() {
         const tbody = document.getElementById('pos-sales-body');
         if (!tbody) return;
-        
+
         tbody.innerHTML = '';
+
+        // Group items by category
+        const categories = {};
         CONFIG.POS_ITEMS.forEach(item => {
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td>${item.name}</td>
-                <td>$${item.price.toFixed(2)}</td>
-                <td><input type="number" id="${item.id}-qty" min="0" value="0" data-item="${item.id}"></td>
-                <td id="${item.id}-total">$0.00</td>
-            `;
-            
-            const input = row.querySelector('input');
-            input.addEventListener('input', () => this.calculatePOSSales(item.id, item.price));
+            if (!categories[item.category]) {
+                categories[item.category] = [];
+            }
+            categories[item.category].push(item);
+        });
+
+        // Render categories in the order they appear in door sales summary
+        const categoryOrder = ['Electronic Bingo', 'Miscellaneous', 'Paper Bingo'];
+
+        categoryOrder.forEach(categoryName => {
+            if (categories[categoryName]) {
+                // Add category header row
+                const headerRow = tbody.insertRow();
+                headerRow.classList.add('category-header');
+                headerRow.innerHTML = `
+                    <td colspan="4" class="category-title"><strong>${categoryName}</strong></td>
+                `;
+
+                // Add items in this category
+                categories[categoryName].forEach(item => {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td><input type="number" id="${item.id}-qty" min="0" value="0" data-item="${item.id}"></td>
+                        <td id="${item.id}-total">$0.00</td>
+                    `;
+
+                    const input = row.querySelector('input');
+                    input.addEventListener('input', () => this.calculatePOSSales(item.id, item.price));
+                });
+            }
         });
     }
     
     /**
-     * Determine session type based on date (Monday logic)
+     * Determine occasion type based on date (Monday logic)
      */
-    determineSession(dateString) {
+    determineOccasion(dateString) {
         const date = new Date(dateString);
         if (date.getDay() !== 1) return; // Not Monday
         
@@ -581,54 +606,54 @@ class BingoApp {
         
         const weekNumber = Math.ceil((date.getDate() - firstMonday.getDate() + 1) / 7) + 1;
         
-        let session;
+        let occasion;
         switch(weekNumber) {
             case 1:
             case 5:
-                session = '5-1';
+                occasion = '5-1';
                 break;
             case 2:
-                session = '6-2';
+                occasion = '6-2';
                 break;
             case 3:
-                session = '7-3';
+                occasion = '7-3';
                 break;
             case 4:
-                session = '8-4';
+                occasion = '8-4';
                 break;
             default:
-                session = '5-1';
+                occasion = '5-1';
         }
-        
-        const sessionSelect = document.getElementById('session-type');
-        if (sessionSelect) {
-            sessionSelect.value = session;
-            this.loadSessionGames(session);
+
+        const occasionSelect = document.getElementById('occasion-type');
+        if (occasionSelect) {
+            occasionSelect.value = occasion;
+            this.loadOccasionGames(occasion);
         }
     }
     
     /**
-     * Load session-specific games from backend
+     * Load occasion-specific games from backend
      */
-    async loadSessionGames(sessionType) {
-        if (!sessionType) return;
-        
+    async loadOccasionGames(occasionType) {
+        if (!occasionType) return;
+
         try {
-            const response = await fetch(CONFIG.API_URL + '?path=session-games&sessionType=' + sessionType);
+            const response = await fetch(CONFIG.API_URL + '?path=occasion-games&occasionType=' + occasionType);
             const data = await response.json();
-            
+
             if (data.success && data.games) {
                 this.renderGamesTable(data.games);
             }
         } catch (error) {
-            console.error('Error loading session games:', error);
+            console.error('Error loading occasion games:', error);
             // Use default games if API fails
-            this.renderGamesTable(this.getDefaultGames(sessionType));
+            this.renderGamesTable(this.getDefaultGames(occasionType));
         }
     }
     
     /**
-     * Render games table with session data
+     * Render games table with occasion data
      */
     renderGamesTable(games) {
         const tbody = document.getElementById('games-body');
@@ -1052,9 +1077,9 @@ class BingoApp {
     }
     
     /**
-     * Get default games for session type
+     * Get default games for occasion type
      */
-    getDefaultGames(sessionType) {
+    getDefaultGames(occasionType) {
         // Default games if API fails
         const defaults = {
             '5-1': [
@@ -1073,7 +1098,7 @@ class BingoApp {
                 {num: 6, color: 'Red', game: 'Coverall', prize: 125}
             ]
         };
-        return defaults[sessionType] || defaults['5-1'];
+        return defaults[occasionType] || defaults['5-1'];
     }
     
     /**
