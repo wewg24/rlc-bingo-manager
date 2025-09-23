@@ -142,14 +142,85 @@
             document.getElementById('pt-lion').value = data.pullTabs.lionInCharge;
         }
 
+        // POS sales data
+        if (data.posSales) {
+            Object.entries(data.posSales).forEach(([itemId, itemData]) => {
+                const qtyInput = document.getElementById(`${itemId}-qty`);
+                if (qtyInput && itemData.quantity) {
+                    qtyInput.value = itemData.quantity;
+                    // Trigger calculation to update totals
+                    calculatePOSSales(itemId, itemData.price || 0);
+                }
+            });
+        }
+
         // Money count data will be populated by other scripts when those steps are reached
         console.log('Form populated with existing data');
+    }
+
+    // Initialize POS Door Sales table for mobile
+    function initializePOSSalesForMobile() {
+        const tbody = document.getElementById('pos-sales-body');
+        if (!tbody || !CONFIG?.POS_ITEMS) return;
+
+        // Clear any existing rows
+        tbody.innerHTML = '';
+
+        // Add rows for each POS item
+        CONFIG.POS_ITEMS.forEach(item => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td><input type="number" id="${item.id}-qty" min="0" value="0" onchange="calculatePOSSales('${item.id}', ${item.price})"></td>
+                <td id="${item.id}-total">$0.00</td>
+            `;
+        });
+
+        console.log('POS Door Sales table initialized with', CONFIG.POS_ITEMS.length, 'items');
+    }
+
+    // Calculate POS sales totals
+    function calculatePOSSales(itemId, price) {
+        const qtyInput = document.getElementById(`${itemId}-qty`);
+        const totalCell = document.getElementById(`${itemId}-total`);
+
+        if (!qtyInput || !totalCell) return;
+
+        const quantity = parseInt(qtyInput.value) || 0;
+        const total = quantity * price;
+
+        totalCell.textContent = `$${total.toFixed(2)}`;
+
+        // Store in app data
+        if (!window.app.data.posSales) window.app.data.posSales = {};
+        window.app.data.posSales[itemId] = {
+            price: price,
+            quantity: quantity,
+            total: total
+        };
+
+        // Calculate total POS sales
+        let totalPosSales = 0;
+        Object.values(window.app.data.posSales).forEach(item => {
+            totalPosSales += item.total || 0;
+        });
+
+        const totalElement = document.getElementById('total-paper-sales');
+        if (totalElement) {
+            totalElement.textContent = `$${totalPosSales.toFixed(2)}`;
+        }
+
+        console.log('POS Sales updated:', itemId, { quantity, total, totalPosSales });
     }
 
     // Fix hamburger menu
     document.addEventListener('DOMContentLoaded', function() {
         // Check for edit mode first
         checkForEditMode();
+
+        // Initialize POS Door Sales table
+        initializePOSSalesForMobile();
 
         const menuToggle = document.getElementById('menu-toggle');
         const sideMenu = document.getElementById('side-menu');
