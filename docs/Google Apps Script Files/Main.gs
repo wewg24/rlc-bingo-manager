@@ -311,7 +311,7 @@ class DataManager {
       occasionSheet.appendRow([
         occasionId,                                    // Occasion ID
         occasion.date || occasion.mondayDate,          // Date
-        session.sessionType || session.sessionType, // Session Type
+        occasion.sessionType || occasion.sessionType, // Session Type
         occasion.lionInCharge,                         // Lion in Charge
         parseInt(occasion.totalPlayers) || 0,          // Total Players
         parseInt(occasion.birthdays) || 0,             // Birthdays
@@ -938,4 +938,5 @@ function setup() {
 
 // NOTE: Sheet initialization is handled by Initialize.js
 // Removed duplicate initializeSheets function to avoid conflicts
+
 
