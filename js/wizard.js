@@ -121,13 +121,13 @@ function validateCurrentStep() {
 }
 
 function validateSessionInfo() {
-    const date = document.getElementById('session-date')?.value;
+    const date = document.getElementById('occasion-date')?.value;
     const session = document.getElementById('session-type')?.value;
     const lion = document.getElementById('lion-charge')?.value;
     const totalPeople = document.getElementById('total-people')?.value;
     
     if (!date || !session || !lion || !totalPeople) {
-        showValidationError('Please fill in all required session information');
+        showValidationError('Please fill in all required occasion information');
         return false;
     }
     
@@ -212,7 +212,7 @@ function saveOccasionInfo() {
     const sessionTypeLabel = CONFIG.SESSION_TYPES[sessionTypeKey] || sessionTypeKey;
 
     window.app.data.occasion = {
-        date: document.getElementById('session-date')?.value,
+        date: document.getElementById('occasion-date')?.value,
         sessionType: sessionTypeKey, // Backend expects the session code (5-1, 6-2, etc.)
         lionInCharge: document.getElementById('lion-charge')?.value,
         totalPlayers: parseInt(document.getElementById('total-people')?.value) || 0, // Backend expects 'totalPlayers'
@@ -423,7 +423,7 @@ function loadOccasionInfo() {
     if (!window.app.data.occasion) return;
     
     const data = window.app.data.occasion;
-    if (data.date) document.getElementById('session-date').value = data.date;
+    if (data.date) document.getElementById('occasion-date').value = data.date;
 
     // Handle session type - sessionType is now stored as key (5-1, 6-2, etc.)
     if (data.sessionType) {
@@ -470,7 +470,7 @@ function loadReviewData() {
 // ============================================
 
 function initializeDatePicker() {
-    const dateInput = document.getElementById('session-date');
+    const dateInput = document.getElementById('occasion-date');
     if (!dateInput) return;
     
     // Enable native date picker
