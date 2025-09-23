@@ -61,8 +61,9 @@ function doGet(e) {
         break;
         
       case 'session-games':
-        const sessionType = e.parameter.sessionType || e.parameter.session;
-        const gamesResult = dm.getSessionGames(sessionType);
+      case 'occasion-games':
+        const occasionType = e.parameter.occasionType || e.parameter.sessionType || e.parameter.session;
+        const gamesResult = dm.getOccasionGames(occasionType);
         response.success = gamesResult.success;
         response.games = gamesResult.games || [];
         break;
@@ -87,7 +88,7 @@ function doGet(e) {
       default:
         response.error = 'Invalid path: ' + path;
         response.availablePaths = [
-          'status', 'pulltabs', 'session-games', 'occasions', 'occasion'
+          'status', 'pulltabs', 'session-games', 'occasion-games', 'occasions', 'occasion'
         ];
     }
   } catch (error) {
@@ -209,9 +210,9 @@ class DataManager {
   }
   
   /**
-   * Get session games configuration
+   * Get occasion games configuration
    */
-  getSessionGames(sessionType) {
+  getOccasionGames(occasionType) {
     const configs = {
       '5-1': [
         {num: 1, color: 'Early Bird', game: 'Hard Way Bingo No Free Space', prize: 100},
@@ -289,7 +290,7 @@ class DataManager {
     
     return {
       success: true,
-      games: configs[sessionType] || configs['5-1']
+      games: configs[occasionType] || configs['5-1']
     };
   }
   
@@ -310,7 +311,7 @@ class DataManager {
       occasionSheet.appendRow([
         occasionId,                                    // Occasion ID
         occasion.date || occasion.mondayDate,          // Date
-        occasion.sessionType,                          // Session Type
+        occasion.occasionType || occasion.sessionType, // Occasion Type
         occasion.lionInCharge,                         // Lion in Charge
         parseInt(occasion.totalPlayers) || 0,          // Total Players
         parseInt(occasion.birthdays) || 0,             // Birthdays
