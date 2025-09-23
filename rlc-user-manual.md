@@ -16,10 +16,10 @@
 ## 1. Introduction
 
 ### Purpose
-The RLC Bingo Manager is a modern Progressive Web Application designed specifically for the Rolla Lions Club to manage Monday night bingo sessions. This wizard-based system guides you through each step of recording a bingo occasion, ensuring complete and accurate data collection for Missouri Gaming Commission compliance.
+The RLC Bingo Manager is a modern Progressive Web Application designed specifically for the Rolla Lions Club to manage Monday night bingo occasions. This wizard-based system guides you through each step of recording a bingo occasion, ensuring complete and accurate data collection for Missouri Gaming Commission compliance.
 
 ### What's New in Version 11.0.4
-- **Wizard Interface**: 6-step guided workflow that matches your actual session process
+- **Wizard Interface**: 6-step guided workflow that matches your actual occasion process
 - **Dark/Light Mode**: Easy on the eyes with automatic theme switching
 - **Smart Caching**: Never see outdated versions again with intelligent cache management
 - **Enhanced Calculations**: Automatic BOGO processing and progressive prize calculations
@@ -32,7 +32,7 @@ The RLC Bingo Manager is a modern Progressive Web Application designed specifica
 ✅ **Touch-Optimized**: Works perfectly on tablets and phones  
 ✅ **Complete Offline Mode**: Full functionality without internet  
 ✅ **Automatic Sync**: Data uploads when connection returns  
-✅ **Dark Mode**: Reduce eye strain during evening sessions  
+✅ **Dark Mode**: Reduce eye strain during evening occasions  
 
 ---
 
@@ -92,7 +92,7 @@ The system automatically determines your session type based on the date:
 
 ## 3. The Wizard Workflow
 
-The wizard guides you through six logical steps that match your actual bingo session workflow:
+The wizard guides you through six logical steps that match your actual bingo occasion workflow:
 
 ```
 1. Occasion Info → 2. Paper Sales → 3. Game Results
@@ -124,7 +124,7 @@ This first step captures the basic occasion details and progressive game setup.
 
 #### Basic Information Fields
 
-**Date**: Select the date of your bingo session. The system will:
+**Date**: Select the date of your bingo occasion. The system will:
 - Auto-detect if it's a Monday
 - Determine the session type (1st, 2nd, 3rd, or 4th Monday)
 - Load the appropriate game configuration
@@ -135,7 +135,7 @@ This first step captures the basic occasion details and progressive game setup.
 - **7-3**: 3rd Monday of the month
 - **8-4**: 4th Monday of the month
 
-**Lion in Charge**: Enter the name of the Lion member running the closet. This is the person responsible for the session's operations.
+**Lion in Charge**: Enter the name of the Lion member running the closet. This is the person responsible for the occasion's operations.
 
 **Total People**: Enter the total attendance count. This includes all players but excludes workers.
 
@@ -169,9 +169,9 @@ This step tracks your paper bingo inventory and point-of-sale transactions.
 
 For each type of paper, enter:
 
-**Start Count**: Number of sheets at the beginning of the session  
+**Start Count**: Number of sheets at the beginning of the occasion  
 **Free Count**: Automatically calculated for Early Birds and 6-Face based on birthdays  
-**End Count**: Number of sheets remaining after the session  
+**End Count**: Number of sheets remaining after the occasion  
 **Sold**: Automatically calculated as (Start - End - Free)  
 
 Paper types tracked:
@@ -229,16 +229,16 @@ For each game played:
 
 **Game 13 - Progressive**: This automatically links to the progressive prize calculated in Step 1. The prize amount updates based on whether the jackpot was won and at how many balls.
 
-**Game 9 - Event Game**: This may vary by session. Enter the appropriate prize amount.
+**Game 9 - Event Game**: This may vary by occasion. Enter the appropriate prize amount.
 
 The **Total Bingo Prizes** at the bottom shows your total payout for all games.
 
 ### Step 4: Pull-Tabs
 
-Pull-tabs are instant-win games sold throughout the session. This step tracks each game opened.
+Pull-tabs are instant-win games sold throughout the occasion. This step tracks each game opened.
 
 #### Lion in Charge of Pull-Tabs
-Enter the name of the Lion member who managed pull-tabs for this session.
+Enter the name of the Lion member who managed pull-tabs for this occasion.
 
 #### Adding Pull-Tab Games
 
@@ -270,7 +270,7 @@ The totals section shows:
 
 ### Step 5: Money Count
 
-This step reconciles all cash and checks from the session.
+This step reconciles all cash and checks from the occasion.
 
 #### Bingo Drawer Count
 
@@ -321,7 +321,7 @@ Review all calculated totals:
 #### Performance Metrics
 
 Key performance indicators:
-- **Total Players**: Attendance for the session
+- **Total Players**: Attendance for the occasion
 - **Gross Sales**: Total revenue generated
 - **Net Profit**: After all prizes paid
 - **Per Player**: Average profit per attendee
@@ -350,7 +350,7 @@ The application is designed to function completely without internet:
 
 ### Working Offline
 
-You can complete an entire bingo session offline:
+You can complete an entire bingo occasion offline:
 - Enter all data normally through the wizard
 - Calculations work exactly the same
 - Save draft or submit occasion
@@ -402,7 +402,7 @@ Access reports through the menu (☰):
 
 ### Data Export
 
-You can export session data for:
+You can export occasion data for:
 - Backup purposes
 - External analysis
 - Historical records
