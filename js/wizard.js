@@ -71,9 +71,17 @@ function updateStepDisplay() {
     // Update navigation buttons
     const prevBtn = document.querySelector('.prev-button, button[onclick="previousStep()"]');
     const nextBtn = document.querySelector('.next-button, button[onclick="nextStep()"]');
-    
+
     if (prevBtn) {
-        prevBtn.style.display = window.app.currentStep === 1 ? 'none' : 'inline-block';
+        if (window.app.currentStep === 1) {
+            prevBtn.style.display = 'none';
+            prevBtn.disabled = true;
+        } else {
+            prevBtn.style.display = 'inline-block';
+            prevBtn.disabled = false;
+            prevBtn.style.opacity = '1';
+            prevBtn.style.cursor = 'pointer';
+        }
     }
     
     if (nextBtn) {
@@ -128,17 +136,17 @@ function validateSessionInfo() {
 }
 
 function validatePaperSales() {
-    // Basic validation - ensure at least some paper types have been entered
+    // Basic validation - ensure at least some manual count items have been entered
     let hasValidEntry = false;
-    
-    CONFIG.PAPER_TYPES.forEach(type => {
+
+    CONFIG.MANUAL_COUNT_ITEMS.forEach(type => {
         const startInput = document.getElementById(`${type.id}-start`);
         const endInput = document.getElementById(`${type.id}-end`);
-        
+
         if (startInput && endInput) {
             const start = parseInt(startInput.value) || 0;
             const end = parseInt(endInput.value) || 0;
-            
+
             if (start > 0 || end > 0) {
                 hasValidEntry = true;
             }
@@ -177,7 +185,7 @@ function saveStepData() {
     
     switch (window.app.currentStep) {
         case 1:
-            saveSessionInfo();
+            saveOccasionInfo();
             break;
         case 2:
             savePaperSales();
@@ -199,14 +207,17 @@ function saveStepData() {
     }
 }
 
-function saveSessionInfo() {
+function saveOccasionInfo() {
+    const sessionTypeKey = document.getElementById('session-type')?.value;
+    const sessionTypeLabel = CONFIG.SESSION_TYPES[sessionTypeKey] || sessionTypeKey;
+
     window.app.data.occasion = {
         date: document.getElementById('session-date')?.value,
-        sessionType: document.getElementById('session-type')?.value,
+        sessionType: sessionTypeLabel, // Backend expects the full label for Google Sheets
         lionInCharge: document.getElementById('lion-charge')?.value,
         totalPeople: parseInt(document.getElementById('total-people')?.value) || 0, // Backend expects 'totalPeople'
         birthdays: parseInt(document.getElementById('birthdays')?.value) || 0,
-        createdBy: 'Current User' // Backend expects this field
+        createdBy: 'Mobile Entry' // Backend expects this field
     };
 
     // Progressive data structure aligned with backend expectations
@@ -221,13 +232,13 @@ function saveSessionInfo() {
 }
 
 function savePaperSales() {
-    // Save paper inventory
-    CONFIG.PAPER_TYPES.forEach(type => {
+    // Save manual count inventory
+    CONFIG.MANUAL_COUNT_ITEMS.forEach(type => {
         const start = parseInt(document.getElementById(`${type.id}-start`)?.value) || 0;
         const end = parseInt(document.getElementById(`${type.id}-end`)?.value) || 0;
         const free = parseInt(document.getElementById(`${type.id}-free`)?.value) || 0;
         const sold = Math.max(0, start - end - free);
-        
+
         window.app.data.paperBingo[type.id] = { start, end, free, sold };
     });
     
@@ -388,7 +399,7 @@ function loadStepData() {
     
     switch (window.app.currentStep) {
         case 1:
-            loadSessionInfo();
+            loadOccasionInfo();
             break;
         case 2:
             loadPaperSales();
@@ -408,12 +419,20 @@ function loadStepData() {
     }
 }
 
-function loadSessionInfo() {
+function loadOccasionInfo() {
     if (!window.app.data.occasion) return;
     
     const data = window.app.data.occasion;
     if (data.date) document.getElementById('session-date').value = data.date;
-    if (data.sessionType) document.getElementById('session-type').value = data.sessionType;
+
+    // Handle session type mapping - find the key for the stored label value
+    if (data.sessionType) {
+        const sessionTypeKey = Object.keys(CONFIG.SESSION_TYPES).find(key =>
+            CONFIG.SESSION_TYPES[key] === data.sessionType
+        ) || data.sessionType;
+        document.getElementById('session-type').value = sessionTypeKey;
+    }
+
     if (data.lionInCharge) document.getElementById('lion-charge').value = data.lionInCharge;
     if (data.attendance) document.getElementById('total-people').value = data.attendance;
     if (data.birthdays) document.getElementById('birthdays').value = data.birthdays;
