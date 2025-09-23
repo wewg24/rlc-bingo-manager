@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLC Bingo Wizard v12.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .wizard-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .wizard-header {
+            background: #1976d2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: #e3f2fd;
+        }
+
+        .step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .step.active {
+            background: #1976d2;
+        }
+
+        .step.completed {
+            background: #4caf50;
+        }
+
+        .wizard-content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .pos-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .pos-table th,
+        .pos-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .pos-table th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+
+        .pos-table input {
+            width: 100%;
+            border: none;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .wizard-buttons {
+            padding: 20px 30px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #616161;
+        }
+
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .total-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1976d2;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+        }
+
+        .status.success {
+            background: #4caf50;
+        }
+
+        .status.error {
+            background: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="wizard-container">
+        <div class="wizard-header">
+            <h1>RLC Bingo Manager</h1>
+            <p>Clean New System v12.0</p>
+            <p id="edit-mode-indicator" style="display: none; background: #ff9800; padding: 5px 15px; border-radius: 20px; margin-top: 10px;">
+                EDIT MODE: <span id="edit-occasion-id"></span>
+            </p>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step active" id="step-1-indicator">1</div>
+            <div class="step" id="step-2-indicator">2</div>
+            <div class="step" id="step-3-indicator">3</div>
+            <div class="step" id="step-4-indicator">4</div>
+        </div>
+
+        <div class="wizard-content">
+            <!-- STEP 1: Occasion Info -->
+            <div class="step-content active" id="step-1">
+                <h2>Step 1: Occasion Information</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="occasion-date">Date</label>
+                        <input type="date" id="occasion-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="session-type">Session Type</label>
+                        <select id="session-type" required>
+                            <option value="">Select Session Type</option>
+                            <option value="5-1">5-1 (1st/5th Monday)</option>
+                            <option value="6-2">6-2 (2nd Monday)</option>
+                            <option value="7-3">7-3 (3rd Monday)</option>
+                            <option value="8-4">8-4 (4th Monday)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="lion-charge">Lion in Charge</label>
+                        <input type="text" id="lion-charge" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="total-players">Total Players</label>
+                        <input type="number" id="total-players" min="0" value="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="birthdays">Birthdays (for BOGOs)</label>
+                        <input type="number" id="birthdays" min="0" value="0">
+                    </div>
+                </div>
+
+                <h3>Progressive Game</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prog-jackpot">Jackpot Amount</label>
+                        <input type="number" id="prog-jackpot" step="0.01" value="1000.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="prog-balls">Balls Needed</label>
+                        <input type="number" id="prog-balls" value="48">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prog-consolation">Consolation Prize</label>
+                        <input type="number" id="prog-consolation" step="0.01" value="200.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="prog-actual">Actual Balls Called</label>
+                        <input type="number" id="prog-actual" value="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prog-prize">Prize Awarded</label>
+                        <input type="number" id="prog-prize" step="0.01" value="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="prog-check"> Paid by Check
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: POS Door Sales -->
+            <div class="step-content" id="step-2">
+                <h2>Step 2: POS Door Sales</h2>
+
+                <table class="pos-table" id="pos-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pos-table-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Total POS Sales</strong></td>
+                            <td class="total-display" id="pos-total">$0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- STEP 3: Games Results -->
+            <div class="step-content" id="step-3">
+                <h2>Step 3: Game Results</h2>
+
+                <table class="pos-table" id="games-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Color</th>
+                            <th>Game</th>
+                            <th>Prize</th>
+                            <th>Winners</th>
+                            <th>Check</th>
+                        </tr>
+                    </thead>
+                    <tbody id="games-table-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- STEP 4: Review & Submit -->
+            <div class="step-content" id="step-4">
+                <h2>Step 4: Review & Submit</h2>
+
+                <div id="review-content">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-success" onclick="submitOccasion()" id="submit-btn">
+                        Save Occasion
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="wizard-buttons">
+            <button class="btn btn-secondary" onclick="prevStep()" id="prev-btn" style="display: none;">
+                Previous
+            </button>
+            <button class="btn btn-primary" onclick="nextStep()" id="next-btn">
+                Next
+            </button>
+        </div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec';
+
+        const POS_ITEMS = [
+            { id: 'dauber', name: 'Dauber', price: 2 },
+            { id: 'birthday', name: 'Birthday Pack', price: 0 },
+            { id: 'coverall', name: 'Coverall Extra', price: 1 },
+            { id: 'double-action', name: 'Early Bird Double', price: 5 },
+            { id: 'letter-x', name: 'Letter X Extra', price: 1 },
+            { id: 'number7', name: 'Number 7 Extra', price: 1 },
+            { id: '18-face-prog', name: 'Progressive 18 Face', price: 5 },
+            { id: '3-face-prog', name: 'Progressive 3 Face', price: 1 },
+            { id: '6-face', name: 'Six Face', price: 10 },
+            { id: '9-face-solid', name: 'Nine Face Solid', price: 15 },
+            { id: '9-face-stripe', name: 'Nine Face Stripe', price: 10 }
+        ];
+
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        let currentStep = 1;
+        let occasionData = {};
+        let editMode = false;
+        let editOccasionId = null;
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            checkEditMode();
+            initializePOSTable();
+            loadSessionGames();
+        });
+
+        function checkEditMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+
+            if (editId) {
+                editMode = true;
+                editOccasionId = editId;
+
+                document.getElementById('edit-mode-indicator').style.display = 'block';
+                document.getElementById('edit-occasion-id').textContent = editId;
+                document.getElementById('submit-btn').textContent = 'Update Occasion';
+
+                loadExistingOccasion(editId);
+            }
+        }
+
+        async function loadExistingOccasion(id) {
+            try {
+                showStatus('Loading occasion data...', 'info');
+
+                const response = await fetch(`${API_URL}?path=occasion&id=${id}`);
+                const result = await response.json();
+
+                console.log('Loaded occasion:', result);
+
+                if (result.success && result.data) {
+                    populateFormWithData(result.data);
+                    showStatus('Occasion data loaded successfully', 'success');
+                } else {
+                    showStatus(`Failed to load occasion: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading occasion:', error);
+                showStatus('Error loading occasion data', 'error');
+            }
+        }
+
+        function populateFormWithData(data) {
+            // Basic info
+            if (data.date) document.getElementById('occasion-date').value = data.date;
+            if (data.sessionType) document.getElementById('session-type').value = data.sessionType;
+            if (data.lionInCharge) document.getElementById('lion-charge').value = data.lionInCharge;
+            if (data.totalPlayers) document.getElementById('total-players').value = data.totalPlayers;
+            if (data.birthdays) document.getElementById('birthdays').value = data.birthdays;
+
+            // Progressive
+            if (data.progressive) {
+                const prog = data.progressive;
+                if (prog.jackpot) document.getElementById('prog-jackpot').value = prog.jackpot;
+                if (prog.ballsNeeded) document.getElementById('prog-balls').value = prog.ballsNeeded;
+                if (prog.consolation) document.getElementById('prog-consolation').value = prog.consolation;
+                if (prog.actualBalls) document.getElementById('prog-actual').value = prog.actualBalls;
+                if (prog.prizeAwarded) document.getElementById('prog-prize').value = prog.prizeAwarded;
+                if (prog.paidByCheck) document.getElementById('prog-check').checked = prog.paidByCheck;
+            }
+
+            // POS Sales
+            if (data.posSales) {
+                Object.entries(data.posSales).forEach(([itemId, itemData]) => {
+                    const qtyInput = document.getElementById(`${itemId}-qty`);
+                    if (qtyInput && itemData.quantity) {
+                        qtyInput.value = itemData.quantity;
+                        updatePOSTotal(itemId);
+                    }
+                });
+            }
+
+            occasionData = data;
+        }
+
+        // ==========================================
+        // POS TABLE INITIALIZATION
+        // ==========================================
+        function initializePOSTable() {
+            const tbody = document.getElementById('pos-table-body');
+            tbody.innerHTML = '';
+
+            POS_ITEMS.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td><input type="number" id="${item.id}-qty" min="0" value="0" onchange="updatePOSTotal('${item.id}')"></td>
+                    <td id="${item.id}-total">$0.00</td>
+                `;
+            });
+        }
+
+        function updatePOSTotal(itemId) {
+            const item = POS_ITEMS.find(p => p.id === itemId);
+            if (!item) return;
+
+            const qtyInput = document.getElementById(`${itemId}-qty`);
+            const totalCell = document.getElementById(`${itemId}-total`);
+
+            const quantity = parseInt(qtyInput.value) || 0;
+            const total = quantity * item.price;
+
+            totalCell.textContent = `$${total.toFixed(2)}`;
+
+            // Calculate grand total
+            let grandTotal = 0;
+            POS_ITEMS.forEach(posItem => {
+                const qty = parseInt(document.getElementById(`${posItem.id}-qty`).value) || 0;
+                grandTotal += qty * posItem.price;
+            });
+
+            document.getElementById('pos-total').textContent = `$${grandTotal.toFixed(2)}`;
+        }
+
+        // ==========================================
+        // GAMES TABLE INITIALIZATION
+        // ==========================================
+        async function loadSessionGames() {
+            try {
+                const sessionType = document.getElementById('session-type').value || '5-1';
+                const response = await fetch(`${API_URL}?path=session-games&sessionType=${sessionType}`);
+                const result = await response.json();
+
+                if (result.success && result.games) {
+                    populateGamesTable(result.games);
+                }
+            } catch (error) {
+                console.error('Error loading session games:', error);
+            }
+        }
+
+        function populateGamesTable(games) {
+            const tbody = document.getElementById('games-table-body');
+            tbody.innerHTML = '';
+
+            games.forEach(game => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${game.num}</td>
+                    <td>${game.color}</td>
+                    <td>${game.game}</td>
+                    <td>$${game.prize}</td>
+                    <td><input type="number" id="game-${game.num}-winners" min="0" value="0"></td>
+                    <td><input type="checkbox" id="game-${game.num}-check"></td>
+                `;
+            });
+        }
+
+        // ==========================================
+        // WIZARD NAVIGATION
+        // ==========================================
+        function nextStep() {
+            if (currentStep < 4) {
+                // Validate current step
+                if (validateStep(currentStep)) {
+                    currentStep++;
+                    updateWizardDisplay();
+                }
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWizardDisplay();
+            }
+        }
+
+        function updateWizardDisplay() {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // Show current step
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+
+            // Update indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                } else if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+
+            // Update buttons
+            document.getElementById('prev-btn').style.display = currentStep > 1 ? 'block' : 'none';
+            document.getElementById('next-btn').style.display = currentStep < 4 ? 'block' : 'none';
+
+            // Special handling for step transitions
+            if (currentStep === 3) {
+                loadSessionGames();
+            } else if (currentStep === 4) {
+                generateReview();
+            }
+        }
+
+        function validateStep(step) {
+            switch(step) {
+                case 1:
+                    const date = document.getElementById('occasion-date').value;
+                    const sessionType = document.getElementById('session-type').value;
+                    const lionCharge = document.getElementById('lion-charge').value;
+
+                    if (!date || !sessionType || !lionCharge) {
+                        showStatus('Please fill in all required fields', 'error');
+                        return false;
+                    }
+                    return true;
+
+                case 2:
+                case 3:
+                    return true;
+
+                default:
+                    return true;
+            }
+        }
+
+        // ==========================================
+        // REVIEW GENERATION
+        // ==========================================
+        function generateReview() {
+            const reviewContent = document.getElementById('review-content');
+
+            const occasionInfo = {
+                date: document.getElementById('occasion-date').value,
+                sessionType: document.getElementById('session-type').value,
+                lionInCharge: document.getElementById('lion-charge').value,
+                totalPlayers: document.getElementById('total-players').value,
+                birthdays: document.getElementById('birthdays').value
+            };
+
+            reviewContent.innerHTML = `
+                <h3>Occasion Summary</h3>
+                <p><strong>Date:</strong> ${occasionInfo.date}</p>
+                <p><strong>Session Type:</strong> ${occasionInfo.sessionType}</p>
+                <p><strong>Lion in Charge:</strong> ${occasionInfo.lionInCharge}</p>
+                <p><strong>Total Players:</strong> ${occasionInfo.totalPlayers}</p>
+                <p><strong>Birthdays:</strong> ${occasionInfo.birthdays}</p>
+
+                <h3>POS Sales Total</h3>
+                <p class="total-display">${document.getElementById('pos-total').textContent}</p>
+
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 4px; margin-top: 20px;">
+                    <strong>✅ Ready to save to JSON storage</strong><br>
+                    <small>This will be saved as individual JSON files in Google Drive</small>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // OCCASION SUBMISSION
+        // ==========================================
+        async function submitOccasion() {
+            try {
+                showStatus('Saving occasion...', 'info');
+
+                // Collect all form data
+                const formData = {
+                    id: editMode ? editOccasionId : null,
+                    date: document.getElementById('occasion-date').value,
+                    sessionType: document.getElementById('session-type').value,
+                    lionInCharge: document.getElementById('lion-charge').value,
+                    totalPlayers: document.getElementById('total-players').value,
+                    birthdays: document.getElementById('birthdays').value,
+
+                    progressiveJackpot: document.getElementById('prog-jackpot').value,
+                    progressiveBalls: document.getElementById('prog-balls').value,
+                    progressiveConsolation: document.getElementById('prog-consolation').value,
+                    progressiveActual: document.getElementById('prog-actual').value,
+                    progressivePrize: document.getElementById('prog-prize').value,
+                    progressiveCheck: document.getElementById('prog-check').checked,
+
+                    posSales: collectPOSSales(),
+                    games: collectGamesData(),
+
+                    status: 'Active'
+                };
+
+                console.log('Submitting data:', formData);
+
+                // Send to new clean backend
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'save-occasion',
+                        data: JSON.stringify(formData)
+                    })
+                });
+
+                const result = await response.json();
+                console.log('Save result:', result);
+
+                if (result.success) {
+                    showStatus(`✅ ${result.message}`, 'success');
+
+                    // Redirect after success
+                    setTimeout(() => {
+                        window.location.href = 'admin-new.html';
+                    }, 2000);
+                } else {
+                    showStatus(`❌ Save failed: ${result.error}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Submission error:', error);
+                showStatus('❌ Error saving occasion', 'error');
+            }
+        }
+
+        function collectPOSSales() {
+            const posSales = {};
+
+            POS_ITEMS.forEach(item => {
+                const qty = parseInt(document.getElementById(`${item.id}-qty`).value) || 0;
+                if (qty > 0) {
+                    posSales[item.id] = {
+                        price: item.price,
+                        quantity: qty,
+                        total: qty * item.price
+                    };
+                }
+            });
+
+            return posSales;
+        }
+
+        function collectGamesData() {
+            const games = [];
+            const gameRows = document.querySelectorAll('#games-table-body tr');
+
+            gameRows.forEach(row => {
+                const cells = row.cells;
+                const gameNum = cells[0].textContent;
+                const winners = parseInt(document.getElementById(`game-${gameNum}-winners`).value) || 0;
+                const checkPayment = document.getElementById(`game-${gameNum}-check`).checked;
+
+                if (winners > 0) {
+                    games.push({
+                        number: gameNum,
+                        color: cells[1].textContent,
+                        game: cells[2].textContent,
+                        prize: parseFloat(cells[3].textContent.replace('$', '')),
+                        winners: winners,
+                        checkPayment: checkPayment
+                    });
+                }
+            });
+
+            return games;
+        }
+
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        // Handle session type change
+        document.getElementById('session-type').addEventListener('change', function() {
+            if (currentStep === 3) {
+                loadSessionGames();
+            }
+        });
+    </script>
+</body>
+</html>

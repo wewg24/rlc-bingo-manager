@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLC Bingo Admin v12.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: #1976d2;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-header h1 {
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #616161;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        .admin-content {
+            padding: 20px;
+        }
+
+        .occasions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .occasions-table th,
+        .occasions-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .occasions-table th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+
+        .occasions-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .occasions-table tr:hover {
+            background: #e3f2fd;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-buttons .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+        }
+
+        .status.success {
+            background: #4caf50;
+        }
+
+        .status.error {
+            background: #f44336;
+        }
+
+        .status.info {
+            background: #2196f3;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .system-info {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .system-info h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div>
+                <h1>RLC Bingo Admin</h1>
+                <p>Clean New System v12.0 - JSON Storage</p>
+            </div>
+            <div class="header-actions">
+                <a href="wizard-new.html" class="btn btn-primary">Create New Occasion</a>
+                <button class="btn btn-secondary" onclick="refreshData()">Refresh</button>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <div class="system-info">
+                <h3>✅ New Clean System Active</h3>
+                <p><strong>Backend:</strong> Pure JSON storage in Google Drive</p>
+                <p><strong>Data:</strong> No Google Sheets dependencies</p>
+                <p><strong>Storage:</strong> Individual JSON files per occasion</p>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Occasions</h3>
+                    <div class="number" id="total-occasions">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>This Month</h3>
+                    <div class="number" id="this-month">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>System Status</h3>
+                    <div class="number" id="system-status">-</div>
+                </div>
+            </div>
+
+            <div id="occasions-container">
+                <div class="loading">Loading occasions...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec';
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+            loadOccasions();
+        });
+
+        // ==========================================
+        // SYSTEM STATUS
+        // ==========================================
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_URL}?path=status`);
+                const result = await response.json();
+
+                console.log('System status:', result);
+
+                if (result.success && result.version === '12.0.0') {
+                    document.getElementById('system-status').textContent = '✅ v12.0';
+                    document.getElementById('system-status').style.color = '#4caf50';
+                } else {
+                    document.getElementById('system-status').textContent = '❌ Old';
+                    document.getElementById('system-status').style.color = '#f44336';
+                    showStatus('Warning: Backend not updated to v12.0', 'error');
+                }
+            } catch (error) {
+                console.error('Status check error:', error);
+                document.getElementById('system-status').textContent = '❌ Error';
+                document.getElementById('system-status').style.color = '#f44336';
+            }
+        }
+
+        // ==========================================
+        // OCCASIONS LOADING
+        // ==========================================
+        async function loadOccasions() {
+            try {
+                showStatus('Loading occasions...', 'info');
+
+                const response = await fetch(`${API_URL}?path=occasions`);
+                const result = await response.json();
+
+                console.log('Occasions loaded:', result);
+
+                if (result.success) {
+                    displayOccasions(result.occasions || []);
+                    updateStats(result.occasions || []);
+                    showStatus('Occasions loaded successfully', 'success');
+                } else {
+                    showStatus(`Failed to load occasions: ${result.error}`, 'error');
+                    displayError(result.error);
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                showStatus('Error loading occasions', 'error');
+                displayError(error.toString());
+            }
+        }
+
+        function displayOccasions(occasions) {
+            const container = document.getElementById('occasions-container');
+
+            if (occasions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No occasions found</h3>
+                        <p>Create your first occasion to get started.</p>
+                        <a href="wizard-new.html" class="btn btn-primary">Create New Occasion</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const table = `
+                <table class="occasions-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Session Type</th>
+                            <th>Lion in Charge</th>
+                            <th>Players</th>
+                            <th>Status</th>
+                            <th>Modified</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${occasions.map(occasion => `
+                            <tr>
+                                <td>${formatDate(occasion.date)}</td>
+                                <td>${occasion.sessionType || 'N/A'}</td>
+                                <td>${occasion.lionInCharge || 'N/A'}</td>
+                                <td>${occasion.totalPlayers || 0}</td>
+                                <td>${occasion.status || 'Active'}</td>
+                                <td>${formatDateTime(occasion.modified)}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="wizard-new.html?edit=${occasion.id}" class="btn btn-secondary">Edit</a>
+                                        <button class="btn btn-danger" onclick="deleteOccasion('${occasion.id}')">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = table;
+        }
+
+        function updateStats(occasions) {
+            document.getElementById('total-occasions').textContent = occasions.length;
+
+            // Count this month's occasions
+            const thisMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
+            const thisMonthCount = occasions.filter(o =>
+                o.date && o.date.startsWith(thisMonth)
+            ).length;
+
+            document.getElementById('this-month').textContent = thisMonthCount;
+        }
+
+        function displayError(error) {
+            const container = document.getElementById('occasions-container');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>Error Loading Data</h3>
+                    <p><strong>Error:</strong> ${error}</p>
+                    <button class="btn btn-primary" onclick="loadOccasions()">Retry</button>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // OCCASION ACTIONS
+        // ==========================================
+        async function deleteOccasion(id) {
+            if (!confirm(`Are you sure you want to delete occasion ${id}?`)) {
+                return;
+            }
+
+            try {
+                showStatus('Deleting occasion...', 'info');
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'delete-occasion',
+                        id: id
+                    })
+                });
+
+                const result = await response.json();
+                console.log('Delete result:', result);
+
+                if (result.success) {
+                    showStatus('Occasion deleted successfully', 'success');
+                    loadOccasions(); // Refresh the list
+                } else {
+                    showStatus(`Delete failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                showStatus('Error deleting occasion', 'error');
+            }
+        }
+
+        function refreshData() {
+            checkSystemStatus();
+            loadOccasions();
+        }
+
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                return new Date(dateString).toLocaleDateString();
+            } catch {
+                return dateString;
+            }
+        }
+
+        function formatDateTime(dateTimeString) {
+            if (!dateTimeString) return 'N/A';
+            try {
+                return new Date(dateTimeString).toLocaleString();
+            } catch {
+                return dateTimeString;
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
