@@ -71,6 +71,7 @@
             const result = await response.json();
 
             console.log('API Response:', result);
+            console.log('API Response JSON:', JSON.stringify(result, null, 2));
 
             if (result.success && result.data) {
                 const occasionData = result.data;
@@ -89,6 +90,9 @@
                 }
             } else {
                 console.error('Failed to load occasion. Full response:', result);
+                console.error('Full response JSON:', JSON.stringify(result, null, 2));
+                console.error('Result.success:', result.success);
+                console.error('Result.data:', result.data);
                 console.error('Error details:', result.error || 'No error details provided');
                 alert(`Failed to load occasion data for editing. ${result.error || 'Unknown error'}`);
             }
