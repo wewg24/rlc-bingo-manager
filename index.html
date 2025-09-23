@@ -800,8 +800,8 @@
 
         async loadDashboard() {
             try {
-                // For now, use mock data since get-sessions isn't implemented yet
-                this.loadMockData();
+                // Load real data from API
+                await this.loadRealData();
             } catch (error) {
                 console.error('Error loading dashboard:', error);
                 this.loadMockData();
@@ -811,23 +811,49 @@
             this.generateQRCode();
         }
 
-        generateQRCode() {
-            const mobileUrl = 'https://wewg24.github.io/rlc-bingo-manager/mobile.html';
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(mobileUrl)}`;
+        async loadRealData() {
+            const response = await fetch(`${CONFIG.API_URL}?path=occasions`);
+            const result = await response.json();
 
-            const qrImage = document.getElementById('qr-image');
-            const qrPlaceholder = document.getElementById('qr-placeholder');
-
-            if (qrImage && qrPlaceholder) {
-                qrImage.src = qrApiUrl;
-                qrImage.onload = function() {
-                    qrPlaceholder.style.display = 'none';
-                    qrImage.style.display = 'block';
-                };
-                qrImage.onerror = function() {
-                    qrPlaceholder.innerHTML = '<div>📱</div><div>QR Code</div><div style="margin-top: 5px; font-size: 10px; color: #666;">Error loading QR</div>';
-                };
+            if (result.success && result.occasions) {
+                // Convert API data to admin interface format
+                this.sessions = result.occasions.map(occasion => ({
+                    id: occasion.occasionId,
+                    date: occasion.date,
+                    sessionType: occasion.sessionType,
+                    lionInCharge: occasion.lionInCharge,
+                    totalPlayers: occasion.totalPeople || 0,
+                    totalRevenue: occasion.totalRevenue || 0,
+                    netProfit: occasion.netProfit || 0,
+                    status: occasion.status || 'Draft'
+                }));
+            } else {
+                throw new Error('No occasions data received');
             }
+
+            this.updateDashboardStats();
+        }
+
+        generateQRCode() {
+            // Use setTimeout to make QR generation non-blocking
+            setTimeout(() => {
+                const mobileUrl = 'https://wewg24.github.io/rlc-bingo-manager/mobile.html';
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(mobileUrl)}`;
+
+                const qrImage = document.getElementById('qr-image');
+                const qrPlaceholder = document.getElementById('qr-placeholder');
+
+                if (qrImage && qrPlaceholder) {
+                    qrImage.src = qrApiUrl;
+                    qrImage.onload = function() {
+                        qrPlaceholder.style.display = 'none';
+                        qrImage.style.display = 'block';
+                    };
+                    qrImage.onerror = function() {
+                        qrPlaceholder.innerHTML = '<div>📱</div><div>QR Code</div><div style="margin-top: 5px; font-size: 10px; color: #666;">Error loading QR</div>';
+                    };
+                }
+            }, 100);
         }
 
         loadMockData() {
