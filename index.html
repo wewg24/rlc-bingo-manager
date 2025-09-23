@@ -404,7 +404,7 @@
         <div class="card">
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button class="btn" onclick="showDashboard()">Dashboard</button>
-                <button class="btn" onclick="showSessions()">Sessions</button>
+                <button class="btn" onclick="showOccasions()">Occasions</button>
                 <button class="btn" onclick="showReports()">Reports</button>
                 <button class="btn" onclick="showLibrary()">Pull-Tab Library</button>
                 <button class="btn warning" onclick="generateOfflineApp()">Generate Offline App</button>
@@ -415,8 +415,8 @@
         <div id="dashboard-view" class="view">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value" id="total-sessions">0</div>
-                    <div class="stat-label">Total Sessions</div>
+                    <div class="stat-value" id="total-occasions">0</div>
+                    <div class="stat-label">Total Occasions</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" id="total-revenue">$0</div>
@@ -479,7 +479,7 @@
             </div>
         </div>
 
-        <!-- Sessions View -->
+        <!-- Occasions View -->
         <div id="sessions-view" class="view hidden">
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -501,7 +501,7 @@
                         </tr>
                     </thead>
                     <tbody id="sessions-table">
-                        <!-- Sessions will be loaded here -->
+                        <!-- Occasions will be loaded here -->
                     </tbody>
                 </table>
             </div>
@@ -916,12 +916,12 @@
         }
 
         updateDashboardStats() {
-            const totalSessions = this.sessions.length;
+            const totalOccasions = this.sessions.length;
             const totalRevenue = this.sessions.reduce((sum, s) => sum + (s.totalRevenue || 0), 0);
             const totalProfit = this.sessions.reduce((sum, s) => sum + (s.netProfit || 0), 0);
-            const avgPlayers = totalSessions > 0 ? Math.round(this.sessions.reduce((sum, s) => sum + (s.totalPlayers || 0), 0) / totalSessions) : 0;
+            const avgPlayers = totalOccasions > 0 ? Math.round(this.sessions.reduce((sum, s) => sum + (s.totalPlayers || 0), 0) / totalOccasions) : 0;
 
-            document.getElementById('total-sessions').textContent = totalSessions;
+            document.getElementById('total-sessions').textContent = totalOccasions;
             document.getElementById('total-revenue').textContent = '$' + totalRevenue.toLocaleString();
             document.getElementById('total-profit').textContent = '$' + totalProfit.toLocaleString();
             document.getElementById('avg-players').textContent = avgPlayers;
@@ -933,7 +933,7 @@
             this.loadDashboard();
         }
 
-        showSessions() {
+        showOccasions() {
             this.hideAllViews();
             document.getElementById('sessions-view').classList.remove('hidden');
             this.loadOccasionsTable();
@@ -1994,7 +1994,7 @@
     });
 
     function showDashboard() { if (adminApp) adminApp.showDashboard(); }
-    function showSessions() { if (adminApp) adminApp.showSessions(); }
+    function showOccasions() { if (adminApp) adminApp.showOccasions(); }
     function showReports() { if (adminApp) adminApp.showReports(); }
     function showLibrary() { if (adminApp) adminApp.showLibrary(); }
     function generateOfflineApp() { if (adminApp) adminApp.generateOfflineApp(); }
@@ -2006,12 +2006,12 @@
     function generateMonthlyReport() {
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
-        const monthSessions = adminApp.sessions.filter(s => {
+        const monthOccasions = adminApp.sessions.filter(s => {
             const sessionDate = new Date(s.date);
             return sessionDate.getMonth() === currentMonth && sessionDate.getFullYear() === currentYear;
         });
 
-        const report = generateReportHTML('Monthly Summary Report', monthSessions, {
+        const report = generateReportHTML('Monthly Summary Report', monthOccasions, {
             title: `${new Date().toLocaleString('default', { month: 'long' })} ${currentYear} Summary`,
             includeComparison: true
         });
@@ -2021,11 +2021,11 @@
 
     function generateYearlyReport() {
         const currentYear = new Date().getFullYear();
-        const yearSessions = adminApp.sessions.filter(s => {
+        const yearOccasions = adminApp.sessions.filter(s => {
             return new Date(s.date).getFullYear() === currentYear;
         });
 
-        const report = generateReportHTML('Yearly Summary Report', yearSessions, {
+        const report = generateReportHTML('Yearly Summary Report', yearOccasions, {
             title: `${currentYear} Annual Report`,
             includeMonthlyBreakdown: true
         });
@@ -2040,11 +2040,11 @@
 
     function generateTaxReport() {
         const currentYear = new Date().getFullYear();
-        const yearSessions = adminApp.sessions.filter(s => {
+        const yearOccasions = adminApp.sessions.filter(s => {
             return new Date(s.date).getFullYear() === currentYear;
         });
 
-        const report = generateTaxReport(yearSessions, currentYear);
+        const report = generateTaxReport(yearOccasions, currentYear);
         openReportWindow(report);
     }
 
@@ -2078,7 +2078,7 @@
             return;
         }
 
-        const filteredSessions = adminApp.sessions.filter(s => {
+        const filteredOccasions = adminApp.sessions.filter(s => {
             const sessionDate = new Date(s.date);
             return sessionDate >= new Date(startDate) && sessionDate <= new Date(endDate);
         });
@@ -2086,13 +2086,13 @@
         let report;
         switch(reportType) {
             case 'detailed':
-                report = generateDetailedReport(filteredSessions, startDate, endDate);
+                report = generateDetailedReport(filteredOccasions, startDate, endDate);
                 break;
             case 'comparison':
-                report = generateComparisonReport(filteredSessions, startDate, endDate);
+                report = generateComparisonReport(filteredOccasions, startDate, endDate);
                 break;
             default:
-                report = generateReportHTML('Custom Summary Report', filteredSessions, {
+                report = generateReportHTML('Custom Summary Report', filteredOccasions, {
                     title: `Custom Report: ${startDate} to ${endDate}`
                 });
         }
@@ -2102,10 +2102,10 @@
 
     // Report generation helper functions
     function generateReportHTML(title, sessions, options = {}) {
-        const totalSessions = sessions.length;
+        const totalOccasions = sessions.length;
         const totalRevenue = sessions.reduce((sum, s) => sum + (s.totalRevenue || 0), 0);
         const totalProfit = sessions.reduce((sum, s) => sum + (s.netProfit || 0), 0);
-        const avgPlayers = totalSessions > 0 ? Math.round(sessions.reduce((sum, s) => sum + (s.totalPlayers || 0), 0) / totalSessions) : 0;
+        const avgPlayers = totalOccasions > 0 ? Math.round(sessions.reduce((sum, s) => sum + (s.totalPlayers || 0), 0) / totalOccasions) : 0;
 
         return `
         <!DOCTYPE html>
@@ -2137,8 +2137,8 @@
 
             <div class="summary">
                 <div class="summary-card">
-                    <div class="summary-value">${totalSessions}</div>
-                    <div class="summary-label">Total Sessions</div>
+                    <div class="summary-value">${totalOccasions}</div>
+                    <div class="summary-label">Total Occasions</div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-value">$${totalRevenue.toLocaleString()}</div>
@@ -2167,15 +2167,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    ${sessions.map(session => `
+                    ${occasions.map(occasion => `
                         <tr>
-                            <td>${new Date(session.date).toLocaleDateString()}</td>
+                            <td>${new Date(occasion.date).toLocaleDateString()}</td>
                             <td>${CONFIG.SESSION_TYPES[session.sessionType] || session.sessionType}</td>
-                            <td>${session.lionInCharge || 'N/A'}</td>
-                            <td>${session.totalPlayers || 0}</td>
-                            <td>$${(session.totalRevenue || 0).toLocaleString()}</td>
-                            <td>$${(session.netProfit || 0).toLocaleString()}</td>
-                            <td>${session.status}</td>
+                            <td>${occasion.lionInCharge || 'N/A'}</td>
+                            <td>${occasion.totalPlayers || 0}</td>
+                            <td>$${(occasion.totalRevenue || 0).toLocaleString()}</td>
+                            <td>$${(occasion.netProfit || 0).toLocaleString()}</td>
+                            <td>${occasion.status}</td>
                         </tr>
                     `).join('')}
                 </tbody>
