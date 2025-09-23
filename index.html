@@ -1250,7 +1250,8 @@
                 const result = await response.json();
                 if (result.success && result.data && result.data.success) {
                     this.closeSessionModal();
-                    await this.loadSessions(); // Refresh sessions from backend
+                    await this.loadRealData(); // Refresh sessions from backend
+                    this.loadSessionsTable(); // Refresh the table display
                     this.showAlert(this.currentEditingSessionId ? 'Session updated successfully!' : 'Session saved successfully!', 'success');
                 } else {
                     this.showAlert('Error saving session: ' + (result.error || result.data?.error || 'Unknown error'), 'error');
