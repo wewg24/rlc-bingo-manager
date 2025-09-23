@@ -822,29 +822,65 @@
                 this.occasions = result.occasions.map(occasion => {
                     console.log('Processing occasion:', occasion); // Debug logging
 
-                    // Clean and validate the occasion ID
+                    // Clean and validate the occasion ID - handle both object formats
                     const occasionId = occasion.id || occasion['Occasion ID'];
                     if (!occasionId || typeof occasionId !== 'string') {
                         console.warn('Invalid occasion ID:', occasionId);
                         return null; // Skip invalid records
                     }
 
-                    // Convert occasion type from readable name back to key for consistency
-                    const sessionTypeValue = this.cleanString(occasion['Session Type']) || 'Unknown';
-                    const sessionTypeKey = Object.keys(CONFIG.SESSION_TYPES).find(key =>
-                        CONFIG.SESSION_TYPES[key] === sessionTypeValue
-                    ) || sessionTypeValue;
+                    // Get session type with robust property access
+                    const sessionTypeValue = this.cleanString(
+                        occasion.sessionType ||
+                        occasion['Session Type'] ||
+                        occasion['sessionType']
+                    ) || 'Unknown';
+
+                    // Convert session type: if it's already a key (like "5-1"), keep it
+                    // If it's a full name (like "1st/5th Monday"), convert to key
+                    let sessionTypeKey = sessionTypeValue;
+                    if (CONFIG.SESSION_TYPES[sessionTypeValue]) {
+                        // It's already a key like "5-1"
+                        sessionTypeKey = sessionTypeValue;
+                    } else {
+                        // It's a full name like "1st/5th Monday", find the key
+                        sessionTypeKey = Object.keys(CONFIG.SESSION_TYPES).find(key =>
+                            CONFIG.SESSION_TYPES[key] === sessionTypeValue
+                        ) || sessionTypeValue;
+                    }
+
+                    // Get lion in charge with robust property access
+                    const lionInCharge = this.cleanString(
+                        occasion.lionInCharge ||
+                        occasion['Lion in Charge'] ||
+                        occasion['lionInCharge']
+                    ) || 'N/A';
+
+                    // Get date with robust property access
+                    const dateValue = occasion.date || occasion['Date'] || occasion['date'];
+                    const validatedDate = this.validateDate(dateValue) || new Date().toISOString().split('T')[0];
+
+                    // Get status with robust property access
+                    const statusValue = this.cleanString(
+                        occasion.status ||
+                        occasion['Status'] ||
+                        occasion['status']
+                    ) || 'Draft';
 
                     return {
                         id: occasionId,
-                        date: this.validateDate(occasion['Date']) || new Date().toISOString().split('T')[0],
+                        date: validatedDate,
                         sessionType: sessionTypeKey,
-                        lionInCharge: this.cleanString(occasion['Lion in Charge']) || 'N/A',
-                        totalPlayers: parseInt(occasion['Total Players']) || 0,
+                        lionInCharge: lionInCharge,
+                        totalPlayers: parseInt(
+                            occasion.totalPlayers ||
+                            occasion['Total Players'] ||
+                            occasion['totalPlayers']
+                        ) || 0,
                         // For now, use 0 for revenue/profit until we have those fields calculated
                         totalRevenue: 0,
                         netProfit: 0,
-                        status: this.cleanString(occasion['Status']) || 'Draft',
+                        status: statusValue,
                         // Store additional fields for reference
                         progressive: {
                             jackpot: parseFloat(occasion['Progressive Jackpot']) || 0,
@@ -1234,14 +1270,22 @@
                 document.getElementById('occasion-modal-title').textContent = 'Edit Occasion';
                 document.getElementById('modal-date').value = occasion.date;
 
-                // Find the session type key that matches the stored value
-                const sessionTypeKey = Object.keys(CONFIG.SESSION_TYPES).find(key =>
-                    CONFIG.SESSION_TYPES[key] === occasion.sessionType
-                ) || occasion.sessionType;
+                // Session type is now stored as a key (like "5-1"), so use it directly
+                // If it's somehow a full name, convert it back to key
+                let sessionTypeKey = occasion.sessionType;
+                if (CONFIG.SESSION_TYPES[sessionTypeKey]) {
+                    // It's already a valid key
+                    sessionTypeKey = occasion.sessionType;
+                } else {
+                    // It might be a full name, find the key
+                    sessionTypeKey = Object.keys(CONFIG.SESSION_TYPES).find(key =>
+                        CONFIG.SESSION_TYPES[key] === occasion.sessionType
+                    ) || occasion.sessionType;
+                }
                 document.getElementById('modal-session-type').value = sessionTypeKey;
 
-                document.getElementById('modal-lion').value = occasion.lionInCharge;
-                document.getElementById('modal-status').value = occasion.status;
+                document.getElementById('modal-lion').value = occasion.lionInCharge || '';
+                document.getElementById('modal-status').value = occasion.status || 'Draft';
                 document.getElementById('occasion-modal').style.display = 'flex';
             }
         }
@@ -1428,6 +1472,45 @@
 
         showOccasionDetails(occasionData) {
             const occasion = occasionData.occasion || {};
+
+            // Apply the same robust data processing as the listing
+            const sessionTypeValue = this.cleanString(
+                occasion.sessionType ||
+                occasion['Session Type'] ||
+                occasion['sessionType']
+            ) || 'Unknown';
+
+            // Convert session type to display format
+            let displaySessionType = sessionTypeValue;
+            if (CONFIG.SESSION_TYPES[sessionTypeValue]) {
+                // It's a key like "5-1", convert to display name
+                displaySessionType = CONFIG.SESSION_TYPES[sessionTypeValue];
+            } else {
+                // It's already a display name or unknown
+                displaySessionType = sessionTypeValue;
+            }
+
+            const lionInCharge = this.cleanString(
+                occasion.lionInCharge ||
+                occasion['Lion in Charge'] ||
+                occasion['lionInCharge']
+            ) || 'N/A';
+
+            const dateValue = occasion.date || occasion['Date'] || occasion['date'];
+            const formattedDate = dateValue ? new Date(dateValue).toLocaleDateString() : 'N/A';
+
+            const statusValue = this.cleanString(
+                occasion.status ||
+                occasion['Status'] ||
+                occasion['status']
+            ) || 'N/A';
+
+            const totalPlayers = parseInt(
+                occasion.totalPlayers ||
+                occasion['Total Players'] ||
+                occasion['totalPlayers']
+            ) || 0;
+
             const detailsHtml = `
                 <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="occasion-details-modal">
                     <div class="card" style="max-width: 800px; width: 90%; max-height: 80%; overflow-y: auto;">
@@ -1439,18 +1522,18 @@
                         <div class="grid grid-2">
                             <div>
                                 <h4>Basic Information</h4>
-                                <p><strong>Date:</strong> ${occasion['Date'] ? new Date(occasion['Date']).toLocaleDateString() : 'N/A'}</p>
-                                <p><strong>Session Type:</strong> ${occasion['Session Type'] || 'N/A'}</p>
-                                <p><strong>Lion in Charge:</strong> ${occasion['Lion in Charge'] || 'N/A'}</p>
-                                <p><strong>Total Players:</strong> ${occasion['Total Players'] || 0}</p>
-                                <p><strong>Status:</strong> ${occasion['Status'] || 'N/A'}</p>
+                                <p><strong>Date:</strong> ${formattedDate}</p>
+                                <p><strong>Session Type:</strong> ${displaySessionType}</p>
+                                <p><strong>Lion in Charge:</strong> ${lionInCharge}</p>
+                                <p><strong>Total Players:</strong> ${totalPlayers}</p>
+                                <p><strong>Status:</strong> ${statusValue}</p>
                             </div>
                             <div>
                                 <h4>Financial Summary</h4>
-                                <p><strong>Total Revenue:</strong> $${(occasion['Total Revenue'] || 0).toLocaleString()}</p>
-                                <p><strong>Net Profit:</strong> $${(occasion['Net Profit'] || 0).toLocaleString()}</p>
-                                <p><strong>Progressive Jackpot:</strong> $${(occasion['Progressive Jackpot'] || 0).toLocaleString()}</p>
-                                <p><strong>Progressive Balls:</strong> ${occasion['Progressive Balls'] || 0}</p>
+                                <p><strong>Total Revenue:</strong> $0</p>
+                                <p><strong>Net Profit:</strong> $0</p>
+                                <p><strong>Progressive Jackpot:</strong> $${(parseFloat(occasion['Progressive Jackpot']) || 1000).toLocaleString()}</p>
+                                <p><strong>Progressive Balls:</strong> ${parseInt(occasion['Progressive Balls']) || 48}</p>
                             </div>
                         </div>
 

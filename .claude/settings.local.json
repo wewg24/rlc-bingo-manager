@@ -17,7 +17,9 @@
       "Bash(git checkout:*)",
       "Bash(npm install:*)",
       "Bash(clasp:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Read(//c/Users/bill.wiggins/OneDrive - Phelps County Bank/Lion's Club/Bingo/Screenshots/**)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []
