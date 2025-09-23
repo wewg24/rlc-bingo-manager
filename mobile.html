@@ -67,7 +67,7 @@
     // Load existing occasion data for editing
     async function loadExistingOccasion(occasionId) {
         try {
-            const response = await fetch(`${CONFIG.API_URL}?path=occasions&action=get&id=${occasionId}`);
+            const response = await fetch(`${CONFIG.API_URL}?path=occasion&id=${occasionId}`);
             const result = await response.json();
 
             console.log('API Response:', result);
