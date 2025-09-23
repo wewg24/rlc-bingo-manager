@@ -822,16 +822,23 @@
                 this.sessions = result.occasions.map(occasion => {
                     console.log('Processing occasion:', occasion); // Debug logging
 
+                    // Clean and validate the occasion ID
+                    const occasionId = occasion['Occasion ID'];
+                    if (!occasionId || typeof occasionId !== 'string') {
+                        console.warn('Invalid occasion ID:', occasionId);
+                        return null; // Skip invalid records
+                    }
+
                     return {
-                        id: occasion['Occasion ID'] || `temp_${Date.now()}`,
+                        id: occasionId,
                         date: this.validateDate(occasion['Date']) || new Date().toISOString().split('T')[0],
-                        sessionType: occasion['Session Type'] || 'Unknown',
-                        lionInCharge: occasion['Lion in Charge'] || 'N/A',
+                        sessionType: this.cleanString(occasion['Session Type']) || 'Unknown',
+                        lionInCharge: this.cleanString(occasion['Lion in Charge']) || 'N/A',
                         totalPlayers: parseInt(occasion['Total Players']) || 0,
                         // For now, use 0 for revenue/profit until we have those fields calculated
                         totalRevenue: 0,
                         netProfit: 0,
-                        status: occasion['Status'] || 'Draft',
+                        status: this.cleanString(occasion['Status']) || 'Draft',
                         // Store additional fields for reference
                         progressive: {
                             jackpot: parseFloat(occasion['Progressive Jackpot']) || 0,
@@ -845,13 +852,18 @@
                         created: occasion['Created'],
                         createdBy: occasion['Created By']
                     };
-                }).filter(session => session.id); // Remove any invalid sessions
+                }).filter(session => session !== null && session.id); // Remove any invalid sessions
             } else {
                 console.warn('Invalid API response:', result);
                 throw new Error('No valid occasions data received');
             }
 
             this.updateDashboardStats();
+        }
+
+        cleanString(value) {
+            if (!value) return '';
+            return String(value).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
         }
 
         validateDate(dateStr) {
@@ -1237,7 +1249,7 @@
             }
 
             try {
-                const action = this.currentEditingSessionId ? 'update-session' : 'save-session';
+                const action = 'save-session'; // Backend handles both create and update with same action
                 const response = await fetch(CONFIG.API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1323,8 +1335,9 @@
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: new URLSearchParams({
-                        action: 'delete-session',
-                        sessionId: sessionId
+                        action: 'save-session', // Use save with delete flag
+                        sessionId: sessionId,
+                        delete: 'true'
                     })
                 });
 
@@ -1881,8 +1894,9 @@
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: new URLSearchParams({
-                        action: 'update-pull-tab-game',
+                        action: 'add-pull-tab-game', // Use add with update flag
                         gameIndex: gameIndex,
+                        update: 'true',
                         data: JSON.stringify(gameData)
                     })
                 });
