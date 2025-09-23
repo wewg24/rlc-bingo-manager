@@ -213,9 +213,9 @@ function saveOccasionInfo() {
 
     window.app.data.occasion = {
         date: document.getElementById('session-date')?.value,
-        sessionType: sessionTypeLabel, // Backend expects the full label for Google Sheets
+        sessionType: sessionTypeKey, // Backend expects the session code (5-1, 6-2, etc.)
         lionInCharge: document.getElementById('lion-charge')?.value,
-        totalPeople: parseInt(document.getElementById('total-people')?.value) || 0, // Backend expects 'totalPeople'
+        totalPlayers: parseInt(document.getElementById('total-people')?.value) || 0, // Backend expects 'totalPlayers'
         birthdays: parseInt(document.getElementById('birthdays')?.value) || 0,
         createdBy: 'Mobile Entry' // Backend expects this field
     };
@@ -425,12 +425,9 @@ function loadOccasionInfo() {
     const data = window.app.data.occasion;
     if (data.date) document.getElementById('session-date').value = data.date;
 
-    // Handle session type mapping - find the key for the stored label value
+    // Handle session type - sessionType is now stored as key (5-1, 6-2, etc.)
     if (data.sessionType) {
-        const sessionTypeKey = Object.keys(CONFIG.SESSION_TYPES).find(key =>
-            CONFIG.SESSION_TYPES[key] === data.sessionType
-        ) || data.sessionType;
-        document.getElementById('session-type').value = sessionTypeKey;
+        document.getElementById('session-type').value = data.sessionType;
     }
 
     if (data.lionInCharge) document.getElementById('lion-charge').value = data.lionInCharge;
