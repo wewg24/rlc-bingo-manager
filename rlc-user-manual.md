@@ -95,7 +95,7 @@ The system automatically determines your session type based on the date:
 The wizard guides you through six logical steps that match your actual bingo session workflow:
 
 ```
-1. Session Info → 2. Paper Sales → 3. Game Results
+1. Occasion Info → 2. Paper Sales → 3. Game Results
       ↓                ↓                ↓
    Basic Info      Inventory        Prize Tracking
    Progressive     POS Sales        17 Games
@@ -118,7 +118,7 @@ You can always go back to previous steps to make corrections.
 
 ## 4. Step-by-Step Instructions
 
-### Step 1: Session Information
+### Step 1: Occasion Information
 
 This first step captures the basic occasion details and progressive game setup.
 
@@ -388,7 +388,7 @@ Access reports through the menu (☰):
 - Includes all required fields
 - PDF format for printing/filing
 
-**Session Summary**: Internal report showing:
+**Occasion Summary**: Internal report showing:
 - Complete financial reconciliation
 - Game-by-game analysis
 - Pull-tab performance
@@ -453,7 +453,7 @@ If you encounter issues:
 
 ## 8. Quick Reference Guide
 
-### Session Start Checklist
+### Occasion Start Checklist
 - [ ] Navigate to the application URL
 - [ ] Check theme preference (dark/light)
 - [ ] Note connection status
@@ -461,7 +461,7 @@ If you encounter issues:
 
 ### Wizard Steps Quick Reference
 
-**Step 1 - Session Info**
+**Step 1 - Occasion Info**
 - Date → Session auto-selects
 - Enter Lion in Charge and attendance
 - Record birthdays for BOGOs
