@@ -1,16 +1,14 @@
 {
-    "version": "11.0.0",
-    "released": "2025-01-17",
+    "version": "11.1.0",
+    "released": "2025-09-23",
     "changes": [
-        "Fixed date picker initialization",
-        "Added auto-session selection for Mondays",
-        "Added Daubers to POS sales",
-        "Reordered POS items per printout format",
-        "Fixed game winner calculations",
-        "Fixed pull-tab library population",
-        "Added delete row functionality",
-        "Added special event library",
-        "Fixed financial summary calculations",
-        "Fixed occasion submission"
+        "MAJOR: Migrated from Google Sheets to JSON file storage",
+        "MAJOR: Admin interface now redirects to mobile for create/edit",
+        "Added edit parameter handling to mobile.html",
+        "Enhanced mobile interface to load existing occasion data",
+        "Fixed data type preservation (session types stay as entered)",
+        "Improved data integrity with JSON storage",
+        "Updated documentation for new workflow",
+        "Fixed edit workflow with proper parameter handling"
     ]
 }

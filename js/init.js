@@ -1,11 +1,11 @@
-// init.js - Complete Initialization Fix v11.0.4
+// init.js - Complete Initialization Fix v11.1.0
 // This file ensures proper initialization order and fixes all missing references
 // Add as a new file and include AFTER all other scripts in index.html
 
 (function() {
     'use strict';
     
-    console.log('RLC Bingo Manager - Initializing v11.0.4');
+    console.log('RLC Bingo Manager - Initializing v11.1.0');
     
     // 1. ENSURE BINGO APP IS INSTANTIATED
     function ensureAppExists() {

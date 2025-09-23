@@ -13,7 +13,7 @@ A modern Progressive Web Application (PWA) for managing bingo occasions with com
 - **🧙 Wizard-Based Workflow**: 6-step guided data entry process
 - **🌓 Dark/Light Mode**: Automatic theme switching with user preference
 - **📱 Mobile-First Design**: Touch-optimized with 44px minimum targets
-- **☁️ Cloud Sync**: Automatic bidirectional synchronization with Google Sheets
+- **☁️ Cloud Storage**: Secure JSON file storage in Google Drive with real-time access
 - **📸 Photo Documentation**: Integrated camera support for winner documentation
 - **💰 Financial Tracking**: Complete money counting and deposit reconciliation
 - **📊 MGC Compliance**: Built-in Missouri Gaming Commission reporting
@@ -42,10 +42,10 @@ A modern Progressive Web Application (PWA) for managing bingo occasions with com
 1. **Google Apps Script Backend Setup**
    ```javascript
    // 1. Open Google Apps Script project
-   // 2. Replace Main.gs with provided v11.0.4 code
-   // 3. Keep existing PullTabLibrary.gs
-   // 4. Run setup() function once
-   // 5. Deploy as Web App
+   // 2. Replace Main.gs with JSON storage version
+   // 3. Configure Google Drive folder IDs in CONFIG
+   // 4. Run setup() function once to create folder structure
+   // 5. Deploy as Web App with Drive API access
    // 6. Copy deployment URL
    ```
 
@@ -100,15 +100,12 @@ Frontend (PWA) - Wizard Interface
    (Cache v11.0.4)
           ↓
     Google Apps Script Backend
-    ├── Occasions Sheet
-    ├── SessionGames Sheet
-    ├── PullTabLibrary (152 games)
-    ├── PullTabUsage Sheet
-    ├── PaperBingo Sheet
-    ├── POSDoorSales Sheet
-    ├── Electronic Sheet
-    ├── MoneyCount Sheet
-    └── FinancialSummary Sheet
+    ├── JsonDataManager (JSON file storage)
+    ├── Google Drive Integration
+    │   ├── Occasions JSON files (individual records)
+    │   ├── PullTabLibrary.json (152 games)
+    │   └── Structured folder organization
+    └── Legacy Google Sheets (migration support)
 ```
 
 ## 📁 Project Structure
@@ -201,8 +198,9 @@ Version 11.0.4 implements intelligent cache busting:
 ### Data Integrity
 - Local draft saving every field change
 - Sync queue for offline changes
-- Conflict resolution for multi-device edits
-- Complete audit trail in Google Sheets
+- JSON file storage preserves exact data types
+- Complete audit trail in Google Drive
+- No data conversion issues (vs. Google Sheets auto-formatting)
 
 ### MGC Compliance
 - Session-based game configurations
@@ -223,48 +221,56 @@ The system now includes automatic cache busting. Users only need to refresh once
 | Data not saving | Verify browser storage permissions |
 | Progressive not calculating | Enter all required fields |
 
-## 📊 Database Schema
+## 📊 Data Storage Architecture
 
-### Main Occasion Record
+### JSON File Storage
+The system now uses individual JSON files stored in Google Drive for better data integrity:
+
+### Main Occasion Record (stored as `{occasionId}.json`)
 ```javascript
 {
-  occasionId: 'OCC_[timestamp]',
-  date: '2025-09-17',
-  sessionType: '5-1',
-  lionInCharge: 'John Smith',
-  totalPeople: 150,
-  birthdays: 3,
-  progressive: {
-    jackpot: 1500,
-    ballsNeeded: 48,
-    actualBalls: 50,
-    actualPrize: 200,
-    checkPayment: false
-  }
+  id: 'OCC_[timestamp]',
+  occasion: {
+    date: '2025-09-17',
+    sessionType: '5-1',  // Preserved exactly as entered
+    lionInCharge: 'John Smith',
+    totalPeople: 150,
+    birthdays: 3,
+    progressive: {
+      jackpot: 1500,
+      ballsNeeded: 48,
+      actualBalls: 50,
+      prizeAwarded: 200,
+      paidByCheck: false
+    }
+  },
+  paperBingo: { /* paper sales data */ },
+  games: [ /* session games array */ ],
+  pullTabs: { /* pull-tab tracking */ },
+  moneyCount: { /* denomination counts */ },
+  financial: { /* calculated summaries */ }
 }
 ```
 
-### Complete Data Structure
-The system tracks:
-- Paper inventory (start/end/free/sold)
-- POS door sales (10 categories)
-- Electronic machine rentals
-- 17 session games with winners
-- Pull-tab games with serial tracking
-- Complete money denomination counts
-- Financial summary with reconciliation
+### Storage Benefits
+- **Data Type Preservation**: Session types like "1st/5th Monday" stay as text
+- **Individual Files**: Each occasion is a separate JSON file
+- **No Auto-Conversion**: Unlike Google Sheets, data stays exactly as entered
+- **Better Performance**: Direct file access vs. spreadsheet API calls
+- **Simplified Backup**: Standard file-based backup strategies
 
 ## 🔄 Version History
 
 ### v11.0.4 (Current)
-- Fixed dark mode readability issues
-- Implemented cache busting strategy
-- Added version checking system
-- Enhanced service worker update logic
+- **MAJOR**: Migrated from Google Sheets to JSON file storage
+- **BREAKING**: Admin interface now redirects to mobile for create/edit
+- Fixed data corruption issues with session types
+- Enhanced edit workflow with parameter handling
+- Preserved exact data entry without auto-conversion
+- Improved data integrity and performance
+- Fixed cache busting and dark mode issues
 - Complete wizard-based 6-step workflow
-- Occasions list view for historical data
 - Enhanced navigation with progress indicators
-- Real-time financial variance detection
 
 ### v11.0.1
 - Implemented complete wizard UI
@@ -329,7 +335,8 @@ MIT License - See [LICENSE](LICENSE) file for details.
 ### Quick Links
 - **Production URL**: https://wewg24.github.io/rlc-bingo-manager/
 - **Backend Script**: [Google Apps Script Project](https://script.google.com/home/projects/1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU)
-- **Data Spreadsheet**: [RLC Bingo Manager Database](https://docs.google.com/spreadsheets/d/1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc)
+- **Data Storage**: JSON files in Google Drive (organized by occasion)
+- **Legacy Spreadsheet**: [RLC Bingo Manager Database](https://docs.google.com/spreadsheets/d/1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc) (migration support)
 
 ---
 

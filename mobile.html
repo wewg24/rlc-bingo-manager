@@ -13,9 +13,9 @@
     <meta http-equiv="Expires" content="0">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=11.0.0">
-    <link rel="stylesheet" href="css/wizard.css?v=11.0.0">
-    <link rel="stylesheet" href="css/dark-mode.css?v=11.0.0">
+    <link rel="stylesheet" href="css/style.css?v=11.1.0">
+    <link rel="stylesheet" href="css/wizard.css?v=11.1.0">
+    <link rel="stylesheet" href="css/dark-mode.css?v=11.1.0">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -45,8 +45,93 @@
         }
     };
 
+    // Check for edit parameter and load existing occasion data
+    function checkForEditMode() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const editOccasionId = urlParams.get('edit');
+
+        if (editOccasionId) {
+            console.log('Edit mode detected for occasion:', editOccasionId);
+            window.app.editMode = true;
+            window.app.editOccasionId = editOccasionId;
+            loadExistingOccasion(editOccasionId);
+
+            // Update header to show edit mode
+            const headerText = document.querySelector('.app-header p');
+            if (headerText) {
+                headerText.textContent = `Editing Occasion: ${editOccasionId}`;
+            }
+        }
+    }
+
+    // Load existing occasion data for editing
+    async function loadExistingOccasion(occasionId) {
+        try {
+            const response = await fetch(`${CONFIG.API_URL}?path=occasions&action=get&id=${occasionId}`);
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                const occasionData = result.data;
+                console.log('Loaded occasion data:', occasionData);
+
+                // Populate the form with existing data
+                populateFormWithData(occasionData);
+
+                // Store the original data in app.data
+                window.app.data = occasionData;
+
+                // Update submit button text
+                const submitBtn = document.querySelector('button[onclick="submitOccasion()"]');
+                if (submitBtn) {
+                    submitBtn.textContent = 'Update Occasion';
+                }
+            } else {
+                console.error('Failed to load occasion:', result.error);
+                alert('Failed to load occasion data for editing.');
+            }
+        } catch (error) {
+            console.error('Error loading occasion:', error);
+            alert('Error loading occasion data. Please try again.');
+        }
+    }
+
+    // Populate form fields with existing occasion data
+    function populateFormWithData(data) {
+        // Occasion info
+        if (data.occasion) {
+            const occasion = data.occasion;
+            if (occasion.date) document.getElementById('occasion-date').value = occasion.date;
+            if (occasion.sessionType) document.getElementById('session-type').value = occasion.sessionType;
+            if (occasion.lionInCharge) document.getElementById('lion-charge').value = occasion.lionInCharge;
+            if (occasion.totalPeople) document.getElementById('total-people').value = occasion.totalPeople;
+            if (occasion.birthdays) document.getElementById('birthdays').value = occasion.birthdays;
+
+            // Progressive game data
+            if (occasion.progressive) {
+                const prog = occasion.progressive;
+                if (prog.jackpot) document.getElementById('prog-jackpot').value = prog.jackpot;
+                if (prog.ballsNeeded) document.getElementById('prog-balls').value = prog.ballsNeeded;
+                if (prog.consolation) document.getElementById('prog-consolation').value = prog.consolation;
+                if (prog.actualBalls) document.getElementById('prog-actual-balls').value = prog.actualBalls;
+                if (prog.prizeAwarded) document.getElementById('prog-prize').value = prog.prizeAwarded;
+                if (prog.paidByCheck) document.getElementById('prog-check').checked = prog.paidByCheck;
+            }
+        }
+
+        // Pull-tab lion
+        if (data.pullTabs && data.pullTabs.lionInCharge) {
+            document.getElementById('pt-lion').value = data.pullTabs.lionInCharge;
+        }
+
+        // Money count data will be populated by other scripts when those steps are reached
+        console.log('Form populated with existing data');
+    }
+
     // Fix hamburger menu
     document.addEventListener('DOMContentLoaded', function() {
+        // Check for edit mode first
+        checkForEditMode();
+
         const menuToggle = document.getElementById('menu-toggle');
         const sideMenu = document.getElementById('side-menu');
         const overlay = document.getElementById('overlay');
@@ -601,12 +686,12 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/config.js?v=11.0.0"></script>
-    <script src="js/app.js?v=11.0.0"></script>
-    <script src="js/wizard.js?v=11.0.0"></script>
-    <script src="js/calculations.js?v=11.0.0"></script>
-    <script src="js/offline.js?v=11.0.0"></script>
-    <script src="js/sync.js?v=11.0.0"></script>
-    <script src="js/init.js?v=11.0.0"></script>
+    <script src="js/config.js?v=11.1.0"></script>
+    <script src="js/app.js?v=11.1.0"></script>
+    <script src="js/wizard.js?v=11.1.0"></script>
+    <script src="js/calculations.js?v=11.1.0"></script>
+    <script src="js/offline.js?v=11.1.0"></script>
+    <script src="js/sync.js?v=11.1.0"></script>
+    <script src="js/init.js?v=11.1.0"></script>
 </body>
 </html>

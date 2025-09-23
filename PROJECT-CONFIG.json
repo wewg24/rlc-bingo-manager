@@ -2,7 +2,7 @@
   "project": {
     "name": "RLC Bingo Manager",
     "description": "Missouri Gaming Commission compliant bingo and pull-tab management system for Rolla Lions Club",
-    "version": "11.0.0",
+    "version": "11.1.0",
     "owner": "Rolla Lions Club",
     "developer": "bill.wiggins@phelps-county-bank.com"
   },
@@ -39,11 +39,11 @@
       "key_files": ["Main.js", "DataPersistence.js", "DraftManagement.js", "ErrorHandler.js"]
     },
     "data_storage": {
-      "technology": "Google Sheets",
-      "sheets": [
-        "Occasions", "SessionGames", "PullTabLibrary", "PullTabUsage",
-        "PaperBingo", "POSDoorSales", "Electronic", "MoneyCount",
-        "FinancialSummary", "Metrics"
+      "technology": "JSON files in Google Drive",
+      "primary_storage": "Individual JSON files per occasion",
+      "legacy_storage": "Google Sheets (migration support only)",
+      "drive_folder_structure": [
+        "Occasions (JSON files)", "PullTabLibrary.json", "Reports", "Photos"
       ]
     }
   },

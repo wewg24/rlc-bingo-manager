@@ -19,11 +19,13 @@
 The RLC Bingo Manager is a modern Progressive Web Application designed specifically for the Rolla Lions Club to manage Monday night bingo occasions. This wizard-based system guides you through each step of recording a bingo occasion, ensuring complete and accurate data collection for Missouri Gaming Commission compliance.
 
 ### What's New in Version 11.0.4
+- **Unified Create/Edit Workflow**: Admin interface now redirects to mobile version for complete data entry
+- **Enhanced Edit Mode**: Mobile interface automatically loads existing data when editing occasions
+- **JSON Storage**: Migrated from Google Sheets to JSON files for better data integrity
+- **Preserved Data Types**: Session types stay exactly as entered (no auto-conversion issues)
 - **Wizard Interface**: 6-step guided workflow that matches your actual occasion process
 - **Dark/Light Mode**: Easy on the eyes with automatic theme switching
 - **Smart Caching**: Never see outdated versions again with intelligent cache management
-- **Enhanced Calculations**: Automatic BOGO processing and progressive prize calculations
-- **Improved Offline**: Complete functionality without internet connection
 
 ### Key Features
 ✅ **Step-by-Step Guidance**: Never miss important data with our wizard workflow  
@@ -40,11 +42,19 @@ The RLC Bingo Manager is a modern Progressive Web Application designed specifica
 
 ### Accessing the Application
 
-#### First Time Setup
-1. Open your web browser (Chrome or Edge recommended)
-2. Navigate to: `https://wewg24.github.io/rlc-bingo-manager/`
-3. Bookmark the page for quick access
-4. The application will load and cache itself for offline use
+#### Two Ways to Use the System
+
+**Admin Interface** (for viewing and management):
+1. Navigate to: `https://wewg24.github.io/rlc-bingo-manager/`
+2. View list of existing occasions
+3. Click "Create New Occasion" or "Edit" to start data entry
+4. System automatically redirects to mobile wizard for data entry
+
+**Mobile Interface** (for data entry):
+1. Navigate to: `https://wewg24.github.io/rlc-bingo-manager/mobile.html`
+2. Complete occasion data through 6-step wizard
+3. Can be accessed directly or via admin interface redirects
+4. Handles both new occasions and editing existing ones
 
 #### Installing as an App (Recommended)
 
@@ -225,6 +235,13 @@ For each game played:
 4. The **Total** column shows the total payout for that game
 5. Check the **Check** box if any winner was paid by check
 
+#### Edit Mode Behavior
+When editing an existing occasion:
+- All previously entered data automatically loads into the form
+- Header shows "Editing Occasion: [ID]" to confirm edit mode
+- Submit button changes to "Update Occasion"
+- All data preserves exactly as originally entered
+
 #### Special Games
 
 **Game 13 - Progressive**: This automatically links to the progressive prize calculated in Step 1. The prize amount updates based on whether the jackpot was won and at how many balls.
@@ -328,10 +345,12 @@ Key performance indicators:
 
 #### Action Buttons
 
-- **Submit Occasion**: Saves all data to the cloud (or queue if offline)
+- **Submit Occasion** / **Update Occasion**: Saves all data to JSON files in Google Drive
 - **Save Draft**: Saves current progress locally
 - **Print Report**: Generates a printable version
 - **Export Data**: Downloads data as JSON file
+
+**Note**: In edit mode, the submit button displays "Update Occasion" to clearly indicate you're modifying existing data.
 
 ---
 
@@ -381,7 +400,13 @@ The system helps maintain MGC compliance by:
 
 ### Available Reports
 
-Access reports through the menu (☰):
+Access reports through the admin interface at the main URL:
+
+**Occasions List**: View all completed occasions
+- Click any occasion to view details
+- Edit button opens mobile interface with existing data
+- Delete functionality for corrections
+- Search and filter capabilities
 
 **MGC Form 104**: Official occasion report for state filing
 - Generated from completed occasion data
@@ -393,12 +418,6 @@ Access reports through the menu (☰):
 - Game-by-game analysis
 - Pull-tab performance
 - Variance explanations
-
-**Monthly Reports**: Aggregate data for board meetings
-- Total attendance trends
-- Revenue analysis
-- Profit margins
-- Progressive status
 
 ### Data Export
 
@@ -461,6 +480,18 @@ If you encounter issues:
 
 ### Wizard Steps Quick Reference
 
+**Creating New Occasions**
+- Start from admin interface
+- Click "Create New Occasion"
+- System opens mobile wizard
+- Complete all 6 steps
+
+**Editing Existing Occasions**
+- Find occasion in admin list
+- Click "Edit" button
+- System opens mobile wizard with existing data
+- Make changes and update
+
 **Step 1 - Occasion Info**
 - Date → Session auto-selects
 - Enter Lion in Charge and attendance
@@ -491,7 +522,7 @@ If you encounter issues:
 **Step 6 - Review**
 - Check all totals
 - Review over/short
-- Submit occasion
+- Submit or update occasion
 
 ### Keyboard Shortcuts
 - **Tab**: Next field
