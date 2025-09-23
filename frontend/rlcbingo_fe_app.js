@@ -23,6 +23,20 @@ class RLCBingoAPI {
   }
 
   /**
+   * Initialize API with authentication
+   */
+  async initWithAuth() {
+    if (typeof RLCBingoAuth !== 'undefined') {
+      this.token = await RLCBingoAuth.getToken();
+      if (!this.token) {
+        throw new Error('GitHub token required for API access');
+      }
+    } else {
+      throw new Error('RLCBingoAuth not loaded');
+    }
+  }
+
+  /**
    * Save occasion data by triggering GitHub Actions workflow
    */
   async saveOccasion(occasionData) {
