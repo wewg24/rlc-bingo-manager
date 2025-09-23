@@ -1,8 +1,8 @@
 Google Sheets ID: 1Tj9s4vol2nELlz-znKz3XMjn5Lv8E_zqc7E2ngRSGIc
 Project ID: 1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU
-Version 25 on Sep 23, 2025, 10:36 AM
+Version 26 on Sep 23, 2025, 12:16 PM
 Deployment ID: AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A
 Web app URL: https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec
 Execute as: Me(wewg24@gmail.com)
 Who has access: Anyone
-Library: https://script.google.com/macros/library/d/1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU/25
+Library: https://script.google.com/macros/library/d/1W8URFctBaFd98FQpdzi7tI8h8OnUPi1rT-Et_SJRkKiMuVKra34pN5hU/26
