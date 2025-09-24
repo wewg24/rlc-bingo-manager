@@ -6,7 +6,7 @@
 // Prevent redeclaration if already loaded
 if (typeof RLCBingoAuth === 'undefined') {
 
-class RLCBingoAuth {
+  window.RLCBingoAuth = class RLCBingoAuth {
   constructor() {
     this.tokenKey = 'rlc_bingo_github_token';
   }
@@ -128,14 +128,9 @@ class RLCBingoAuth {
       return false;
     }
   }
-}
+  }; // End of RLCBingoAuth class
 
-// Global auth instance
-const RLCBingoAuthInstance = new RLCBingoAuth();
+  // Global auth instance
+  window.RLCBingoAuthInstance = new RLCBingoAuth();
 
 } // End of RLCBingoAuth undefined check
-
-// Ensure instance exists even if class was already defined
-if (typeof RLCBingoAuthInstance === 'undefined') {
-  const RLCBingoAuthInstance = new RLCBingoAuth();
-}
