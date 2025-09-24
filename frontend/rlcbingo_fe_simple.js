@@ -331,6 +331,7 @@ async function submitOccasion() {
   }
 
   isSubmitting = true;
+  console.log('Starting submission process...');
 
   try {
     // Show loading
@@ -379,6 +380,29 @@ async function submitOccasion() {
                    document.querySelector('button[onclick="saveOccasion()"]');
     if (saveBtn) saveBtn.disabled = false;
   }
+}
+
+// Button click handler with extra protection
+function handleSubmit(button) {
+  if (isSubmitting) {
+    console.log('Button clicked but already submitting');
+    return false;
+  }
+
+  // Immediately disable the button
+  button.disabled = true;
+  button.textContent = 'Saving...';
+
+  // Call the actual submit function
+  submitOccasion().finally(() => {
+    // Re-enable button when done (if still exists)
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Save Occasion';
+    }
+  });
+
+  return false; // Prevent any default behavior
 }
 
 // Alias for compatibility
