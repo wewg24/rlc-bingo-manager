@@ -3,6 +3,8 @@ name: Process RLC Bingo Occasion Data
 on:
   repository_dispatch:
     types: [save_occasion, delete_occasion]
+  issues:
+    types: [opened]
   workflow_dispatch:
     inputs:
       test_data:
@@ -31,8 +33,29 @@ jobs:
         const path = require('path');
 
         // Get event data
-        const eventType = '${{ github.event.action }}' || 'save_occasion';
-        const payload = ${{ toJSON(github.event.client_payload) }} || {};
+        let eventType = '${{ github.event.action }}' || 'save_occasion';
+        let payload = ${{ toJSON(github.event.client_payload) }} || {};
+
+        // Handle issues-based trigger
+        if ('${{ github.event.issue }}' && '${{ github.event.issue }}'.trim() !== '') {
+          const issue = ${{ toJSON(github.event.issue) }};
+          if (issue.labels && issue.labels.some(l => l.name === 'data-save')) {
+            eventType = 'save_occasion';
+            // Extract JSON from issue body
+            const match = issue.body.match(/\`\`\`json\n([\s\S]*?)\n\`\`\`/);
+            if (match) {
+              try {
+                payload = JSON.parse(match[1]);
+              } catch (e) {
+                console.error('Failed to parse JSON from issue:', e);
+                process.exit(1);
+              }
+            }
+          } else {
+            console.log('Issue not related to data save, skipping');
+            process.exit(0);
+          }
+        }
 
         console.log('Processing event:', eventType);
         console.log('Payload:', JSON.stringify(payload, null, 2));

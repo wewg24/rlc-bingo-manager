@@ -35,7 +35,16 @@ async function saveOccasion(occasionData) {
   try {
     console.log('Saving occasion:', occasionData);
 
-    const response = await fetch(`${GITHUB_CONFIG.apiUrl}/dispatches`, {
+    // Use GitHub Issues API as a workaround for CORS restrictions
+    const issueTitle = `Occasion Save Request: ${occasionData.date} - ${occasionData.sessionType}`;
+    const issueBody = `\`\`\`json
+${JSON.stringify(occasionData, null, 2)}
+\`\`\`
+
+**Event Type:** save_occasion
+**Timestamp:** ${new Date().toISOString()}`;
+
+    const response = await fetch(`${GITHUB_CONFIG.apiUrl}/issues`, {
       method: 'POST',
       headers: {
         'Authorization': `token ${GITHUB_CONFIG.token}`,
@@ -43,14 +52,30 @@ async function saveOccasion(occasionData) {
         'Accept': 'application/vnd.github.v3+json'
       },
       body: JSON.stringify({
-        event_type: 'save_occasion',
-        client_payload: occasionData
+        title: issueTitle,
+        body: issueBody,
+        labels: ['data-save', 'auto-generated']
       })
     });
 
     if (!response.ok) {
       throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
     }
+
+    const issue = await response.json();
+
+    // Close the issue immediately since we only used it as a trigger
+    await fetch(`${GITHUB_CONFIG.apiUrl}/issues/${issue.number}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `token ${GITHUB_CONFIG.token}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      body: JSON.stringify({
+        state: 'closed'
+      })
+    });
 
     return {
       success: true,
