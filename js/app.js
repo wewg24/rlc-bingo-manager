@@ -25,7 +25,7 @@ class BingoApp {
             financial: {}
         };
         
-        // Pull Tab Library array - will be populated from Google Sheets data
+        // Pull Tab Library array - will be populated from JSON data
         this.pullTabLibrary = [];
         
         // Application state
@@ -130,8 +130,7 @@ class BingoApp {
     }
     
     /**
-     * Display pull-tab library with proper Google Sheets data mapping
-     * Maps Google Sheets columns: Game, Form, Count, Price, Profit
+     * Display pull-tab library with JSON data mapping
      */
     showPullTabLibrary() {
         this.closeMenu();
@@ -142,7 +141,7 @@ class BingoApp {
         // Generate library table HTML with proper field mapping
         const libraryHTML = this.pullTabLibrary && this.pullTabLibrary.length > 0
             ? this.pullTabLibrary.slice(0, 50).map(game => {
-                // Map Google Sheets data to display values
+                // Map JSON data to display values
                 const gameName = game.name || '';
                 const formNumber = game.form || '';
                 const ticketCount = game.count || 0;
@@ -426,7 +425,7 @@ class BingoApp {
         this.initializePaperSalesTable();
         this.initializePOSSalesTable();
         
-        // Load pull-tab library with Google Sheets column mapping
+        // Load pull-tab library from JSON API
         await this.loadPullTabLibrary();
         
         // Setup online/offline detection
@@ -1029,7 +1028,7 @@ class BingoApp {
     
     /**
      * Load pull-tab library from backend or cache
-     * Maps Google Sheets columns to expected structure
+     * Maps JSON data to expected structure
      */
     async loadPullTabLibrary(forceReload = false) {
         try {
@@ -1037,7 +1036,7 @@ class BingoApp {
             const data = await response.json();
             
             if (data.success && data.games) {
-                // Store library with proper mapping for Google Sheets data
+                // Store library with proper JSON data mapping
                 this.pullTabLibrary = data.games.map(game => {
                     // Handle both array and object formats from backend
                     if (Array.isArray(game)) {
