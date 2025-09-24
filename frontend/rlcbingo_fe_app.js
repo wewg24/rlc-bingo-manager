@@ -33,6 +33,13 @@ class RLCBingoAPI {
       return;
     }
 
+    // Wait for auth instance to be available
+    let retries = 0;
+    while (typeof RLCBingoAuthInstance === 'undefined' && retries < 50) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      retries++;
+    }
+
     // Fallback to auth instance if available
     if (typeof RLCBingoAuthInstance !== 'undefined') {
       this.token = await RLCBingoAuthInstance.getToken();
@@ -40,7 +47,7 @@ class RLCBingoAPI {
         throw new Error('GitHub token required for API access');
       }
     } else {
-      throw new Error('No authentication method available');
+      throw new Error('RLCBingoAuth not loaded after waiting');
     }
   }
 

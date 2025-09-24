@@ -3,6 +3,9 @@
  * Manages GitHub token for API access
  */
 
+// Prevent redeclaration if already loaded
+if (typeof RLCBingoAuth === 'undefined') {
+
 class RLCBingoAuth {
   constructor() {
     this.tokenKey = 'rlc_bingo_github_token';
@@ -129,3 +132,10 @@ class RLCBingoAuth {
 
 // Global auth instance
 const RLCBingoAuthInstance = new RLCBingoAuth();
+
+} // End of RLCBingoAuth undefined check
+
+// Ensure instance exists even if class was already defined
+if (typeof RLCBingoAuthInstance === 'undefined') {
+  const RLCBingoAuthInstance = new RLCBingoAuth();
+}
