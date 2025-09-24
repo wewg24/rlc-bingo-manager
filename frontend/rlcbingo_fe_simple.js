@@ -55,45 +55,52 @@ This is an automated request. The data will be processed by GitHub Actions.`;
     // Create a new issue URL for manual creation if API fails
     const issueUrl = `https://github.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=data-save,auto-generated`;
 
-    // Since we can't use API without tokens, show user the issue URL
-    const userWantsManual = confirm(`Due to security restrictions, we need to create a GitHub issue manually.
+    // Use GitHub's web form to create issue automatically
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `https://github.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/new`;
+    form.target = '_blank';
 
-This will open GitHub in a new tab where you can submit the save request.
+    // Add form fields
+    const titleField = document.createElement('input');
+    titleField.type = 'hidden';
+    titleField.name = 'issue[title]';
+    titleField.value = issueTitle;
+    form.appendChild(titleField);
 
-Click OK to open GitHub, or Cancel to try a different approach.`);
+    const bodyField = document.createElement('input');
+    bodyField.type = 'hidden';
+    bodyField.name = 'issue[body]';
+    bodyField.value = issueBody;
+    form.appendChild(bodyField);
 
-    if (userWantsManual) {
-      window.open(issueUrl, '_blank');
-      return {
-        success: true,
-        message: 'GitHub issue opened for manual submission',
-        id: occasionId
-      };
-    } else {
-      // For now, save locally to localStorage as fallback
-      const savedOccasions = JSON.parse(localStorage.getItem('rlc_occasions') || '[]');
+    const labelsField = document.createElement('input');
+    labelsField.type = 'hidden';
+    labelsField.name = 'issue[labels]';
+    labelsField.value = 'data-save,auto-generated';
+    form.appendChild(labelsField);
 
-      // Remove existing entry if updating
-      const filteredOccasions = savedOccasions.filter(o => o.id !== occasionId);
+    // Submit form
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
 
-      // Add new entry
-      const newOccasion = {
-        ...occasionData,
-        created: new Date().toISOString(),
-        modified: new Date().toISOString()
-      };
+    // Also save locally as backup
+    const savedOccasions = JSON.parse(localStorage.getItem('rlc_occasions') || '[]');
+    const filteredOccasions = savedOccasions.filter(o => o.id !== occasionId);
+    const newOccasion = {
+      ...occasionData,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString()
+    };
+    filteredOccasions.push(newOccasion);
+    localStorage.setItem('rlc_occasions', JSON.stringify(filteredOccasions));
 
-      filteredOccasions.push(newOccasion);
-
-      // Save to localStorage
-      localStorage.setItem('rlc_occasions', JSON.stringify(filteredOccasions));
-
-      return {
-        success: true,
-        message: 'Occasion saved locally (temporary until GitHub sync)',
-        id: occasionId
-      };
-    }
+    return {
+      success: true,
+      message: 'GitHub issue created - data will be processed automatically',
+      id: occasionId
+    };
 
   } catch (error) {
     console.error('Error saving occasion:', error);

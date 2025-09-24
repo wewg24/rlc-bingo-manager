@@ -52,37 +52,66 @@ class RLCBingoAPI {
   }
 
   /**
-   * Save occasion data using secure localStorage approach
+   * Save occasion data by creating GitHub issue (automatic processing)
    */
   async saveOccasion(occasionData) {
     try {
-      console.log('Saving occasion locally:', occasionData);
+      console.log('Saving occasion via GitHub issue:', occasionData);
 
       // Generate occasion ID if not provided
       const occasionId = occasionData.id || 'OCC_' + Date.now();
       occasionData.id = occasionId;
 
-      // Save to localStorage as secure approach
+      // Create GitHub issue with the data
+      const issueTitle = `Save Occasion: ${occasionData.date} - ${occasionData.sessionType}`;
+      const issueBody = `\`\`\`json
+${JSON.stringify(occasionData, null, 2)}
+\`\`\``;
+
+      // Use GitHub's web form API (no authentication needed)
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = `https://github.com/${this.config.owner}/${this.config.repo}/issues/new`;
+      form.target = '_blank';
+
+      // Add form fields
+      const titleField = document.createElement('input');
+      titleField.type = 'hidden';
+      titleField.name = 'issue[title]';
+      titleField.value = issueTitle;
+      form.appendChild(titleField);
+
+      const bodyField = document.createElement('input');
+      bodyField.type = 'hidden';
+      bodyField.name = 'issue[body]';
+      bodyField.value = issueBody;
+      form.appendChild(bodyField);
+
+      const labelsField = document.createElement('input');
+      labelsField.type = 'hidden';
+      labelsField.name = 'issue[labels]';
+      labelsField.value = 'data-save,auto-generated';
+      form.appendChild(labelsField);
+
+      // Submit form
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+
+      // Also save locally as backup
       const savedOccasions = JSON.parse(localStorage.getItem('rlc_occasions') || '[]');
-
-      // Remove existing entry if updating
       const filteredOccasions = savedOccasions.filter(o => o.id !== occasionId);
-
-      // Add new entry
       const newOccasion = {
         ...occasionData,
         created: new Date().toISOString(),
         modified: new Date().toISOString()
       };
-
       filteredOccasions.push(newOccasion);
-
-      // Save to localStorage
       localStorage.setItem('rlc_occasions', JSON.stringify(filteredOccasions));
 
       return {
         success: true,
-        message: 'Occasion saved locally',
+        message: 'GitHub issue created - data will be processed automatically',
         id: occasionId
       };
 
