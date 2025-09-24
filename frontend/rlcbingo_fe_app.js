@@ -52,66 +52,34 @@ class RLCBingoAPI {
   }
 
   /**
-   * Save occasion data by creating GitHub issue (automatic processing)
+   * Save occasion data via Google Apps Script
    */
   async saveOccasion(occasionData) {
     try {
-      console.log('Saving occasion via GitHub issue:', occasionData);
+      console.log('Saving occasion:', occasionData);
 
       // Generate occasion ID if not provided
       const occasionId = occasionData.id || 'OCC_' + Date.now();
       occasionData.id = occasionId;
 
-      // Create GitHub issue with the data
-      const issueTitle = `Save Occasion: ${occasionData.date} - ${occasionData.sessionType}`;
-      const issueBody = `\`\`\`json
-${JSON.stringify(occasionData, null, 2)}
-\`\`\``;
+      // Use existing Google Apps Script endpoint
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec';
 
-      // Use GitHub's web form API (no authentication needed)
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = `https://github.com/${this.config.owner}/${this.config.repo}/issues/new`;
-      form.target = '_blank';
-
-      // Add form fields
-      const titleField = document.createElement('input');
-      titleField.type = 'hidden';
-      titleField.name = 'issue[title]';
-      titleField.value = issueTitle;
-      form.appendChild(titleField);
-
-      const bodyField = document.createElement('input');
-      bodyField.type = 'hidden';
-      bodyField.name = 'issue[body]';
-      bodyField.value = issueBody;
-      form.appendChild(bodyField);
-
-      const labelsField = document.createElement('input');
-      labelsField.type = 'hidden';
-      labelsField.name = 'issue[labels]';
-      labelsField.value = 'data-save,auto-generated';
-      form.appendChild(labelsField);
-
-      // Submit form
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-
-      // Also save locally as backup
-      const savedOccasions = JSON.parse(localStorage.getItem('rlc_occasions') || '[]');
-      const filteredOccasions = savedOccasions.filter(o => o.id !== occasionId);
-      const newOccasion = {
-        ...occasionData,
-        created: new Date().toISOString(),
-        modified: new Date().toISOString()
-      };
-      filteredOccasions.push(newOccasion);
-      localStorage.setItem('rlc_occasions', JSON.stringify(filteredOccasions));
+      const response = await fetch(scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'saveOccasion',
+          data: occasionData
+        })
+      });
 
       return {
         success: true,
-        message: 'GitHub issue created - data will be processed automatically',
+        message: 'Occasion saved successfully',
         id: occasionId
       };
 
