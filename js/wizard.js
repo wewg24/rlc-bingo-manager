@@ -453,6 +453,17 @@ function savePullTabs() {
 }
 
 function saveMoneyCount() {
+    // Ensure moneyCount structure exists
+    if (!window.app.data.moneyCount) {
+        window.app.data.moneyCount = {};
+    }
+    if (!window.app.data.moneyCount.bingo) {
+        window.app.data.moneyCount.bingo = {};
+    }
+    if (!window.app.data.moneyCount.pullTab && !window.app.data.moneyCount.pulltab) {
+        window.app.data.moneyCount.pulltab = {};
+    }
+
     // Save bingo drawer
     ['100', '50', '20', '10', '5', '2', '1', 'coins', 'checks'].forEach(denom => {
         const value = parseFloat(document.getElementById(`bingo-${denom}`)?.value) || 0;
@@ -460,11 +471,6 @@ function saveMoneyCount() {
     });
     
     // Save pull-tab drawer
-    // Ensure pullTab object exists (handle both 'pullTab' and 'pulltab' casing)
-    if (!window.app.data.moneyCount.pullTab && !window.app.data.moneyCount.pulltab) {
-        window.app.data.moneyCount.pulltab = {};
-    }
-
     const pullTabData = window.app.data.moneyCount.pullTab || window.app.data.moneyCount.pulltab;
 
     ['100', '50', '20', '10', '5', '2', '1', 'coins'].forEach(denom => {
@@ -991,22 +997,40 @@ function showValidationError(message) {
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Wizard.js initializing...');
-    
+
     // Initialize date picker
     initializeDatePicker();
-    
+
     // Initialize game calculations
     initializeGameCalculations();
-    
+
+    // Add step click handlers for direct navigation
+    document.querySelectorAll('.step[data-step]').forEach(stepElement => {
+        stepElement.addEventListener('click', (e) => {
+            const targetStep = parseInt(stepElement.getAttribute('data-step'));
+            if (targetStep && targetStep !== window.app.currentStep) {
+                // Save current step data before switching
+                if (window.app.saveDraft) {
+                    window.app.saveDraft();
+                }
+                // Allow direct navigation to any step
+                window.app.currentStep = targetStep;
+                updateStepDisplay();
+            }
+        });
+        // Add cursor pointer to indicate clickable
+        stepElement.style.cursor = 'pointer';
+    });
+
     // Set initial step display
     if (window.app) {
         updateStepDisplay();
     }
-    
+
     // Load pull-tab library if function exists
     if (typeof loadPullTabLibrary === 'function') {
         loadPullTabLibrary();
     }
-    
+
     console.log('Wizard.js initialization complete');
 });
