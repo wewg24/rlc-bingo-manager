@@ -30,12 +30,13 @@ function doPost(e) {
 
   } catch (error) {
     console.error('Error in doPost:', error);
-    return ContentService
+    const errorResponse = ContentService
       .createTextOutput(JSON.stringify({
         success: false,
         error: error.toString()
       }))
       .setMimeType(ContentService.MimeType.JSON);
+    return addCORSHeaders(errorResponse);
   }
 }
 
@@ -47,20 +48,32 @@ function doGet(e) {
     const action = e.parameter.action || 'loadOccasions';
 
     if (action === 'loadOccasions') {
-      return handleLoadOccasions();
+      const result = handleLoadOccasions();
+      return addCORSHeaders(result);
     }
 
     throw new Error('Unknown GET action: ' + action);
 
   } catch (error) {
     console.error('Error in doGet:', error);
-    return ContentService
+    const errorResponse = ContentService
       .createTextOutput(JSON.stringify({
         success: false,
         error: error.toString()
       }))
       .setMimeType(ContentService.MimeType.JSON);
+    return addCORSHeaders(errorResponse);
   }
+}
+
+/**
+ * Add CORS headers to response
+ */
+function addCORSHeaders(response) {
+  return response
+    .setHeader('Access-Control-Allow-Origin', '*')
+    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    .setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 }
 
 /**
@@ -115,7 +128,7 @@ function handleSaveOccasion(occasionData) {
     // Create backup
     createBackup(fileData);
 
-    return ContentService
+    const response = ContentService
       .createTextOutput(JSON.stringify({
         success: true,
         message: 'Occasion saved successfully',
@@ -123,6 +136,7 @@ function handleSaveOccasion(occasionData) {
         count: occasions.length
       }))
       .setMimeType(ContentService.MimeType.JSON);
+    return addCORSHeaders(response);
 
   } catch (error) {
     console.error('Error saving occasion:', error);
@@ -140,7 +154,7 @@ function handleLoadOccasions() {
 
     if (!file) {
       // Return empty structure if no file exists
-      return ContentService
+      const response = ContentService
         .createTextOutput(JSON.stringify({
           success: true,
           lastUpdated: new Date().toISOString(),
@@ -148,17 +162,19 @@ function handleLoadOccasions() {
           occasions: []
         }))
         .setMimeType(ContentService.MimeType.JSON);
+      return addCORSHeaders(response);
     }
 
     const content = file.getBlob().getDataAsString();
     const data = JSON.parse(content);
 
-    return ContentService
+    const response = ContentService
       .createTextOutput(JSON.stringify({
         success: true,
         ...data
       }))
       .setMimeType(ContentService.MimeType.JSON);
+    return addCORSHeaders(response);
 
   } catch (error) {
     console.error('Error loading occasions:', error);
@@ -197,13 +213,14 @@ function handleDeleteOccasion(occasionId) {
     // Save updated file
     file.setContent(JSON.stringify(data, null, 2));
 
-    return ContentService
+    const response = ContentService
       .createTextOutput(JSON.stringify({
         success: true,
         message: 'Occasion deleted successfully',
         count: newCount
       }))
       .setMimeType(ContentService.MimeType.JSON);
+    return addCORSHeaders(response);
 
   } catch (error) {
     console.error('Error deleting occasion:', error);

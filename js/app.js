@@ -73,7 +73,13 @@ class BingoApp {
      */
     async loadOccasionsList() {
         try {
-            const response = await fetch(CONFIG.API_URL + '?path=occasions');
+            const response = await fetch(`${CONFIG.API_URL}?action=loadOccasions&t=${Date.now()}`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
             const data = await response.json();
             
             const listContainer = document.querySelector('.occasions-list');

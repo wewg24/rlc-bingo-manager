@@ -742,7 +742,13 @@
         }
 
         async loadRealData() {
-            const response = await fetch(`${CONFIG.API_URL}?path=occasions`);
+            const response = await fetch(`${CONFIG.API_URL}?action=loadOccasions&t=${Date.now()}`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
             const result = await response.json();
 
             console.log('API Response:', result); // Debug logging

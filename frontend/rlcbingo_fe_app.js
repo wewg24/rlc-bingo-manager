@@ -93,30 +93,29 @@ class RLCBingoAPI {
   }
 
   /**
-   * Delete occasion data
+   * Delete occasion data via Google Apps Script
    */
   async deleteOccasion(occasionId) {
     try {
-      const response = await fetch(`${this.baseUrl}/dispatches`, {
+      console.log('Deleting occasion:', occasionId);
+
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec';
+
+      const response = await fetch(scriptUrl, {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
-          'Authorization': `token ${this.token}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
         },
         body: JSON.stringify({
-          event_type: 'delete_occasion',
-          client_payload: { id: occasionId }
+          action: 'deleteOccasion',
+          occasionId: occasionId
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status}`);
-      }
-
       return {
         success: true,
-        message: 'Occasion deletion triggered successfully'
+        message: 'Occasion deleted successfully'
       };
 
     } catch (error) {
@@ -129,27 +128,29 @@ class RLCBingoAPI {
   }
 
   /**
-   * Load all occasions from static JSON file
+   * Load all occasions from Google Apps Script
    */
   async loadOccasions() {
     try {
-      const response = await fetch(`${this.dataUrl}/occasions.json?t=${Date.now()}`);
+      console.log('Loading occasions via Google Apps Script');
+
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec';
+
+      const response = await fetch(scriptUrl + '?action=loadOccasions&t=' + Date.now(), {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
 
       if (!response.ok) {
-        if (response.status === 404) {
-          // No occasions file exists yet
-          return {
-            success: true,
-            occasions: [],
-            count: 0
-          };
-        }
         throw new Error(`Failed to load occasions: ${response.status}`);
       }
 
       const data = await response.json();
       return {
-        success: true,
+        success: data.success || true,
         occasions: data.occasions || [],
         count: data.count || 0,
         lastUpdated: data.lastUpdated
@@ -166,20 +167,26 @@ class RLCBingoAPI {
   }
 
   /**
-   * Load specific occasion data
+   * Load specific occasion data via Google Apps Script
    */
   async loadOccasion(occasionId) {
     try {
-      const response = await fetch(`${this.dataUrl}/occasions/${occasionId}.json?t=${Date.now()}`);
+      // Load all occasions and find the specific one
+      const allOccasionsResult = await this.loadOccasions();
 
-      if (!response.ok) {
+      if (!allOccasionsResult.success) {
+        throw new Error('Failed to load occasions data');
+      }
+
+      const occasion = allOccasionsResult.occasions.find(o => o.id === occasionId);
+
+      if (!occasion) {
         throw new Error(`Occasion not found: ${occasionId}`);
       }
 
-      const data = await response.json();
       return {
         success: true,
-        data: data
+        data: occasion
       };
 
     } catch (error) {
