@@ -72,18 +72,40 @@ function doGet(e) {
 }
 
 function doPost(e) {
-  const action = e.parameter.action;
-
   try {
+    console.log('doPost called with:', JSON.stringify(e, null, 2));
+
     const storage = new JsonStorage();
-    const data = e.parameter.data ? JSON.parse(e.parameter.data) : {};
+    let requestData = {};
+    let action = '';
+
+    // Handle JSON request body from frontend
+    if (e.postData && e.postData.contents) {
+      try {
+        const jsonData = JSON.parse(e.postData.contents);
+        action = jsonData.action;
+        requestData = jsonData.data || {};
+        console.log('Parsed JSON request:', { action, requestData });
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        return jsonResponse({
+          success: false,
+          error: 'Invalid JSON in request body'
+        });
+      }
+    } else {
+      // Fallback to URL parameters
+      action = e.parameter.action;
+      requestData = e.parameter.data ? JSON.parse(e.parameter.data) : {};
+    }
 
     switch(action) {
-      case 'save-occasion':
-        return jsonResponse(storage.saveOccasion(data));
+      case 'saveOccasion':
+        console.log('Calling saveOccasion with:', requestData);
+        return jsonResponse(storage.saveOccasion(requestData));
 
-      case 'delete-occasion':
-        const id = e.parameter.id || data.id;
+      case 'deleteOccasion':
+        const id = e.parameter.id || requestData.id;
         if (!id) return jsonResponse({ success: false, error: 'ID required' });
         return jsonResponse(storage.deleteOccasion(id));
 
@@ -91,10 +113,11 @@ function doPost(e) {
         return jsonResponse({
           success: false,
           error: 'Invalid action: ' + action,
-          availableActions: ['save-occasion', 'delete-occasion']
+          availableActions: ['saveOccasion', 'deleteOccasion']
         });
     }
   } catch (error) {
+    console.error('doPost error:', error);
     return jsonResponse({
       success: false,
       error: error.toString(),
