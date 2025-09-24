@@ -925,7 +925,7 @@ async function submitOccasion() {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams({
-                action: 'save-occasion',
+                action: 'saveOccasion',
                 data: JSON.stringify(submissionData)
             })
         });
@@ -949,7 +949,7 @@ async function submitOccasion() {
         // Add to sync queue for later submission
         const queue = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]');
         queue.push({
-            action: 'save-occasion',
+            action: 'saveOccasion',
             data: window.app.data,
             timestamp: new Date().toISOString()
         });
