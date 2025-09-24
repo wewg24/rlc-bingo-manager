@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>RLC Bingo Manager - Admin Interface</title>
+    <title>RLC Bingo Manager - Admin Interface v11.1.1</title>
 
     <!-- Cache control meta tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -13,8 +13,8 @@
     <meta http-equiv="Expires" content="0">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=11.1.0">
-    <link rel="stylesheet" href="css/dark-mode.css?v=11.1.0">
+    <link rel="stylesheet" href="css/style.css?v=11.1.1">
+    <link rel="stylesheet" href="css/dark-mode.css?v=11.1.1">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -1378,8 +1378,8 @@
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: new URLSearchParams({
-                        action: 'save-occasion',
-                        data: JSON.stringify(deleteData)
+                        action: 'deleteOccasion',
+                        occasionId: occasionId
                     })
                 });
 
