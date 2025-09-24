@@ -1,16 +1,26 @@
 /* css/dark-mode.css - Complete Dark Mode Implementation */
 
-/* Dark Mode Root Variables */
+/* Dark Mode Root Variables with Lions Club Theme */
 body.dark-mode {
     --background: #1a1a1a;
-    --text: #e8e8e8;  /* Increased brightness for better readability */
-    --text-secondary: #b0b0b0;  /* For less prominent text */
+    --text: #e8e8e8;
+    --text-secondary: #b0b0b0;
     --white: #2c2c2c;
     --light: #3a3a3a;
     --border: #4a4a4a;
-    --shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.7);
-    
+
+    /* Lions Club Dark Mode Colors */
+    --primary: #4787db; /* Lighter Lions Blue for dark mode */
+    --primary-dark: #1565C0;
+    --lions-yellow: #f9c910;
+    --lions-yellow-dark: #e6b800;
+    --lions-yellow-muted: #8b7300; /* Darker yellow for dark mode text */
+
+    /* Shadows with Lions Club colors */
+    --shadow: 0 2px 8px rgba(71, 135, 219, 0.15);
+    --shadow-lg: 0 8px 24px rgba(71, 135, 219, 0.2);
+    --shadow-yellow: 0 4px 15px rgba(249, 201, 16, 0.25);
+
     /* Form specific colors for dark mode */
     --input-bg: #2a2a2a;
     --input-text: #ffffff;
@@ -25,10 +35,11 @@ body.dark-mode {
     color: var(--text);
 }
 
-/* Header adjustments for dark mode */
+/* Header adjustments for dark mode with Lions Club theme */
 body.dark-mode .app-header {
-    background: #0c0c0c;
+    background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
     border-bottom: 1px solid #4a4a4a;
+    border-top: 3px solid var(--lions-yellow);
 }
 
 body.dark-mode .app-header h1 {

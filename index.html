@@ -32,7 +32,7 @@
 
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
         color: #333;
         line-height: 1.6;
         min-height: 100vh;
@@ -60,10 +60,11 @@
     .header h1 {
         font-size: 3rem;
         margin-bottom: 10px;
-        background: linear-gradient(135deg, #2196F3, #1976D2);
+        background: linear-gradient(135deg, #f9c910, #e6b800);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .header .subtitle {
@@ -96,7 +97,7 @@
     .card h3 {
         font-size: 1.5rem;
         margin-bottom: 15px;
-        color: #2196F3;
+        color: #1565C0;
     }
 
     .card p {
@@ -129,41 +130,50 @@
     .url-display {
         font-family: 'Monaco', 'Consolas', monospace;
         font-size: 12px;
-        color: #2196F3;
-        background: #f0f4f8;
+        color: #1565C0;
+        background: #e8f4fd;
         padding: 8px 12px;
         border-radius: 6px;
         margin-top: 10px;
         word-break: break-all;
+        border: 1px solid #f9c910;
     }
 
     .btn {
-        background: linear-gradient(135deg, #2196F3, #1976D2);
-        color: white;
-        border: none;
+        background: linear-gradient(135deg, #f9c910, #e6b800);
+        color: #1565C0;
+        border: 2px solid #f9c910;
         padding: 12px 24px;
         border-radius: 8px;
         cursor: pointer;
         text-decoration: none;
         display: inline-block;
         font-size: 16px;
-        font-weight: 500;
+        font-weight: 600;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        box-shadow: 0 4px 15px rgba(249, 201, 16, 0.3);
     }
 
     .btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+        background: linear-gradient(135deg, #1565C0, #0D47A1);
+        color: white;
+        border-color: #1565C0;
+        box-shadow: 0 8px 25px rgba(21, 101, 192, 0.4);
     }
 
     .btn.admin {
-        background: linear-gradient(135deg, #6c757d, #495057);
-        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        background: linear-gradient(135deg, #1565C0, #0D47A1);
+        color: white;
+        border-color: #1565C0;
+        box-shadow: 0 4px 15px rgba(21, 101, 192, 0.3);
     }
 
     .btn.admin:hover {
-        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+        background: linear-gradient(135deg, #f9c910, #e6b800);
+        color: #1565C0;
+        border-color: #f9c910;
+        box-shadow: 0 8px 25px rgba(249, 201, 16, 0.4);
     }
 
     .credentials-hint {
@@ -227,8 +237,8 @@
             </div>
 
             <div class="card">
-                <h3>⚙️ Administration</h3>
-                <p>Access the admin dashboard to manage occasions, view reports, and configure the system.</p>
+                <h3>⚙️ Admin Dashboard</h3>
+                <p>Access the admin dashboard using your smartphone or desktop browser.</p>
                 <div style="margin: 20px 0;">
                     <a href="admin.html" class="btn admin">⚙️ Admin Dashboard</a>
                 </div>
@@ -245,9 +255,6 @@
                     <div class="url-display" id="admin-url">
                         https://wewg24.github.io/rlc-bingo-manager/admin.html
                     </div>
-                </div>
-                <div class="credentials-hint">
-                    <strong>Credentials Hint:</strong> Same as RLC Website for Member's Access
                 </div>
             </div>
         </div>
