@@ -278,56 +278,101 @@ class BingoApp {
         container.innerHTML = `
             <div class="view-container">
                 <div class="view-header">
-                    <h2>Help & Support</h2>
-                    <button class="button primary" onclick="window.app.returnToWizard()">Back to Entry</button>
+                    <h2>📋 Help & Support</h2>
+                    <button class="button primary" onclick="window.app.returnToWizard()">↶ Back to Entry</button>
                 </div>
                 <div class="help-content">
                     <section>
-                        <h3>Using the Wizard</h3>
-                        <p>The RLC Bingo Manager uses a 6-step wizard to guide you through recording each bingo occasion. 
-                           Each step validates your entries before allowing you to proceed, ensuring complete and accurate data collection.</p>
+                        <h3>🎯 Quick Start Guide</h3>
+                        <p><strong>Welcome to the RLC Bingo Manager!</strong> This system guides you through recording bingo occasions with a simple 6-step wizard.
+                           All data is automatically saved as you type, and you can work completely offline.</p>
+                        <div style="background: #e8f4fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196F3; margin: 15px 0;">
+                            <strong>💡 Pro Tip:</strong> You can click on any completed step number in the progress bar to go back and review or edit that section.
+                        </div>
                     </section>
-                    
+
                     <section>
-                        <h3>The Six Steps</h3>
+                        <h3>📝 The Six Steps Explained</h3>
                         <div class="help-steps">
-                            <div class="help-step">
-                                <strong>1. Occasion Info:</strong> Enter the date, occasion type, attendance, and progressive game details.
+                            <div class="help-step" style="background: #f8f9fa; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 3px solid #007bff;">
+                                <strong>1. 📅 Occasion Info:</strong> Enter the date (auto-detects Monday type), Lion in charge, attendance count, and progressive jackpot details.
                             </div>
-                            <div class="help-step">
-                                <strong>2. Paper Sales:</strong> Record beginning and ending inventory counts, POS sales, and electronic rentals.
+                            <div class="help-step" style="background: #f8f9fa; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 3px solid #28a745;">
+                                <strong>2. 📋 Paper Sales:</strong> Record your beginning/ending inventory counts for all paper types, POS door sales, and electronic machine rentals.
                             </div>
-                            <div class="help-step">
-                                <strong>3. Game Results:</strong> Enter winner counts for each of the 17 occasion games.
+                            <div class="help-step" style="background: #f8f9fa; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 3px solid #ffc107;">
+                                <strong>3. 🎮 Game Results:</strong> Enter the number of winners for each of the 17 regular games. System auto-calculates payouts.
                             </div>
-                            <div class="help-step">
-                                <strong>4. Pull-Tabs:</strong> Track each pull-tab game opened with serial numbers and prizes paid.
+                            <div class="help-step" style="background: #f8f9fa; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 3px solid #17a2b8;">
+                                <strong>4. 🎫 Pull-Tabs:</strong> Add each pull-tab game opened, select from library, enter serial numbers and actual prizes paid.
                             </div>
-                            <div class="help-step">
-                                <strong>5. Money Count:</strong> Count both cash drawers and calculate the deposit.
+                            <div class="help-step" style="background: #f8f9fa; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 3px solid #6610f2;">
+                                <strong>5. 💰 Money Count:</strong> Count both the bingo and pull-tab cash drawers. System calculates deposit totals.
                             </div>
-                            <div class="help-step">
-                                <strong>6. Review:</strong> Verify all totals and submit the completed occasion.
+                            <div class="help-step" style="background: #f8f9fa; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 3px solid #e83e8c;">
+                                <strong>6. ✅ Review:</strong> Review all totals and financial calculations before final submission to the system.
                             </div>
                         </div>
                     </section>
-                    
+
                     <section>
-                        <h3>Tips for Success</h3>
-                        <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
-                            <li>The system auto-saves your progress locally as you type</li>
-                            <li>You can work completely offline - data syncs when connected</li>
-                            <li>Click any completed step number to go back and review</li>
-                            <li>Use dark mode (moon icon) for evening occasions</li>
-                            <li>Pull-tab library contains ${this.pullTabLibrary.length} games for quick selection</li>
+                        <h3>💡 Tips & Best Practices</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                            <div style="background: #d4edda; padding: 12px; border-radius: 6px;">
+                                <strong>📱 Mobile Friendly</strong><br>
+                                <small>Works great on tablets and phones - perfect for taking around the hall</small>
+                            </div>
+                            <div style="background: #d1ecf1; padding: 12px; border-radius: 6px;">
+                                <strong>🌙 Dark Mode</strong><br>
+                                <small>Click the moon icon for easier viewing during evening occasions</small>
+                            </div>
+                            <div style="background: #fff3cd; padding: 12px; border-radius: 6px;">
+                                <strong>💾 Auto-Save</strong><br>
+                                <small>Every field saves automatically - never lose your work!</small>
+                            </div>
+                            <div style="background: #f8d7da; padding: 12px; border-radius: 6px;">
+                                <strong>📶 Works Offline</strong><br>
+                                <small>No internet? No problem! Data syncs when connection returns</small>
+                            </div>
+                        </div>
+                        <ul style="text-align: left; max-width: 600px; margin: 20px auto 0; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                            <li><strong>Start Early:</strong> Begin entering data as the occasion starts - don't wait until the end</li>
+                            <li><strong>Double-Check Counts:</strong> Verify your beginning/ending inventory counts before proceeding</li>
+                            <li><strong>Use Pull-Tab Library:</strong> Contains ${this.pullTabLibrary.length} games - select instead of typing names</li>
+                            <li><strong>Check Progressive:</strong> Make sure progressive jackpot amount and balls are correct</li>
+                            <li><strong>Count Carefully:</strong> Money count step is critical - take your time</li>
                         </ul>
                     </section>
-                    
+
                     <section>
-                        <h3>Support</h3>
-                        <p>For technical support, contact: wewg24@github.com</p>
-                        <p>Version: ${CONFIG.VERSION}</p>
-                        <p>Last Library Update: ${localStorage.getItem('lastLibraryUpdate') || 'Never'}</p>
+                        <h3>🛠️ Technical Support</h3>
+                        <div style="background: #e7f3ff; padding: 20px; border-radius: 10px; border: 2px solid #2196F3; text-align: center;">
+                            <h4 style="margin-top: 0; color: #1565C0;">Need Help? Contact Bill!</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 15px 0;">
+                                <div>
+                                    <strong>📧 Email</strong><br>
+                                    <a href="mailto:wewg24@gmail.com" style="color: #1565C0; text-decoration: none;">wewg24@gmail.com</a>
+                                </div>
+                                <div>
+                                    <strong>📱 Phone</strong><br>
+                                    <a href="tel:+15735782866" style="color: #1565C0; text-decoration: none;">(573) 578-2866</a>
+                                </div>
+                                <div>
+                                    <strong>👤 Name</strong><br>
+                                    <span style="color: #1565C0;">Bill Wiggins</span>
+                                </div>
+                            </div>
+                            <p style="margin: 15px 0 5px; font-size: 0.9em; color: #666;">
+                                <strong>System Info:</strong> Version ${CONFIG.VERSION} •
+                                Last Updated: ${localStorage.getItem('lastLibraryUpdate') || 'Never'}
+                            </p>
+                        </div>
+                    </section>
+
+                    <section style="margin-top: 30px; text-align: center; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                        <h4 style="color: #2196F3; margin-bottom: 10px;">🦁 Rolla Lions Club</h4>
+                        <p style="margin: 5px 0; color: #666;">Serving the community through Monday night bingo since 1924</p>
+                        <p style="margin: 5px 0; font-size: 0.9em; color: #888;">Missouri Gaming Commission Compliant</p>
                     </section>
                 </div>
             </div>
