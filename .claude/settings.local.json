@@ -19,7 +19,9 @@
       "Bash(clasp:*)",
       "Bash(powershell:*)",
       "Read(//c/Users/bill.wiggins/OneDrive - Phelps County Bank/Lion's Club/Bingo/Screenshots/**)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

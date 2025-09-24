@@ -407,7 +407,6 @@ function handleSubmit(button) {
 
 // Make functions globally accessible
 window.handleSubmit = handleSubmit;
-window.saveOccasion = submitOccasion;
 window.submitOccasion = submitOccasion;
 
 // ==========================================
