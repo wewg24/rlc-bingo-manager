@@ -405,8 +405,10 @@ function handleSubmit(button) {
   return false; // Prevent any default behavior
 }
 
-// Alias for compatibility
+// Make functions globally accessible
+window.handleSubmit = handleSubmit;
 window.saveOccasion = submitOccasion;
+window.submitOccasion = submitOccasion;
 
 // ==========================================
 // ADMIN FUNCTIONS
