@@ -384,9 +384,16 @@ function saveMoneyCount() {
     });
     
     // Save pull-tab drawer
+    // Ensure pullTab object exists (handle both 'pullTab' and 'pulltab' casing)
+    if (!window.app.data.moneyCount.pullTab && !window.app.data.moneyCount.pulltab) {
+        window.app.data.moneyCount.pulltab = {};
+    }
+
+    const pullTabData = window.app.data.moneyCount.pullTab || window.app.data.moneyCount.pulltab;
+
     ['100', '50', '20', '10', '5', '2', '1', 'coins'].forEach(denom => {
         const value = parseFloat(document.getElementById(`pt-${denom}`)?.value) || 0;
-        window.app.data.moneyCount.pullTab[denom] = value;
+        pullTabData[denom] = value;
     });
 }
 

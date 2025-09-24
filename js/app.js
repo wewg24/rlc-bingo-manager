@@ -873,11 +873,18 @@ class BingoApp {
         }
         
         // Calculate Pull-tab drawer
+        // Ensure pullTab object exists (handle both 'pullTab' and 'pulltab' casing)
+        if (!this.data.moneyCount.pullTab && !this.data.moneyCount.pulltab) {
+            this.data.moneyCount.pulltab = {};
+        }
+
+        const pullTabData = this.data.moneyCount.pullTab || this.data.moneyCount.pulltab;
+
         let ptTotal = 0;
         ['100', '50', '20', '10', '5', '2', '1', 'coins'].forEach(denom => {
             const value = parseFloat(document.getElementById(`pt-${denom}`)?.value) || 0;
             ptTotal += value;
-            this.data.moneyCount.pullTab[denom] = value;
+            pullTabData[denom] = value;
         });
         
         const ptTotalElement = document.getElementById('pt-total');
@@ -887,8 +894,9 @@ class BingoApp {
         
         // Calculate deposit summary
         const totalDeposit = bingoTotal + ptTotal;
-        const currency = totalDeposit - (this.data.moneyCount.bingo.coins || 0) - (this.data.moneyCount.pullTab.coins || 0);
-        const coins = (this.data.moneyCount.bingo.coins || 0) + (this.data.moneyCount.pullTab.coins || 0);
+        const pullTabCoins = (this.data.moneyCount.pullTab?.coins || this.data.moneyCount.pulltab?.coins || 0);
+        const currency = totalDeposit - (this.data.moneyCount.bingo.coins || 0) - pullTabCoins;
+        const coins = (this.data.moneyCount.bingo.coins || 0) + pullTabCoins;
         const checks = this.data.moneyCount.bingo.checks || 0;
         
         const depositCurrencyElement = document.getElementById('deposit-currency');
