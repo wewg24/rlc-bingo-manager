@@ -44,16 +44,21 @@ The RLC Bingo Manager is a modern Progressive Web Application designed specifica
 
 #### Two Ways to Use the System
 
-**Admin Interface** (for viewing and management):
+**Landing Page** (public access):
 1. Navigate to: `https://wewg24.github.io/rlc-bingo-manager/`
-2. View list of existing occasions
-3. Click "Create New Occasion" or "Edit" to start data entry
-4. System automatically redirects to mobile wizard for data entry
+2. Access occasion entry via QR code or direct link
+3. View admin dashboard link (requires authentication)
 
-**Mobile Interface** (for data entry):
-1. Navigate to: `https://wewg24.github.io/rlc-bingo-manager/mobile.html`
+**Admin Dashboard** (for viewing and management):
+1. Navigate to: `https://wewg24.github.io/rlc-bingo-manager/admin.html`
+2. Enter credentials (same as RLC Website Member's Access)
+3. View list of existing occasions and manage system
+4. System automatically redirects to occasion entry for data entry
+
+**Occasion Entry** (for data entry):
+1. Navigate to: `https://wewg24.github.io/rlc-bingo-manager/occasion.html`
 2. Complete occasion data through 6-step wizard
-3. Can be accessed directly or via admin interface redirects
+3. Can be accessed directly, via QR code, or via admin redirects
 4. Handles both new occasions and editing existing ones
 
 #### Installing as an App (Recommended)

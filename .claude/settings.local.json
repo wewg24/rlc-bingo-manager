@@ -1,27 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:wewg24.github.io)",
-      "WebFetch(domain:script.google.com)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "WebFetch(domain:script.googleusercontent.com)",
-      "WebFetch(domain:docs.google.com)",
-      "Bash(grep:*)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:github.com)",
-      "WebSearch",
-      "Bash(git pull:*)",
-      "Bash(git stash push:*)",
-      "Bash(git checkout:*)",
-      "Bash(npm install:*)",
-      "Bash(clasp:*)",
-      "Bash(powershell:*)",
-      "Read(//c/Users/bill.wiggins/OneDrive - Phelps County Bank/Lion's Club/Bingo/Screenshots/**)",
-      "Bash(dir:*)",
-      "Bash(git rebase:*)",
-      "Bash(git reset:*)"
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
