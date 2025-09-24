@@ -25,6 +25,7 @@ const POS_ITEMS = [
 // Global variables
 let currentStep = 1;
 let editingOccasionId = null;
+let isSubmitting = false; // Prevent multiple simultaneous submissions
 
 // ==========================================
 // API FUNCTIONS
@@ -323,6 +324,14 @@ function collectPOSSales() {
 }
 
 async function submitOccasion() {
+  // Prevent multiple simultaneous submissions
+  if (isSubmitting) {
+    console.log('Already submitting, ignoring duplicate call');
+    return;
+  }
+
+  isSubmitting = true;
+
   try {
     // Show loading
     const loadingDiv = document.getElementById('loading');
@@ -360,6 +369,9 @@ async function submitOccasion() {
     console.error('Error saving occasion:', error);
     alert('❌ Error saving occasion: ' + error.message);
   } finally {
+    // Reset submission flag
+    isSubmitting = false;
+
     const loadingDiv = document.getElementById('loading');
     if (loadingDiv) loadingDiv.style.display = 'none';
 
