@@ -7,7 +7,7 @@
 const GITHUB_CONFIG = {
   owner: 'wewg24',
   repo: 'rlc-bingo-manager',
-  token: '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',
+  token: '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',
   get apiUrl() { return `https://api.github.com/repos/${this.owner}/${this.repo}`; },
   get dataUrl() { return `https://${this.owner}.github.io/${this.repo}/data`; }
 };
