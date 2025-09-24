@@ -230,7 +230,21 @@
                 <h3>⚙️ Administration</h3>
                 <p>Access the admin dashboard to manage occasions, view reports, and configure the system.</p>
                 <div style="margin: 20px 0;">
-                    <a href="admin.html" class="btn admin">Access Admin Dashboard</a>
+                    <a href="admin.html" class="btn admin">⚙️ Admin Dashboard</a>
+                </div>
+                <p style="margin: 15px 0 10px; color: #666; font-size: 14px;">Or scan QR code for mobile access:</p>
+                <div class="qr-container">
+                    <div class="qr-code" id="admin-qr">
+                        <div id="admin-qr-placeholder" style="width: 150px; height: 150px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; border: 2px dashed #ddd; flex-direction: column; font-size: 12px; text-align: center; border-radius: 8px; margin: 0 auto;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">⚙️</div>
+                            <div>QR Code</div>
+                            <div style="margin-top: 5px; font-size: 10px; color: #666;">Loading...</div>
+                        </div>
+                        <img id="admin-qr-image" src="" alt="Admin QR Code" style="width: 150px; height: 150px; display: none;">
+                    </div>
+                    <div class="url-display" id="admin-url">
+                        https://wewg24.github.io/rlc-bingo-manager/admin.html
+                    </div>
                 </div>
                 <div class="credentials-hint">
                     <strong>Credentials Hint:</strong> Same as RLC Website for Member's Access
@@ -240,34 +254,59 @@
     </div>
 
     <script>
-    // Generate QR code for occasion entry
-    function generateQRCode() {
+    // Generate QR codes for both occasion entry and admin
+    function generateQRCodes() {
+        // Generate Occasion Entry QR Code
         const occasionUrl = 'https://wewg24.github.io/rlc-bingo-manager/occasion.html';
-        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(occasionUrl)}`;
+        const occasionQrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(occasionUrl)}`;
 
-        const qrImage = document.getElementById('qr-image');
-        const qrPlaceholder = document.getElementById('qr-placeholder');
+        const occasionQrImage = document.getElementById('qr-image');
+        const occasionQrPlaceholder = document.getElementById('qr-placeholder');
 
-        if (qrImage && qrPlaceholder) {
-            qrImage.onload = function() {
-                qrPlaceholder.style.display = 'none';
-                qrImage.style.display = 'block';
+        if (occasionQrImage && occasionQrPlaceholder) {
+            occasionQrImage.onload = function() {
+                occasionQrPlaceholder.style.display = 'none';
+                occasionQrImage.style.display = 'block';
             };
 
-            qrImage.onerror = function() {
-                qrPlaceholder.innerHTML = `
+            occasionQrImage.onerror = function() {
+                occasionQrPlaceholder.innerHTML = `
                     <div style="font-size: 20px; margin-bottom: 5px;">⚠️</div>
                     <div>QR Generation Failed</div>
                     <div style="margin-top: 5px; font-size: 10px;">Use URL below</div>
                 `;
             };
 
-            qrImage.src = qrApiUrl;
+            occasionQrImage.src = occasionQrApiUrl;
+        }
+
+        // Generate Admin Dashboard QR Code
+        const adminUrl = 'https://wewg24.github.io/rlc-bingo-manager/admin.html';
+        const adminQrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(adminUrl)}`;
+
+        const adminQrImage = document.getElementById('admin-qr-image');
+        const adminQrPlaceholder = document.getElementById('admin-qr-placeholder');
+
+        if (adminQrImage && adminQrPlaceholder) {
+            adminQrImage.onload = function() {
+                adminQrPlaceholder.style.display = 'none';
+                adminQrImage.style.display = 'block';
+            };
+
+            adminQrImage.onerror = function() {
+                adminQrPlaceholder.innerHTML = `
+                    <div style="font-size: 20px; margin-bottom: 5px;">⚠️</div>
+                    <div>QR Generation Failed</div>
+                    <div style="margin-top: 5px; font-size: 10px;">Use URL below</div>
+                `;
+            };
+
+            adminQrImage.src = adminQrApiUrl;
         }
     }
 
-    // Generate QR code when page loads
-    document.addEventListener('DOMContentLoaded', generateQRCode);
+    // Generate QR codes when page loads
+    document.addEventListener('DOMContentLoaded', generateQRCodes);
     </script>
 </body>
 </html>
