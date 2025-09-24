@@ -52,35 +52,38 @@ class RLCBingoAPI {
   }
 
   /**
-   * Save occasion data by triggering GitHub Actions workflow
+   * Save occasion data using secure localStorage approach
    */
   async saveOccasion(occasionData) {
     try {
-      console.log('Saving occasion via GitHub Actions:', occasionData);
+      console.log('Saving occasion locally:', occasionData);
 
-      const response = await fetch(`${this.baseUrl}/dispatches`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `token ${this.token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/vnd.github.v3+json'
-        },
-        body: JSON.stringify({
-          event_type: 'save_occasion',
-          client_payload: occasionData
-        })
-      });
+      // Generate occasion ID if not provided
+      const occasionId = occasionData.id || 'OCC_' + Date.now();
+      occasionData.id = occasionId;
 
-      if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-      }
+      // Save to localStorage as secure approach
+      const savedOccasions = JSON.parse(localStorage.getItem('rlc_occasions') || '[]');
 
-      // GitHub Actions is async, so we return success immediately
-      // The actual file creation happens in the background
+      // Remove existing entry if updating
+      const filteredOccasions = savedOccasions.filter(o => o.id !== occasionId);
+
+      // Add new entry
+      const newOccasion = {
+        ...occasionData,
+        created: new Date().toISOString(),
+        modified: new Date().toISOString()
+      };
+
+      filteredOccasions.push(newOccasion);
+
+      // Save to localStorage
+      localStorage.setItem('rlc_occasions', JSON.stringify(filteredOccasions));
+
       return {
         success: true,
-        message: 'Occasion save triggered successfully',
-        id: occasionData.id || 'OCC_' + Date.now()
+        message: 'Occasion saved locally',
+        id: occasionId
       };
 
     } catch (error) {
