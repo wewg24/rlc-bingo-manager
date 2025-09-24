@@ -624,6 +624,7 @@
 
     <!-- Scripts -->
     <script src="js/config.js?v=11.1.0"></script>
+    <script src="js/loading.js?v=11.1.0"></script>
 
     <script>
     // Admin Interface JavaScript
@@ -729,16 +730,33 @@
         }
 
         async loadDashboard() {
+            // Show loading spinner during initial load
+            if (window.showLoading) {
+                window.showLoading({
+                    text: 'Loading Dashboard',
+                    subtext: 'Fetching occasions and data from Google Drive...',
+                    timeout: 20000
+                });
+            }
+
             try {
                 // Load real data from API
                 await this.loadRealData();
+
+                // Generate QR code for mobile access after successful load
+                this.generateQRCode();
+
             } catch (error) {
                 console.error('Error loading dashboard:', error);
-                this.loadMockData();
-            }
 
-            // Generate QR code for mobile access
-            this.generateQRCode();
+                // Show error state instead of dummy data
+                this.showErrorState(error.message || 'Unable to load data from Google Drive');
+            } finally {
+                // Hide loading spinner
+                if (window.hideLoading) {
+                    window.hideLoading();
+                }
+            }
         }
 
         async loadRealData() {
@@ -871,13 +889,33 @@
             }, 100);
         }
 
-        loadMockData() {
-            this.occasions = [
-                { id: 1, date: '2024-01-15', sessionType: '5-1', lionInCharge: 'John Smith', totalPlayers: 45, totalRevenue: 2240, netProfit: 580, status: 'Completed' },
-                { id: 2, date: '2024-01-22', sessionType: '6-2', lionInCharge: 'Jane Doe', totalPlayers: 52, totalRevenue: 2680, netProfit: 720, status: 'Completed' },
-                { id: 3, date: '2024-01-29', sessionType: '7-3', lionInCharge: 'Bob Johnson', totalPlayers: 38, totalRevenue: 1920, netProfit: 450, status: 'Draft' }
-            ];
-            this.updateDashboardStats();
+        showErrorState(errorMessage) {
+            // Clear occasions data
+            this.occasions = [];
+
+            // Show error message in dashboard stats
+            document.getElementById('total-occasions').textContent = 'Error';
+            document.getElementById('total-revenue').textContent = 'Error';
+            document.getElementById('total-profit').textContent = 'Error';
+            document.getElementById('avg-players').textContent = 'Error';
+
+            // Show error message in occasions table
+            const occasionsTableBody = document.getElementById('occasions-table-body');
+            if (occasionsTableBody) {
+                occasionsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--danger);">
+                            <h3>❌ Unable to Load Data</h3>
+                            <p>${errorMessage}</p>
+                            <button onclick="location.reload()" class="btn primary" style="margin-top: 1rem;">
+                                🔄 Retry
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            console.error('Dashboard error state:', errorMessage);
         }
 
         updateDashboardStats() {
@@ -985,12 +1023,26 @@
         }
 
         loadOccasionsJSONP(scriptUrl) {
+            // Show loading spinner
+            if (window.showLoading) {
+                window.showLoading({
+                    text: 'Loading Occasions',
+                    subtext: 'Fetching data from Google Drive...',
+                    timeout: 15000
+                });
+            }
+
             return new Promise((resolve, reject) => {
                 const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
                 const script = document.createElement('script');
 
                 // Set up the callback function
                 window[callbackName] = function(data) {
+                    // Hide loading spinner
+                    if (window.hideLoading) {
+                        window.hideLoading();
+                    }
+
                     delete window[callbackName];
                     document.body.removeChild(script);
                     resolve({
@@ -1004,6 +1056,11 @@
                 // Create the script tag
                 script.src = `${scriptUrl}?action=loadOccasions&callback=${callbackName}&t=${Date.now()}`;
                 script.onerror = function() {
+                    // Hide loading spinner on error
+                    if (window.hideLoading) {
+                        window.hideLoading();
+                    }
+
                     delete window[callbackName];
                     document.body.removeChild(script);
                     reject(new Error('JSONP request failed'));
@@ -1023,6 +1080,15 @@
         }
 
         async loadPullTabLibrary() {
+            // Show loading spinner
+            if (window.showLoading) {
+                window.showLoading({
+                    text: 'Loading Pull-Tab Library',
+                    subtext: 'Fetching games from Google Drive...',
+                    timeout: 15000
+                });
+            }
+
             try {
                 // Load real pull-tab library data from API
                 const response = await fetch(`${CONFIG.API_URL}?path=pulltabs`);
@@ -1035,11 +1101,16 @@
                     this.renderPullTabTable(result.games);
                 } else {
                     console.warn('Invalid pull-tab library response:', result);
-                    this.loadMockPullTabLibrary();
+                    this.showPullTabError('Invalid response from server. No pull-tab data available.');
                 }
             } catch (error) {
                 console.error('Error loading pull-tab library:', error);
-                this.loadMockPullTabLibrary();
+                this.showPullTabError(error.message || 'Unable to load pull-tab library from Google Drive');
+            } finally {
+                // Hide loading spinner
+                if (window.hideLoading) {
+                    window.hideLoading();
+                }
             }
         }
 
@@ -1084,16 +1155,27 @@
             });
         }
 
-        loadMockPullTabLibrary() {
-            // Fallback mock data if API fails
-            const mockLibrary = [
-                { name: 'Lucky 7s', price: 1, count: 300, profit: 0.25, form: 'A7-300', url: '' },
-                { name: 'Cash Explosion', price: 2, count: 200, profit: 0.60, form: 'BK-CE-200', url: '' },
-                { name: 'Gold Rush', price: 5, count: 100, profit: 1.75, form: 'A-GR-100', url: '' }
-            ];
+        showPullTabError(errorMessage) {
+            // Clear pull-tab library data
+            this.pullTabLibrary = [];
 
-            this.pullTabLibrary = mockLibrary; // Store for access by other functions
-            this.renderPullTabTable(mockLibrary);
+            // Show error message in pull-tab table
+            const tbody = document.getElementById('library-table');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem; color: var(--danger);">
+                            <h3>❌ Unable to Load Pull-Tab Library</h3>
+                            <p>${errorMessage}</p>
+                            <button onclick="adminApp.loadPullTabLibrary()" class="btn primary" style="margin-top: 1rem;">
+                                🔄 Retry
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            console.error('Pull-tab library error:', errorMessage);
         }
 
         viewPullTabDetails(gameIndex) {

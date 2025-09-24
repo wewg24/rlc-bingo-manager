@@ -10,15 +10,36 @@ function nextStep() {
     if (!validateCurrentStep()) {
         return false;
     }
-    
-    // Save current step data
-    saveStepData();
-    
-    // Move to next step if not at the end
-    if (window.app && window.app.currentStep < window.app.totalSteps) {
-        window.app.currentStep++;
-        updateStepDisplay();
-        loadStepData(); // Load any saved data for the new step
+
+    // Show loading during step processing
+    if (window.showLoading) {
+        window.showLoading({
+            text: 'Processing Step',
+            subtext: 'Saving data and advancing...',
+            timeout: 10000
+        });
+    }
+
+    try {
+        // Save current step data
+        saveStepData();
+
+        // Move to next step if not at the end
+        if (window.app && window.app.currentStep < window.app.totalSteps) {
+            window.app.currentStep++;
+            updateStepDisplay();
+            loadStepData(); // Load any saved data for the new step
+        }
+    } catch (error) {
+        console.error('Error in nextStep:', error);
+        if (window.hideLoading) window.hideLoading();
+        alert('Error processing step: ' + error.message);
+        return;
+    }
+
+    // Hide loading after brief delay
+    if (window.hideLoading) {
+        setTimeout(() => window.hideLoading(), 800);
     }
 }
 
@@ -232,38 +253,93 @@ function saveOccasionInfo() {
 }
 
 function savePaperSales() {
-    // Save manual count inventory
-    CONFIG.MANUAL_COUNT_ITEMS.forEach(type => {
-        const start = parseInt(document.getElementById(`${type.id}-start`)?.value) || 0;
-        const end = parseInt(document.getElementById(`${type.id}-end`)?.value) || 0;
-        const free = parseInt(document.getElementById(`${type.id}-free`)?.value) || 0;
-        const sold = Math.max(0, start - end - free);
+    // Ensure complete data structure exists
+    if (!window.app || !window.app.data) {
+        console.error('window.app.data not initialized');
+        return;
+    }
 
-        window.app.data.paperBingo[type.id] = { start, end, free, sold };
-    });
-    
+    // Initialize missing data objects
+    if (!window.app.data.paperBingo) {
+        console.log('Initializing paperBingo object');
+        window.app.data.paperBingo = {};
+    }
+    if (!window.app.data.posSales) {
+        console.log('Initializing posSales object');
+        window.app.data.posSales = {};
+    }
+    if (!window.app.data.electronic) {
+        console.log('Initializing electronic object');
+        window.app.data.electronic = {};
+    }
+
+    // Save manual count inventory
+    if (CONFIG.MANUAL_COUNT_ITEMS && Array.isArray(CONFIG.MANUAL_COUNT_ITEMS)) {
+        CONFIG.MANUAL_COUNT_ITEMS.forEach(type => {
+            try {
+                // Validate type object has required properties
+                if (!type || !type.id) {
+                    console.warn('Invalid MANUAL_COUNT_ITEMS entry:', type);
+                    return;
+                }
+
+                const start = parseInt(document.getElementById(`${type.id}-start`)?.value) || 0;
+                const end = parseInt(document.getElementById(`${type.id}-end`)?.value) || 0;
+                const free = parseInt(document.getElementById(`${type.id}-free`)?.value) || 0;
+                const sold = Math.max(0, start - end - free);
+
+                // Ensure paperBingo object exists and initialize the specific type
+                if (!window.app.data.paperBingo) {
+                    window.app.data.paperBingo = {};
+                }
+
+                if (!window.app.data.paperBingo[type.id]) {
+                    window.app.data.paperBingo[type.id] = {};
+                }
+
+                window.app.data.paperBingo[type.id] = { start, end, free, sold };
+
+                console.log(`Saved paperBingo[${type.id}]:`, window.app.data.paperBingo[type.id]);
+            } catch (error) {
+                console.error('Error processing manual count item:', type.id, error);
+            }
+        });
+    } else {
+        console.warn('CONFIG.MANUAL_COUNT_ITEMS not found or invalid');
+    }
+
     // Save POS sales
-    CONFIG.POS_ITEMS.forEach(item => {
-        const qty = parseInt(document.getElementById(`${item.id}-qty`)?.value) || 0;
-        window.app.data.posSales[item.id] = {
-            name: item.name,
-            price: item.price,
-            quantity: qty,
-            total: qty * item.price
-        };
-    });
-    
+    if (CONFIG.POS_ITEMS) {
+        CONFIG.POS_ITEMS.forEach(item => {
+            try {
+                const qty = parseInt(document.getElementById(`${item.id}-qty`)?.value) || 0;
+                window.app.data.posSales[item.id] = {
+                    name: item.name,
+                    price: item.price,
+                    quantity: qty,
+                    total: qty * item.price
+                };
+            } catch (error) {
+                console.error('Error processing POS item:', item.id, error);
+            }
+        });
+    }
+
     // Save electronic rentals
-    const smallMachines = parseInt(document.getElementById('small-machines')?.value) || 0;
-    const largeMachines = parseInt(document.getElementById('large-machines')?.value) || 0;
-    
-    window.app.data.electronic = {
-        smallMachines,
-        largeMachines,
-        smallTotal: smallMachines * 40,
-        largeTotal: largeMachines * 65,
-        total: (smallMachines * 40) + (largeMachines * 65)
-    };
+    try {
+        const smallMachines = parseInt(document.getElementById('small-machines')?.value) || 0;
+        const largeMachines = parseInt(document.getElementById('large-machines')?.value) || 0;
+
+        window.app.data.electronic = {
+            smallMachines,
+            largeMachines,
+            smallTotal: smallMachines * 40,
+            largeTotal: largeMachines * 65,
+            total: (smallMachines * 40) + (largeMachines * 65)
+        };
+    } catch (error) {
+        console.error('Error processing electronic rentals:', error);
+    }
 
     // Trigger financial calculations update
     if (window.app && typeof window.app.calculateComprehensiveFinancials === 'function') {
