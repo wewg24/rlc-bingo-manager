@@ -1023,15 +1023,6 @@
         }
 
         loadOccasionsJSONP(scriptUrl) {
-            // Show loading spinner
-            if (window.showLoading) {
-                window.showLoading({
-                    text: 'Loading Occasions',
-                    subtext: 'Fetching data from Google Drive...',
-                    timeout: 15000
-                });
-            }
-
             return new Promise((resolve, reject) => {
                 const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
                 const script = document.createElement('script');
@@ -1056,11 +1047,6 @@
                 // Create the script tag
                 script.src = `${scriptUrl}?action=loadOccasions&callback=${callbackName}&t=${Date.now()}`;
                 script.onerror = function() {
-                    // Hide loading spinner on error
-                    if (window.hideLoading) {
-                        window.hideLoading();
-                    }
-
                     delete window[callbackName];
                     document.body.removeChild(script);
                     reject(new Error('JSONP request failed'));

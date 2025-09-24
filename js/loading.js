@@ -8,6 +8,7 @@ class LoadingManager {
     constructor() {
         this.overlay = null;
         this.currentTimeout = null;
+        this.isShowing = false;
         this.init();
     }
 
@@ -51,6 +52,18 @@ class LoadingManager {
             dots = true
         } = options;
 
+        // Clear any existing timeout first
+        if (this.currentTimeout) {
+            clearTimeout(this.currentTimeout);
+            this.currentTimeout = null;
+        }
+
+        // If already showing, just update text and return
+        if (this.isShowing) {
+            this.updateText(text, subtext);
+            return;
+        }
+
         // Update text content
         const textEl = document.getElementById('loading-text');
         const subtextEl = document.getElementById('loading-subtext');
@@ -66,12 +79,15 @@ class LoadingManager {
 
         // Show overlay
         this.overlay.classList.add('show');
+        this.isShowing = true;
 
         // Auto-hide after timeout if specified
         if (timeout) {
             this.currentTimeout = setTimeout(() => {
-                this.hide();
-                console.warn('Loading timeout reached:', timeout + 'ms');
+                if (this.isShowing) {  // Only hide if still showing
+                    this.hide();
+                    console.warn('Loading timeout reached:', timeout + 'ms');
+                }
             }, timeout);
         }
 
@@ -88,8 +104,14 @@ class LoadingManager {
             this.currentTimeout = null;
         }
 
+        // Only hide if actually showing
+        if (!this.isShowing) {
+            return;
+        }
+
         // Hide overlay
         this.overlay.classList.remove('show');
+        this.isShowing = false;
 
         // Re-enable form inputs
         this.disableInputs(false);
