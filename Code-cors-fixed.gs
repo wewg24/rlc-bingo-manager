@@ -1,6 +1,6 @@
 /**
- * RLC Bingo Manager - Google Apps Script Backend v48
- * Handles JSON file storage in Google Drive with CORS support
+ * RLC Bingo Manager - Google Apps Script Backend v51
+ * Handles JSON file storage in Google Drive with proper CORS support
  */
 
 // Configuration
@@ -9,6 +9,19 @@ const CONFIG = {
   OCCASIONS_FILE: 'occasions.json',
   BACKUP_FOLDER: 'RLC Bingo Backups'
 };
+
+/**
+ * Handle OPTIONS requests for CORS preflight
+ */
+function doOptions(e) {
+  return HtmlService.createHtmlOutput()
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setContent('')
+    .getBlob()
+    .setContentType('text/html')
+    .getAs('application/json');
+}
 
 /**
  * Main entry point for web app requests
@@ -30,13 +43,16 @@ function doPost(e) {
 
   } catch (error) {
     console.error('Error in doPost:', error);
-    const errorResponse = ContentService
+    return ContentService
       .createTextOutput(JSON.stringify({
         success: false,
         error: error.toString()
       }))
-      .setMimeType(ContentService.MimeType.JSON);
-    return addCORSHeaders(errorResponse);
+      .setMimeType(ContentService.MimeType.JSON)
+      .setHeader('Access-Control-Allow-Origin', '*')
+      .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      .setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+      .setHeader('Access-Control-Max-Age', '3600');
   }
 }
 
@@ -46,10 +62,20 @@ function doPost(e) {
 function doGet(e) {
   try {
     const action = e.parameter.action || 'loadOccasions';
+    const callback = e.parameter.callback; // For JSONP support
 
     if (action === 'loadOccasions') {
       const result = handleLoadOccasions();
-      return addCORSHeaders(result);
+
+      // If callback is provided, return JSONP
+      if (callback) {
+        const jsonpResponse = callback + '(' + result.getContent() + ')';
+        return ContentService
+          .createTextOutput(jsonpResponse)
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+
+      return result;
     }
 
     throw new Error('Unknown GET action: ' + action);
@@ -73,7 +99,8 @@ function addCORSHeaders(response) {
   return response
     .setHeader('Access-Control-Allow-Origin', '*')
     .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    .setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    .setHeader('Access-Control-Max-Age', '3600');
 }
 
 /**

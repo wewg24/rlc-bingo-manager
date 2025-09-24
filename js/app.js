@@ -73,14 +73,7 @@ class BingoApp {
      */
     async loadOccasionsList() {
         try {
-            const response = await fetch(`${CONFIG.API_URL}?action=loadOccasions&t=${Date.now()}`, {
-                method: 'GET',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            const data = await response.json();
+            const data = await this.loadOccasionsJSONP(CONFIG.API_URL);
             
             const listContainer = document.querySelector('.occasions-list');
             if (data.success && data.occasions) {
@@ -98,7 +91,45 @@ class BingoApp {
             document.querySelector('.occasions-list').innerHTML = '<p>Error loading occasions. Check connection.</p>';
         }
     }
-    
+
+    loadOccasionsJSONP(scriptUrl) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+            const script = document.createElement('script');
+
+            // Set up the callback function
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve({
+                    success: data.success || true,
+                    occasions: data.occasions || [],
+                    count: data.count || 0,
+                    lastUpdated: data.lastUpdated
+                });
+            };
+
+            // Create the script tag
+            script.src = `${scriptUrl}?action=loadOccasions&callback=${callbackName}&t=${Date.now()}`;
+            script.onerror = function() {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('JSONP request failed'));
+            };
+
+            document.body.appendChild(script);
+
+            // Timeout after 10 seconds
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(new Error('JSONP request timeout'));
+                }
+            }, 10000);
+        });
+    }
+
     /**
      * Display reports generation interface
      */

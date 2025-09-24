@@ -1,6 +1,7 @@
 /**
- * RLC Bingo Manager - Google Apps Script Backend v48
+ * RLC Bingo Manager - Google Apps Script Backend v49
  * Handles JSON file storage in Google Drive with CORS support
+ * CLEAN DEPLOYMENT - No frontend files included
  */
 
 // Configuration

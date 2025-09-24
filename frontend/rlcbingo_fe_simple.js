@@ -83,25 +83,8 @@ async function loadOccasions() {
 
     const scriptUrl = 'https://script.google.com/macros/s/AKfycbycm0NuPj3Y_7LZU7HaB54KB87hLHbDW8e3AQ8QwSrVXktKsiP9eusYK6z_whwuxL024A/exec';
 
-    const response = await fetch(scriptUrl + '?action=loadOccasions&t=' + Date.now(), {
-      method: 'GET',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to load occasions: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return {
-      success: data.success || true,
-      occasions: data.occasions || [],
-      count: data.count || 0,
-      lastUpdated: data.lastUpdated
-    };
+    // Use JSONP to bypass CORS restrictions
+    return await loadOccasionsJSONP(scriptUrl);
 
   } catch (error) {
     console.error('Error loading occasions:', error);
@@ -111,6 +94,44 @@ async function loadOccasions() {
       occasions: []
     };
   }
+}
+
+function loadOccasionsJSONP(scriptUrl) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+    const script = document.createElement('script');
+
+    // Set up the callback function
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      resolve({
+        success: data.success || true,
+        occasions: data.occasions || [],
+        count: data.count || 0,
+        lastUpdated: data.lastUpdated
+      });
+    };
+
+    // Create the script tag
+    script.src = `${scriptUrl}?action=loadOccasions&callback=${callbackName}&t=${Date.now()}`;
+    script.onerror = function() {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      reject(new Error('JSONP request failed'));
+    };
+
+    document.body.appendChild(script);
+
+    // Timeout after 10 seconds
+    setTimeout(() => {
+      if (window[callbackName]) {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        reject(new Error('JSONP request timeout'));
+      }
+    }, 10000);
+  });
 }
 
 async function loadOccasion(occasionId) {
