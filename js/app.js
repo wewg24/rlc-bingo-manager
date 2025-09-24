@@ -1253,7 +1253,42 @@ class BingoApp {
      * Save draft data to local storage
      */
     saveDraft() {
-        localStorage.setItem(CONFIG.STORAGE_KEYS.DRAFT_DATA, JSON.stringify(this.data));
+        try {
+            localStorage.setItem(CONFIG.STORAGE_KEYS.DRAFT_DATA, JSON.stringify(this.data));
+            console.log('Draft saved successfully to localStorage');
+
+            // Show user feedback
+            if (window.showToast) {
+                window.showToast('Draft saved successfully', 'success');
+            } else {
+                // Fallback notification
+                const notification = document.createElement('div');
+                notification.textContent = 'Draft saved!';
+                notification.style.cssText = `
+                    position: fixed; top: 20px; right: 20px; z-index: 10000;
+                    background: #4CAF50; color: white; padding: 12px 20px;
+                    border-radius: 4px; font-family: Arial, sans-serif;
+                    font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                `;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
+            }
+            return true;
+        } catch (error) {
+            console.error('Error saving draft:', error);
+
+            // Show error feedback
+            if (window.showToast) {
+                window.showToast('Error saving draft: ' + error.message, 'error');
+            } else {
+                alert('Error saving draft: ' + error.message);
+            }
+            return false;
+        }
     }
     
     /**
