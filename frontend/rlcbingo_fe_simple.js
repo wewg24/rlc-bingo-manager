@@ -7,7 +7,6 @@
 const GITHUB_CONFIG = {
   owner: 'wewg24',
   repo: 'rlc-bingo-manager',
-  token: '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',
   get apiUrl() { return `https://api.github.com/repos/${this.owner}/${this.repo}`; },
   get dataUrl() { return `https://${this.owner}.github.io/${this.repo}/data`; }
 };
@@ -35,53 +34,66 @@ async function saveOccasion(occasionData) {
   try {
     console.log('Saving occasion:', occasionData);
 
-    // Use GitHub Issues API as a workaround for CORS restrictions
+    // Generate occasion ID if not provided
+    const occasionId = occasionData.id || 'OCC_' + Date.now();
+    occasionData.id = occasionId;
+
+    // Use GitHub's web interface to create an issue (no authentication required)
     const issueTitle = `Occasion Save Request: ${occasionData.date} - ${occasionData.sessionType}`;
-    const issueBody = `\`\`\`json
+    const issueBody = `Please process this occasion data:
+
+\`\`\`json
 ${JSON.stringify(occasionData, null, 2)}
 \`\`\`
 
 **Event Type:** save_occasion
-**Timestamp:** ${new Date().toISOString()}`;
+**Timestamp:** ${new Date().toISOString()}
+**Occasion ID:** ${occasionId}
 
-    const response = await fetch(`${GITHUB_CONFIG.apiUrl}/issues`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `token ${GITHUB_CONFIG.token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify({
-        title: issueTitle,
-        body: issueBody,
-        labels: ['data-save', 'auto-generated']
-      })
-    });
+This is an automated request. The data will be processed by GitHub Actions.`;
 
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+    // Create a new issue URL for manual creation if API fails
+    const issueUrl = `https://github.com/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=data-save,auto-generated`;
+
+    // Since we can't use API without tokens, show user the issue URL
+    const userWantsManual = confirm(`Due to security restrictions, we need to create a GitHub issue manually.
+
+This will open GitHub in a new tab where you can submit the save request.
+
+Click OK to open GitHub, or Cancel to try a different approach.`);
+
+    if (userWantsManual) {
+      window.open(issueUrl, '_blank');
+      return {
+        success: true,
+        message: 'GitHub issue opened for manual submission',
+        id: occasionId
+      };
+    } else {
+      // For now, save locally to localStorage as fallback
+      const savedOccasions = JSON.parse(localStorage.getItem('rlc_occasions') || '[]');
+
+      // Remove existing entry if updating
+      const filteredOccasions = savedOccasions.filter(o => o.id !== occasionId);
+
+      // Add new entry
+      const newOccasion = {
+        ...occasionData,
+        created: new Date().toISOString(),
+        modified: new Date().toISOString()
+      };
+
+      filteredOccasions.push(newOccasion);
+
+      // Save to localStorage
+      localStorage.setItem('rlc_occasions', JSON.stringify(filteredOccasions));
+
+      return {
+        success: true,
+        message: 'Occasion saved locally (temporary until GitHub sync)',
+        id: occasionId
+      };
     }
-
-    const issue = await response.json();
-
-    // Close the issue immediately since we only used it as a trigger
-    await fetch(`${GITHUB_CONFIG.apiUrl}/issues/${issue.number}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `token ${GITHUB_CONFIG.token}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.github.v3+json'
-      },
-      body: JSON.stringify({
-        state: 'closed'
-      })
-    });
-
-    return {
-      success: true,
-      message: 'Occasion save triggered successfully',
-      id: occasionData.id || 'OCC_' + Date.now()
-    };
 
   } catch (error) {
     console.error('Error saving occasion:', error);
