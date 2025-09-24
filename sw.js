@@ -1,5 +1,5 @@
 // sw.js - Updated with cache versioning
-const CACHE_VERSION = 'v11.1.0';
+const CACHE_VERSION = 'v11.1.1';
 const CACHE_NAME = `rlc-bingo-${CACHE_VERSION}`;
 
 const urlsToCache = [
@@ -50,15 +50,20 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Skip service worker for Google Apps Script API requests
+  if (event.request.url.includes('script.google.com')) {
+    return; // Let the request go through normally without service worker interference
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         // Always fetch index.html fresh to check for updates
-        if (event.request.url.includes('index.html') || 
+        if (event.request.url.includes('index.html') ||
             event.request.url.endsWith('/')) {
           return fetch(event.request);
         }
-        
+
         // Return cached version or fetch new
         return response || fetch(event.request);
       })
