@@ -30,6 +30,11 @@ body {
 .view {
     flex: 1; /* Allow views to expand to fill available space */
     min-height: 400px; /* Minimum height for content */
+    display: none; /* Hidden by default */
+}
+
+.view.active {
+    display: block; /* Show when active */
 }
 
 .header {
