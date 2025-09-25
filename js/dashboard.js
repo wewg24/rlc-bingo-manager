@@ -11,7 +11,9 @@ class Dashboard {
      * Update dashboard statistics based on loaded data
      */
     updateDashboardStats() {
+        console.log('Dashboard: updateDashboardStats called');
         const occasions = this.adminInterface.occasions || [];
+        console.log('Dashboard: occasions data:', occasions);
 
         // Calculate basic stats
         const totalOccasions = occasions.length;
@@ -67,8 +69,13 @@ class Dashboard {
      * Render the complete dashboard
      */
     renderDashboard(stats) {
+        console.log('Dashboard: renderDashboard called with stats:', stats);
         const dashboardView = document.getElementById('dashboard-view');
-        if (!dashboardView) return;
+        console.log('Dashboard: dashboardView element:', dashboardView);
+        if (!dashboardView) {
+            console.error('Dashboard: dashboard-view element not found!');
+            return;
+        }
 
         const dashboardHtml = `
             <div class="dashboard-container">
@@ -161,6 +168,7 @@ class Dashboard {
         `;
 
         dashboardView.innerHTML = dashboardHtml;
+        console.log('Dashboard: HTML successfully set, content length:', dashboardHtml.length);
     }
 
     /**
