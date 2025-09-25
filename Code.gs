@@ -42,17 +42,12 @@ function doOptions(e) {
 }
 
 /**
- * Helper function to create CORS-enabled response
+ * Helper function to create response (CORS handled automatically by Google Apps Script for JSONP)
  */
-function createCorsResponse(content, mimeType = ContentService.MimeType.JSON) {
+function createResponse(content, mimeType = ContentService.MimeType.JSON) {
   return ContentService
     .createTextOutput(content)
-    .setMimeType(mimeType)
-    .setHeaders({
-      'Access-Control-Allow-Origin': 'https://wewg24.github.io',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    });
+    .setMimeType(mimeType);
 }
 
 /**
@@ -368,7 +363,7 @@ function doGet(e) {
       const content = result.getContent();
 
       if (callback) {
-        return createCorsResponse(callback + '(' + content + ')', ContentService.MimeType.JAVASCRIPT);
+        return createResponse(callback + '(' + content + ')', ContentService.MimeType.JAVASCRIPT);
       }
       return result;
     }
@@ -1246,7 +1241,7 @@ function updatePullTabsIndex() {
                 form: game.form,
                 count: game.count,
                 price: game.price,
-                profit: game.profit,
+                profit: game.idealProfit || game.profit,
                 identifier: game.identifier,
                 fileName: fileName,
                 lastModified: file.getLastUpdated().toISOString()
@@ -2056,7 +2051,7 @@ function handleGetPullTabsLibrary() {
       console.log('Pull-tabs library file not found, using default data');
       const defaultLibrary = getDefaultPullTabsLibrary();
 
-      return createCorsResponse(JSON.stringify({
+      return createResponse(JSON.stringify({
         success: true,
         data: defaultLibrary,
         source: 'default',
@@ -2064,7 +2059,7 @@ function handleGetPullTabsLibrary() {
       }));
     }
 
-    return createCorsResponse(JSON.stringify({
+    return createResponse(JSON.stringify({
       success: true,
       data: pullTabsLibrary,
       source: 'file',
@@ -2073,7 +2068,7 @@ function handleGetPullTabsLibrary() {
 
   } catch (error) {
     console.error('Error loading pull-tabs library:', error);
-    return createCorsResponse(JSON.stringify({
+    return createResponse(JSON.stringify({
       success: false,
       error: error.toString()
     }));

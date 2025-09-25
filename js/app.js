@@ -183,7 +183,7 @@ class BingoApp {
                 const formNumber = game.form || '';
                 const ticketCount = game.count || 0;
                 const ticketPrice = game.price || 1;
-                const idealProfit = game.profit || 0;
+                const idealProfit = game.idealProfit || 0;
                 
                 return `
                     <tr>
@@ -1138,7 +1138,7 @@ class BingoApp {
                             form: game.form,
                             count: game.count || 0,
                             price: game.price || 1,
-                            profit: game.profit || 0,
+                            profit: game.idealProfit || 0,
                             url: game.url || '',
                             identifier: `${game.name}_${game.form}`
                         };
@@ -1380,7 +1380,7 @@ window.populatePullTabDropdowns = function() {
             option.textContent = `${game.name} (${game.form})`;
             option.dataset.tickets = game.count;
             option.dataset.price = game.price;
-            option.dataset.profit = game.profit;
+            option.dataset.profit = game.idealProfit;
             select.appendChild(option);
         });
     });
@@ -1408,12 +1408,12 @@ window.handlePullTabSelection = function(selectElement) {
         
         // Calculate ideal values
         const idealSales = game.count * game.price;
-        const idealPrizes = idealSales - game.profit;
+        const idealPrizes = idealSales - game.idealProfit;
         
         if (ticketsSoldCell) ticketsSoldCell.textContent = `$${idealSales.toFixed(2)}`;
         if (prizesPaidCell) prizesPaidCell.textContent = `$${idealPrizes.toFixed(2)}`;
-        if (profitCell) profitCell.textContent = `$${game.profit.toFixed(2)}`;
-        if (idealProfitCell) idealProfitCell.textContent = `$${game.profit.toFixed(2)}`;
+        if (profitCell) profitCell.textContent = `$${game.idealProfit.toFixed(2)}`;
+        if (idealProfitCell) idealProfitCell.textContent = `$${game.idealProfit.toFixed(2)}`;
         
         // Trigger totals calculation if function exists
         if (typeof window.calculatePullTabTotals === 'function') {

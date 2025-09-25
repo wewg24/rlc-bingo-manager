@@ -1119,7 +1119,7 @@
                     const row = tbody.insertRow();
 
                     // Calculate profit percentage if possible
-                    const profitPercent = game.price > 0 ? Math.round((game.profit / game.price) * 100) : 0;
+                    const profitPercent = game.price > 0 ? Math.round((game.idealProfit / game.price) * 100) : 0;
 
                     row.innerHTML = `
                         <td>${game.name || 'Unknown Game'}</td>
@@ -1188,8 +1188,8 @@
                             <div><strong>Form Number:</strong> ${game.form || 'N/A'}</div>
                             <div><strong>Ticket Price:</strong> $${parseFloat(game.price) || 0}</div>
                             <div><strong>Tickets per Game:</strong> ${parseInt(game.count) || 0}</div>
-                            <div><strong>Expected Profit:</strong> $${parseFloat(game.profit) || 0}</div>
-                            <div><strong>Profit Percentage:</strong> ${game.price > 0 ? Math.round((game.profit / game.price) * 100) : 0}%</div>
+                            <div><strong>Expected Profit:</strong> $${parseFloat(game.idealProfit) || 0}</div>
+                            <div><strong>Profit Percentage:</strong> ${game.price > 0 ? Math.round((game.idealProfit / game.price) * 100) : 0}%</div>
                             ${game.url ? `<div><strong>PDF Document:</strong> <a href="${game.url}" target="_blank" class="btn secondary">View PDF</a></div>` : ''}
                         </div>
 
@@ -1909,7 +1909,7 @@
 
                         <div class="form-group">
                             <label>Expected Profit ($)</label>
-                            <input type="number" name="profit" class="form-control" value="${game.profit || ''}" required min="0" step="0.01">
+                            <input type="number" name="profit" class="form-control" value="${game.idealProfit || ''}" required min="0" step="0.01">
                         </div>
 
                         <div class="form-group">

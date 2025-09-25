@@ -745,12 +745,12 @@ function handlePullTabSelection(selectElement) {
         
         // Calculate ideal values
         const idealSales = game.count * game.price;
-        const idealPrizes = idealSales - game.profit;
+        const idealPrizes = idealSales - game.idealProfit;
         
         if (ticketsSoldCell) ticketsSoldCell.textContent = `$${idealSales.toFixed(2)}`;
         if (prizesPaidCell) prizesPaidCell.textContent = `$${idealPrizes.toFixed(2)}`;
-        if (profitCell) profitCell.textContent = `$${game.profit.toFixed(2)}`;
-        if (idealProfitCell) idealProfitCell.textContent = `$${game.profit.toFixed(2)}`;
+        if (profitCell) profitCell.textContent = `$${game.idealProfit.toFixed(2)}`;
+        if (idealProfitCell) idealProfitCell.textContent = `$${game.idealProfit.toFixed(2)}`;
         
         // Trigger totals calculation
         calculatePullTabTotals();

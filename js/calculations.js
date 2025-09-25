@@ -124,7 +124,7 @@ function addPullTabRow() {
         const game = window.app?.pullTabLibrary.find(g => g.name === e.target.value);
         if (game) {
             row.querySelector('.pt-price').value = game.price || 1;
-            row.querySelector('.pt-ideal').value = game.profit || 0;
+            row.querySelector('.pt-ideal').value = game.idealProfit || 0;
         }
     });
     

@@ -40,7 +40,7 @@
                             form: game.Form || game.form,
                             count: game[' Count '] || game.Count || game.count || 0,
                             price: game.Price || game.price || 1,
-                            profit: game.IdealProfit || game.profit || 0,
+                            profit: game.IdealProfit || game.idealProfit || game.profit || 0,
                             url: game.URL || game.url || '',
                             identifier: `${game.Game || game.name}_${game.Form || game.form}`
                         };
