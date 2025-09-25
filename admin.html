@@ -1253,7 +1253,7 @@
                         <td>
                             <button class="btn" onclick="adminApp.editPullTab('${index}')">Edit</button>
                             <button class="btn secondary" onclick="adminApp.viewPullTabDetails('${index}')">View</button>
-                            ${game.url ? `<button class="btn secondary" onclick="window.open('${game.url}', '_blank')">PDF</button>` : ''}
+                            ${game.url ? `<button class="btn secondary" onclick="adminApp.showPDFModal('${game.url}', '${game.name}')">PDF</button>` : ''}
                         </td>
                     `;
                 } catch (error) {
@@ -1465,7 +1465,7 @@
                             <div><strong>Tickets per Game:</strong> ${parseInt(game.count) || 0}</div>
                             <div><strong>Expected Profit:</strong> $${parseFloat(game.idealProfit) || 0}</div>
                             <div><strong>Profit Percentage:</strong> ${game.price > 0 ? Math.round((game.idealProfit / game.price) * 100) : 0}%</div>
-                            ${game.url ? `<div><strong>PDF Document:</strong> <a href="${game.url}" target="_blank" class="btn secondary">View PDF</a></div>` : ''}
+                            ${game.url ? `<div><strong>PDF Document:</strong> <button onclick="adminApp.showPDFModal('${game.url}', '${game.name}')" class="btn secondary">View PDF</button></div>` : ''}
                         </div>
 
                         <div style="margin-top: 20px; text-align: right;">
@@ -1501,7 +1501,14 @@
 
                             <div class="form-group">
                                 <label for="new-game-price">Ticket Price *</label>
-                                <input type="number" id="new-game-price" class="form-control" step="0.01" min="0" required>
+                                <select id="new-game-price" class="form-control" required>
+                                    <option value="0.25">$0.25</option>
+                                    <option value="0.50">$0.50</option>
+                                    <option value="1">$1.00</option>
+                                    <option value="2">$2.00</option>
+                                    <option value="5">$5.00</option>
+                                    <option value="10">$10.00</option>
+                                </select>
                             </div>
 
                             <div class="form-group">
@@ -1548,15 +1555,9 @@
             };
 
             try {
-                const response = await fetch(`${CONFIG.API_URL}`, {
-                    method: 'POST',
-                    body: new URLSearchParams({
-                        action: 'add-pull-tab-game',
-                        data: JSON.stringify(formData)
-                    })
-                });
-
-                const result = await response.json();
+                // Use JSONP to avoid CORS issues
+                const url = `${CONFIG.API_URL}?action=add-pull-tab-game&data=${encodeURIComponent(JSON.stringify(formData))}&t=${Date.now()}`;
+                const result = await this.jsonpRequest(url);
 
                 if (result.success) {
                     this.showAlert('New game added successfully!', 'success');
@@ -1625,6 +1626,61 @@
             setTimeout(() => {
                 alertEl.style.display = 'none';
             }, 3000);
+        }
+
+        showPDFModal(pdfUrl, gameName) {
+            // Create PDF modal
+            const modalHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="pdf-modal">
+                    <div style="background: white; width: 90%; height: 90%; border-radius: 8px; display: flex; flex-direction: column; max-width: 1200px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #ccc; background: #f8f9fa; border-radius: 8px 8px 0 0;">
+                            <h3 style="margin: 0; color: #333;">PDF: ${gameName}</h3>
+                            <button onclick="document.getElementById('pdf-modal').remove()" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                                ✕ Close
+                            </button>
+                        </div>
+                        <div style="flex: 1; padding: 0; position: relative;">
+                            <iframe
+                                src="${pdfUrl}"
+                                style="width: 100%; height: 100%; border: none; display: block;"
+                                title="PDF Document - ${gameName}">
+                                <p>Your browser does not support PDFs. <a href="${pdfUrl}" target="_blank">Click here to download the PDF file.</a></p>
+                            </iframe>
+                        </div>
+                        <div style="padding: 10px 20px; background: #f8f9fa; border-top: 1px solid #ccc; text-align: center; border-radius: 0 0 8px 8px;">
+                            <small style="color: #666;">If the PDF doesn't load, <a href="${pdfUrl}" target="_blank">open it in a new tab</a></small>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Remove any existing PDF modal
+            const existingModal = document.getElementById('pdf-modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // Add the new modal to the page
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            // Close modal when clicking outside of it
+            document.getElementById('pdf-modal').addEventListener('click', function(e) {
+                if (e.target.id === 'pdf-modal') {
+                    this.remove();
+                }
+            });
+
+            // Close modal with Escape key
+            const escapeHandler = function(e) {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('pdf-modal');
+                    if (modal) {
+                        modal.remove();
+                    }
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
         }
 
         async deleteOccasion(occasionId) {
@@ -2228,21 +2284,9 @@
 
                 console.log('Saving pull-tab edit for game index:', gameIndex, gameData);
 
-                // Call backend API to update the game
-                const response = await fetch(CONFIG.API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        action: 'add-pull-tab-game', // Use add with update flag
-                        gameIndex: gameIndex,
-                        update: 'true',
-                        data: JSON.stringify(gameData)
-                    })
-                });
-
-                const result = await response.json();
+                // Call backend API to update the game using JSONP
+                const url = `${CONFIG.API_URL}?action=update-pull-tab-game&gameIndex=${gameIndex}&data=${encodeURIComponent(JSON.stringify(gameData))}&t=${Date.now()}`;
+                const result = await this.jsonpRequest(url);
 
                 if (result.success) {
                     modal.remove();
