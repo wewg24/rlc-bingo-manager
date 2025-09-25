@@ -125,8 +125,13 @@ class AdminInterface {
     }
 
     showDashboard() {
+        console.log('AdminInterface: showDashboard called');
         this.hideAllViews();
-        document.getElementById('dashboard-view').classList.remove('hidden');
+        const dashboardView = document.getElementById('dashboard-view');
+        dashboardView.classList.remove('hidden');
+        console.log('AdminInterface: Removed hidden class from dashboard-view');
+        console.log('AdminInterface: dashboard-view classes:', dashboardView.className);
+        console.log('AdminInterface: dashboard-view style display:', dashboardView.style.display);
         document.getElementById('nav-dashboard').classList.add('active');
         this.loadDashboard();
     }
