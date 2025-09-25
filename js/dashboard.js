@@ -79,6 +79,15 @@ class Dashboard {
 
         const dashboardHtml = `
             <div class="dashboard-container">
+                ${stats.totalOccasions === 0 ? `
+                    <div class="card" style="text-align: center; padding: 40px; margin-bottom: 20px; background: #f8f9fa;">
+                        <h2>🏁 Welcome to RLC Bingo Admin!</h2>
+                        <p style="font-size: 16px; margin-bottom: 20px;">No occasions found in the system yet.</p>
+                        <a href="./occasion.html" class="btn success" target="_blank" style="font-size: 18px; padding: 12px 24px;">
+                            ➕ Create Your First Occasion
+                        </a>
+                    </div>
+                ` : ''}
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value">${stats.totalOccasions}</div>
