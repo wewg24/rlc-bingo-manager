@@ -660,6 +660,20 @@
     <script src="js/loading.js?v=11.1.0"></script>
 
     <script>
+    // Deployment/Version Info - Auto-logs on page load
+    const DEPLOYMENT_INFO = {
+        version: '11.1.2-cache-busting',
+        deployed: '2025-09-24T23:45:00Z',
+        features: ['cache-busting-api-calls', 'session-games-view', 'enhanced-debugging'],
+        commit: '4c1d70e',
+        apiUrl: CONFIG.API_URL
+    };
+
+    console.log('🚀 RLC Bingo Manager Admin - Deployment Info:', DEPLOYMENT_INFO);
+    console.log('📅 Deployed:', new Date(DEPLOYMENT_INFO.deployed).toLocaleString());
+    console.log('🔗 API URL:', DEPLOYMENT_INFO.apiUrl);
+    console.log('✨ Features:', DEPLOYMENT_INFO.features);
+
     // Admin Interface JavaScript
     class AdminInterface {
         constructor() {
