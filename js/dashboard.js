@@ -182,7 +182,21 @@ class Dashboard {
         `;
 
         dashboardView.innerHTML = dashboardHtml;
+
+        // Force visibility to debug CSS issues
+        dashboardView.style.display = 'block';
+        dashboardView.style.visibility = 'visible';
+        dashboardView.style.opacity = '1';
+        dashboardView.style.minHeight = '200px';
+        dashboardView.style.background = '#f0f0f0'; // Temporary background to see boundaries
+
         console.log('Dashboard: HTML successfully set, content length:', dashboardHtml.length);
+        console.log('Dashboard: Final element styles:', {
+            display: dashboardView.style.display,
+            visibility: dashboardView.style.visibility,
+            opacity: dashboardView.style.opacity,
+            minHeight: dashboardView.style.minHeight
+        });
     }
 
     /**

@@ -16,6 +16,20 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    min-height: calc(100vh - 40px); /* Ensure container takes full viewport height minus padding */
+    display: flex;
+    flex-direction: column;
+}
+
+#admin-interface {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.view {
+    flex: 1; /* Allow views to expand to fill available space */
+    min-height: 400px; /* Minimum height for content */
 }
 
 .header {
