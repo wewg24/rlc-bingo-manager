@@ -584,8 +584,7 @@
                             <th>Game Name</th>
                             <th>Ticket Price</th>
                             <th>Tickets per Game</th>
-                            <th>Ideal Profit %</th>
-                            <th>Manufacturer</th>
+                            <th>Ideal Profit</th>
                             <th>Form #</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -1230,7 +1229,7 @@
             if (!games || games.length === 0) {
                 const row = tbody.insertRow();
                 row.innerHTML = `
-                    <td colspan="8" style="text-align: center; padding: 20px; color: #666;">
+                    <td colspan="7" style="text-align: center; padding: 20px; color: #666;">
                         No pull-tab games found in library.
                     </td>
                 `;
@@ -1241,15 +1240,14 @@
                 try {
                     const row = tbody.insertRow();
 
-                    // Calculate profit percentage if possible
-                    const profitPercent = game.price > 0 ? Math.round((game.idealProfit / game.price) * 100) : 0;
+                    // Format ideal profit as currency
+                    const idealProfit = parseFloat(game.idealProfit) || 0;
 
                     row.innerHTML = `
                         <td>${game.name || 'Unknown Game'}</td>
                         <td>$${parseFloat(game.price) || 0}</td>
                         <td>${parseInt(game.count) || 0}</td>
-                        <td>${profitPercent}%</td>
-                        <td>Unknown</td>
+                        <td>$${idealProfit.toFixed(2)}</td>
                         <td>${game.form || 'N/A'}</td>
                         <td><span class="status active">Active</span></td>
                         <td>
@@ -1826,13 +1824,8 @@
         }
 
         async getPullTabLibraryData() {
-            // In a real implementation, this would fetch from the backend
-            return [
-                { id: 1, name: 'Lucky 7s', ticketPrice: 1, ticketsPerGame: 300, idealProfitPercent: 25, manufacturer: 'Arrow', formNumber: 'A7-300', status: 'Active' },
-                { id: 2, name: 'Cash Explosion', ticketPrice: 2, ticketsPerGame: 200, idealProfitPercent: 30, manufacturer: 'Bingo King', formNumber: 'BK-CE-200', status: 'Active' },
-                { id: 3, name: 'Gold Rush', ticketPrice: 5, ticketsPerGame: 100, idealProfitPercent: 35, manufacturer: 'Arrow', formNumber: 'A-GR-100', status: 'Active' }
-                // In reality, this would include 150+ games
-            ];
+            // Return actual pull-tab library data
+            return this.pullTabLibrary || [];
         }
 
         async getOccasionConfigs() {
@@ -1851,11 +1844,10 @@
             const libraryRows = libraryData.map(game => `
                 <tr>
                     <td>${game.name}</td>
-                    <td>$${game.ticketPrice}</td>
-                    <td>${game.ticketsPerGame}</td>
-                    <td>${game.idealProfitPercent}%</td>
-                    <td>${game.manufacturer}</td>
-                    <td>${game.formNumber}</td>
+                    <td>$${game.price || game.ticketPrice}</td>
+                    <td>${game.count || game.ticketsPerGame}</td>
+                    <td>$${(game.idealProfit || 0).toFixed(2)}</td>
+                    <td>${game.form || game.formNumber || 'N/A'}</td>
                 </tr>
             `).join('');
 
@@ -1955,8 +1947,7 @@
                             <th>Game Name</th>
                             <th>Price</th>
                             <th>Tickets</th>
-                            <th>Profit %</th>
-                            <th>Manufacturer</th>
+                            <th>Ideal Profit</th>
                             <th>Form #</th>
                         </tr>
                     </thead>
