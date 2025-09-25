@@ -2022,7 +2022,13 @@
                             <div><strong>Ticket Price:</strong> $${parseFloat(game.price) || 0}</div>
                             <div><strong>Tickets per Game:</strong> ${parseInt(game.count) || 0}</div>
                             <div><strong>Expected Profit:</strong> $${parseFloat(game.idealProfit) || 0}</div>
-                            <div><strong>Profit Percentage:</strong> ${game.price > 0 ? Math.round((game.idealProfit / game.price) * 100) : 0}%</div>
+                            <div><strong>Profit Percentage:</strong> ${(() => {
+                                const price = parseFloat(game.price) || 0;
+                                const count = parseInt(game.count) || 0;
+                                const idealProfit = parseFloat(game.idealProfit) || 0;
+                                const totalSales = price * count;
+                                return totalSales > 0 ? Math.round((idealProfit / totalSales) * 100) : 0;
+                            })()}%</div>
                             ${game.url ? `<div><strong>PDF Document:</strong> <button onclick="adminApp.showPDFModal('${game.url}', '${game.name}')" class="btn secondary">View PDF</button></div>` : ''}
                         </div>
 
