@@ -932,11 +932,11 @@
             // Clear occasions data
             this.occasions = [];
 
-            // Show error message in dashboard stats
-            document.getElementById('total-occasions').textContent = 'Error';
-            document.getElementById('total-revenue').textContent = 'Error';
-            document.getElementById('total-profit').textContent = 'Error';
-            document.getElementById('avg-players').textContent = 'Error';
+            // Show error message in dashboard stats with retry buttons
+            document.getElementById('total-occasions').innerHTML = '<button onclick="adminApp.loadDashboard()" class="btn primary" style="padding: 2px 6px; font-size: 12px;">🔄 Retry</button>';
+            document.getElementById('total-revenue').innerHTML = '<span style="color: var(--danger);">Error</span>';
+            document.getElementById('total-profit').innerHTML = '<span style="color: var(--danger);">Error</span>';
+            document.getElementById('avg-players').innerHTML = '<span style="color: var(--danger);">Error</span>';
 
             // Show error message in occasions table
             const occasionsTableBody = document.getElementById('occasions-table-body');
@@ -946,15 +946,54 @@
                         <td colspan="7" style="text-align: center; padding: 2rem; color: var(--danger);">
                             <h3>❌ Unable to Load Data</h3>
                             <p>${errorMessage}</p>
-                            <button onclick="location.reload()" class="btn primary" style="margin-top: 1rem;">
-                                🔄 Retry
-                            </button>
+                            <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                                <button onclick="adminApp.loadDashboard()" class="btn primary">
+                                    🔄 Retry Dashboard
+                                </button>
+                                <button onclick="location.reload()" class="btn secondary">
+                                    🔄 Reload Page
+                                </button>
+                                <button onclick="adminApp.clearErrorAndRetry()" class="btn" style="background: #6c757d; color: white;">
+                                    🗑️ Clear & Retry
+                                </button>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                                Try "Retry Dashboard" first. If that fails, use "Reload Page" to refresh completely.
+                            </p>
                         </td>
                     </tr>
                 `;
             }
 
             console.error('Dashboard error state:', errorMessage);
+        }
+
+        clearErrorAndRetry() {
+            // Clear any cached data and retry loading
+            this.occasions = [];
+
+            // Reset dashboard stats to loading state
+            document.getElementById('total-occasions').textContent = 'Loading...';
+            document.getElementById('total-revenue').textContent = 'Loading...';
+            document.getElementById('total-profit').textContent = 'Loading...';
+            document.getElementById('avg-players').textContent = 'Loading...';
+
+            // Clear occasions table
+            const occasionsTableBody = document.getElementById('occasions-table-body');
+            if (occasionsTableBody) {
+                occasionsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem;">
+                            <div class="loading">🔄 Clearing cache and retrying...</div>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Wait a moment then retry loading
+            setTimeout(() => {
+                this.loadDashboard();
+            }, 500);
         }
 
         updateDashboardStats() {
@@ -1274,15 +1313,48 @@
                         <td colspan="8" style="text-align: center; padding: 2rem; color: var(--danger);">
                             <h3>❌ Unable to Load Pull-Tab Library</h3>
                             <p>${errorMessage}</p>
-                            <button onclick="adminApp.loadPullTabLibrary()" class="btn primary" style="margin-top: 1rem;">
-                                🔄 Retry
-                            </button>
+                            <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                                <button onclick="adminApp.loadPullTabLibrary()" class="btn primary">
+                                    🔄 Retry Library
+                                </button>
+                                <button onclick="location.reload()" class="btn secondary">
+                                    🔄 Reload Page
+                                </button>
+                                <button onclick="adminApp.clearPullTabErrorAndRetry()" class="btn" style="background: #6c757d; color: white;">
+                                    🗑️ Clear & Retry
+                                </button>
+                            </div>
+                            <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                                Try "Retry Library" first. If that fails, use "Reload Page" to refresh completely.
+                            </p>
                         </td>
                     </tr>
                 `;
             }
 
             console.error('Pull-tab library error:', errorMessage);
+        }
+
+        clearPullTabErrorAndRetry() {
+            // Clear any cached data and retry loading
+            this.pullTabLibrary = [];
+
+            // Show loading message in pull-tab table
+            const tbody = document.getElementById('library-table');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 2rem;">
+                            <div class="loading">🔄 Clearing cache and retrying pull-tab library...</div>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Wait a moment then retry loading
+            setTimeout(() => {
+                this.loadPullTabLibrary();
+            }, 500);
         }
 
         renderSessionGamesView(sessionData) {
@@ -1429,14 +1501,45 @@
                     <div style="text-align: center; padding: 2rem; color: var(--danger);">
                         <h3>❌ Unable to Load Session Games</h3>
                         <p>${errorMessage}</p>
-                        <button onclick="adminApp.loadSessionGames()" class="btn primary" style="margin-top: 1rem;">
-                            🔄 Retry
-                        </button>
+                        <div style="margin-top: 1rem; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <button onclick="adminApp.loadSessionGames()" class="btn primary">
+                                🔄 Retry Session Games
+                            </button>
+                            <button onclick="location.reload()" class="btn secondary">
+                                🔄 Reload Page
+                            </button>
+                            <button onclick="adminApp.clearSessionGamesErrorAndRetry()" class="btn" style="background: #6c757d; color: white;">
+                                🗑️ Clear & Retry
+                            </button>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                            Try "Retry Session Games" first. If that fails, use "Reload Page" to refresh completely.
+                        </p>
                     </div>
                 `;
             }
 
             console.error('Session games error:', errorMessage);
+        }
+
+        clearSessionGamesErrorAndRetry() {
+            // Clear any cached data and retry loading
+            this.sessionGames = {};
+
+            // Show loading message
+            const contentDiv = document.getElementById('session-games-content');
+            if (contentDiv) {
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div class="loading">🔄 Clearing cache and retrying session games...</div>
+                    </div>
+                `;
+            }
+
+            // Wait a moment then retry loading
+            setTimeout(() => {
+                this.loadSessionGames();
+            }, 500);
         }
 
         viewPullTabDetails(gameIndex) {
