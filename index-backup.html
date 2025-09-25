@@ -1077,14 +1077,14 @@
 
             try {
                 // Load real pull-tab library data from API
-                const response = await fetch(`${CONFIG.API_URL}?path=pulltabs`);
+                const response = await fetch(`${CONFIG.API_URL}?action=getPullTabsLibrary`);
                 const result = await response.json();
 
                 console.log('Pull-tab library API response:', result); // Debug logging
 
-                if (result.success && result.games && Array.isArray(result.games)) {
-                    this.pullTabLibrary = result.games; // Store for access by other functions
-                    this.renderPullTabTable(result.games);
+                if (result.success && result.data && result.data.games && Array.isArray(result.data.games)) {
+                    this.pullTabLibrary = result.data.games; // Store for access by other functions
+                    this.renderPullTabTable(result.data.games);
                 } else {
                     console.warn('Invalid pull-tab library response:', result);
                     this.showPullTabError('Invalid response from server. No pull-tab data available.');

@@ -420,6 +420,7 @@
                 <button class="btn" onclick="showOccasions()">Occasions</button>
                 <button class="btn" onclick="showReports()">Reports</button>
                 <button class="btn" onclick="showLibrary()">Pull-Tab Library</button>
+                <button class="btn" onclick="showSessionGames()">Session Games</button>
                 <button class="btn warning" onclick="generateOfflineApp()">Generate Offline App</button>
             </div>
         </div>
@@ -598,6 +599,25 @@
         </div>
 
         <!-- Removed inadequate modal form - use mobile version instead -->
+
+        <!-- Session Games View -->
+        <div id="session-games-view" class="view hidden">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>Session Games Management</h3>
+                    <div>
+                        <button class="btn secondary" onclick="adminApp.loadSessionGames()" title="Refresh session games">🔄 Refresh</button>
+                    </div>
+                </div>
+
+                <div id="session-games-content">
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <div class="spinner" style="margin: 0 auto 1rem;"></div>
+                        <p>Loading session games...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Offline App Generator -->
         <div id="offline-generator" class="card hidden">
@@ -959,6 +979,12 @@
             this.loadPullTabLibrary();
         }
 
+        showSessionGames() {
+            this.hideAllViews();
+            document.getElementById('session-games-view').classList.remove('hidden');
+            this.loadSessionGames();
+        }
+
         hideAllViews() {
             document.querySelectorAll('.view').forEach(view => {
                 view.classList.add('hidden');
@@ -1083,14 +1109,22 @@
 
             try {
                 // Load real pull-tab library data from API
-                const response = await fetch(`${CONFIG.API_URL}?path=pulltabs`);
+                const response = await fetch(`${CONFIG.API_URL}?action=getPullTabsLibrary`);
                 const result = await response.json();
 
                 console.log('Pull-tab library API response:', result); // Debug logging
+                console.log('Response keys:', Object.keys(result));
+                console.log('result.success:', result.success);
+                console.log('result.data exists:', !!result.data);
+                if (result.data) {
+                    console.log('result.data keys:', Object.keys(result.data));
+                    console.log('result.data.games exists:', !!result.data.games);
+                    console.log('result.data.games is array:', Array.isArray(result.data.games));
+                }
 
-                if (result.success && result.games && Array.isArray(result.games)) {
-                    this.pullTabLibrary = result.games; // Store for access by other functions
-                    this.renderPullTabTable(result.games);
+                if (result.success && result.data && result.data.games && Array.isArray(result.data.games)) {
+                    this.pullTabLibrary = result.data.games; // Store for access by other functions
+                    this.renderPullTabTable(result.data.games);
                 } else {
                     console.warn('Invalid pull-tab library response:', result);
                     this.showPullTabError('Invalid response from server. No pull-tab data available.');
@@ -1098,6 +1132,41 @@
             } catch (error) {
                 console.error('Error loading pull-tab library:', error);
                 this.showPullTabError(error.message || 'Unable to load pull-tab library from Google Drive');
+            } finally {
+                // Hide loading spinner
+                if (window.hideLoading) {
+                    window.hideLoading();
+                }
+            }
+        }
+
+        async loadSessionGames() {
+            // Show loading spinner
+            if (window.showLoading) {
+                window.showLoading({
+                    text: 'Loading Session Games',
+                    subtext: 'Fetching session games from Google Drive...',
+                    timeout: 15000
+                });
+            }
+
+            try {
+                // Load session games data from API
+                const response = await fetch(`${CONFIG.API_URL}?action=getSessionGames`);
+                const result = await response.json();
+
+                console.log('Session games API response:', result); // Debug logging
+
+                if (result.success && result.data) {
+                    this.sessionGames = result.data; // Store for access by other functions
+                    this.renderSessionGamesView(result.data);
+                } else {
+                    console.warn('Invalid session games response:', result);
+                    this.showSessionGamesError('Invalid response from server. No session games data available.');
+                }
+            } catch (error) {
+                console.error('Error loading session games:', error);
+                this.showSessionGamesError(error.message || 'Unable to load session games from Google Drive');
             } finally {
                 // Hide loading spinner
                 if (window.hideLoading) {
@@ -1168,6 +1237,160 @@
             }
 
             console.error('Pull-tab library error:', errorMessage);
+        }
+
+        renderSessionGamesView(sessionData) {
+            const contentDiv = document.getElementById('session-games-content');
+
+            if (!sessionData || Object.keys(sessionData).length === 0) {
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <h3>No Session Games Found</h3>
+                        <p>No session games data available.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="session-games-grid">';
+
+            // Iterate through each session
+            Object.entries(sessionData).forEach(([sessionKey, session]) => {
+                html += `
+                    <div class="session-card" style="border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">
+                            ${session.sessionName} (${session.totalGames} games)
+                        </h4>
+
+                        <div class="session-categories">
+                `;
+
+                // Early Bird Games
+                if (session.categories.earlyBird && session.categories.earlyBird.games) {
+                    html += `
+                        <div class="category-section" style="margin-bottom: 15px;">
+                            <h5 style="color: var(--success); margin-bottom: 8px;">Early Bird Games</h5>
+                            <div class="games-list">
+                    `;
+                    session.categories.earlyBird.games.forEach(game => {
+                        html += `
+                            <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                <span>Game ${game.gameNumber}: ${game.pattern}</span>
+                                <span style="font-weight: bold; color: var(--success);">$${game.payout}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                }
+
+                // Regular Games
+                if (session.categories.regular) {
+                    html += `
+                        <div class="category-section" style="margin-bottom: 15px;">
+                            <h5 style="color: var(--primary); margin-bottom: 8px;">Regular Games</h5>
+                    `;
+
+                    // Pre-intermission games
+                    if (session.categories.regular.preIntermission) {
+                        session.categories.regular.preIntermission.forEach(game => {
+                            html += `
+                                <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                    <span>Game ${game.gameNumber}: ${game.pattern}</span>
+                                    <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    // Post-intermission games
+                    if (session.categories.regular.postIntermission) {
+                        session.categories.regular.postIntermission.forEach(game => {
+                            html += `
+                                <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                    <span>Game ${game.gameNumber}: ${game.pattern}</span>
+                                    <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    // Post-progressive games
+                    if (session.categories.regular.postProgressive) {
+                        session.categories.regular.postProgressive.forEach(game => {
+                            html += `
+                                <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                    <span>Game ${game.gameNumber}: ${game.pattern}</span>
+                                    <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    html += `</div>`;
+                }
+
+                // Special Event Games
+                if (session.categories.specialEvent && session.categories.specialEvent.games) {
+                    html += `
+                        <div class="category-section" style="margin-bottom: 15px;">
+                            <h5 style="color: var(--warning); margin-bottom: 8px;">Special Event Games</h5>
+                            <div class="games-list">
+                    `;
+                    session.categories.specialEvent.games.forEach(game => {
+                        html += `
+                            <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                <span>Game ${game.gameNumber}: ${game.pattern}</span>
+                                <span style="font-weight: bold; color: var(--warning);">${game.payout}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                }
+
+                // Progressive Games
+                if (session.categories.progressive && session.categories.progressive.games) {
+                    html += `
+                        <div class="category-section" style="margin-bottom: 15px;">
+                            <h5 style="color: var(--danger); margin-bottom: 8px;">Progressive Games</h5>
+                            <div class="games-list">
+                    `;
+                    session.categories.progressive.games.forEach(game => {
+                        html += `
+                            <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                <span>Game ${game.gameNumber}: ${game.pattern}</span>
+                                <span style="font-weight: bold; color: var(--danger);">${game.payout}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                }
+
+                html += `</div></div>`;
+            });
+
+            html += '</div>';
+            contentDiv.innerHTML = html;
+        }
+
+        showSessionGamesError(errorMessage) {
+            // Clear session games data
+            this.sessionGames = {};
+
+            // Show error message in session games content area
+            const contentDiv = document.getElementById('session-games-content');
+            if (contentDiv) {
+                contentDiv.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--danger);">
+                        <h3>❌ Unable to Load Session Games</h3>
+                        <p>${errorMessage}</p>
+                        <button onclick="adminApp.loadSessionGames()" class="btn primary" style="margin-top: 1rem;">
+                            🔄 Retry
+                        </button>
+                    </div>
+                `;
+            }
+
+            console.error('Session games error:', errorMessage);
         }
 
         viewPullTabDetails(gameIndex) {
@@ -2024,6 +2247,7 @@
     function showOccasions() { if (adminApp) adminApp.showOccasions(); }
     function showReports() { if (adminApp) adminApp.showReports(); }
     function showLibrary() { if (adminApp) adminApp.showLibrary(); }
+    function showSessionGames() { if (adminApp) adminApp.showSessionGames(); }
     function generateOfflineApp() { if (adminApp) adminApp.generateOfflineApp(); }
     function createOccasion() { if (adminApp) adminApp.createOccasion(); }
     function closeOccasionModal() { if (adminApp) adminApp.closeOccasionModal(); }
