@@ -394,6 +394,22 @@ function doGet(e) {
     }
 
 
+    // Handle save-occasion in GET for backward compatibility (redirect to POST)
+    if (action === 'save-occasion' || action === 'saveOccasion') {
+      const result = ContentService.createTextOutput(JSON.stringify({
+        success: false,
+        error: 'Save operations must use POST method, not GET',
+        suggestedFix: 'Use fetch() with method: POST, not JSONP calls'
+      }));
+
+      if (callback) {
+        return ContentService
+          .createTextOutput(callback + '(' + result.getContent() + ')')
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+      return result;
+    }
+
     throw new Error('Unknown GET action: ' + action);
 
   } catch (error) {
@@ -2079,7 +2095,10 @@ function handleGetPullTabsLibrary() {
 
       return createResponse(JSON.stringify({
         success: true,
-        data: defaultLibrary,
+        data: {
+          games: defaultLibrary || [],
+          metadata: { source: 'default', totalGames: (defaultLibrary || []).length }
+        },
         source: 'default',
         message: 'Using comprehensive default pull-tabs library'
       }));
@@ -2087,7 +2106,10 @@ function handleGetPullTabsLibrary() {
 
     return createResponse(JSON.stringify({
       success: true,
-      data: pullTabsLibrary,
+      data: {
+        games: pullTabsLibrary.games || [],
+        metadata: pullTabsLibrary.metadata || {}
+      },
       source: 'file',
       message: 'Comprehensive pull-tabs library loaded successfully'
     }));

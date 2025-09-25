@@ -229,7 +229,7 @@ function submitOccasion() {
         fetch(CONFIG.API_URL, {
             method: 'POST',
             body: new URLSearchParams({
-                action: 'save-occasion',
+                action: 'saveOccasion',
                 data: JSON.stringify(data)
             })
         })
@@ -256,7 +256,7 @@ function submitOccasion() {
 function addToSyncQueue(data) {
     const queue = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]');
     queue.push({
-        action: 'save-occasion',
+        action: 'saveOccasion',
         data: data,
         timestamp: new Date().toISOString()
     });

@@ -556,13 +556,14 @@ async function loadGameResults() {
         const result = await loadSessionGamesJSONP();
 
         if (result.success && result.data) {
-            const sessionData = result.data[sessionType];
+            const sessionTypes = result.data.sessionTypes || result.data;
+            const sessionData = sessionTypes[sessionType];
 
-            if (sessionData && sessionData.categories) {
+            if (sessionData && sessionData.games && Array.isArray(sessionData.games)) {
                 console.log('Loading session games for:', sessionType, sessionData);
-                populateSessionGames(sessionData);
+                populateSessionGamesNew(sessionData);
             } else {
-                console.warn('No games found for session type:', sessionType);
+                console.warn('No games found for session type:', sessionType, sessionData);
                 gamesBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #666;">No games configured for this session type</td></tr>';
             }
         } else {
@@ -576,6 +577,53 @@ async function loadGameResults() {
                 <br><button onclick="loadGameResults()" class="btn btn-small" style="margin-top: 10px;">Retry</button>
             </td></tr>
         `;
+    }
+}
+
+function populateSessionGamesNew(sessionData) {
+    const gamesBody = document.getElementById('games-body');
+    if (!gamesBody) return;
+
+    // Use the flat games array from the new schema
+    const games = sessionData.games || [];
+    console.log(`Loading ${games.length} games for session`);
+
+    // Sort games by order/gameNumber
+    games.sort((a, b) => (a.order || a.gameNumber || 0) - (b.order || b.gameNumber || 0));
+
+    // Generate HTML for all games
+    let gamesHtml = '';
+    games.forEach((game, index) => {
+        const gameNumber = game.gameNumber || game.order || (index + 1);
+        const gameName = game.name || 'Unknown Game';
+        const gameColor = game.color || 'N/A';
+        const category = game.category || 'Regular';
+        const payout = typeof game.payout === 'number' ? game.payout : 0;
+
+        // Color-coded styling for game colors
+        let colorStyle = '';
+        if (gameColor !== 'N/A' && gameColor !== '') {
+            colorStyle = `background-color: ${gameColor.toLowerCase()}; color: white; font-weight: bold;`;
+        }
+
+        gamesHtml += `
+            <tr>
+                <td><strong>${gameNumber}</strong></td>
+                <td style="${colorStyle} text-align: center; padding: 4px 8px; border-radius: 4px;">${gameColor}</td>
+                <td>${gameName}</td>
+                <td>$${payout}</td>
+                <td><input type="number" class="winner-count" data-game="${gameNumber}" min="0" value="1" onchange="updateGamePrizesNew(${index}, ${payout})" style="width: 60px;"></td>
+                <td class="prize-per">$${payout}</td>
+                <td class="total-prize">$${payout}</td>
+            </tr>
+        `;
+    });
+
+    if (gamesHtml) {
+        gamesBody.innerHTML = gamesHtml;
+        console.log(`Successfully loaded ${games.length} games for session`);
+    } else {
+        gamesBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #666;">No games available for this session</td></tr>';
     }
 }
 
@@ -681,6 +729,30 @@ function populateSessionGames(sessionData) {
         console.log(`Loaded ${allGames.length} games for session`);
     } else {
         gamesBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #666;">No games available for this session</td></tr>';
+    }
+}
+
+function updateGamePrizesNew(gameIndex, basePayout) {
+    const row = document.querySelector(`#games-body tr:nth-child(${gameIndex + 1})`);
+    if (!row) return;
+
+    const winnersInput = row.querySelector('.winner-count');
+    const prizePerCell = row.querySelector('.prize-per');
+    const totalPrizeCell = row.querySelector('.total-prize');
+
+    if (winnersInput && prizePerCell && totalPrizeCell) {
+        const winners = parseInt(winnersInput.value) || 1;
+        const totalPrize = basePayout; // Total prize pool stays the same
+        const prizePerWinner = winners > 0 ? totalPrize / winners : 0;
+
+        // Update the per-winner amount
+        prizePerCell.textContent = `$${prizePerWinner.toFixed(2)}`;
+
+        // Total prize stays the same (total pool is fixed)
+        totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
+
+        // Update total bingo prizes
+        updateTotalBingoPrizes();
     }
 }
 
@@ -799,7 +871,16 @@ async function loadPullTabs() {
             const result = await loadPullTabLibraryJSONP();
 
             if (result.success && result.data && result.data.games) {
-                window.pullTabLibrary = result.data.games;
+                // Ensure each game has required properties
+                window.pullTabLibrary = result.data.games.map(game => ({
+                    ...game,
+                    identifier: game.identifier || `${game.name}_${game.form}` || game.name,
+                    name: game.name || 'Unknown Game',
+                    form: game.form || '',
+                    count: game.count || 0,
+                    price: game.price || 1,
+                    idealProfit: game.idealProfit || 0
+                }));
                 console.log('Pull-tab library loaded:', window.pullTabLibrary.length, 'games');
 
                 // Update any existing pull-tab selects with the library games
@@ -1170,14 +1251,23 @@ function calculatePullTabTotals() {
 // ============================================
 
 function calculateFinalTotals() {
-    // Calculate totals from all previous steps and populate Review & Submit screen
+    console.log('Calculating final totals for review step');
 
-    // 1. Bingo Sales (from POS Door Sales in step 2)
+    // Get data from window.app if available
+    const appData = window.app?.data || {};
+
+    // 1. Calculate Bingo Sales (Paper Sales + Electronic)
     let totalBingoSales = 0;
-    const posSalesInputs = document.querySelectorAll('.pos-sales-input');
-    posSalesInputs.forEach(input => {
-        totalBingoSales += parseFloat(input.value) || 0;
-    });
+
+    // From POS Door Sales
+    const totalPaperElement = document.getElementById('total-paper-sales');
+    const totalPaperSales = parseFloat(totalPaperElement?.textContent?.replace('$', '')) || 0;
+    totalBingoSales += totalPaperSales;
+
+    // From Electronic Sales
+    if (appData.electronic?.total) {
+        totalBingoSales += appData.electronic.total;
+    }
 
     // 2. Bingo Prizes (from Session Games in step 3)
     const bingoTotalElement = document.getElementById('total-bingo-prizes');
@@ -1186,28 +1276,51 @@ function calculateFinalTotals() {
     // 3. Pull-Tab Sales and Prizes (from step 4)
     let totalPullTabSales = 0;
     let totalPullTabPrizes = 0;
-    const pullTabRows = document.querySelectorAll('#pulltab-body tr');
-    pullTabRows.forEach(row => {
-        const salesCell = row.querySelector('.sales-cell');
-        const prizesCell = row.querySelector('.prizes-cell');
-        if (salesCell) totalPullTabSales += parseFloat(salesCell.textContent?.replace('$', '')) || 0;
-        if (prizesCell) totalPullTabPrizes += parseFloat(prizesCell.textContent?.replace('$', '')) || 0;
-    });
-
-    // 4. Special Event Sales and Prizes
     let totalSESales = 0;
     let totalSEPrizes = 0;
-    const seRows = document.querySelectorAll('#special-events-body tr');
-    seRows.forEach(row => {
-        const salesCell = row.querySelector('.event-sales-cell');
-        const prizesInput = row.querySelector('.event-prizes-input');
-        if (salesCell) totalSESales += parseFloat(salesCell.textContent?.replace('$', '')) || 0;
-        if (prizesInput) totalSEPrizes += parseFloat(prizesInput.value) || 0;
-    });
 
-    // 5. Cash Deposit (from step 5)
+    // Check for pull-tab data in app.data
+    if (appData.pullTabs && Array.isArray(appData.pullTabs)) {
+        appData.pullTabs.forEach(pt => {
+            if (pt.isSpecialEvent) {
+                totalSESales += pt.sales || 0;
+                totalSEPrizes += pt.prizesPaid || 0;
+            } else {
+                totalPullTabSales += pt.sales || 0;
+                totalPullTabPrizes += pt.prizesPaid || 0;
+            }
+        });
+    }
+
+    // Fallback: try to read from UI elements
+    const ptRegSalesElement = document.getElementById('pt-reg-sales');
+    const ptRegPrizesElement = document.getElementById('pt-reg-prizes');
+    const ptSeSalesElement = document.getElementById('pt-se-sales');
+    const ptSePrizesElement = document.getElementById('pt-se-prizes');
+
+    if (ptRegSalesElement) totalPullTabSales = parseFloat(ptRegSalesElement.textContent?.replace('$', '')) || totalPullTabSales;
+    if (ptRegPrizesElement) totalPullTabPrizes = parseFloat(ptRegPrizesElement.textContent?.replace('$', '')) || totalPullTabPrizes;
+    if (ptSeSalesElement) totalSESales = parseFloat(ptSeSalesElement.textContent?.replace('$', '')) || totalSESales;
+    if (ptSePrizesElement) totalSEPrizes = parseFloat(ptSePrizesElement.textContent?.replace('$', '')) || totalSEPrizes;
+
+    // 4. Cash Deposit (from step 5 - Money Count)
+    let totalDeposit = 0;
+
+    // Check for deposit data in app.data
+    if (appData.moneyCount) {
+        // Sum up all the cash in both drawers
+        const bingoDrawer = appData.moneyCount.bingo || {};
+        const pullTabDrawer = appData.moneyCount.pulltab || appData.moneyCount.pullTab || {};
+
+        Object.values(bingoDrawer).forEach(amount => totalDeposit += parseFloat(amount) || 0);
+        Object.values(pullTabDrawer).forEach(amount => totalDeposit += parseFloat(amount) || 0);
+    }
+
+    // Fallback: try to read from UI elements
     const depositTotalElement = document.getElementById('deposit-total');
-    const totalDeposit = parseFloat(depositTotalElement?.textContent?.replace('$', '')) || 0;
+    if (depositTotalElement) {
+        totalDeposit = parseFloat(depositTotalElement.textContent?.replace('$', '')) || totalDeposit;
+    }
 
     // Calculate derived totals
     const grossSales = totalBingoSales + totalPullTabSales + totalSESales;

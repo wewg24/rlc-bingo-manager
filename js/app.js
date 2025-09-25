@@ -1363,6 +1363,16 @@ window.BingoApp = BingoApp;
 // Create and expose the global app instance
 window.app = new BingoApp();
 
+// Merge with any temporary data from occasion.html
+if (window.tempAppData) {
+    Object.assign(window.app, window.tempAppData);
+    // Ensure the saveDraft method from the class is preserved
+    const classSaveDraft = window.app.saveDraft.bind(window.app);
+    window.app.saveDraft = classSaveDraft;
+    // Clean up temporary data
+    delete window.tempAppData;
+}
+
 // Global utility functions for pull-tab management
 window.populatePullTabDropdowns = function() {
     const dropdowns = document.querySelectorAll('.pulltab-select');
