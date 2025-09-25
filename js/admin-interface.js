@@ -129,6 +129,7 @@ class AdminInterface {
         this.hideAllViews();
         const dashboardView = document.getElementById('dashboard-view');
         dashboardView.classList.remove('hidden');
+        dashboardView.style.display = 'block';
         console.log('AdminInterface: Removed hidden class from dashboard-view');
         console.log('AdminInterface: dashboard-view classes:', dashboardView.className);
         console.log('AdminInterface: dashboard-view style display:', dashboardView.style.display);
@@ -138,7 +139,9 @@ class AdminInterface {
 
     showOccasions() {
         this.hideAllViews();
-        document.getElementById('occasions-view').classList.remove('hidden');
+        const occasionsView = document.getElementById('occasions-view');
+        occasionsView.classList.remove('hidden');
+        occasionsView.style.display = 'block';
         document.getElementById('nav-occasions').classList.add('active');
         if (this.apiService) {
             this.apiService.loadOccasionsTable();
@@ -147,14 +150,18 @@ class AdminInterface {
 
     showReports() {
         this.hideAllViews();
-        document.getElementById('reports-view').classList.remove('hidden');
+        const reportsView = document.getElementById('reports-view');
+        reportsView.classList.remove('hidden');
+        reportsView.style.display = 'block';
         document.getElementById('nav-reports').classList.add('active');
         // Reports functionality will be handled by reports module
     }
 
     showLibrary() {
         this.hideAllViews();
-        document.getElementById('library-view').classList.remove('hidden');
+        const libraryView = document.getElementById('library-view');
+        libraryView.classList.remove('hidden');
+        libraryView.style.display = 'block';
         document.getElementById('nav-library').classList.add('active');
         if (this.apiService) {
             this.apiService.loadPullTabLibrary();
@@ -163,7 +170,9 @@ class AdminInterface {
 
     showSessionGames() {
         this.hideAllViews();
-        document.getElementById('session-games-view').classList.remove('hidden');
+        const sessionGamesView = document.getElementById('session-games-view');
+        sessionGamesView.classList.remove('hidden');
+        sessionGamesView.style.display = 'block';
         document.getElementById('nav-session-games').classList.add('active');
         if (this.apiService) {
             this.apiService.loadSessionGames();
@@ -172,7 +181,9 @@ class AdminInterface {
 
     showOfflineGenerator() {
         this.hideAllViews();
-        document.getElementById('offline-generator-view').classList.remove('hidden');
+        const offlineGeneratorView = document.getElementById('offline-generator-view');
+        offlineGeneratorView.classList.remove('hidden');
+        offlineGeneratorView.style.display = 'block';
         document.getElementById('nav-offline-generator').classList.add('active');
         // Offline generator will be handled by offline-generator module
     }
