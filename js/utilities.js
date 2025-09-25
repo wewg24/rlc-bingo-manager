@@ -212,7 +212,23 @@ class Utilities {
             document.body.appendChild(loadingOverlay);
             this.addLoadingStyles();
         } else {
-            loadingOverlay.querySelector('.loading-message').textContent = message;
+            // Check for both possible message element structures
+            let messageElement = loadingOverlay.querySelector('.loading-message');
+            if (!messageElement) {
+                messageElement = loadingOverlay.querySelector('.loading-text');
+            }
+
+            if (messageElement) {
+                messageElement.textContent = message;
+            } else {
+                // If the existing overlay doesn't have the expected structure, replace it
+                loadingOverlay.innerHTML = `
+                    <div class="loading-content">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-message">${message}</div>
+                    </div>
+                `;
+            }
         }
 
         loadingOverlay.style.display = 'flex';

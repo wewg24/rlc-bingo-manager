@@ -29,19 +29,22 @@ document.addEventListener('DOMContentLoaded', function() {
     window.adminInterface = adminInterface;
 
     // Set up global utility functions for backward compatibility
-    window.showLoading = function(options) {
-        if (typeof options === 'string') {
-            utilities.showLoading(options);
-        } else if (options && options.text) {
-            utilities.showLoading(options.text);
-        } else {
-            utilities.showLoading();
-        }
-    };
+    // Only override if LoadingManager is not available
+    if (!window.LoadingManager || !window.showLoading) {
+        window.showLoading = function(options) {
+            if (typeof options === 'string') {
+                utilities.showLoading(options);
+            } else if (options && options.text) {
+                utilities.showLoading(options.text);
+            } else {
+                utilities.showLoading();
+            }
+        };
 
-    window.hideLoading = function() {
-        utilities.hideLoading();
-    };
+        window.hideLoading = function() {
+            utilities.hideLoading();
+        };
+    }
 
     console.log('✅ RLC Bingo Admin Interface initialized successfully');
 });
