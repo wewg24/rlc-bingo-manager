@@ -77,8 +77,8 @@ class AdminInterface {
         loginScreen.classList.add('hidden');
         adminInterface.classList.remove('hidden');
 
-        console.log('AdminInterface: calling loadDashboard()');
-        this.loadDashboard();
+        console.log('AdminInterface: calling showDashboard()');
+        this.showDashboard();
         this.bindAdminEventListeners();
     }
 
