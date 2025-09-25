@@ -199,9 +199,22 @@ class AdminInterface {
             console.error('Error loading dashboard:', error);
             this.showErrorState(error.message || 'Unable to load data from Google Drive');
         } finally {
+            console.log('AdminInterface: calling hideLoading in finally block');
             if (window.hideLoading) {
                 window.hideLoading();
+                console.log('AdminInterface: hideLoading called successfully');
+            } else {
+                console.warn('AdminInterface: window.hideLoading not available in finally block');
             }
+
+            // Force remove any loading text that might be stuck
+            setTimeout(() => {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                    console.log('AdminInterface: Force-hidden loading overlay');
+                }
+            }, 100);
         }
     }
 
