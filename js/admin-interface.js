@@ -67,8 +67,17 @@ class AdminInterface {
     }
 
     showAdminInterface() {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('admin-interface').classList.remove('hidden');
+        console.log('AdminInterface: showAdminInterface called');
+        const loginScreen = document.getElementById('login-screen');
+        const adminInterface = document.getElementById('admin-interface');
+
+        console.log('AdminInterface: loginScreen element:', loginScreen);
+        console.log('AdminInterface: adminInterface element:', adminInterface);
+
+        loginScreen.classList.add('hidden');
+        adminInterface.classList.remove('hidden');
+
+        console.log('AdminInterface: calling loadDashboard()');
         this.loadDashboard();
         this.bindAdminEventListeners();
     }
@@ -165,12 +174,18 @@ class AdminInterface {
 
     // Dashboard Loading
     async loadDashboard() {
+        console.log('AdminInterface: loadDashboard called');
+        console.log('AdminInterface: window.showLoading available:', !!window.showLoading);
+
         if (window.showLoading) {
+            console.log('AdminInterface: calling showLoading');
             window.showLoading({
                 text: 'Loading Dashboard',
                 subtext: 'Fetching occasions and data from Google Drive...',
                 timeout: 20000
             });
+        } else {
+            console.warn('AdminInterface: window.showLoading not available');
         }
 
         try {
