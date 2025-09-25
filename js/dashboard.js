@@ -202,6 +202,7 @@ class Dashboard {
         console.log('Dashboard: Parent container:', dashboardView.parentElement);
 
         // Force visibility
+        dashboardView.style.display = 'block';
         dashboardView.style.minHeight = '500px';
         dashboardView.style.backgroundColor = 'lightblue';
         console.log('Dashboard: Applied debug styles for visibility');
