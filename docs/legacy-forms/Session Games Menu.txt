@@ -1,0 +1,87 @@
+Session Type: 5-1
+Description: 1st & 5th Monday of Month
+Game Number - Category - Sheet Color - Game Name - Prize
+1 - Early Bird - N/A - Hard Way Bingo No Free Space - $100
+2 - Early Bird - N/A - Diagonal & Outside Corners - $100
+3 - Early Bird - N/A - Small Picture Frame - $100
+4 - Regular - Blue - Regular Bingo or Outside 4 Corners - $100
+5 - Regular - Orange - Number 7 - $250
+6 - Regular - Green - Small Diamond - $100
+7 - Regular - Yellow - Crazy Picture Frame - $100
+8 - Regular - Pink - Letter X - $250
+Intermission
+9 - Pull-Tab - N/A - Event Game - Prizes Varies by Game Selection
+10 - Regular - Gray - Baseball Diamond - $150
+11 - Regular - Olive - 6 Pack Anywhere - $150
+12 - Regular - Brown - Top or Bottom Line - $150
+13 - Progressive - N/A - Progressive Diamond - Progressive Prize Varies ($1,000 - $1,199), Consolation $200
+14 - Regular - Red - 3 on Top Row & 3 on Bottom Row - $150
+15 - Regular - Purple - Double Postage Stamp - Anywhere - $150
+16 - Regular - Black - Small Kite - $150
+17 - Regular - Aqua - Coverall - $500
+
+Session Type: 6-2
+Description: 2nd Monday of Month
+Game Number - Category - Sheet Color - Game Name - Prize
+1 - Early Bird - N/A - Hard Way Bingo No Free Space - $100
+2 - Early Bird - N/A - Diagonal & Outside Corners - $100
+3 - Early Bird - N/A - Small Picture Frame - $100
+4 - Regular - Blue - Block of 9 - $100
+5 - Regular - Orange - Number 7 - $250
+6 - Regular - Green - Small Diamond - $100
+7 - Regular - Yellow - Razor Blade - $100
+8 - Regular - Pink - Letter X - $250
+Intermission
+9 - Pull-Tab - N/A - Event Game - Prizes Varies by Game Selection
+10 - Regular - Gray - 5 Around Any Corner - $150
+11 - Regular - Olive - Double Postage Stamp - $150
+12 - Regular - Brown - Outside Line - $150
+13 - Progressive - N/A - Progressive Diamond - Progressive Prize Varies ($1,000 - $1,199), Consolation $200
+14 - Regular - Red - Checkmark - $150
+15 - Regular - Purple - Regular Bingo No Corners - Anywhere - $150
+16 - Regular - Black - 3 on Top Row & 3 on Bottom Row - $150
+17 - Regular - Aqua - Coverall - $500
+
+Session Type: 7-3
+Description: 3rd Monday of Month
+Game Number - Category - Sheet Color - Game Name - Prize
+1 - Early Bird - N/A - Hard Way Bingo No Free Space - $100
+2 - Early Bird - N/A - Diagonal & Outside Corners - $100
+3 - Early Bird - N/A - Small Picture Frame - $100
+4 - Regular - Blue - 6 Pack Anywhere - $100
+5 - Regular - Orange - Number 7 - $250
+6 - Regular - Green - Pryamid - $100
+7 - Regular - Yellow - Champagne Glass - $100
+8 - Regular - Pink - Letter X - $250
+Intermission
+9 - Pull-Tab - N/A - Event Game - Prizes Varies by Game Selection
+10 - Regular - Gray - Bow Tie - $150
+11 - Regular - Olive - Outside Line - $150
+12 - Regular - Brown - L for Lions - $150
+13 - Progressive - N/A - Progressive Diamond - Progressive Prize Varies ($1,000 - $1,199), Consolation $200
+14 - Regular - Red - Checkmark - $150
+15 - Regular - Purple - 5 Around Any Corner - Anywhere - $150
+16 - Regular - Black - Small Kite - $150
+17 - Regular - Aqua - Coverall - $500
+
+Session Type: 8-4
+Description: 4th Monday of Month
+Game Number - Category - Sheet Color - Game Name - Prize
+1 - Early Bird - N/A - Hard Way Bingo No Free Space - $100
+2 - Early Bird - N/A - Diagonal & Outside Corners - $100
+3 - Early Bird - N/A - Small Picture Frame - $100
+4 - Regular - Blue - Block of 9 - $100
+5 - Regular - Orange - Number 7 - $250
+6 - Regular - Green - Diamond - $100
+7 - Regular - Yellow - Razor Blade - $100
+8 - Regular - Pink - Letter X - $250
+Intermission
+9 - Pull-Tab - N/A - Event Game - Prizes Varies by Game Selection
+10 - Regular - Gray - 5 Around Any Corner - $150
+11 - Regular - Olive - Double Postage Stamp - $150
+12 - Regular - Brown - Outside Line - $150
+13 - Progressive - N/A - Progressive Diamond - Progressive Prize Varies ($1,000 - $1,199), Consolation $200
+14 - Regular - Red - Checkmark - $150
+15 - Regular - Purple - Regular Bingo - Anywhere - $150
+16 - Regular - Black - 3 on Top Row & 3 on Bottom Row - $150
+17 - Regular - Aqua - Coverall - $500

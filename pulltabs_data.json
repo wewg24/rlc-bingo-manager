@@ -1,0 +1,1218 @@
+[
+  {
+    "Game": "Beat the Clock 599",
+    "Form": "7724H",
+    "Count": 960,
+    "Price": 1,
+    "IdealProfit": 361,
+    "URL": null
+  },
+  {
+    "Game": "Black Jack 175",
+    "Form": "6916M",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Black Jack 200",
+    "Form": "6779P",
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Black Jack 280",
+    "Form": "6917M",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Black Jack 400",
+    "Form": "6918M",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Black Jack 599",
+    "Form": "6919M",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Black Jack 700",
+    "Form": "6268P",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Bubble Gum 100",
+    "Form": "6906V",
+    "Count": 150,
+    "Price": 1,
+    "IdealProfit": 50,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Bubble Gum 175",
+    "Form": "6747U",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Bubble Gum 280",
+    "Form": "6748U",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Bubble Gum 325",
+    "Form": "6771V",
+    "Count": 500,
+    "Price": 1,
+    "IdealProfit": 175,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Bubble Gum 400",
+    "Form": "6749U",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Bubble Gum 599",
+    "Form": "6750U",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Bubble Gum 700",
+    "Form": "6751U",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Chase Your Dreams 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Chocolate 100",
+    "Form": "6906V",
+    "Count": 150,
+    "Price": 1,
+    "IdealProfit": 50,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Chocolate 175",
+    "Form": "6747U",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Chocolate 280",
+    "Form": "6748U",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Chocolate 325",
+    "Form": "6771V",
+    "Count": 500,
+    "Price": 1,
+    "IdealProfit": 175,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Chocolate 400",
+    "Form": "6749U",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Chocolate 599",
+    "Form": "6750U",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Chocolate 700",
+    "Form": "6751U",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Claw Enforcement 175",
+    "Form": null,
+    "Count": 280,
+    "Price": 1,
+    "IdealProfit": 105,
+    "URL": null
+  },
+  {
+    "Game": "Cotton Candy 100",
+    "Form": "6906V",
+    "Count": 150,
+    "Price": 1,
+    "IdealProfit": 50,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Cotton Candy 175",
+    "Form": "6747U",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Cotton Candy 280",
+    "Form": "6748U",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Cotton Candy 325",
+    "Form": "6771V",
+    "Count": 500,
+    "Price": 1,
+    "IdealProfit": 175,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Cotton Candy 400",
+    "Form": "6749U",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Cotton Candy 599",
+    "Form": "6750U",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Cotton Candy 700",
+    "Form": "6751U",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Crap Shoot 175",
+    "Form": "6916M",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Crap Shoot 200",
+    "Form": "6779P",
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Crap Shoot 280",
+    "Form": "6917M",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Crap Shoot 400",
+    "Form": "6918M",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Crap Shoot 599",
+    "Form": "6919M",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Crap Shoot 700",
+    "Form": "6268P",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Dabbin' Dachsund 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Dabbin' Me Ma 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Day Dabbin' 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Dig Life 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Double Bubble 140",
+    "Form": "5595Y",
+    "Count": 200,
+    "Price": 1,
+    "IdealProfit": 60,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C5594Y.PDF"
+  },
+  {
+    "Game": "Double Bubble 175",
+    "Form": "5596Y",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C5594Y.PDF"
+  },
+  {
+    "Game": "Double Bubble 280",
+    "Form": "5597Y",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C5594Y.PDF"
+  },
+  {
+    "Game": "Double Bubble 425",
+    "Form": "5102Z",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 175,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C5594Y.PDF"
+  },
+  {
+    "Game": "Dumbo Dab 175",
+    "Form": "6219H",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Fire Fighters 140",
+    "Form": null,
+    "Count": 225,
+    "Price": 1,
+    "IdealProfit": 85,
+    "URL": null
+  },
+  {
+    "Game": "Fire Fighters 599",
+    "Form": "5991FF",
+    "Count": 960,
+    "Price": 1,
+    "IdealProfit": 361,
+    "URL": null
+  },
+  {
+    "Game": "Flamingo Bingo 140",
+    "Form": null,
+    "Count": 230,
+    "Price": 1,
+    "IdealProfit": 90,
+    "URL": null
+  },
+  {
+    "Game": "Funky Chicken 280",
+    "Form": null,
+    "Count": 445,
+    "Price": 1,
+    "IdealProfit": 165,
+    "URL": null
+  },
+  {
+    "Game": "Gator Dab 175",
+    "Form": "6219H",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Gator Dab 280",
+    "Form": "6220H",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Gator Dab 280",
+    "Form": "6220H",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Gator Dab 400",
+    "Form": "6221H",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Gator Dab 400",
+    "Form": "6221H",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Gator Dab 700",
+    "Form": "6222H",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Gator Dab 700",
+    "Form": "6222H",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Gotcha 140",
+    "Form": "783Q",
+    "Count": 200,
+    "Price": 1,
+    "IdealProfit": 60,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C785Q.PDF"
+  },
+  {
+    "Game": "Gotcha 280",
+    "Form": "784Q",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C785Q.PDF"
+  },
+  {
+    "Game": "Gotcha 425",
+    "Form": "785Q",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 175,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C785Q.PDF"
+  },
+  {
+    "Game": "Gum Drops 100",
+    "Form": "6906V",
+    "Count": 150,
+    "Price": 1,
+    "IdealProfit": 50,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Gum Drops 175",
+    "Form": "6747U",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Gum Drops 280",
+    "Form": "6748U",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Gum Drops 325",
+    "Form": "6771V",
+    "Count": 500,
+    "Price": 1,
+    "IdealProfit": 175,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Gum Drops 400",
+    "Form": "6749U",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Gum Drops 599",
+    "Form": "6750U",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Gum Drops 700",
+    "Form": "6751U",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Hiss & Make Up 350",
+    "Form": null,
+    "Count": 550,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": null
+  },
+  {
+    "Game": "Jack 280",
+    "Form": null,
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": null
+  },
+  {
+    "Game": "Kick Grass 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Life Happens 599",
+    "Form": "7726H",
+    "Count": 960,
+    "Price": 1,
+    "IdealProfit": 361,
+    "URL": null
+  },
+  {
+    "Game": "Lion Dab 175",
+    "Form": "6219H",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Lion Dab 280",
+    "Form": "6220H",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Lion Dab 400",
+    "Form": "6221H",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Lion Dab 700",
+    "Form": "6222H",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Lollipops 100",
+    "Form": "6906V",
+    "Count": 150,
+    "Price": 1,
+    "IdealProfit": 50,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Lollipops 175",
+    "Form": "6747U",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Lollipops 280",
+    "Form": "6748U",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Lollipops 325",
+    "Form": "6771V",
+    "Count": 500,
+    "Price": 1,
+    "IdealProfit": 175,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Lollipops 400",
+    "Form": "6749U",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Lollipops 599",
+    "Form": "6750U",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Lollipops 700",
+    "Form": "6751U",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6747U.PDF"
+  },
+  {
+    "Game": "Luckies 100",
+    "Form": 55886,
+    "Count": 140,
+    "Price": 1,
+    "IdealProfit": 40,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C55888.PDF"
+  },
+  {
+    "Game": "Luckies 200",
+    "Form": 55887,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C55888.PDF"
+  },
+  {
+    "Game": "Luckies 350",
+    "Form": 55888,
+    "Count": 550,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C55888.PDF"
+  },
+  {
+    "Game": "Luckies 500",
+    "Form": 55889,
+    "Count": 770,
+    "Price": 1,
+    "IdealProfit": 270,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C55888.PDF"
+  },
+  {
+    "Game": "Mewsical 350",
+    "Form": null,
+    "Count": 550,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": null
+  },
+  {
+    "Game": "Monkey in the Middle 210",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 90,
+    "URL": null
+  },
+  {
+    "Game": "Monkey See Monkey Do 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Monopoly Chance It 140",
+    "Form": "7973H",
+    "Count": 230,
+    "Price": 1,
+    "IdealProfit": 90,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7972H.PDF"
+  },
+  {
+    "Game": "Monopoly Chance It 280",
+    "Form": "7975H",
+    "Count": 440,
+    "Price": 1,
+    "IdealProfit": 160,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7972H.PDF"
+  },
+  {
+    "Game": "Monopoly Chance It 400",
+    "Form": "7976H",
+    "Count": 660,
+    "Price": 1,
+    "IdealProfit": 260,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7972H.PDF"
+  },
+  {
+    "Game": "Monopoly Chance It 599",
+    "Form": "7177J",
+    "Count": 960,
+    "Price": 1,
+    "IdealProfit": 361,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7972H.PDF"
+  },
+  {
+    "Game": "Mouse Keeping 350",
+    "Form": null,
+    "Count": 550,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": null
+  },
+  {
+    "Game": "Panda Dab 175",
+    "Form": "6219H",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Panda Dab 280",
+    "Form": "6220H",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Panda Dab 400",
+    "Form": "6221H",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Panda Dab 700",
+    "Form": "6222H",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Parrot Party 140",
+    "Form": null,
+    "Count": 230,
+    "Price": 1,
+    "IdealProfit": 90,
+    "URL": null
+  },
+  {
+    "Game": "Parrot Party 280",
+    "Form": null,
+    "Count": 445,
+    "Price": 1,
+    "IdealProfit": 165,
+    "URL": null
+  },
+  {
+    "Game": "Patriot Bingo 140",
+    "Form": "5096W",
+    "Count": 200,
+    "Price": 1,
+    "IdealProfit": 60,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C5097W.PDF"
+  },
+  {
+    "Game": "Patriot Bingo 280",
+    "Form": "5097W",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C5097W.PDF"
+  },
+  {
+    "Game": "Patriot Bingo 599",
+    "Form": "5340W",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C5097W.PDF"
+  },
+  {
+    "Game": "Paws for the Cause 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Pot of Gold 140",
+    "Form": "7319D",
+    "Count": 230,
+    "Price": 1,
+    "IdealProfit": 90,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7319D.PDF"
+  },
+  {
+    "Game": "Pot of Gold 280",
+    "Form": "7320D",
+    "Count": 440,
+    "Price": 1,
+    "IdealProfit": 160,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7319D.PDF"
+  },
+  {
+    "Game": "Pot of Gold 400",
+    "Form": "7321D",
+    "Count": 660,
+    "Price": 1,
+    "IdealProfit": 260,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7319D.PDF"
+  },
+  {
+    "Game": "Purrsuasion 350",
+    "Form": null,
+    "Count": 550,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": null
+  },
+  {
+    "Game": "Quad Runner 100",
+    "Form": "7357M",
+    "Count": 150,
+    "Price": 1,
+    "IdealProfit": 50,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7357M.PDF"
+  },
+  {
+    "Game": "Quad Runner 130",
+    "Form": "7358M",
+    "Count": 200,
+    "Price": 1,
+    "IdealProfit": 70,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7357M.PDF"
+  },
+  {
+    "Game": "Quad Runner 140",
+    "Form": "7359M",
+    "Count": 200,
+    "Price": 1,
+    "IdealProfit": 60,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7357M.PDF"
+  },
+  {
+    "Game": "Quad Runner 165",
+    "Form": "7361M",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 85,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7357M.PDF"
+  },
+  {
+    "Game": "Quad Runner 175",
+    "Form": "7360M",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7357M.PDF"
+  },
+  {
+    "Game": "Quad Runner 210",
+    "Form": null,
+    "Count": 325,
+    "Price": 1,
+    "IdealProfit": 115,
+    "URL": null
+  },
+  {
+    "Game": "Quad Runner 260",
+    "Form": "7363M",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 140,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7357M.PDF"
+  },
+  {
+    "Game": "Quad Runner 280",
+    "Form": "7362M",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7357M.PDF"
+  },
+  {
+    "Game": "Quad Runner 390",
+    "Form": "7364M",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 210,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C7357M.PDF"
+  },
+  {
+    "Game": "Quad Runner 500",
+    "Form": null,
+    "Count": 775,
+    "Price": 1,
+    "IdealProfit": 275,
+    "URL": null
+  },
+  {
+    "Game": "Race Horse Downs 250",
+    "Form": "354GA",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 330,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C354GA.PDF"
+  },
+  {
+    "Game": "Race Horse Downs 521",
+    "Form": "353GA",
+    "Count": 2040,
+    "Price": 1,
+    "IdealProfit": 615,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C354GA.PDF"
+  },
+  {
+    "Game": "Red Hot Cardinals 140",
+    "Form": null,
+    "Count": 230,
+    "Price": 1,
+    "IdealProfit": 90,
+    "URL": null
+  },
+  {
+    "Game": "Rockin' Robin 140",
+    "Form": "7348J",
+    "Count": 230,
+    "Price": 1,
+    "IdealProfit": 90,
+    "URL": null
+  },
+  {
+    "Game": "Roulette 175",
+    "Form": "6916M",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Roulette 200",
+    "Form": "6779P",
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Roulette 280",
+    "Form": "6917M",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Roulette 400",
+    "Form": "6918M",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Roulette 599",
+    "Form": "6919M",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Roulette 700",
+    "Form": "6268P",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Shake it Off 200",
+    "Form": null,
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": null
+  },
+  {
+    "Game": "Slots 175",
+    "Form": "6916M",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Slots 200",
+    "Form": "6779P",
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Slots 280",
+    "Form": "6917M",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": null
+  },
+  {
+    "Game": "Slots 400",
+    "Form": "6918M",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Slots 599",
+    "Form": "6919M",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Slots 700",
+    "Form": "6268P",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Smack Dab 270",
+    "Form": null,
+    "Count": 450,
+    "Price": 1,
+    "IdealProfit": 180,
+    "URL": null
+  },
+  {
+    "Game": "Small Ball 175",
+    "Form": "6916M",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Small Ball 200",
+    "Form": "6779P",
+    "Count": 300,
+    "Price": 1,
+    "IdealProfit": 100,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Small Ball 280",
+    "Form": "6917M",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": null
+  },
+  {
+    "Game": "Small Ball 400",
+    "Form": "6918M",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Small Ball 599",
+    "Form": "6919M",
+    "Count": 840,
+    "Price": 1,
+    "IdealProfit": 241,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Small Ball 700",
+    "Form": "6268P",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6916M.PDF"
+  },
+  {
+    "Game": "Snap Crackle Pop 270",
+    "Form": null,
+    "Count": 450,
+    "Price": 1,
+    "IdealProfit": 180,
+    "URL": null
+  },
+  {
+    "Game": "Stones 599",
+    "Form": "7728H",
+    "Count": 960,
+    "Price": 1,
+    "IdealProfit": 361,
+    "URL": null
+  },
+  {
+    "Game": "Tiger Dab 175",
+    "Form": "6219H",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Tiger Dab 280",
+    "Form": "6220H",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Tiger Dab 400",
+    "Form": "6221H",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Tiger Dab 700",
+    "Form": "6222H",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6219H.PDF"
+  },
+  {
+    "Game": "Triple Twist 110",
+    "Form": "6080J",
+    "Count": 150,
+    "Price": 1,
+    "IdealProfit": 40,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6080J.PDF"
+  },
+  {
+    "Game": "Triple Twist 175",
+    "Form": "6081J",
+    "Count": 250,
+    "Price": 1,
+    "IdealProfit": 75,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6080J.PDF"
+  },
+  {
+    "Game": "Triple Twist 280",
+    "Form": "6082J",
+    "Count": 400,
+    "Price": 1,
+    "IdealProfit": 120,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6080J.PDF"
+  },
+  {
+    "Game": "Triple Twist 400",
+    "Form": "6083J",
+    "Count": 600,
+    "Price": 1,
+    "IdealProfit": 200,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6080J.PDF"
+  },
+  {
+    "Game": "Triple Twist 700",
+    "Form": "6084J",
+    "Count": 1000,
+    "Price": 1,
+    "IdealProfit": 300,
+    "URL": "https://www.arrowinternational.com/db/grafix/AIPDF/C6080J.PDF"
+  }
+]

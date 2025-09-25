@@ -1,0 +1,34 @@
+{
+  "lastUpdated": "2024-09-24T18:00:00.000Z",
+  "count": 4,
+  "sessions": [
+    {
+      "sessionType": "5-1",
+      "sessionName": "1st/5th Monday",
+      "gameCount": 4,
+      "fileName": "session-games.json",
+      "lastModified": "2024-09-24T18:00:00.000Z"
+    },
+    {
+      "sessionType": "6-2",
+      "sessionName": "2nd Monday",
+      "gameCount": 3,
+      "fileName": "session-games.json",
+      "lastModified": "2024-09-24T18:00:00.000Z"
+    },
+    {
+      "sessionType": "7-3",
+      "sessionName": "3rd Monday",
+      "gameCount": 3,
+      "fileName": "session-games.json",
+      "lastModified": "2024-09-24T18:00:00.000Z"
+    },
+    {
+      "sessionType": "8-4",
+      "sessionName": "4th Monday",
+      "gameCount": 3,
+      "fileName": "session-games.json",
+      "lastModified": "2024-09-24T18:00:00.000Z"
+    }
+  ]
+}

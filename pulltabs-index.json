@@ -1,0 +1,26 @@
+{
+  "lastUpdated": "2024-09-24T18:00:00.000Z",
+  "count": 27,
+  "pullTabs": [
+    {
+      "name": "Beat the Clock 599",
+      "form": "7724H",
+      "count": 960,
+      "price": 1,
+      "profit": 361,
+      "identifier": "Beat the Clock 599_7724H",
+      "fileName": "pulltabs-library.json",
+      "lastModified": "2024-09-24T18:00:00.000Z"
+    },
+    {
+      "name": "Black Jack 175",
+      "form": "6916M",
+      "count": 250,
+      "price": 1,
+      "profit": 75,
+      "identifier": "Black Jack 175_6916M",
+      "fileName": "pulltabs-library.json",
+      "lastModified": "2024-09-24T18:00:00.000Z"
+    }
+  ]
+}

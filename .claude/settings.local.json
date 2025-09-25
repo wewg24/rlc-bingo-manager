@@ -4,7 +4,21 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "WebFetch(domain:wewg24.github.io)"
+      "WebFetch(domain:wewg24.github.io)",
+      "Bash(mkdir:*)",
+      "Bash(clasp clone:*)",
+      "Bash(clasp login:*)",
+      "Bash(clasp:*)",
+      "Bash(npm run dev:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(python:*)",
+      "Bash(gdrive about:*)",
+      "Bash(curl:*)",
+      "Bash(powershell:*)",
+      "Bash(pip install:*)",
+      "WebFetch(domain:script.google.com)",
+      "WebFetch(domain:script.googleusercontent.com)",
+      "Read(//c/Users/bill.wiggins/OneDrive - Phelps County Bank/Lion's Club/Bingo/Bingo Closet Photos/**)"
     ],
     "deny": [],
     "ask": []

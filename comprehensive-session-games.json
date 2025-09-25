@@ -1,0 +1,730 @@
+{
+  "5-1": {
+    "sessionName": "1st/5th Monday",
+    "totalGames": 17,
+    "categories": {
+      "earlyBird": {
+        "description": "Early Bird Games - Hard Way Bingo (No Free Space)",
+        "games": [
+          {
+            "gameNumber": 1,
+            "category": "Early Bird",
+            "pattern": "Hard Way Bingo - No Free Space",
+            "payout": 100,
+            "description": "Hard Way Bingo with no free space allowed",
+            "order": 1
+          },
+          {
+            "gameNumber": 2,
+            "category": "Early Bird",
+            "pattern": "Diagonal & Outside Corners",
+            "payout": 100,
+            "description": "Cover both diagonals and all four outside corners",
+            "order": 2
+          },
+          {
+            "gameNumber": 3,
+            "category": "Early Bird",
+            "pattern": "Small Picture Frame",
+            "payout": 100,
+            "description": "Cover the outside border of the bingo card",
+            "order": 3
+          }
+        ]
+      },
+      "regular": {
+        "description": "Regular Session Games",
+        "preIntermission": [
+          {
+            "gameNumber": 4,
+            "category": "Regular",
+            "pattern": "Straight Line",
+            "payout": 100,
+            "description": "Any horizontal, vertical, or diagonal line",
+            "order": 4
+          },
+          {
+            "gameNumber": 5,
+            "category": "Regular",
+            "pattern": "Four Corners",
+            "payout": 150,
+            "description": "Cover all four corners of the bingo card",
+            "order": 5
+          },
+          {
+            "gameNumber": 6,
+            "category": "Regular",
+            "pattern": "Letter X",
+            "payout": 200,
+            "description": "Cover both diagonals to form an X",
+            "order": 6
+          },
+          {
+            "gameNumber": 7,
+            "category": "Regular",
+            "pattern": "Letter T",
+            "payout": 200,
+            "description": "Cover the top row and middle column",
+            "order": 7
+          },
+          {
+            "gameNumber": 8,
+            "category": "Regular",
+            "pattern": "Postage Stamp",
+            "payout": 250,
+            "description": "Cover a 2x2 square in any corner",
+            "order": 8
+          }
+        ],
+        "postIntermission": [
+          {
+            "gameNumber": 10,
+            "category": "Regular",
+            "pattern": "Letter L",
+            "payout": 150,
+            "description": "Cover the bottom row and left column",
+            "order": 10
+          },
+          {
+            "gameNumber": 11,
+            "category": "Regular",
+            "pattern": "Arrow",
+            "payout": 150,
+            "description": "Cover numbers forming an arrow pattern",
+            "order": 11
+          },
+          {
+            "gameNumber": 12,
+            "category": "Regular",
+            "pattern": "Picture Frame",
+            "payout": 150,
+            "description": "Cover the entire outside border",
+            "order": 12
+          }
+        ],
+        "postProgressive": [
+          {
+            "gameNumber": 14,
+            "category": "Regular",
+            "pattern": "Kite",
+            "payout": 150,
+            "description": "Cover numbers forming a kite pattern",
+            "order": 14
+          },
+          {
+            "gameNumber": 15,
+            "category": "Regular",
+            "pattern": "Double Line",
+            "payout": 200,
+            "description": "Cover any two complete lines",
+            "order": 15
+          },
+          {
+            "gameNumber": 16,
+            "category": "Regular",
+            "pattern": "Letter U",
+            "payout": 300,
+            "description": "Cover the bottom row and both side columns",
+            "order": 16
+          },
+          {
+            "gameNumber": 17,
+            "category": "Regular",
+            "pattern": "Coverall",
+            "payout": 500,
+            "description": "Cover all numbers on the bingo card",
+            "order": 17
+          }
+        ]
+      },
+      "specialEvent": {
+        "description": "Special Event Games",
+        "games": [
+          {
+            "gameNumber": 9,
+            "category": "Special Event",
+            "pattern": "Pull-Tab Special",
+            "payout": "Variable",
+            "description": "Pot of Gold or other special pull-tab game",
+            "order": 9,
+            "pullTabGame": true,
+            "pullTabDetails": {
+              "defaultGame": "Pot of Gold",
+              "alternateGames": ["Lucky 7s", "Money Tree", "Cash Bonanza"]
+            }
+          }
+        ]
+      },
+      "progressive": {
+        "description": "Progressive Games with Jackpot",
+        "games": [
+          {
+            "gameNumber": 13,
+            "category": "Progressive",
+            "pattern": "Progressive Diamond",
+            "payout": "Progressive Jackpot",
+            "description": "Diamond pattern with progressive jackpot rules",
+            "order": 13,
+            "progressiveRules": {
+              "startingJackpot": 500,
+              "increment": 25,
+              "maxCalls": {
+                "50": "Full Jackpot",
+                "55": "75% Jackpot",
+                "60": "50% Jackpot",
+                "65": "25% Jackpot",
+                "over65": "Consolation Prize $100"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "6-2": {
+    "sessionName": "2nd Monday",
+    "totalGames": 17,
+    "categories": {
+      "earlyBird": {
+        "description": "Early Bird Games - Hard Way Bingo (No Free Space)",
+        "games": [
+          {
+            "gameNumber": 1,
+            "category": "Early Bird",
+            "pattern": "Hard Way Bingo - No Free Space",
+            "payout": 100,
+            "description": "Hard Way Bingo with no free space allowed",
+            "order": 1
+          },
+          {
+            "gameNumber": 2,
+            "category": "Early Bird",
+            "pattern": "Diagonal & Outside Corners",
+            "payout": 100,
+            "description": "Cover both diagonals and all four outside corners",
+            "order": 2
+          },
+          {
+            "gameNumber": 3,
+            "category": "Early Bird",
+            "pattern": "Small Picture Frame",
+            "payout": 100,
+            "description": "Cover the outside border of the bingo card",
+            "order": 3
+          }
+        ]
+      },
+      "regular": {
+        "description": "Regular Session Games",
+        "preIntermission": [
+          {
+            "gameNumber": 4,
+            "category": "Regular",
+            "pattern": "Straight Line",
+            "payout": 125,
+            "description": "Any horizontal, vertical, or diagonal line",
+            "order": 4
+          },
+          {
+            "gameNumber": 5,
+            "category": "Regular",
+            "pattern": "Four Corners",
+            "payout": 175,
+            "description": "Cover all four corners of the bingo card",
+            "order": 5
+          },
+          {
+            "gameNumber": 6,
+            "category": "Regular",
+            "pattern": "Letter X",
+            "payout": 225,
+            "description": "Cover both diagonals to form an X",
+            "order": 6
+          },
+          {
+            "gameNumber": 7,
+            "category": "Regular",
+            "pattern": "Letter H",
+            "payout": 225,
+            "description": "Cover both side columns and middle row",
+            "order": 7
+          },
+          {
+            "gameNumber": 8,
+            "category": "Regular",
+            "pattern": "Plus Sign",
+            "payout": 275,
+            "description": "Cover the middle row and middle column",
+            "order": 8
+          }
+        ],
+        "postIntermission": [
+          {
+            "gameNumber": 10,
+            "category": "Regular",
+            "pattern": "Letter C",
+            "payout": 150,
+            "description": "Cover left column, top and bottom rows",
+            "order": 10
+          },
+          {
+            "gameNumber": 11,
+            "category": "Regular",
+            "pattern": "Bow Tie",
+            "payout": 150,
+            "description": "Cover numbers forming a bow tie pattern",
+            "order": 11
+          },
+          {
+            "gameNumber": 12,
+            "category": "Regular",
+            "pattern": "Block of 9",
+            "payout": 150,
+            "description": "Cover a 3x3 block anywhere on the card",
+            "order": 12
+          }
+        ],
+        "postProgressive": [
+          {
+            "gameNumber": 14,
+            "category": "Regular",
+            "pattern": "Letter Z",
+            "payout": 150,
+            "description": "Cover top row, diagonal, and bottom row",
+            "order": 14
+          },
+          {
+            "gameNumber": 15,
+            "category": "Regular",
+            "pattern": "Triple Line",
+            "payout": 225,
+            "description": "Cover any three complete lines",
+            "order": 15
+          },
+          {
+            "gameNumber": 16,
+            "category": "Regular",
+            "pattern": "Big Picture Frame",
+            "payout": 325,
+            "description": "Cover two complete outer borders",
+            "order": 16
+          },
+          {
+            "gameNumber": 17,
+            "category": "Regular",
+            "pattern": "Coverall",
+            "payout": 600,
+            "description": "Cover all numbers on the bingo card",
+            "order": 17
+          }
+        ]
+      },
+      "specialEvent": {
+        "description": "Special Event Games",
+        "games": [
+          {
+            "gameNumber": 9,
+            "category": "Special Event",
+            "pattern": "Pull-Tab Special",
+            "payout": "Variable",
+            "description": "Lucky Streak or other special pull-tab game",
+            "order": 9,
+            "pullTabGame": true,
+            "pullTabDetails": {
+              "defaultGame": "Lucky Streak",
+              "alternateGames": ["Hot Shot", "Big Money", "Winner's Circle"]
+            }
+          }
+        ]
+      },
+      "progressive": {
+        "description": "Progressive Games with Jackpot",
+        "games": [
+          {
+            "gameNumber": 13,
+            "category": "Progressive",
+            "pattern": "Progressive Diamond",
+            "payout": "Progressive Jackpot",
+            "description": "Diamond pattern with progressive jackpot rules",
+            "order": 13,
+            "progressiveRules": {
+              "startingJackpot": 600,
+              "increment": 30,
+              "maxCalls": {
+                "50": "Full Jackpot",
+                "55": "75% Jackpot",
+                "60": "50% Jackpot",
+                "65": "25% Jackpot",
+                "over65": "Consolation Prize $125"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "7-3": {
+    "sessionName": "3rd Monday",
+    "totalGames": 17,
+    "categories": {
+      "earlyBird": {
+        "description": "Early Bird Games - Hard Way Bingo (No Free Space)",
+        "games": [
+          {
+            "gameNumber": 1,
+            "category": "Early Bird",
+            "pattern": "Hard Way Bingo - No Free Space",
+            "payout": 100,
+            "description": "Hard Way Bingo with no free space allowed",
+            "order": 1
+          },
+          {
+            "gameNumber": 2,
+            "category": "Early Bird",
+            "pattern": "Diagonal & Outside Corners",
+            "payout": 100,
+            "description": "Cover both diagonals and all four outside corners",
+            "order": 2
+          },
+          {
+            "gameNumber": 3,
+            "category": "Early Bird",
+            "pattern": "Small Picture Frame",
+            "payout": 100,
+            "description": "Cover the outside border of the bingo card",
+            "order": 3
+          }
+        ]
+      },
+      "regular": {
+        "description": "Regular Session Games",
+        "preIntermission": [
+          {
+            "gameNumber": 4,
+            "category": "Regular",
+            "pattern": "Straight Line",
+            "payout": 100,
+            "description": "Any horizontal, vertical, or diagonal line",
+            "order": 4
+          },
+          {
+            "gameNumber": 5,
+            "category": "Regular",
+            "pattern": "Four Corners",
+            "payout": 150,
+            "description": "Cover all four corners of the bingo card",
+            "order": 5
+          },
+          {
+            "gameNumber": 6,
+            "category": "Regular",
+            "pattern": "Letter X",
+            "payout": 200,
+            "description": "Cover both diagonals to form an X",
+            "order": 6
+          },
+          {
+            "gameNumber": 7,
+            "category": "Regular",
+            "pattern": "Letter I",
+            "payout": 200,
+            "description": "Cover the middle column completely",
+            "order": 7
+          },
+          {
+            "gameNumber": 8,
+            "category": "Regular",
+            "pattern": "Diamond",
+            "payout": 250,
+            "description": "Cover numbers forming a diamond pattern",
+            "order": 8
+          }
+        ],
+        "postIntermission": [
+          {
+            "gameNumber": 10,
+            "category": "Regular",
+            "pattern": "Letter O",
+            "payout": 150,
+            "description": "Cover the outside border forming an O",
+            "order": 10
+          },
+          {
+            "gameNumber": 11,
+            "category": "Regular",
+            "pattern": "Six Pack",
+            "payout": 150,
+            "description": "Cover any 2x3 block on the card",
+            "order": 11
+          },
+          {
+            "gameNumber": 12,
+            "category": "Regular",
+            "pattern": "Crazy T",
+            "payout": 150,
+            "description": "Cover any row and any column intersection",
+            "order": 12
+          }
+        ],
+        "postProgressive": [
+          {
+            "gameNumber": 14,
+            "category": "Regular",
+            "pattern": "Letter N",
+            "payout": 150,
+            "description": "Cover both side columns and one diagonal",
+            "order": 14
+          },
+          {
+            "gameNumber": 15,
+            "category": "Regular",
+            "pattern": "Cross",
+            "payout": 250,
+            "description": "Cover middle row and middle column",
+            "order": 15
+          },
+          {
+            "gameNumber": 16,
+            "category": "Regular",
+            "pattern": "Double Postage Stamp",
+            "payout": 350,
+            "description": "Cover two 2x2 squares in opposite corners",
+            "order": 16
+          },
+          {
+            "gameNumber": 17,
+            "category": "Regular",
+            "pattern": "Full House",
+            "payout": 600,
+            "description": "Cover all numbers on the bingo card",
+            "order": 17
+          }
+        ]
+      },
+      "specialEvent": {
+        "description": "Special Event Games",
+        "games": [
+          {
+            "gameNumber": 9,
+            "category": "Special Event",
+            "pattern": "Pull-Tab Special",
+            "payout": "Variable",
+            "description": "Money Tree or other special pull-tab game",
+            "order": 9,
+            "pullTabGame": true,
+            "pullTabDetails": {
+              "defaultGame": "Money Tree",
+              "alternateGames": ["Cash Cow", "Golden Ticket", "Jackpot Junction"]
+            }
+          }
+        ]
+      },
+      "progressive": {
+        "description": "Progressive Games with Jackpot",
+        "games": [
+          {
+            "gameNumber": 13,
+            "category": "Progressive",
+            "pattern": "Progressive Diamond",
+            "payout": "Progressive Jackpot",
+            "description": "Diamond pattern with progressive jackpot rules",
+            "order": 13,
+            "progressiveRules": {
+              "startingJackpot": 550,
+              "increment": 25,
+              "maxCalls": {
+                "50": "Full Jackpot",
+                "55": "75% Jackpot",
+                "60": "50% Jackpot",
+                "65": "25% Jackpot",
+                "over65": "Consolation Prize $110"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "8-4": {
+    "sessionName": "4th Monday",
+    "totalGames": 17,
+    "categories": {
+      "earlyBird": {
+        "description": "Early Bird Games - Hard Way Bingo (No Free Space)",
+        "games": [
+          {
+            "gameNumber": 1,
+            "category": "Early Bird",
+            "pattern": "Hard Way Bingo - No Free Space",
+            "payout": 100,
+            "description": "Hard Way Bingo with no free space allowed",
+            "order": 1
+          },
+          {
+            "gameNumber": 2,
+            "category": "Early Bird",
+            "pattern": "Diagonal & Outside Corners",
+            "payout": 100,
+            "description": "Cover both diagonals and all four outside corners",
+            "order": 2
+          },
+          {
+            "gameNumber": 3,
+            "category": "Early Bird",
+            "pattern": "Small Picture Frame",
+            "payout": 100,
+            "description": "Cover the outside border of the bingo card",
+            "order": 3
+          }
+        ]
+      },
+      "regular": {
+        "description": "Regular Session Games",
+        "preIntermission": [
+          {
+            "gameNumber": 4,
+            "category": "Regular",
+            "pattern": "Straight Line",
+            "payout": 150,
+            "description": "Any horizontal, vertical, or diagonal line",
+            "order": 4
+          },
+          {
+            "gameNumber": 5,
+            "category": "Regular",
+            "pattern": "Four Corners",
+            "payout": 200,
+            "description": "Cover all four corners of the bingo card",
+            "order": 5
+          },
+          {
+            "gameNumber": 6,
+            "category": "Regular",
+            "pattern": "Letter X",
+            "payout": 250,
+            "description": "Cover both diagonals to form an X",
+            "order": 6
+          },
+          {
+            "gameNumber": 7,
+            "category": "Regular",
+            "pattern": "Letter V",
+            "payout": 250,
+            "description": "Cover numbers forming a V pattern",
+            "order": 7
+          },
+          {
+            "gameNumber": 8,
+            "category": "Regular",
+            "pattern": "Postage Stamp",
+            "payout": 300,
+            "description": "Cover a 2x2 square in any corner",
+            "order": 8
+          }
+        ],
+        "postIntermission": [
+          {
+            "gameNumber": 10,
+            "category": "Regular",
+            "pattern": "Letter E",
+            "payout": 150,
+            "description": "Cover left column and top, middle, bottom rows",
+            "order": 10
+          },
+          {
+            "gameNumber": 11,
+            "category": "Regular",
+            "pattern": "Airplane",
+            "payout": 150,
+            "description": "Cover numbers forming an airplane pattern",
+            "order": 11
+          },
+          {
+            "gameNumber": 12,
+            "category": "Regular",
+            "pattern": "Champagne Glass",
+            "payout": 150,
+            "description": "Cover numbers forming a champagne glass",
+            "order": 12
+          }
+        ],
+        "postProgressive": [
+          {
+            "gameNumber": 14,
+            "category": "Regular",
+            "pattern": "Letter B",
+            "payout": 150,
+            "description": "Cover left column and specific pattern for B",
+            "order": 14
+          },
+          {
+            "gameNumber": 15,
+            "category": "Regular",
+            "pattern": "Layer Cake",
+            "payout": 275,
+            "description": "Cover three complete horizontal rows",
+            "order": 15
+          },
+          {
+            "gameNumber": 16,
+            "category": "Regular",
+            "pattern": "Crazy L",
+            "payout": 400,
+            "description": "Cover any row and any column in L formation",
+            "order": 16
+          },
+          {
+            "gameNumber": 17,
+            "category": "Regular",
+            "pattern": "Coverall",
+            "payout": 750,
+            "description": "Cover all numbers on the bingo card",
+            "order": 17
+          }
+        ]
+      },
+      "specialEvent": {
+        "description": "Special Event Games",
+        "games": [
+          {
+            "gameNumber": 9,
+            "category": "Special Event",
+            "pattern": "Pull-Tab Special",
+            "payout": "Variable",
+            "description": "Big Bucks or other special pull-tab game",
+            "order": 9,
+            "pullTabGame": true,
+            "pullTabDetails": {
+              "defaultGame": "Big Bucks",
+              "alternateGames": ["Super 7", "Cash Bonanza", "Lucky Strike"]
+            }
+          }
+        ]
+      },
+      "progressive": {
+        "description": "Progressive Games with Jackpot",
+        "games": [
+          {
+            "gameNumber": 13,
+            "category": "Progressive",
+            "pattern": "Progressive Diamond",
+            "payout": "Progressive Jackpot",
+            "description": "Diamond pattern with progressive jackpot rules",
+            "order": 13,
+            "progressiveRules": {
+              "startingJackpot": 700,
+              "increment": 35,
+              "maxCalls": {
+                "50": "Full Jackpot",
+                "55": "75% Jackpot",
+                "60": "50% Jackpot",
+                "65": "25% Jackpot",
+                "over65": "Consolation Prize $150"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -52,9 +52,9 @@ clasp undeploy <deployment-id>
 - Version: 11.1.2-cache-busting
 
 ### Backend (Google Apps Script)
-- Deployment: @86 - AKfycbweRj6cAYCQ0XibjfXfXXPQBc9voXhJJs-dQaM_5AixcTRlmgscOd2mamy5UTDg5v5ptw
-- Version: v11.3.0-punchlist-fixes
-- Features: pull-tabs-library-152-games, session-games-68-total, cache-busting-support, pull-tab-crud-operations, enhanced-error-handling, save-occasion-api-fix
+- Deployment: @87 - AKfycbxdqMeSmfWO43ATuaVCmHI5yNaPonGsACCfS_7_guZIO9A5zsZY689wcVbejjz8f5GFxQ
+- Version: v11.3.1-crud-fixes
+- Features: pull-tabs-library-152-games, session-games-68-total, cache-busting-support, pull-tab-crud-operations, enhanced-error-handling, save-occasion-api-fix, jsonp-crud-support
 
 ## Recent Changes (Sep 25, 2025)
 
