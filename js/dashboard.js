@@ -183,7 +183,28 @@ class Dashboard {
 
         dashboardView.innerHTML = dashboardHtml;
 
+        // Debug: Check element dimensions and visibility
+        const rect = dashboardView.getBoundingClientRect();
+        const computedStyle = window.getComputedStyle(dashboardView);
         console.log('Dashboard: HTML successfully set, content length:', dashboardHtml.length);
+        console.log('Dashboard: Element dimensions:', {
+            width: rect.width,
+            height: rect.height,
+            top: rect.top,
+            left: rect.left
+        });
+        console.log('Dashboard: Computed styles:', {
+            display: computedStyle.display,
+            visibility: computedStyle.visibility,
+            position: computedStyle.position,
+            overflow: computedStyle.overflow
+        });
+        console.log('Dashboard: Parent container:', dashboardView.parentElement);
+
+        // Force visibility
+        dashboardView.style.minHeight = '500px';
+        dashboardView.style.backgroundColor = 'lightblue';
+        console.log('Dashboard: Applied debug styles for visibility');
     }
 
     /**
