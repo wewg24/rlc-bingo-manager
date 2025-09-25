@@ -256,6 +256,19 @@
             });
         }
     });
+
+    // Function to handle session type changes and reload games
+    function onSessionTypeChange() {
+        const sessionType = document.getElementById('session-type')?.value;
+        if (sessionType && window.app && window.app.currentStep === 3) {
+            // If we're already on the Game Results step, reload the games immediately
+            loadGameResults();
+        }
+        // Store the selected session type for later use
+        if (window.app && window.app.data) {
+            window.app.data.sessionType = sessionType;
+        }
+    }
     </script>
     <div id="app">
         <!-- Header -->
@@ -324,7 +337,7 @@
                         </div>
                         <div class="form-group">
                             <label for="session-type">Session</label>
-                            <select id="session-type" required>
+                            <select id="session-type" required onchange="onSessionTypeChange()">
                                 <option value="">Select...</option>
                                 <option value="5-1">5-1 (1st/5th Monday)</option>
                                 <option value="6-2">6-2 (2nd Monday)</option>
@@ -448,7 +461,6 @@
                                 <th>Winners</th>
                                 <th>Per Winner</th>
                                 <th>Total</th>
-                                <th>Check</th>
                             </tr>
                         </thead>
                         <tbody id="games-body">
@@ -458,7 +470,6 @@
                             <tr class="total-row">
                                 <td colspan="6">Total Bingo Prizes</td>
                                 <td id="total-bingo-prizes">$0.00</td>
-                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -486,7 +497,6 @@
                                 <th>Prizes</th>
                                 <th>Net</th>
                                 <th>SE</th>
-                                <th>Check</th>
                             </tr>
                         </thead>
                         <tbody id="pulltab-body">
@@ -513,7 +523,7 @@
                     </table>
 
                     <button class="button secondary" onclick="addPullTabRow()">Add Game</button>
-                    <button onclick="addSpecialEventRow()" class="button secondary">Add Special Event</button>
+                    <button onclick="addSpecialEventRow()" class="button secondary">Add Custom</button>
                 </div>
             </div>
 

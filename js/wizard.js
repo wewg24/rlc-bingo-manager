@@ -538,12 +538,285 @@ function loadPaperSales() {
     // Implementation for loading paper sales data
 }
 
-function loadGameResults() {
-    // Implementation for loading game results
+async function loadGameResults() {
+    // Get the selected session type from step 1
+    const sessionType = document.getElementById('session-type')?.value;
+    const gamesBody = document.getElementById('games-body');
+
+    if (!sessionType || !gamesBody) {
+        console.warn('Session type not selected or games body not found');
+        return;
+    }
+
+    try {
+        // Show loading state
+        gamesBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Loading session games...</td></tr>';
+
+        // Load session games from API using JSONP to avoid CORS
+        const result = await loadSessionGamesJSONP();
+
+        if (result.success && result.data) {
+            const sessionData = result.data[sessionType];
+
+            if (sessionData && sessionData.categories) {
+                console.log('Loading session games for:', sessionType, sessionData);
+                populateSessionGames(sessionData);
+            } else {
+                console.warn('No games found for session type:', sessionType);
+                gamesBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #666;">No games configured for this session type</td></tr>';
+            }
+        } else {
+            throw new Error(result.error || 'Failed to load session games');
+        }
+    } catch (error) {
+        console.error('Error loading session games:', error);
+        gamesBody.innerHTML = `
+            <tr><td colspan="8" style="text-align: center; padding: 20px; color: #e74c3c;">
+                Error loading session games: ${error.message}
+                <br><button onclick="loadGameResults()" class="btn btn-small" style="margin-top: 10px;">Retry</button>
+            </td></tr>
+        `;
+    }
 }
 
-function loadPullTabs() {
-    // Implementation for loading pull-tabs
+function populateSessionGames(sessionData) {
+    const gamesBody = document.getElementById('games-body');
+    if (!gamesBody) return;
+
+    let allGames = [];
+    let gameNumber = 1;
+
+    // Collect all games from different categories
+    if (sessionData.categories.earlyBird?.games) {
+        sessionData.categories.earlyBird.games.forEach(game => {
+            allGames.push({
+                ...game,
+                category: 'Early Bird',
+                color: '#28a745', // Green
+                displayNumber: gameNumber++
+            });
+        });
+    }
+
+    // Regular games - pre-intermission
+    if (sessionData.categories.regular?.preIntermission) {
+        sessionData.categories.regular.preIntermission.forEach(game => {
+            allGames.push({
+                ...game,
+                category: 'Regular',
+                color: '#007bff', // Blue
+                displayNumber: gameNumber++
+            });
+        });
+    }
+
+    // Regular games - post-intermission
+    if (sessionData.categories.regular?.postIntermission) {
+        sessionData.categories.regular.postIntermission.forEach(game => {
+            allGames.push({
+                ...game,
+                category: 'Regular',
+                color: '#007bff', // Blue
+                displayNumber: gameNumber++
+            });
+        });
+    }
+
+    // Regular games - post-progressive
+    if (sessionData.categories.regular?.postProgressive) {
+        sessionData.categories.regular.postProgressive.forEach(game => {
+            allGames.push({
+                ...game,
+                category: 'Regular',
+                color: '#007bff', // Blue
+                displayNumber: gameNumber++
+            });
+        });
+    }
+
+    // Progressive games
+    if (sessionData.categories.progressive?.games) {
+        sessionData.categories.progressive.games.forEach(game => {
+            allGames.push({
+                ...game,
+                category: 'Progressive',
+                color: '#dc3545', // Red
+                displayNumber: gameNumber++
+            });
+        });
+    }
+
+    // Special event games
+    if (sessionData.categories.specialEvent?.games) {
+        sessionData.categories.specialEvent.games.forEach(game => {
+            allGames.push({
+                ...game,
+                category: 'Special',
+                color: '#ffc107', // Yellow
+                displayNumber: gameNumber++
+            });
+        });
+    }
+
+    // Generate HTML for all games
+    let gamesHtml = '';
+    allGames.forEach((game, index) => {
+        const prizePerWinner = parseFloat(game.payout) || 0;
+
+        gamesHtml += `
+            <tr>
+                <td>${game.displayNumber}</td>
+                <td style="background-color: ${game.color}20; color: ${game.color}; font-weight: bold; text-align: center;">${game.category}</td>
+                <td>${game.pattern}</td>
+                <td>$${prizePerWinner}</td>
+                <td><input type="number" class="winner-count" data-game="${game.gameNumber || index}" min="0" value="0" onchange="updateGamePrizes(${index})" style="width: 60px;"></td>
+                <td class="prize-per">$${prizePerWinner}</td>
+                <td class="total-prize">$0.00</td>
+            </tr>
+        `;
+    });
+
+    if (gamesHtml) {
+        gamesBody.innerHTML = gamesHtml;
+        console.log(`Loaded ${allGames.length} games for session`);
+    } else {
+        gamesBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #666;">No games available for this session</td></tr>';
+    }
+}
+
+function updateGamePrizes(gameIndex) {
+    const row = document.querySelector(`#games-body tr:nth-child(${gameIndex + 1})`);
+    if (!row) return;
+
+    const winnersInput = row.querySelector('.winner-count');
+    const prizePerCell = row.querySelector('.prize-per');
+    const totalPrizeCell = row.querySelector('.total-prize');
+
+    if (winnersInput && prizePerCell && totalPrizeCell) {
+        const winners = parseInt(winnersInput.value) || 0;
+        const prizePerWinner = parseFloat(prizePerCell.textContent.replace('$', '')) || 0;
+        const totalPrize = winners * prizePerWinner;
+
+        totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
+
+        // Update total bingo prizes
+        updateTotalBingoPrizes();
+    }
+}
+
+function updateTotalBingoPrizes() {
+    const totalPrizeCells = document.querySelectorAll('#games-body .total-prize');
+    let total = 0;
+
+    totalPrizeCells.forEach(cell => {
+        const amount = parseFloat(cell.textContent.replace('$', '')) || 0;
+        total += amount;
+    });
+
+    const totalElement = document.getElementById('total-bingo-prizes');
+    if (totalElement) {
+        totalElement.textContent = `$${total.toFixed(2)}`;
+    }
+}
+
+// JSONP helper for loading session games
+function loadSessionGamesJSONP() {
+    return new Promise((resolve, reject) => {
+        const callbackName = 'jsonpCallback_' + Math.random().toString(36).substr(2, 9);
+        const script = document.createElement('script');
+
+        // Set up the callback function
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(data);
+        };
+
+        // Create the script tag with callback parameter
+        const url = `${CONFIG.API_URL}?action=getSessionGames&callback=${callbackName}&t=${Date.now()}`;
+        script.src = url;
+        script.onerror = function() {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            reject(new Error('Failed to load session games'));
+        };
+
+        document.body.appendChild(script);
+
+        // Timeout after 10 seconds
+        setTimeout(() => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('Session games request timeout'));
+            }
+        }, 10000);
+    });
+}
+
+// JSONP helper for loading pull-tab library
+function loadPullTabLibraryJSONP() {
+    return new Promise((resolve, reject) => {
+        const callbackName = 'jsonpCallback_' + Math.random().toString(36).substr(2, 9);
+        const script = document.createElement('script');
+
+        // Set up the callback function
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            resolve(data);
+        };
+
+        // Create the script tag with callback parameter
+        const url = `${CONFIG.API_URL}?action=getPullTabsLibrary&callback=${callbackName}&t=${Date.now()}`;
+        script.src = url;
+        script.onerror = function() {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            reject(new Error('Failed to load pull-tab library'));
+        };
+
+        document.body.appendChild(script);
+
+        // Timeout after 10 seconds
+        setTimeout(() => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('Pull-tab library request timeout'));
+            }
+        }, 10000);
+    });
+}
+
+async function loadPullTabs() {
+    try {
+        // Show loading if we don't have the library yet
+        if (!window.pullTabLibrary) {
+            console.log('Loading pull-tab library...');
+
+            // Load pull-tab library from API using JSONP
+            const result = await loadPullTabLibraryJSONP();
+
+            if (result.success && result.data && result.data.games) {
+                window.pullTabLibrary = result.data.games;
+                console.log('Pull-tab library loaded:', window.pullTabLibrary.length, 'games');
+
+                // Update any existing pull-tab selects with the library games
+                const pullTabSelects = document.querySelectorAll('.pulltab-select');
+                pullTabSelects.forEach(select => {
+                    populatePullTabSelect(select);
+                });
+            } else {
+                console.warn('Failed to load pull-tab library:', result);
+                // Set empty array to prevent further attempts
+                window.pullTabLibrary = [];
+            }
+        }
+    } catch (error) {
+        console.error('Error loading pull-tab library:', error);
+        window.pullTabLibrary = [];
+    }
 }
 
 function loadMoneyCount() {
@@ -708,13 +981,13 @@ function addPullTabRow() {
             </select>
         </td>
         <td><input type="text" class="serial-input" placeholder="Serial #"></td>
+        <td class="ticket-price-cell">$0.00</td>
         <td class="tickets-cell">0</td>
-        <td class="tickets-sold-cell">$0.00</td>
+        <td class="sales-cell">$0.00</td>
+        <td class="ideal-cell">$0.00</td>
         <td class="prizes-cell">$0.00</td>
-        <td class="profit-cell">$0.00</td>
-        <td class="ideal-profit-cell">$0.00</td>
-        <td><input type="checkbox" class="check-payment"></td>
-        <td><button onclick="deletePullTabRow(this)" class="remove-btn">×</button></td>
+        <td class="net-cell">$0.00</td>
+        <td><input type="checkbox" class="se-checkbox"></td>
     `;
     
     tbody.appendChild(row);
@@ -897,8 +1170,81 @@ function calculatePullTabTotals() {
 // ============================================
 
 function calculateFinalTotals() {
-    // This function would calculate all totals for the review step
-    // Implementation depends on your specific calculation requirements
+    // Calculate totals from all previous steps and populate Review & Submit screen
+
+    // 1. Bingo Sales (from POS Door Sales in step 2)
+    let totalBingoSales = 0;
+    const posSalesInputs = document.querySelectorAll('.pos-sales-input');
+    posSalesInputs.forEach(input => {
+        totalBingoSales += parseFloat(input.value) || 0;
+    });
+
+    // 2. Bingo Prizes (from Session Games in step 3)
+    const bingoTotalElement = document.getElementById('total-bingo-prizes');
+    const totalBingoPrizes = parseFloat(bingoTotalElement?.textContent?.replace('$', '')) || 0;
+
+    // 3. Pull-Tab Sales and Prizes (from step 4)
+    let totalPullTabSales = 0;
+    let totalPullTabPrizes = 0;
+    const pullTabRows = document.querySelectorAll('#pulltab-body tr');
+    pullTabRows.forEach(row => {
+        const salesCell = row.querySelector('.sales-cell');
+        const prizesCell = row.querySelector('.prizes-cell');
+        if (salesCell) totalPullTabSales += parseFloat(salesCell.textContent?.replace('$', '')) || 0;
+        if (prizesCell) totalPullTabPrizes += parseFloat(prizesCell.textContent?.replace('$', '')) || 0;
+    });
+
+    // 4. Special Event Sales and Prizes
+    let totalSESales = 0;
+    let totalSEPrizes = 0;
+    const seRows = document.querySelectorAll('#special-events-body tr');
+    seRows.forEach(row => {
+        const salesCell = row.querySelector('.event-sales-cell');
+        const prizesInput = row.querySelector('.event-prizes-input');
+        if (salesCell) totalSESales += parseFloat(salesCell.textContent?.replace('$', '')) || 0;
+        if (prizesInput) totalSEPrizes += parseFloat(prizesInput.value) || 0;
+    });
+
+    // 5. Cash Deposit (from step 5)
+    const depositTotalElement = document.getElementById('deposit-total');
+    const totalDeposit = parseFloat(depositTotalElement?.textContent?.replace('$', '')) || 0;
+
+    // Calculate derived totals
+    const grossSales = totalBingoSales + totalPullTabSales + totalSESales;
+    const totalPrizes = totalBingoPrizes + totalPullTabPrizes + totalSEPrizes;
+    const actualProfit = totalDeposit - 1000; // Less startup of $1000
+
+    // Update the Review & Submit summary fields
+    updateSummaryField('summary-bingo-sales', totalBingoSales);
+    updateSummaryField('summary-pt-sales', totalPullTabSales);
+    updateSummaryField('summary-se-sales', totalSESales);
+    updateSummaryField('summary-gross', grossSales);
+    updateSummaryField('summary-bingo-prizes', totalBingoPrizes);
+    updateSummaryField('summary-pt-prizes', totalPullTabPrizes);
+    updateSummaryField('summary-se-prizes', totalSEPrizes);
+    updateSummaryField('summary-total-prizes', totalPrizes);
+    updateSummaryField('summary-deposit', totalDeposit);
+    updateSummaryField('summary-actual', actualProfit);
+
+    console.log('Final totals calculated:', {
+        bingoSales: totalBingoSales,
+        pullTabSales: totalPullTabSales,
+        seSales: totalSESales,
+        grossSales: grossSales,
+        bingoPrizes: totalBingoPrizes,
+        pullTabPrizes: totalPullTabPrizes,
+        sePrizes: totalSEPrizes,
+        totalPrizes: totalPrizes,
+        deposit: totalDeposit,
+        actualProfit: actualProfit
+    });
+}
+
+function updateSummaryField(fieldId, value) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.textContent = `$${value.toFixed(2)}`;
+    }
 }
 
 // ============================================

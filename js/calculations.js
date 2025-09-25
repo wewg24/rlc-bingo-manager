@@ -264,9 +264,24 @@ function addToSyncQueue(data) {
 }
 
 function saveDraft() {
-    if (window.app) {
-        window.app.saveDraft();
-        alert('Draft saved!');
+    console.log('saveDraft() called');
+    try {
+        if (window.app && typeof window.app.saveDraft === 'function') {
+            console.log('Calling window.app.saveDraft()');
+            const success = window.app.saveDraft();
+            if (success !== false) {
+                alert('Draft saved!');
+            }
+        } else {
+            console.error('window.app or window.app.saveDraft not available:', {
+                app: !!window.app,
+                saveDraftFunction: !!(window.app && window.app.saveDraft)
+            });
+            alert('Error: App not initialized properly. Please reload the page.');
+        }
+    } catch (error) {
+        console.error('Error in saveDraft():', error);
+        alert('Error saving draft: ' + error.message);
     }
 }
 

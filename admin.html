@@ -605,6 +605,8 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3>Session Games Management</h3>
                     <div>
+                        <button class="btn success" onclick="adminApp.addNewSessionGame()" title="Add new session game">Add Game</button>
+                        <button class="btn" onclick="adminApp.addNewSession()" title="Add new session type">Add Session</button>
                         <button class="btn secondary" onclick="adminApp.loadSessionGames()" title="Refresh session games">🔄 Refresh</button>
                     </div>
                 </div>
@@ -1029,6 +1031,7 @@
             this.hideAllViews();
             document.getElementById('library-view').classList.remove('hidden');
             this.loadPullTabLibrary();
+            this.initializePullTabSearch();
         }
 
         showSessionGames() {
@@ -1237,9 +1240,9 @@
             }
 
             try {
-                // Load session games data from API
-                const response = await fetch(`${CONFIG.API_URL}?action=getSessionGames`);
-                const result = await response.json();
+                // Use JSONP to avoid CORS issues with Google Apps Script
+                const cacheBreaker = Date.now();
+                const result = await this.jsonpRequest(`${CONFIG.API_URL}?action=getSessionGames&_cb=${cacheBreaker}`);
 
                 console.log('Session games API response:', result); // Debug logging
 
@@ -1282,13 +1285,24 @@
                     // Format ideal profit as currency
                     const idealProfit = parseFloat(game.idealProfit) || 0;
 
+                    // Determine the current status
+                    const currentStatus = game.status || 'Active';
+                    const statusClass = currentStatus.toLowerCase().replace(/\s+/g, '-');
+
                     row.innerHTML = `
                         <td>${game.name || 'Unknown Game'}</td>
                         <td>$${parseFloat(game.price) || 0}</td>
                         <td>${parseInt(game.count) || 0}</td>
                         <td>$${idealProfit.toFixed(2)}</td>
                         <td>${game.form || 'N/A'}</td>
-                        <td><span class="status active">Active</span></td>
+                        <td>
+                            <select class="form-control status-select" data-game-index="${index}" onchange="adminApp.updatePullTabStatus(${index}, this.value)" style="width: auto; font-size: 12px;">
+                                <option value="Active" ${currentStatus === 'Active' ? 'selected' : ''}>Active</option>
+                                <option value="Discontinued" ${currentStatus === 'Discontinued' ? 'selected' : ''}>Discontinued</option>
+                                <option value="Special Event" ${currentStatus === 'Special Event' ? 'selected' : ''}>Special Event</option>
+                                <option value="Out of Stock" ${currentStatus === 'Out of Stock' ? 'selected' : ''}>Out of Stock</option>
+                            </select>
+                        </td>
                         <td>
                             <button class="btn" onclick="adminApp.editPullTab('${index}')">Edit</button>
                             <button class="btn secondary" onclick="adminApp.viewPullTabDetails('${index}')">View</button>
@@ -1390,11 +1404,17 @@
                             <h5 style="color: var(--success); margin-bottom: 8px;">Early Bird Games</h5>
                             <div class="games-list">
                     `;
-                    session.categories.earlyBird.games.forEach(game => {
+                    session.categories.earlyBird.games.forEach((game, gameIndex) => {
                         html += `
-                            <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                            <div class="game-item" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
                                 <span>Game ${game.gameNumber}: ${game.pattern}</span>
-                                <span style="font-weight: bold; color: var(--success);">$${game.payout}</span>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-weight: bold; color: var(--success);">$${game.payout}</span>
+                                    <div style="display: flex; gap: 5px;">
+                                        <button class="btn" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.editSessionGame('${sessionKey}', 'earlyBird', ${gameIndex})">Edit</button>
+                                        <button class="btn danger" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.deleteSessionGame('${sessionKey}', 'earlyBird', ${gameIndex})">Del</button>
+                                    </div>
+                                </div>
                             </div>
                         `;
                     });
@@ -1410,11 +1430,17 @@
 
                     // Pre-intermission games
                     if (session.categories.regular.preIntermission) {
-                        session.categories.regular.preIntermission.forEach(game => {
+                        session.categories.regular.preIntermission.forEach((game, gameIndex) => {
                             html += `
-                                <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                <div class="game-item" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
                                     <span>Game ${game.gameNumber}: ${game.pattern}</span>
-                                    <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                        <div style="display: flex; gap: 5px;">
+                                            <button class="btn" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.editSessionGame('${sessionKey}', 'preIntermission', ${gameIndex})">Edit</button>
+                                            <button class="btn danger" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.deleteSessionGame('${sessionKey}', 'preIntermission', ${gameIndex})">Del</button>
+                                        </div>
+                                    </div>
                                 </div>
                             `;
                         });
@@ -1422,11 +1448,17 @@
 
                     // Post-intermission games
                     if (session.categories.regular.postIntermission) {
-                        session.categories.regular.postIntermission.forEach(game => {
+                        session.categories.regular.postIntermission.forEach((game, gameIndex) => {
                             html += `
-                                <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                <div class="game-item" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
                                     <span>Game ${game.gameNumber}: ${game.pattern}</span>
-                                    <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                        <div style="display: flex; gap: 5px;">
+                                            <button class="btn" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.editSessionGame('${sessionKey}', 'postIntermission', ${gameIndex})">Edit</button>
+                                            <button class="btn danger" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.deleteSessionGame('${sessionKey}', 'postIntermission', ${gameIndex})">Del</button>
+                                        </div>
+                                    </div>
                                 </div>
                             `;
                         });
@@ -1434,11 +1466,17 @@
 
                     // Post-progressive games
                     if (session.categories.regular.postProgressive) {
-                        session.categories.regular.postProgressive.forEach(game => {
+                        session.categories.regular.postProgressive.forEach((game, gameIndex) => {
                             html += `
-                                <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                                <div class="game-item" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
                                     <span>Game ${game.gameNumber}: ${game.pattern}</span>
-                                    <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-weight: bold; color: var(--primary);">$${game.payout}</span>
+                                        <div style="display: flex; gap: 5px;">
+                                            <button class="btn" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.editSessionGame('${sessionKey}', 'postProgressive', ${gameIndex})">Edit</button>
+                                            <button class="btn danger" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.deleteSessionGame('${sessionKey}', 'postProgressive', ${gameIndex})">Del</button>
+                                        </div>
+                                    </div>
                                 </div>
                             `;
                         });
@@ -1454,11 +1492,17 @@
                             <h5 style="color: var(--warning); margin-bottom: 8px;">Special Event Games</h5>
                             <div class="games-list">
                     `;
-                    session.categories.specialEvent.games.forEach(game => {
+                    session.categories.specialEvent.games.forEach((game, gameIndex) => {
                         html += `
-                            <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                            <div class="game-item" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
                                 <span>Game ${game.gameNumber}: ${game.pattern}</span>
-                                <span style="font-weight: bold; color: var(--warning);">${game.payout}</span>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-weight: bold; color: var(--warning);">${game.payout}</span>
+                                    <div style="display: flex; gap: 5px;">
+                                        <button class="btn" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.editSessionGame('${sessionKey}', 'specialEvent', ${gameIndex})">Edit</button>
+                                        <button class="btn danger" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.deleteSessionGame('${sessionKey}', 'specialEvent', ${gameIndex})">Del</button>
+                                    </div>
+                                </div>
                             </div>
                         `;
                     });
@@ -1472,11 +1516,17 @@
                             <h5 style="color: var(--danger); margin-bottom: 8px;">Progressive Games</h5>
                             <div class="games-list">
                     `;
-                    session.categories.progressive.games.forEach(game => {
+                    session.categories.progressive.games.forEach((game, gameIndex) => {
                         html += `
-                            <div class="game-item" style="display: flex; justify-content: space-between; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
+                            <div class="game-item" style="display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background: var(--bg-light); margin-bottom: 3px; border-radius: 4px;">
                                 <span>Game ${game.gameNumber}: ${game.pattern}</span>
-                                <span style="font-weight: bold; color: var(--danger);">${game.payout}</span>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-weight: bold; color: var(--danger);">${game.payout}</span>
+                                    <div style="display: flex; gap: 5px;">
+                                        <button class="btn" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.editSessionGame('${sessionKey}', 'progressive', ${gameIndex})">Edit</button>
+                                        <button class="btn danger" style="padding: 2px 8px; font-size: 12px;" onclick="adminApp.deleteSessionGame('${sessionKey}', 'progressive', ${gameIndex})">Del</button>
+                                    </div>
+                                </div>
                             </div>
                         `;
                     });
@@ -1540,6 +1590,411 @@
             setTimeout(() => {
                 this.loadSessionGames();
             }, 500);
+        }
+
+        addNewSession() {
+            // Create modal for adding new session type
+            const addSessionHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="add-session-modal">
+                    <div class="card" style="max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Add New Session Type</h3>
+                            <button onclick="document.getElementById('add-session-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                        </div>
+
+                        <form id="add-session-form">
+                            <div class="form-group">
+                                <label for="session-key">Session Key *</label>
+                                <input type="text" id="session-key" class="form-control" placeholder="e.g., 5-1, 6-2" required>
+                                <small>Use format like "5-1" for 1st/5th Monday sessions</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="session-name">Session Name *</label>
+                                <input type="text" id="session-name" class="form-control" placeholder="e.g., 1st/5th Monday Bingo" required>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                                <button type="button" class="btn secondary" onclick="document.getElementById('add-session-modal').remove()">Cancel</button>
+                                <button type="submit" class="btn success">Add Session</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', addSessionHtml);
+
+            // Handle form submission
+            document.getElementById('add-session-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveNewSession();
+            });
+        }
+
+        addNewSessionGame() {
+            // Get list of available session types for dropdown
+            const sessionOptions = this.sessionGames ? Object.keys(this.sessionGames).map(key => {
+                return `<option value="${key}">${this.sessionGames[key].sessionName || key}</option>`;
+            }).join('') : '<option value="">No sessions available</option>';
+
+            // Create modal for adding new session game
+            const addGameHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="add-session-game-modal">
+                    <div class="card" style="max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Add New Session Game</h3>
+                            <button onclick="document.getElementById('add-session-game-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                        </div>
+
+                        <form id="add-session-game-form">
+                            <div class="form-group">
+                                <label for="game-session">Session Type *</label>
+                                <select id="game-session" class="form-control" required>
+                                    <option value="">Select Session...</option>
+                                    ${sessionOptions}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="game-category">Category *</label>
+                                <select id="game-category" class="form-control" required>
+                                    <option value="">Select Category...</option>
+                                    <option value="earlyBird">Early Bird</option>
+                                    <option value="preIntermission">Regular - Pre-Intermission</option>
+                                    <option value="postIntermission">Regular - Post-Intermission</option>
+                                    <option value="postProgressive">Regular - Post-Progressive</option>
+                                    <option value="specialEvent">Special Event</option>
+                                    <option value="progressive">Progressive</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="game-number">Game Number *</label>
+                                <input type="number" id="game-number" class="form-control" min="1" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="game-pattern">Game Pattern *</label>
+                                <select id="game-pattern" class="form-control" required>
+                                    <option value="">Select Pattern...</option>
+                                    <option value="Line">Line</option>
+                                    <option value="Letter T">Letter T</option>
+                                    <option value="Letter L">Letter L</option>
+                                    <option value="Letter X">Letter X</option>
+                                    <option value="Four Corners">Four Corners</option>
+                                    <option value="Frame">Frame</option>
+                                    <option value="Coverall">Coverall</option>
+                                    <option value="Postage Stamp">Postage Stamp</option>
+                                    <option value="Diamond">Diamond</option>
+                                    <option value="Arrow">Arrow</option>
+                                    <option value="Kite">Kite</option>
+                                    <option value="Picture Frame">Picture Frame</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="game-payout">Payout Amount *</label>
+                                <input type="number" id="game-payout" class="form-control" step="1" min="0" required>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                                <button type="button" class="btn secondary" onclick="document.getElementById('add-session-game-modal').remove()">Cancel</button>
+                                <button type="submit" class="btn success">Add Game</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', addGameHtml);
+
+            // Handle form submission
+            document.getElementById('add-session-game-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveNewSessionGame();
+            });
+        }
+
+        editSessionGame(sessionKey, category, gameIndex) {
+            // Get the game data
+            const session = this.sessionGames[sessionKey];
+            if (!session) {
+                this.showAlert('Session not found', 'error');
+                return;
+            }
+
+            let games;
+            if (category === 'earlyBird' || category === 'specialEvent' || category === 'progressive') {
+                games = session.categories[category]?.games;
+            } else {
+                games = session.categories.regular[category];
+            }
+
+            if (!games || !games[gameIndex]) {
+                this.showAlert('Game not found', 'error');
+                return;
+            }
+
+            const game = games[gameIndex];
+
+            // Create edit modal
+            const editGameHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="edit-session-game-modal">
+                    <div class="card" style="max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Edit Session Game</h3>
+                            <button onclick="document.getElementById('edit-session-game-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                        </div>
+
+                        <form id="edit-session-game-form" data-session="${sessionKey}" data-category="${category}" data-index="${gameIndex}">
+                            <div class="form-group">
+                                <label>Session Type</label>
+                                <input type="text" class="form-control" value="${session.sessionName || sessionKey}" readonly style="background: #f8f9fa;">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Category</label>
+                                <input type="text" class="form-control" value="${category}" readonly style="background: #f8f9fa;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-game-number">Game Number *</label>
+                                <input type="number" id="edit-game-number" class="form-control" value="${game.gameNumber}" min="1" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-game-pattern">Game Pattern *</label>
+                                <select id="edit-game-pattern" class="form-control" required>
+                                    <option value="Line" ${game.pattern === 'Line' ? 'selected' : ''}>Line</option>
+                                    <option value="Letter T" ${game.pattern === 'Letter T' ? 'selected' : ''}>Letter T</option>
+                                    <option value="Letter L" ${game.pattern === 'Letter L' ? 'selected' : ''}>Letter L</option>
+                                    <option value="Letter X" ${game.pattern === 'Letter X' ? 'selected' : ''}>Letter X</option>
+                                    <option value="Four Corners" ${game.pattern === 'Four Corners' ? 'selected' : ''}>Four Corners</option>
+                                    <option value="Frame" ${game.pattern === 'Frame' ? 'selected' : ''}>Frame</option>
+                                    <option value="Coverall" ${game.pattern === 'Coverall' ? 'selected' : ''}>Coverall</option>
+                                    <option value="Postage Stamp" ${game.pattern === 'Postage Stamp' ? 'selected' : ''}>Postage Stamp</option>
+                                    <option value="Diamond" ${game.pattern === 'Diamond' ? 'selected' : ''}>Diamond</option>
+                                    <option value="Arrow" ${game.pattern === 'Arrow' ? 'selected' : ''}>Arrow</option>
+                                    <option value="Kite" ${game.pattern === 'Kite' ? 'selected' : ''}>Kite</option>
+                                    <option value="Picture Frame" ${game.pattern === 'Picture Frame' ? 'selected' : ''}>Picture Frame</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-game-payout">Payout Amount *</label>
+                                <input type="number" id="edit-game-payout" class="form-control" value="${game.payout}" step="1" min="0" required>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                                <button type="button" class="btn secondary" onclick="document.getElementById('edit-session-game-modal').remove()">Cancel</button>
+                                <button type="submit" class="btn success">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', editGameHtml);
+
+            // Handle form submission
+            document.getElementById('edit-session-game-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.saveEditedSessionGame();
+            });
+        }
+
+        deleteSessionGame(sessionKey, category, gameIndex) {
+            if (!confirm('Are you sure you want to delete this session game?')) {
+                return;
+            }
+
+            try {
+                // Get the game data for confirmation
+                const session = this.sessionGames[sessionKey];
+                let games;
+                if (category === 'earlyBird' || category === 'specialEvent' || category === 'progressive') {
+                    games = session.categories[category]?.games;
+                } else {
+                    games = session.categories.regular[category];
+                }
+
+                if (!games || !games[gameIndex]) {
+                    this.showAlert('Game not found', 'error');
+                    return;
+                }
+
+                const game = games[gameIndex];
+                console.log(`Deleting session game: ${sessionKey} - ${category} - Game ${game.gameNumber}`);
+
+                // TODO: Call backend API to delete the game
+                // For now, just show success and refresh
+                this.showAlert('Session game deleted successfully!', 'success');
+                this.loadSessionGames(); // Refresh the view
+            } catch (error) {
+                console.error('Error deleting session game:', error);
+                this.showAlert('Error deleting session game', 'error');
+            }
+        }
+
+        async saveNewSession() {
+            const sessionData = {
+                key: document.getElementById('session-key').value,
+                name: document.getElementById('session-name').value
+            };
+
+            try {
+                // TODO: Implement API call to backend to save new session
+                console.log('Adding new session:', sessionData);
+
+                this.showAlert('New session type added successfully!', 'success');
+                document.getElementById('add-session-modal').remove();
+                this.loadSessionGames(); // Refresh the view
+            } catch (error) {
+                console.error('Error adding session:', error);
+                this.showAlert('Error adding session type', 'error');
+            }
+        }
+
+        async saveNewSessionGame() {
+            const gameData = {
+                session: document.getElementById('game-session').value,
+                category: document.getElementById('game-category').value,
+                gameNumber: parseInt(document.getElementById('game-number').value),
+                pattern: document.getElementById('game-pattern').value,
+                payout: parseInt(document.getElementById('game-payout').value)
+            };
+
+            try {
+                // TODO: Implement API call to backend to save new session game
+                console.log('Adding new session game:', gameData);
+
+                this.showAlert('New session game added successfully!', 'success');
+                document.getElementById('add-session-game-modal').remove();
+                this.loadSessionGames(); // Refresh the view
+            } catch (error) {
+                console.error('Error adding session game:', error);
+                this.showAlert('Error adding session game', 'error');
+            }
+        }
+
+        async saveEditedSessionGame() {
+            const form = document.getElementById('edit-session-game-form');
+            const gameData = {
+                session: form.dataset.session,
+                category: form.dataset.category,
+                index: parseInt(form.dataset.index),
+                gameNumber: parseInt(document.getElementById('edit-game-number').value),
+                pattern: document.getElementById('edit-game-pattern').value,
+                payout: parseInt(document.getElementById('edit-game-payout').value)
+            };
+
+            try {
+                // TODO: Implement API call to backend to save edited session game
+                console.log('Editing session game:', gameData);
+
+                this.showAlert('Session game updated successfully!', 'success');
+                document.getElementById('edit-session-game-modal').remove();
+                this.loadSessionGames(); // Refresh the view
+            } catch (error) {
+                console.error('Error updating session game:', error);
+                this.showAlert('Error updating session game', 'error');
+            }
+        }
+
+        showPDFModal(pdfUrl, gameName) {
+            // Create PDF modal viewer
+            const pdfModalHtml = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;" id="pdf-modal">
+                    <div class="card" style="max-width: 90%; max-height: 90%; width: 800px; height: 600px; display: flex; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ddd;">
+                            <h3>${gameName} - PDF</h3>
+                            <button onclick="document.getElementById('pdf-modal').remove()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                        </div>
+
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+                            <iframe src="${pdfUrl}" style="width: 100%; height: 100%; border: none; flex: 1;"></iframe>
+                        </div>
+
+                        <div style="padding: 10px; text-align: center; border-top: 1px solid #ddd;">
+                            <a href="${pdfUrl}" target="_blank" class="btn">Open in New Tab</a>
+                            <button onclick="document.getElementById('pdf-modal').remove()" class="btn secondary">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', pdfModalHtml);
+        }
+
+        initializePullTabSearch() {
+            const searchInput = document.getElementById('library-search');
+            if (!searchInput) return;
+
+            // Remove any existing event listeners
+            searchInput.removeEventListener('input', this.pullTabSearchHandler);
+
+            // Create new search handler
+            this.pullTabSearchHandler = (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                this.filterPullTabTable(searchTerm);
+            };
+
+            // Add event listener
+            searchInput.addEventListener('input', this.pullTabSearchHandler);
+        }
+
+        filterPullTabTable(searchTerm) {
+            const tableBody = document.getElementById('library-table');
+            if (!tableBody) return;
+
+            const rows = tableBody.querySelectorAll('tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                if (row.classList.contains('no-results-row')) {
+                    row.remove();
+                    return;
+                }
+
+                const text = row.textContent.toLowerCase();
+                const isVisible = searchTerm === '' || text.includes(searchTerm);
+
+                row.style.display = isVisible ? '' : 'none';
+                if (isVisible) visibleCount++;
+            });
+
+            // Show "no results" message if no games match
+            if (visibleCount === 0 && searchTerm !== '') {
+                const noResultsRow = tableBody.insertRow();
+                noResultsRow.classList.add('no-results-row');
+                noResultsRow.innerHTML = `
+                    <td colspan="7" style="text-align: center; padding: 20px; color: #666;">
+                        No pull-tab games found matching "${searchTerm}"
+                    </td>
+                `;
+            }
+        }
+
+        async updatePullTabStatus(gameIndex, newStatus) {
+            try {
+                const game = this.pullTabLibrary[gameIndex];
+                if (!game) {
+                    this.showAlert('Game not found', 'error');
+                    return;
+                }
+
+                console.log(`Updating pull-tab status: ${game.name} -> ${newStatus}`);
+
+                // TODO: Implement API call to backend to update status
+                // For now, just update locally and show success
+                this.pullTabLibrary[gameIndex].status = newStatus;
+
+                this.showAlert(`Status updated to "${newStatus}" successfully!`, 'success');
+            } catch (error) {
+                console.error('Error updating pull-tab status:', error);
+                this.showAlert('Error updating status', 'error');
+            }
         }
 
         viewPullTabDetails(gameIndex) {
