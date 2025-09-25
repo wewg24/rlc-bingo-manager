@@ -1108,8 +1108,16 @@
             }
 
             try {
-                // Load real pull-tab library data from API
-                const response = await fetch(`${CONFIG.API_URL}?action=getPullTabsLibrary`);
+                // Load real pull-tab library data from API with cache busting
+                const cacheBreaker = Date.now();
+                const response = await fetch(`${CONFIG.API_URL}?action=getPullTabsLibrary&_cb=${cacheBreaker}`, {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
+                    }
+                });
                 const result = await response.json();
 
                 console.log('Pull-tab library API response:', result); // Debug logging
