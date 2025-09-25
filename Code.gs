@@ -27,6 +27,35 @@ const CONFIG = {
 };
 
 /**
+ * Handle OPTIONS requests for CORS preflight
+ */
+function doOptions(e) {
+  return ContentService
+    .createTextOutput('')
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeaders({
+      'Access-Control-Allow-Origin': 'https://wewg24.github.io',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '3600'
+    });
+}
+
+/**
+ * Helper function to create CORS-enabled response
+ */
+function createCorsResponse(content, mimeType = ContentService.MimeType.JSON) {
+  return ContentService
+    .createTextOutput(content)
+    .setMimeType(mimeType)
+    .setHeaders({
+      'Access-Control-Allow-Origin': 'https://wewg24.github.io',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    });
+}
+
+/**
  * Main entry point for web app requests
  */
 function doPost(e) {
@@ -339,9 +368,7 @@ function doGet(e) {
       const content = result.getContent();
 
       if (callback) {
-        return ContentService
-          .createTextOutput(callback + '(' + content + ')')
-          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+        return createCorsResponse(callback + '(' + content + ')', ContentService.MimeType.JAVASCRIPT);
       }
       return result;
     }
@@ -2029,33 +2056,27 @@ function handleGetPullTabsLibrary() {
       console.log('Pull-tabs library file not found, using default data');
       const defaultLibrary = getDefaultPullTabsLibrary();
 
-      return ContentService
-        .createTextOutput(JSON.stringify({
-          success: true,
-          data: defaultLibrary,
-          source: 'default',
-          message: 'Using comprehensive default pull-tabs library'
-        }))
-        .setMimeType(ContentService.MimeType.JSON);
+      return createCorsResponse(JSON.stringify({
+        success: true,
+        data: defaultLibrary,
+        source: 'default',
+        message: 'Using comprehensive default pull-tabs library'
+      }));
     }
 
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        success: true,
-        data: pullTabsLibrary,
-        source: 'file',
-        message: 'Comprehensive pull-tabs library loaded successfully'
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return createCorsResponse(JSON.stringify({
+      success: true,
+      data: pullTabsLibrary,
+      source: 'file',
+      message: 'Comprehensive pull-tabs library loaded successfully'
+    }));
 
   } catch (error) {
     console.error('Error loading pull-tabs library:', error);
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        success: false,
-        error: error.toString()
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
+    return createCorsResponse(JSON.stringify({
+      success: false,
+      error: error.toString()
+    }));
   }
 }
 
