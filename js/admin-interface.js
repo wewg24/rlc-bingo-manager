@@ -113,63 +113,115 @@ class AdminInterface {
 
     // Navigation Methods
     hideAllViews() {
+        // Force hide all views with important styling
         const views = document.querySelectorAll('.view');
         views.forEach(view => {
             view.classList.remove('active');
+            view.style.display = 'none';
         });
 
         // Remove active class from all nav buttons
         const navButtons = document.querySelectorAll('.nav button');
         navButtons.forEach(btn => btn.classList.remove('active'));
+
+        console.log('AdminInterface: hideAllViews - hidden', views.length, 'views');
     }
 
     showDashboard() {
         console.log('AdminInterface: showDashboard called');
         this.hideAllViews();
-        document.getElementById('dashboard-view').classList.add('active');
-        document.getElementById('nav-dashboard').classList.add('active');
-        this.loadDashboard();
+        const dashboardView = document.getElementById('dashboard-view');
+        const dashboardNav = document.getElementById('nav-dashboard');
+
+        if (dashboardView && dashboardNav) {
+            dashboardView.classList.add('active');
+            dashboardView.style.display = 'block';
+            dashboardNav.classList.add('active');
+            console.log('AdminInterface: Dashboard view activated');
+            this.loadDashboard();
+        }
     }
 
     showOccasions() {
+        console.log('AdminInterface: showOccasions called');
         this.hideAllViews();
-        document.getElementById('occasions-view').classList.add('active');
-        document.getElementById('nav-occasions').classList.add('active');
-        if (this.apiService) {
-            this.apiService.loadOccasionsTable();
+        const occasionsView = document.getElementById('occasions-view');
+        const occasionsNav = document.getElementById('nav-occasions');
+
+        if (occasionsView && occasionsNav) {
+            occasionsView.classList.add('active');
+            occasionsView.style.display = 'block';
+            occasionsNav.classList.add('active');
+            console.log('AdminInterface: Occasions view activated');
+
+            if (this.apiService) {
+                this.apiService.loadOccasionsTable();
+            }
         }
     }
 
     showReports() {
+        console.log('AdminInterface: showReports called');
         this.hideAllViews();
-        document.getElementById('reports-view').classList.add('active');
-        document.getElementById('nav-reports').classList.add('active');
-        // Reports functionality will be handled by reports module
+        const reportsView = document.getElementById('reports-view');
+        const reportsNav = document.getElementById('nav-reports');
+
+        if (reportsView && reportsNav) {
+            reportsView.classList.add('active');
+            reportsView.style.display = 'block';
+            reportsNav.classList.add('active');
+            console.log('AdminInterface: Reports view activated');
+        }
     }
 
     showLibrary() {
+        console.log('AdminInterface: showLibrary called');
         this.hideAllViews();
-        document.getElementById('library-view').classList.add('active');
-        document.getElementById('nav-library').classList.add('active');
-        if (this.apiService) {
-            this.apiService.loadPullTabLibrary();
+        const libraryView = document.getElementById('library-view');
+        const libraryNav = document.getElementById('nav-library');
+
+        if (libraryView && libraryNav) {
+            libraryView.classList.add('active');
+            libraryView.style.display = 'block';
+            libraryNav.classList.add('active');
+            console.log('AdminInterface: Library view activated');
+
+            if (this.apiService) {
+                this.apiService.loadPullTabLibrary();
+            }
         }
     }
 
     showSessionGames() {
+        console.log('AdminInterface: showSessionGames called');
         this.hideAllViews();
-        document.getElementById('session-games-view').classList.add('active');
-        document.getElementById('nav-session-games').classList.add('active');
-        if (this.apiService) {
-            this.apiService.loadSessionGames();
+        const sessionGamesView = document.getElementById('session-games-view');
+        const sessionGamesNav = document.getElementById('nav-session-games');
+
+        if (sessionGamesView && sessionGamesNav) {
+            sessionGamesView.classList.add('active');
+            sessionGamesView.style.display = 'block';
+            sessionGamesNav.classList.add('active');
+            console.log('AdminInterface: Session Games view activated');
+
+            if (this.apiService) {
+                this.apiService.loadSessionGames();
+            }
         }
     }
 
     showOfflineGenerator() {
+        console.log('AdminInterface: showOfflineGenerator called');
         this.hideAllViews();
-        document.getElementById('offline-generator-view').classList.add('active');
-        document.getElementById('nav-offline-generator').classList.add('active');
-        // Offline generator will be handled by offline-generator module
+        const offlineView = document.getElementById('offline-generator-view');
+        const offlineNav = document.getElementById('nav-offline-generator');
+
+        if (offlineView && offlineNav) {
+            offlineView.classList.add('active');
+            offlineView.style.display = 'block';
+            offlineNav.classList.add('active');
+            console.log('AdminInterface: Offline Generator view activated');
+        }
     }
 
     // Dashboard Loading

@@ -201,11 +201,10 @@ class Dashboard {
         });
         console.log('Dashboard: Parent container:', dashboardView.parentElement);
 
-        // Force visibility
+        // Force visibility - removed debug background color
         dashboardView.style.display = 'block';
         dashboardView.style.minHeight = '500px';
-        dashboardView.style.backgroundColor = 'lightblue';
-        console.log('Dashboard: Applied debug styles for visibility');
+        console.log('Dashboard: Applied clean styles for visibility');
     }
 
     /**

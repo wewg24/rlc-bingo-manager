@@ -291,6 +291,96 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Navigation specific styles to override offline-app.css */
+.admin-container .nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    padding: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+}
+
+.admin-container .nav button {
+    background: linear-gradient(135deg, #1565C0, #0D47A1);
+    color: white;
+    border: 2px solid #1565C0;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(21, 101, 192, 0.2);
+}
+
+.admin-container .nav button:hover {
+    background: linear-gradient(135deg, #f9c910, #e6b800);
+    color: #1565C0;
+    border-color: #f9c910;
+    box-shadow: 0 6px 20px rgba(249, 201, 16, 0.3);
+    transform: translateY(-1px);
+}
+
+.admin-container .nav button.active {
+    background: linear-gradient(135deg, #f9c910, #e6b800);
+    color: #1565C0;
+    border-color: #f9c910;
+    box-shadow: 0 6px 20px rgba(249, 201, 16, 0.4);
+    transform: translateY(-1px);
+}
+
+/* View system improvements */
+.view {
+    flex: 1;
+    min-height: 400px;
+    display: none !important;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.view.active {
+    display: block !important;
+    opacity: 1;
+}
+
+/* Table container improvements */
+.table-container {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+/* Search and filter improvements */
+.d-flex {
+    display: flex;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.form-control.search-input {
+    max-width: 300px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .admin-container {
@@ -322,6 +412,16 @@ body {
     .table th,
     .table td {
         padding: 8px;
+    }
+
+    .admin-container .nav {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .admin-container .nav button {
+        width: 100%;
+        justify-content: center;
     }
 }
 

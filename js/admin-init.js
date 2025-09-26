@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Make admin interface globally available
     window.adminInterface = adminInterface;
 
+    // Set up navigation event listeners
+    setupNavigation(adminInterface);
+
     // Set up global utility functions for backward compatibility
     // Only override if LoadingManager is not available
     if (!window.LoadingManager || !window.showLoading) {
@@ -47,7 +50,75 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     console.log('✅ RLC Bingo Admin Interface initialized successfully');
+
+    // Initialize the dashboard view by default
+    setTimeout(() => {
+        adminInterface.showDashboard();
+    }, 100);
 });
+
+/**
+ * Set up navigation event listeners
+ */
+function setupNavigation(adminInterface) {
+    console.log('Setting up navigation event listeners...');
+
+    // Dashboard navigation
+    const navDashboard = document.getElementById('nav-dashboard');
+    if (navDashboard) {
+        navDashboard.addEventListener('click', (e) => {
+            e.preventDefault();
+            adminInterface.showDashboard();
+        });
+    }
+
+    // Occasions navigation
+    const navOccasions = document.getElementById('nav-occasions');
+    if (navOccasions) {
+        navOccasions.addEventListener('click', (e) => {
+            e.preventDefault();
+            adminInterface.showOccasions();
+        });
+    }
+
+    // Reports navigation
+    const navReports = document.getElementById('nav-reports');
+    if (navReports) {
+        navReports.addEventListener('click', (e) => {
+            e.preventDefault();
+            adminInterface.showReports();
+        });
+    }
+
+    // Library navigation
+    const navLibrary = document.getElementById('nav-library');
+    if (navLibrary) {
+        navLibrary.addEventListener('click', (e) => {
+            e.preventDefault();
+            adminInterface.showLibrary();
+        });
+    }
+
+    // Session Games navigation
+    const navSessionGames = document.getElementById('nav-session-games');
+    if (navSessionGames) {
+        navSessionGames.addEventListener('click', (e) => {
+            e.preventDefault();
+            adminInterface.showSessionGames();
+        });
+    }
+
+    // Offline Generator navigation
+    const navOfflineGenerator = document.getElementById('nav-offline-generator');
+    if (navOfflineGenerator) {
+        navOfflineGenerator.addEventListener('click', (e) => {
+            e.preventDefault();
+            adminInterface.showOfflineGenerator();
+        });
+    }
+
+    console.log('Navigation event listeners set up successfully');
+}
 
 // Global error handler
 window.addEventListener('error', function(e) {
