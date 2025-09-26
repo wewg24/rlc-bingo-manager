@@ -1,7 +1,7 @@
 /**
  * Loading Overlay System
  * Provides spinner and progress feedback during data operations
- * Version 11.1.0
+ * Version 11.7.0
  */
 
 class LoadingManager {
