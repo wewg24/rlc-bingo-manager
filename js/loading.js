@@ -182,12 +182,20 @@ class LoadingManager {
     }
 }
 
-// Global loading manager instance
-window.LoadingManager = new LoadingManager();
+// Global loading manager instance - initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeLoadingManager);
+} else {
+    initializeLoadingManager();
+}
 
-// Convenience global functions
-window.showLoading = (options) => window.LoadingManager.show(options);
-window.hideLoading = () => window.LoadingManager.hide();
+function initializeLoadingManager() {
+    window.LoadingManager = new LoadingManager();
+
+    // Convenience global functions
+    window.showLoading = (options) => window.LoadingManager.show(options);
+    window.hideLoading = () => window.LoadingManager.hide();
+}
 window.updateLoading = (text, subtext) => window.LoadingManager.updateText(text, subtext);
 
 // Export for modules
