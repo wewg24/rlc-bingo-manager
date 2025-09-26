@@ -853,42 +853,51 @@
     }
 
     // Global functions for backward compatibility
-    function showDashboard() { if (adminApp) adminApp.showDashboard(); }
-    function showOccasions() { if (adminApp) adminApp.showOccasions(); }
-    function showReports() { if (adminApp) adminApp.showReports(); }
-    function showLibrary() { if (adminApp) adminApp.showLibrary(); }
-    function showSessionGames() { if (adminApp) adminApp.showSessionGames(); }
-    function showOfflineGenerator() { if (adminApp) adminApp.showOfflineGenerator(); }
+    function showDashboard() { if (window.adminInterface) window.adminInterface.showDashboard(); }
+    function showOccasions() { if (window.adminInterface) window.adminInterface.showOccasions(); }
+    function showReports() { if (window.adminInterface) window.adminInterface.showReports(); }
+    function showLibrary() { if (window.adminInterface) window.adminInterface.showLibrary(); }
+    function showSessionGames() { if (window.adminInterface) window.adminInterface.showSessionGames(); }
+    function showOfflineGenerator() { if (window.adminInterface) window.adminInterface.showOfflineGenerator(); }
 
     // Placeholder functions for buttons
-    function createOccasion() { adminApp.showAlert('Create Occasion functionality will be implemented soon', 'success'); }
-    function backupData() { adminApp.showAlert('Data backup functionality will be implemented soon', 'success'); }
-    function generateFinancialReport() { adminApp.showAlert('Financial report generation will be implemented soon', 'success'); }
-    function generateYearlyReport() { adminApp.showAlert('Yearly report generation will be implemented soon', 'success'); }
-    function generateTaxReport() { adminApp.showAlert('Tax report generation will be implemented soon', 'success'); }
-    function generatePlayerReport() { adminApp.showAlert('Player report generation will be implemented soon', 'success'); }
-    function generateAttendanceReport() { adminApp.showAlert('Attendance report generation will be implemented soon', 'success'); }
-    function generateGameReport() { adminApp.showAlert('Game report generation will be implemented soon', 'success'); }
-    function generatePullTabReport() { adminApp.showAlert('Pull-tab report generation will be implemented soon', 'success'); }
-    function addPullTabGame() { adminApp.showAlert('Add pull-tab game functionality will be implemented soon', 'success'); }
-    function addSessionType() { adminApp.showAlert('Add session type functionality will be implemented soon', 'success'); }
-    function addSessionGame() { adminApp.showAlert('Add session game functionality will be implemented soon', 'success'); }
-    function buildOfflineApp() { adminApp.showAlert('Offline app generation will be implemented soon', 'success'); }
-    function previewOfflineApp() { adminApp.showAlert('Offline app preview will be implemented soon', 'success'); }
-    function editOccasion(id) { adminApp.showAlert('Edit occasion functionality will be implemented soon', 'success'); }
-    function viewOccasion(id) { adminApp.showAlert('View occasion functionality will be implemented soon', 'success'); }
-    function editPullTab(id) { adminApp.showAlert('Edit pull-tab functionality will be implemented soon', 'success'); }
-    function viewPullTab(id) { adminApp.showAlert('View pull-tab functionality will be implemented soon', 'success'); }
-    function editSessionGame(id) { adminApp.showAlert('Edit session game functionality will be implemented soon', 'success'); }
-    function viewSessionGame(id) { adminApp.showAlert('View session game functionality will be implemented soon', 'success'); }
+    function createOccasion() {
+        window.open('./occasion.html', '_blank');
+    }
+    function backupData() {
+        if (window.adminInterface && window.adminInterface.utilities) {
+            window.adminInterface.utilities.showAlert('Data backup functionality will be implemented soon', 'success');
+        }
+    }
+    function generateFinancialReport() { showAlert('Financial report generation will be implemented soon', 'success'); }
+    function generateYearlyReport() { showAlert('Yearly report generation will be implemented soon', 'success'); }
+    function generateTaxReport() { showAlert('Tax report generation will be implemented soon', 'success'); }
+    function generatePlayerReport() { showAlert('Player report generation will be implemented soon', 'success'); }
+    function generateAttendanceReport() { showAlert('Attendance report generation will be implemented soon', 'success'); }
+    function generateGameReport() { showAlert('Game report generation will be implemented soon', 'success'); }
+    function generatePullTabReport() { showAlert('Pull-tab report generation will be implemented soon', 'success'); }
+    function addPullTabGame() { showAlert('Add pull-tab game functionality will be implemented soon', 'success'); }
+    function addSessionType() { showAlert('Add session type functionality will be implemented soon', 'success'); }
+    function addSessionGame() { showAlert('Add session game functionality will be implemented soon', 'success'); }
+    function buildOfflineApp() { showAlert('Offline app generation will be implemented soon', 'success'); }
+    function previewOfflineApp() { showAlert('Offline app preview will be implemented soon', 'success'); }
+    function editOccasion(id) { showAlert('Edit occasion functionality will be implemented soon', 'success'); }
+    function viewOccasion(id) { showAlert('View occasion functionality will be implemented soon', 'success'); }
+    function editPullTab(id) { showAlert('Edit pull-tab functionality will be implemented soon', 'success'); }
+    function viewPullTab(id) { showAlert('View pull-tab functionality will be implemented soon', 'success'); }
+    function editSessionGame(id) { showAlert('Edit session game functionality will be implemented soon', 'success'); }
+    function viewSessionGame(id) { showAlert('View session game functionality will be implemented soon', 'success'); }
 
     // Initialize application when DOM is ready
-    let adminApp = null;
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Initializing RLC Bingo Admin Interface...');
-        adminApp = new AdminApp();
-        console.log('✅ RLC Bingo Admin Interface initialized successfully');
-    });
+    // Helper function for alerts
+    function showAlert(message, type) {
+        if (window.adminInterface && window.adminInterface.utilities) {
+            window.adminInterface.utilities.showAlert(message, type);
+        } else {
+            alert(message);
+        }
+    }
+    // Application initialization is handled by admin-init.js
     </script>
 </body>
 </html>
