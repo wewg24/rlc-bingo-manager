@@ -3,34 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RLC Bingo Admin - Simple Test</title>
+    <title>RLC Bingo Admin - Simple Test v11.7.0</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .btn { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .btn:hover { background: #0056b3; }
-        .view { display: none; margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
-        .view.active { display: block; }
-        .nav { margin: 20px 0; }
-        .card { background: white; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin: 10px 0; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
-        .stat-card { background: #f8f9fa; padding: 20px; border-radius: 5px; text-align: center; }
-        .stat-value { font-size: 2rem; font-weight: bold; color: #007bff; }
-        .stat-label { color: #666; margin-top: 10px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1565C0, #0D47A1);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-top: 4px solid #f9c910;
+            box-shadow: 0 8px 24px rgba(21, 101, 192, 0.12);
+            text-align: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1565C0, #0D47A1);
+            color: white;
+            border: 2px solid #1565C0;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(21, 101, 192, 0.2);
+        }
+
+        .btn:hover, .btn.active {
+            background: linear-gradient(135deg, #f9c910, #e6b800);
+            color: #1565C0;
+            border-color: #f9c910;
+            box-shadow: 0 6px 20px rgba(249, 201, 16, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .view {
+            display: none;
+            margin: 20px 0;
+            padding: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .view.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #1565C0;
+            margin-bottom: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1565C0;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .version-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        #api-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .success { color: #28a745; background: #d4edda; }
+        .error { color: #dc3545; background: #f8d7da; }
+
+        @media (max-width: 768px) {
+            .nav { flex-direction: column; }
+            .btn { width: 100%; text-align: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            body { padding: 10px; }
+        }
     </style>
 </head>
 <body>
-    <h1>🦁 RLC Bingo Admin Dashboard - Simple Test</h1>
+    <div class="header">
+        <h1>🦁 RLC Bingo Admin Dashboard - Simple Test
+            <span class="version-badge">v11.7.0</span>
+        </h1>
+    </div>
 
     <div class="nav">
         <button id="nav-dashboard" class="btn active" onclick="showView('dashboard')">📊 Dashboard</button>
         <button id="nav-occasions" class="btn" onclick="showView('occasions')">📅 Occasions</button>
         <button id="nav-reports" class="btn" onclick="showView('reports')">📈 Reports</button>
         <button id="nav-library" class="btn" onclick="showView('library')">🎮 Pull-Tab Library</button>
+        <button id="nav-test" class="btn" onclick="showView('test')">🧪 API Test</button>
     </div>
 
     <div id="dashboard-view" class="view active">
         <div class="card">
             <h2>Dashboard</h2>
+            <p>Welcome to the RLC Bingo Admin Dashboard. This simple test interface demonstrates the core functionality and styling improvements.</p>
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value">0</div>
@@ -44,9 +171,20 @@
                     <div class="stat-value">0</div>
                     <div class="stat-label">Total Revenue</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-value">152</div>
+                    <div class="stat-label">Pull-Tab Games</div>
+                </div>
             </div>
-            <button class="btn" onclick="testAPI()">🔄 Test API Connection</button>
-            <div id="api-status" style="margin-top: 10px;"></div>
+            <h3>Recent Updates (v11.7.0)</h3>
+            <ul>
+                <li>✅ Fixed dashboard view visibility issues</li>
+                <li>✅ Resolved CSS styling conflicts</li>
+                <li>✅ Implemented proper navigation system</li>
+                <li>✅ Added Lions Club branding</li>
+                <li>✅ Enhanced mobile responsiveness</li>
+                <li>✅ Improved error handling and logging</li>
+            </ul>
         </div>
     </div>
 
@@ -69,8 +207,28 @@
     <div id="library-view" class="view">
         <div class="card">
             <h2>Pull-Tab Library</h2>
-            <p>Pull-tab game library will be here.</p>
-            <button class="btn" onclick="alert('Library feature coming soon!')">Add Game</button>
+            <p>The pull-tab game library contains 152 games with comprehensive details including:</p>
+            <ul>
+                <li>Game names and pricing</li>
+                <li>Tab counts and payout ratios</li>
+                <li>Status management (Active, Discontinued, Special Event)</li>
+                <li>Real-time search and filtering</li>
+            </ul>
+            <button class="btn" onclick="alert('Navigate to the full admin interface to manage games!')">View Full Library</button>
+        </div>
+    </div>
+
+    <div id="test-view" class="view">
+        <div class="card">
+            <h2>API Connection Test</h2>
+            <p>Test the connection to the Google Apps Script backend to verify system functionality.</p>
+            <button class="btn" onclick="testAPI()">🔄 Test API Connection</button>
+            <div id="api-status"></div>
+
+            <h3>Test Results</h3>
+            <div id="test-results" style="margin-top: 15px;">
+                <p><em>Click the test button above to check API connectivity.</em></p>
+            </div>
         </div>
     </div>
 
@@ -91,29 +249,71 @@
         // Test API connection
         async function testAPI() {
             const statusDiv = document.getElementById('api-status');
+            const resultsDiv = document.getElementById('test-results');
+
             statusDiv.innerHTML = '⏳ Testing API connection...';
+            statusDiv.className = '';
+
+            const startTime = Date.now();
 
             try {
                 const response = await fetch('https://script.google.com/macros/s/AKfycbzT7N4Ul9mF3KDqOx9nuIeA-IdOeKBeDT18cYMjPcKsUgy3_Ud9iXqFriMGQLQ2otJTSw/exec?action=loadOccasions');
                 const data = await response.json();
+                const duration = Date.now() - startTime;
 
                 if (data.success) {
-                    statusDiv.innerHTML = `✅ API Connected! Found ${data.occasions?.length || 0} occasions`;
-                    statusDiv.style.color = 'green';
+                    statusDiv.innerHTML = `✅ API Connected Successfully! (${duration}ms)`;
+                    statusDiv.className = 'success';
+
+                    resultsDiv.innerHTML = `
+                        <h4>✅ Connection Successful</h4>
+                        <ul>
+                            <li><strong>Response Time:</strong> ${duration}ms</li>
+                            <li><strong>Occasions Found:</strong> ${data.occasions?.length || 0}</li>
+                            <li><strong>Last Updated:</strong> ${data.lastUpdated || 'Unknown'}</li>
+                            <li><strong>Status:</strong> ${data.message || 'Success'}</li>
+                        </ul>
+                    `;
                 } else {
-                    statusDiv.innerHTML = '❌ API responded but with error: ' + (data.message || 'Unknown error');
-                    statusDiv.style.color = 'red';
+                    statusDiv.innerHTML = '❌ API responded but with error';
+                    statusDiv.className = 'error';
+
+                    resultsDiv.innerHTML = `
+                        <h4>❌ API Error</h4>
+                        <ul>
+                            <li><strong>Response Time:</strong> ${duration}ms</li>
+                            <li><strong>Error:</strong> ${data.message || 'Unknown error'}</li>
+                            <li><strong>Success:</strong> ${data.success}</li>
+                        </ul>
+                    `;
                 }
             } catch (error) {
-                statusDiv.innerHTML = '❌ API Connection Failed: ' + error.message;
-                statusDiv.style.color = 'red';
+                const duration = Date.now() - startTime;
+                statusDiv.innerHTML = '❌ Connection Failed';
+                statusDiv.className = 'error';
+
+                resultsDiv.innerHTML = `
+                    <h4>❌ Connection Failed</h4>
+                    <ul>
+                        <li><strong>Duration:</strong> ${duration}ms</li>
+                        <li><strong>Error Type:</strong> ${error.name || 'NetworkError'}</li>
+                        <li><strong>Error Message:</strong> ${error.message}</li>
+                        <li><strong>Possible Causes:</strong> Network issues, CORS policy, or server unavailable</li>
+                    </ul>
+                `;
             }
         }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ Simple admin interface loaded successfully');
+            console.log('✅ Simple admin interface v11.7.0 loaded successfully');
             showView('dashboard');
+
+            // Auto-test API connection on load
+            setTimeout(() => {
+                console.log('Running initial API test...');
+                testAPI();
+            }, 1000);
         });
     </script>
 </body>
