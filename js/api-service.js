@@ -215,90 +215,42 @@ class ApiService {
             let result;
 
             // Try multiple API endpoints for pull-tab library
-            try {
-                result = await this.jsonpRequest(`${CONFIG.API_URL}?action=getPullTabsLibrary&_cb=${cacheBreaker}`);
-                console.log('Pull-tab library API response (getPullTabsLibrary):', result);
-            } catch (error) {
-                console.warn('getPullTabsLibrary failed, trying alternative path:', error);
-                // Try alternative path parameter
-                try {
-                    result = await this.jsonpRequest(`${CONFIG.API_URL}?path=pulltabs&_cb=${cacheBreaker}`);
-                    console.log('Pull-tab library API response (path=pulltabs):', result);
-                } catch (error2) {
-                    console.warn('path=pulltabs failed, trying loadOccasions:', error2);
-                    // Final fallback - sometimes the pull-tab data comes with occasions
-                    result = await this.jsonpRequest(`${CONFIG.API_URL}?action=loadOccasions&_cb=${cacheBreaker}`);
-                    console.log('Pull-tab library API response (loadOccasions fallback):', result);
-                }
+            result = await this.jsonpRequest(`${CONFIG.API_URL}?action=getPullTabsLibrary&_cb=${cacheBreaker}`);
+            console.log('Pull-tab library API response:', result);
+
+            // Validate response - expect proper Google Drive data structure
+            if (!result || !result.success) {
+                throw new Error(result?.message || 'API request failed - no success flag');
             }
 
-            // More flexible response validation - check multiple possible structures
             let games = null;
-            if (result.success && result.data && result.data.games && Array.isArray(result.data.games)) {
+            if (result.data && result.data.games && Array.isArray(result.data.games)) {
                 games = result.data.games;
-            } else if (result.success && result.data && Array.isArray(result.data)) {
+            } else if (result.data && Array.isArray(result.data)) {
                 games = result.data;
-            } else if (result.success && Array.isArray(result.games)) {
+            } else if (Array.isArray(result.games)) {
                 games = result.games;
-            } else if (result.success && result.pullTabs && Array.isArray(result.pullTabs)) {
+            } else if (Array.isArray(result.pullTabs)) {
                 games = result.pullTabs;
-            } else if (result.success && result.pulltabs && Array.isArray(result.pulltabs)) {
-                games = result.pulltabs;
-            } else if (Array.isArray(result)) {
-                games = result;
-            } else if (result.success === false && result.message) {
-                console.warn('API returned error:', result.message);
-                // If the API explicitly says it failed, use a fallback
-                games = this.getFallbackPullTabData();
+            } else {
+                throw new Error('Invalid response structure - expected array of pull-tab games from Google Drive');
             }
 
-            if (games && games.length > 0) {
-                console.log(`Pull-tab library loaded: ${games.length} games`);
-                this.adminInterface.pullTabLibrary = games; // Store for access by other functions
-                if (this.adminInterface.uiComponents) {
-                    this.adminInterface.uiComponents.renderPullTabTable(games);
-                } else {
-                    console.warn('UI Components not available for pull-tab table rendering');
-                }
+            if (!games || games.length === 0) {
+                throw new Error('No pull-tab games found in Google Drive');
+            }
+
+            console.log(`Pull-tab library loaded from Google Drive: ${games.length} games`);
+            this.adminInterface.pullTabLibrary = games;
+
+            if (this.adminInterface.uiComponents) {
+                this.adminInterface.uiComponents.renderPullTabTable(games);
             } else {
-                console.warn('Invalid pull-tab library response structure:', {
-                    hasSuccess: !!result.success,
-                    hasData: !!result.data,
-                    dataType: typeof result.data,
-                    resultKeys: Object.keys(result || {}),
-                    fullResult: result
-                });
-
-                // Use fallback data if API doesn't work
-                console.log('Using fallback pull-tab data...');
-                games = this.getFallbackPullTabData();
-
-                if (games && games.length > 0) {
-                    console.log(`Pull-tab library loaded from fallback: ${games.length} games`);
-                    this.adminInterface.pullTabLibrary = games;
-                    if (this.adminInterface.uiComponents) {
-                        this.adminInterface.uiComponents.renderPullTabTable(games);
-                    }
-                } else {
-                    this.showPullTabError('Invalid response format from server. No pull-tab data available.');
-                }
+                throw new Error('UI Components not available for pull-tab table rendering');
             }
         } catch (error) {
-            console.error('Error loading pull-tab library:', error);
-
-            // Try fallback data on error
-            console.log('Using fallback pull-tab data due to error...');
-            const fallbackGames = this.getFallbackPullTabData();
-
-            if (fallbackGames && fallbackGames.length > 0) {
-                console.log(`Pull-tab library loaded from fallback after error: ${fallbackGames.length} games`);
-                this.adminInterface.pullTabLibrary = fallbackGames;
-                if (this.adminInterface.uiComponents) {
-                    this.adminInterface.uiComponents.renderPullTabTable(fallbackGames);
-                }
-            } else {
-                this.showPullTabError(error.message || 'Unable to load pull-tab library from Google Drive');
-            }
+            console.error('Pull-tab library failed to load from Google Drive:', error);
+            this.showPullTabError(`Failed to load pull-tab library from Google Drive: ${error.message}`);
         } finally {
             // Hide loading spinner
             if (window.hideLoading) {
@@ -308,37 +260,55 @@ class ApiService {
     }
 
     /**
-     * Load session games with new schema support
+     * Load session games using JSONP from backend
      */
     async loadSessionGames() {
         // Show loading spinner
         if (window.showLoading) {
             window.showLoading({
                 text: 'Loading Session Games',
-                subtext: 'Fetching session games from GitHub...',
+                subtext: 'Fetching session games from Google Apps Script...',
                 timeout: 15000
             });
         }
 
         try {
-            // Load from the new session-games.json file with new schema
-            const response = await fetch('./session-games.json?_cb=' + Date.now());
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            // Use JSONP to fetch session games from backend
+            const cacheBreaker = Date.now();
+            let result;
+
+            result = await this.jsonpRequest(`${CONFIG.API_URL}?action=getSessionGames&_cb=${cacheBreaker}`);
+            console.log('Session games API response:', result);
+
+            // Validate response - expect proper Google Drive data structure
+            if (!result || !result.success) {
+                throw new Error(result?.message || 'API request failed - no success flag');
             }
 
-            const sessionGamesData = await response.json();
+            let sessionGamesData = null;
+            if (result.data && (result.data.sessionTypes || result.data.metadata)) {
+                sessionGamesData = result.data;
+            } else if (result.sessionTypes || result.metadata) {
+                sessionGamesData = result;
+            } else {
+                throw new Error('Invalid response structure - expected session games data from Google Drive');
+            }
 
-            console.log('Session games loaded:', sessionGamesData); // Debug logging
+            if (!sessionGamesData || !sessionGamesData.sessionTypes) {
+                throw new Error('No session games data found in Google Drive');
+            }
 
-            this.adminInterface.sessionGames = sessionGamesData; // Store for access by other functions
+            console.log('Session games loaded from Google Drive:', sessionGamesData);
+            this.adminInterface.sessionGames = sessionGamesData;
 
             if (this.adminInterface.uiComponents) {
                 this.adminInterface.uiComponents.renderSessionGamesView(sessionGamesData);
+            } else {
+                throw new Error('UI Components not available for session games rendering');
             }
         } catch (error) {
-            console.error('Error loading session games:', error);
-            this.showSessionGamesError(error.message || 'Unable to load session games data');
+            console.error('Session games failed to load from Google Drive:', error);
+            this.showSessionGamesError(`Failed to load session games from Google Drive: ${error.message}`);
         } finally {
             // Hide loading spinner
             if (window.hideLoading) {
@@ -443,42 +413,6 @@ class ApiService {
         setTimeout(() => this.loadPullTabLibrary(), 500);
     }
 
-    // Fallback pull-tab data when API is not available
-    getFallbackPullTabData() {
-        return [
-            { name: "Beat the Clock 599", price: 1.00, tickets: 960, profit: 361.00, profitPercent: 38, status: "Active" },
-            { name: "Black Jack 175", price: 1.00, tickets: 250, profit: 75.00, profitPercent: 30, status: "Active" },
-            { name: "Black Jack 200", price: 1.00, tickets: 300, profit: 100.00, profitPercent: 33, status: "Active" },
-            { name: "Black Jack 280", price: 1.00, tickets: 400, profit: 120.00, profitPercent: 30, status: "Active" },
-            { name: "Black Jack 400", price: 1.00, tickets: 600, profit: 200.00, profitPercent: 33, status: "Active" },
-            { name: "Black Jack 599", price: 1.00, tickets: 840, profit: 241.00, profitPercent: 29, status: "Active" },
-            { name: "Black Jack 700", price: 1.00, tickets: 1000, profit: 300.00, profitPercent: 30, status: "Active" },
-            { name: "Bubble Gum 100", price: 1.00, tickets: 150, profit: 50.00, profitPercent: 33, status: "Active" },
-            { name: "Bubble Gum 175", price: 1.00, tickets: 250, profit: 75.00, profitPercent: 30, status: "Active" },
-            { name: "Bubble Gum 280", price: 1.00, tickets: 400, profit: 120.00, profitPercent: 30, status: "Active" },
-            { name: "Bubble Gum 325", price: 1.00, tickets: 500, profit: 175.00, profitPercent: 35, status: "Active" },
-            { name: "Bubble Gum 400", price: 1.00, tickets: 600, profit: 200.00, profitPercent: 33, status: "Active" },
-            { name: "Bubble Gum 599", price: 1.00, tickets: 840, profit: 241.00, profitPercent: 29, status: "Active" },
-            { name: "Bubble Gum 700", price: 1.00, tickets: 1000, profit: 300.00, profitPercent: 30, status: "Active" },
-            { name: "Chase Your Dreams 200", price: 1.00, tickets: 300, profit: 100.00, profitPercent: 33, status: "Active" },
-            { name: "Chocolate 100", price: 1.00, tickets: 150, profit: 50.00, profitPercent: 33, status: "Active" },
-            { name: "Chocolate 175", price: 1.00, tickets: 250, profit: 75.00, profitPercent: 30, status: "Active" },
-            { name: "Chocolate 280", price: 1.00, tickets: 400, profit: 120.00, profitPercent: 30, status: "Active" },
-            { name: "Chocolate 325", price: 1.00, tickets: 500, profit: 175.00, profitPercent: 35, status: "Active" },
-            { name: "Chocolate 400", price: 1.00, tickets: 600, profit: 200.00, profitPercent: 33, status: "Active" },
-            { name: "Chocolate 599", price: 1.00, tickets: 840, profit: 241.00, profitPercent: 29, status: "Active" },
-            { name: "Chocolate 700", price: 1.00, tickets: 1000, profit: 300.00, profitPercent: 30, status: "Active" },
-            { name: "Claw Enforcement 175", price: 1.00, tickets: 280, profit: 105.00, profitPercent: 38, status: "Active" },
-            { name: "Cotton Candy 100", price: 1.00, tickets: 150, profit: 50.00, profitPercent: 33, status: "Active" },
-            { name: "Cotton Candy 175", price: 1.00, tickets: 250, profit: 75.00, profitPercent: 30, status: "Active" },
-            { name: "Cotton Candy 280", price: 1.00, tickets: 400, profit: 120.00, profitPercent: 30, status: "Active" },
-            { name: "Cotton Candy 325", price: 1.00, tickets: 500, profit: 175.00, profitPercent: 35, status: "Active" },
-            { name: "Cotton Candy 400", price: 1.00, tickets: 600, profit: 200.00, profitPercent: 33, status: "Active" },
-            { name: "Cotton Candy 599", price: 1.00, tickets: 840, profit: 241.00, profitPercent: 29, status: "Active" },
-            { name: "Cotton Candy 700", price: 1.00, tickets: 1000, profit: 300.00, profitPercent: 30, status: "Active" },
-            { name: "Crap Shoot 175", price: 1.00, tickets: 250, profit: 75.00, profitPercent: 30, status: "Active" }
-        ];
-    }
 
     clearSessionGamesErrorAndRetry() {
         const sessionGamesView = document.getElementById('session-games-view');
@@ -487,6 +421,7 @@ class ApiService {
         }
         setTimeout(() => this.loadSessionGames(), 500);
     }
+
 }
 
 // Make ApiService globally available
