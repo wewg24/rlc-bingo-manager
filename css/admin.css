@@ -1,98 +1,27 @@
-/* Admin Interface Styles with CSS Custom Properties for Theme Support */
+/* Admin Interface Styles - Lions Club Branded Design */
 
-/* CSS Custom Properties for Light Theme (Default) */
+/* Base Lions Club Variables matching occasion.html */
 :root {
-    /* Primary Colors - Lions Club Branding */
-    --primary-blue: #1565C0;
-    --primary-blue-dark: #0D47A1;
-    --accent-gold: #f9c910;
-    --accent-gold-dark: #e6b800;
-
-    /* Background Colors */
-    --bg-primary: #f5f5f5;
-    --bg-secondary: #ffffff;
-    --bg-tertiary: #f8f9fa;
-    --bg-card: #ffffff;
-
-    /* Text Colors */
-    --text-primary: #333333;
-    --text-secondary: #666666;
-    --text-muted: #495057;
-    --text-inverse: #ffffff;
-
-    /* Border Colors */
-    --border-primary: #e0e0e0;
-    --border-secondary: #ddd;
-    --border-focus: #2196F3;
-
-    /* Status Colors */
-    --success: #28a745;
-    --success-hover: #218838;
-    --warning: #ffc107;
-    --warning-hover: #e0a800;
-    --danger: #dc3545;
-    --danger-hover: #c82333;
-    --info: #2196F3;
-
-    /* Shadow Colors */
-    --shadow-sm: rgba(0,0,0,0.1);
-    --shadow-md: rgba(0,0,0,0.15);
-    --shadow-primary: rgba(21, 101, 192, 0.12);
-    --shadow-accent: rgba(249, 201, 16, 0.3);
-
-    /* Alert Colors */
-    --alert-error-bg: #f8d7da;
-    --alert-error-text: #721c24;
-    --alert-error-border: #f5c6cb;
-    --alert-success-bg: #d4edda;
-    --alert-success-text: #155724;
-    --alert-success-border: #c3e6cb;
-
-    /* Status Badge Colors */
-    --status-draft-bg: #fff3cd;
-    --status-draft-text: #856404;
-    --status-completed-bg: #d4edda;
-    --status-completed-text: #155724;
-}
-
-/* Dark Theme CSS Custom Properties */
-[data-theme="dark"] {
-    /* Background Colors */
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #2a2a2a;
-    --bg-tertiary: #333333;
-    --bg-card: #2a2a2a;
-
-    /* Text Colors */
-    --text-primary: #e0e0e0;
-    --text-secondary: #b0b0b0;
-    --text-muted: #888888;
-    --text-inverse: #333333;
-
-    /* Border Colors */
-    --border-primary: #444444;
-    --border-secondary: #555555;
-    --border-focus: #2196F3;
-
-    /* Shadow Colors (darker) */
-    --shadow-sm: rgba(0,0,0,0.3);
-    --shadow-md: rgba(0,0,0,0.4);
-    --shadow-primary: rgba(21, 101, 192, 0.2);
-    --shadow-accent: rgba(249, 201, 16, 0.4);
-
-    /* Alert Colors (dark theme) */
-    --alert-error-bg: #2d1b1e;
-    --alert-error-text: #f8d7da;
-    --alert-error-border: #4a2c2f;
-    --alert-success-bg: #1b2d1e;
-    --alert-success-text: #d4edda;
-    --alert-success-border: #2f4a32;
-
-    /* Status Badge Colors (dark theme) */
-    --status-draft-bg: #3d3a2e;
-    --status-draft-text: #fff3cd;
-    --status-completed-bg: #1e3d22;
-    --status-completed-text: #d4edda;
+    /* Lions Club Color Scheme */
+    --primary: #1565C0; /* Lions Blue */
+    --primary-dark: #0D47A1;
+    --secondary: #6c757d;
+    --success: #2e7d32; /* Forest Green */
+    --warning: #f57c00; /* Orange */
+    --danger: #d32f2f; /* Red */
+    --lions-yellow: #f9c910; /* Official Lions Yellow */
+    --lions-yellow-dark: #e6b800;
+    --dark: #2c3e50;
+    --light: #ecf0f1;
+    --white: #ffffff;
+    --background: #f8f9fa;
+    --text: #212529;
+    --text-secondary: #6c757d;
+    --border: #dee2e6;
+    --border-accent: var(--lions-yellow);
+    --shadow: 0 2px 8px rgba(21, 101, 192, 0.08);
+    --shadow-lg: 0 8px 24px rgba(21, 101, 192, 0.12);
+    --shadow-yellow: 0 4px 15px rgba(249, 201, 16, 0.2);
 }
 
 * {
@@ -102,10 +31,11 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--background);
+    color: var(--text);
     line-height: 1.6;
+    min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -135,16 +65,19 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
-    color: var(--text-inverse);
+    background: var(--dark);
+    color: var(--white);
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 4px solid var(--accent-gold);
-    box-shadow: 0 8px 24px var(--shadow-primary);
+    border-top: 4px solid var(--lions-yellow);
+    box-shadow: var(--shadow-lg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .header h1 {
@@ -159,59 +92,71 @@ body {
 }
 
 .btn {
-    background: linear-gradient(135deg, #1565C0, #0D47A1);
-    color: white;
-    border: 2px solid #1565C0;
+    background: var(--primary);
+    color: var(--white);
+    border: 2px solid var(--primary);
     padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
     font-size: 14px;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(21, 101, 192, 0.2);
+    box-shadow: var(--shadow);
 }
 
 .btn:hover {
-    background: linear-gradient(135deg, #f9c910, #e6b800);
-    color: #1565C0;
-    border-color: #f9c910;
-    box-shadow: 0 6px 20px rgba(249, 201, 16, 0.3);
+    background: var(--lions-yellow);
+    color: var(--primary);
+    border-color: var(--lions-yellow);
+    box-shadow: var(--shadow-yellow);
     transform: translateY(-1px);
 }
 
 .btn.secondary {
-    background: #6c757d;
+    background: var(--secondary);
+    border-color: var(--secondary);
 }
 
 .btn.secondary:hover {
-    background: #545b62;
+    background: var(--lions-yellow);
+    color: var(--primary);
+    border-color: var(--lions-yellow);
 }
 
 .btn.success {
-    background: #28a745;
+    background: var(--success);
+    border-color: var(--success);
 }
 
 .btn.success:hover {
-    background: #218838;
+    background: var(--lions-yellow);
+    color: var(--success);
+    border-color: var(--lions-yellow);
 }
 
 .btn.warning {
-    background: #ffc107;
-    color: #212529;
+    background: var(--warning);
+    color: var(--white);
+    border-color: var(--warning);
 }
 
 .btn.warning:hover {
-    background: #e0a800;
+    background: var(--lions-yellow);
+    color: var(--warning);
+    border-color: var(--lions-yellow);
 }
 
 .btn.danger {
-    background: #dc3545;
+    background: var(--danger);
+    border-color: var(--danger);
 }
 
 .btn.danger:hover {
-    background: #c82333;
+    background: var(--lions-yellow);
+    color: var(--danger);
+    border-color: var(--lions-yellow);
 }
 
 .grid {
@@ -222,16 +167,17 @@ body {
 }
 
 .card {
-    background: var(--bg-card);
+    background: var(--white);
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 2px 4px var(--shadow-sm);
-    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
 }
 
 .card h3 {
     margin-bottom: 15px;
-    color: var(--info);
+    color: var(--primary);
     font-size: 1.25rem;
 }
 
@@ -253,18 +199,18 @@ body {
 .form-control {
     width: 100%;
     padding: 10px;
-    border: 1px solid var(--border-secondary);
+    border: 1px solid var(--border);
     border-radius: 4px;
     font-size: 14px;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    background: var(--white);
+    color: var(--text);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-control:focus {
     outline: none;
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.2);
 }
 
 .table {
@@ -603,4 +549,147 @@ body {
     opacity: 1;
 }
 
-/* Old dark mode CSS removed - now using CSS custom properties system above */
+/* Dark Mode Implementation matching occasion.html design */
+body.dark-mode {
+    --background: #1a1a1a;
+    --text: #e8e8e8;
+    --text-secondary: #b0b0b0;
+    --white: #2c2c2c;
+    --light: #3a3a3a;
+    --border: #4a4a4a;
+
+    /* Lions Club Dark Mode Colors */
+    --primary: #4787db; /* Lighter Lions Blue for dark mode */
+    --primary-dark: #1565C0;
+    --lions-yellow: #f9c910;
+    --lions-yellow-dark: #e6b800;
+
+    /* Shadows with Lions Club colors */
+    --shadow: 0 2px 8px rgba(71, 135, 219, 0.15);
+    --shadow-lg: 0 8px 24px rgba(71, 135, 219, 0.2);
+    --shadow-yellow: 0 4px 15px rgba(249, 201, 16, 0.25);
+
+    /* Form specific colors for dark mode */
+    --input-bg: #2a2a2a;
+    --input-text: #ffffff;
+    --input-border: #505050;
+    --label-text: #d0d0d0;
+    --placeholder-text: #808080;
+}
+
+/* Base dark mode styles */
+body.dark-mode {
+    background: var(--background);
+    color: var(--text);
+}
+
+/* Header adjustments for dark mode with Lions Club theme */
+body.dark-mode .header {
+    background: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+    border-bottom: 1px solid #4a4a4a;
+    border-top: 3px solid var(--lions-yellow);
+}
+
+body.dark-mode .header h1 {
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .header-controls {
+    color: #ffffff;
+}
+
+body.dark-mode .icon-button {
+    color: #ffffff !important;
+    background: transparent;
+    border: none;
+    opacity: 0.9;
+}
+
+body.dark-mode .icon-button:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Form sections with improved contrast */
+body.dark-mode .card,
+body.dark-mode .stat-card,
+body.dark-mode .table,
+body.dark-mode .login-container {
+    background: var(--white);
+    border: 1px solid var(--border);
+}
+
+/* Labels - Much brighter for readability */
+body.dark-mode label,
+body.dark-mode .form-group label {
+    color: var(--label-text);
+    font-weight: 500;
+}
+
+/* Input fields with better contrast */
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="password"],
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode .form-control {
+    background: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+}
+
+body.dark-mode .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(71, 135, 219, 0.3);
+}
+
+/* Table styling for dark mode */
+body.dark-mode .table th {
+    background: var(--light);
+    color: var(--text);
+}
+
+body.dark-mode .table tbody tr:hover {
+    background: var(--light);
+}
+
+/* Navigation buttons for dark mode */
+body.dark-mode .nav button {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+body.dark-mode .nav button:hover,
+body.dark-mode .nav button.active {
+    background: var(--lions-yellow);
+    color: var(--primary);
+    border-color: var(--lions-yellow);
+}
+
+/* Alert styling for dark mode */
+body.dark-mode .alert.error {
+    background: #2d1b1e;
+    color: #f8d7da;
+    border-color: #4a2c2f;
+}
+
+body.dark-mode .alert.success {
+    background: #1b2d1e;
+    color: #d4edda;
+    border-color: #2f4a32;
+}
+
+/* Status badges for dark mode */
+body.dark-mode .status.draft {
+    background: #3d3a2e;
+    color: #fff3cd;
+}
+
+body.dark-mode .status.completed {
+    background: #1e3d22;
+    color: #d4edda;
+}

@@ -97,19 +97,17 @@ class AdminInterface {
     }
 
     toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('rlc_theme', newTheme);
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('rlc_theme', isDark ? 'dark' : 'light');
 
         const themeButton = document.getElementById('theme-toggle');
         if (themeButton) {
-            themeButton.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            themeButton.setAttribute('aria-label', newTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+            themeButton.textContent = isDark ? '☀️' : '🌙';
+            themeButton.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
         }
 
-        console.log(`Theme switched to: ${newTheme}`);
+        console.log(`Theme switched to: ${isDark ? 'dark' : 'light'}`);
     }
 
     loadSavedState() {
@@ -117,7 +115,9 @@ class AdminInterface {
         const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         const theme = savedTheme === 'auto' ? (systemPrefersDark ? 'dark' : 'light') : savedTheme;
 
-        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
 
         const themeButton = document.getElementById('theme-toggle');
         if (themeButton) {
