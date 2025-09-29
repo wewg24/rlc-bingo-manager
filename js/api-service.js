@@ -7,36 +7,6 @@ class ApiService {
         this.adminInterface = adminInterface;
     }
 
-    /**
-     * Make API request to Google Apps Script with proper error handling
-     * Uses fetch which can handle redirects properly
-     */
-    async apiRequest(url) {
-        try {
-            console.log('Making API request to:', url);
-
-            const response = await fetch(url, {
-                method: 'GET',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                redirect: 'follow', // Handle redirects automatically
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            console.log('API response received:', data);
-            return data;
-
-        } catch (error) {
-            console.error('API request failed:', error);
-            throw new Error(`Google Apps Script API error: ${error.message}`);
-        }
-    }
 
     /**
      * Load occasions with JSONP
@@ -199,10 +169,42 @@ class ApiService {
         }
 
         try {
-            // Use fetch API to call Google Apps Script (handles redirects properly)
-            const cacheBreaker = Date.now();
+            // Use working JSONP approach (same as loadOccasionsJSONP)
+            const result = await new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                const script = document.createElement('script');
 
-            const result = await this.apiRequest(`${CONFIG.API_URL}?action=getPullTabsLibrary&_cb=${cacheBreaker}`);
+                // Set up the callback function
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+
+                // Create the script tag
+                script.src = `${CONFIG.API_URL}?action=getPullTabsLibrary&callback=${callbackName}&t=${Date.now()}`;
+                script.onerror = function() {
+                    delete window[callbackName];
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                    reject(new Error('JSONP request failed'));
+                };
+
+                document.body.appendChild(script);
+
+                // Timeout after 30 seconds
+                setTimeout(() => {
+                    if (window[callbackName]) {
+                        delete window[callbackName];
+                        if (script.parentNode) {
+                            document.body.removeChild(script);
+                        }
+                        reject(new Error('Request timeout - server may be slow'));
+                    }
+                }, 30000);
+            });
+
             console.log('Pull-tab library API response:', result);
 
             // Validate response - expect proper Google Drive data structure
@@ -260,10 +262,42 @@ class ApiService {
         }
 
         try {
-            // Use fetch API to call Google Apps Script (handles redirects properly)
-            const cacheBreaker = Date.now();
+            // Use working JSONP approach (same as loadOccasionsJSONP)
+            const result = await new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                const script = document.createElement('script');
 
-            const result = await this.apiRequest(`${CONFIG.API_URL}?action=getSessionGames&_cb=${cacheBreaker}`);
+                // Set up the callback function
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+
+                // Create the script tag
+                script.src = `${CONFIG.API_URL}?action=getSessionGames&callback=${callbackName}&t=${Date.now()}`;
+                script.onerror = function() {
+                    delete window[callbackName];
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                    reject(new Error('JSONP request failed'));
+                };
+
+                document.body.appendChild(script);
+
+                // Timeout after 30 seconds
+                setTimeout(() => {
+                    if (window[callbackName]) {
+                        delete window[callbackName];
+                        if (script.parentNode) {
+                            document.body.removeChild(script);
+                        }
+                        reject(new Error('Request timeout - server may be slow'));
+                    }
+                }, 30000);
+            });
+
             console.log('Session games API response:', result);
 
             // Validate response - expect proper Google Drive data structure
@@ -317,7 +351,7 @@ class ApiService {
         }
 
         try {
-            const result = await this.apiRequest(`${CONFIG.API_URL}?action=loadOccasions&_cb=${Date.now()}`);
+            const result = await this.loadOccasionsJSONP(CONFIG.API_URL);
 
             if (result.success && result.occasions && Array.isArray(result.occasions)) {
                 if (this.adminInterface.uiComponents) {
