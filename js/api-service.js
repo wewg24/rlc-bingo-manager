@@ -8,45 +8,34 @@ class ApiService {
     }
 
     /**
-     * Generic JSONP request function
+     * Make API request to Google Apps Script with proper error handling
+     * Uses fetch which can handle redirects properly
      */
-    jsonpRequest(url) {
-        return new Promise((resolve, reject) => {
-            const callbackName = 'jsonpCallback_' + Math.random().toString(36).substr(2, 9);
-            const script = document.createElement('script');
+    async apiRequest(url) {
+        try {
+            console.log('Making API request to:', url);
 
-            // Set up the callback function
-            window[callbackName] = function(data) {
-                delete window[callbackName];
-                document.body.removeChild(script);
-                resolve(data);
-            };
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                redirect: 'follow', // Handle redirects automatically
+            });
 
-            // Create the script tag with callback parameter
-            script.src = `${url}&callback=${callbackName}`;
-            script.onerror = function() {
-                delete window[callbackName];
-                if (script.parentNode) {
-                    if (script.parentNode) {
-                        document.body.removeChild(script);
-                    }
-                }
-                reject(new Error('JSONP request failed'));
-            };
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
 
-            document.body.appendChild(script);
+            const data = await response.json();
+            console.log('API response received:', data);
+            return data;
 
-            // Timeout after 15 seconds
-            setTimeout(() => {
-                if (window[callbackName]) {
-                    delete window[callbackName];
-                    if (script.parentNode) {
-                        document.body.removeChild(script);
-                    }
-                    reject(new Error('JSONP request timeout'));
-                }
-            }, 15000);
-        });
+        } catch (error) {
+            console.error('API request failed:', error);
+            throw new Error(`Google Apps Script API error: ${error.message}`);
+        }
     }
 
     /**
@@ -210,12 +199,10 @@ class ApiService {
         }
 
         try {
-            // Use JSONP to avoid CORS issues with Google Apps Script
+            // Use fetch API to call Google Apps Script (handles redirects properly)
             const cacheBreaker = Date.now();
-            let result;
 
-            // Try multiple API endpoints for pull-tab library
-            result = await this.jsonpRequest(`${CONFIG.API_URL}?action=getPullTabsLibrary&_cb=${cacheBreaker}`);
+            const result = await this.apiRequest(`${CONFIG.API_URL}?action=getPullTabsLibrary&_cb=${cacheBreaker}`);
             console.log('Pull-tab library API response:', result);
 
             // Validate response - expect proper Google Drive data structure
@@ -273,11 +260,10 @@ class ApiService {
         }
 
         try {
-            // Use JSONP to fetch session games from backend
+            // Use fetch API to call Google Apps Script (handles redirects properly)
             const cacheBreaker = Date.now();
-            let result;
 
-            result = await this.jsonpRequest(`${CONFIG.API_URL}?action=getSessionGames&_cb=${cacheBreaker}`);
+            const result = await this.apiRequest(`${CONFIG.API_URL}?action=getSessionGames&_cb=${cacheBreaker}`);
             console.log('Session games API response:', result);
 
             // Validate response - expect proper Google Drive data structure
@@ -331,7 +317,7 @@ class ApiService {
         }
 
         try {
-            const result = await this.loadOccasionsJSONP(CONFIG.API_URL);
+            const result = await this.apiRequest(`${CONFIG.API_URL}?action=loadOccasions&_cb=${Date.now()}`);
 
             if (result.success && result.occasions && Array.isArray(result.occasions)) {
                 if (this.adminInterface.uiComponents) {
