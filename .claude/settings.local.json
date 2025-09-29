@@ -21,7 +21,8 @@
       "Read(//c/Users/bill.wiggins/OneDrive - Phelps County Bank/Lion's Club/Bingo/Bingo Closet Photos/**)",
       "Read(//c/Users/bill.wiggins/OneDrive - Phelps County Bank/Pictures/Screenshots/**)",
       "Read(//c/Users/bill.wiggins/OneDrive - Phelps County Bank/Lion's Club/Bingo/Screenshots/**)",
-      "Bash(start \"C:\\Users\\bill.wiggins\\OneDrive - Phelps County Bank\\Lion''s Club\\Bingo\\Project\\rlc-bingo-manager\\admin.html\")"
+      "Bash(start \"C:\\Users\\bill.wiggins\\OneDrive - Phelps County Bank\\Lion''s Club\\Bingo\\Project\\rlc-bingo-manager\\admin.html\")",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

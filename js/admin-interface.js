@@ -359,6 +359,11 @@ class AdminInterface {
         console.log('Generating session report...');
         alert('Session Report generation is not yet implemented. This feature will be available in a future update.');
     }
+
+    generateOfflineApp() {
+        console.log('Generating offline app...');
+        alert('Offline App generation is not yet implemented. This feature will be available in a future update.');
+    }
 }
 
 // Make AdminInterface globally available
