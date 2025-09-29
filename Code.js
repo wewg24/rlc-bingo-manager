@@ -410,18 +410,6 @@ function doGet(e) {
       return result;
     }
 
-    if (action === 'getPullTabsLibrary') {
-      const result = handleGetPullTabsLibrary();
-      const content = result.getContent();
-
-      if (callback) {
-        return ContentService
-          .createTextOutput(callback + '(' + content + ')')
-          .setMimeType(ContentService.MimeType.JAVASCRIPT);
-      }
-      return result;
-    }
-
     throw new Error('Unknown GET action: ' + action);
 
   } catch (error) {

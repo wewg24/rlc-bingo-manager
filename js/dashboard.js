@@ -80,7 +80,7 @@ class Dashboard {
         let welcomeCard = '';
         if (stats.totalOccasions === 0) {
             welcomeCard = `
-                <div class="card" style="text-align: center; padding: 40px; margin-bottom: 20px; background: #f8f9fa;">
+                <div class="card" style="text-align: center; padding: 40px; margin-bottom: 20px;">
                     <h2>🏁 Welcome to RLC Bingo Admin!</h2>
                     <p style="font-size: 16px; margin-bottom: 20px;">No occasions found in the system yet.</p>
                     <a href="./occasion.html" class="btn success" target="_blank" style="font-size: 18px; padding: 12px 24px;">

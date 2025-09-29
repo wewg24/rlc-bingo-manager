@@ -343,6 +343,22 @@ class AdminInterface {
     setUIComponents(uiComponents) {
         this.uiComponents = uiComponents;
     }
+
+    // Report generation functions
+    generateFinancialReport() {
+        console.log('Generating financial report...');
+        alert('Financial Report generation is not yet implemented. This feature will be available in a future update.');
+    }
+
+    generatePlayerReport() {
+        console.log('Generating player report...');
+        alert('Player Report generation is not yet implemented. This feature will be available in a future update.');
+    }
+
+    generateSessionReport() {
+        console.log('Generating session report...');
+        alert('Session Report generation is not yet implemented. This feature will be available in a future update.');
+    }
 }
 
 // Make AdminInterface globally available
