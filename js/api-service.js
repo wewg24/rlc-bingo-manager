@@ -207,9 +207,12 @@ class ApiService {
 
             console.log('Pull-tab library API response:', result);
 
-            // Validate response - expect proper Google Drive data structure
+            // Check for backend API action support
             if (!result || !result.success) {
-                throw new Error(result?.message || 'API request failed - no success flag');
+                if (result && result.error && result.error.includes('Unknown GET action: getPullTabsLibrary')) {
+                    throw new Error('Google Apps Script backend does not support getPullTabsLibrary action. Backend deployment needs to be updated with pull-tab library support.');
+                }
+                throw new Error(result?.message || result?.error || 'API request failed - no success flag');
             }
 
             let games = null;
@@ -300,9 +303,12 @@ class ApiService {
 
             console.log('Session games API response:', result);
 
-            // Validate response - expect proper Google Drive data structure
+            // Check for backend API action support
             if (!result || !result.success) {
-                throw new Error(result?.message || 'API request failed - no success flag');
+                if (result && result.error && result.error.includes('Unknown GET action: getSessionGames')) {
+                    throw new Error('Google Apps Script backend does not support getSessionGames action. Backend deployment needs to be updated with session games support.');
+                }
+                throw new Error(result?.message || result?.error || 'API request failed - no success flag');
             }
 
             let sessionGamesData = null;
