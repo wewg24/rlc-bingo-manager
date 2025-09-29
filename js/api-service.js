@@ -26,7 +26,11 @@ class ApiService {
             script.src = `${url}&callback=${callbackName}`;
             script.onerror = function() {
                 delete window[callbackName];
-                document.body.removeChild(script);
+                if (script.parentNode) {
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                }
                 reject(new Error('JSONP request failed'));
             };
 
@@ -36,7 +40,9 @@ class ApiService {
             setTimeout(() => {
                 if (window[callbackName]) {
                     delete window[callbackName];
-                    document.body.removeChild(script);
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
                     reject(new Error('JSONP request timeout'));
                 }
             }, 15000);
@@ -72,7 +78,11 @@ class ApiService {
             script.src = `${scriptUrl}?action=loadOccasions&callback=${callbackName}&t=${Date.now()}`;
             script.onerror = function() {
                 delete window[callbackName];
-                document.body.removeChild(script);
+                if (script.parentNode) {
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                }
                 reject(new Error('JSONP request failed'));
             };
 
@@ -83,7 +93,9 @@ class ApiService {
                 if (window[callbackName]) {
                     delete window[callbackName];
                     if (script.parentNode) {
+                        if (script.parentNode) {
                         document.body.removeChild(script);
+                    }
                     }
                     reject(new Error('Request timeout - server may be slow'));
                 }

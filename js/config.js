@@ -2,7 +2,7 @@
 window.CONFIG = {
     API_URL: 'https://script.google.com/macros/s/AKfycbwMzA-lyLBmEoOzUaYm5X-nD91MOs-9Ng2B9yYocMjxv9HpGNGpOSlrklbxMACq0DpKXQ/exec',
     APP_NAME: 'RLC Bingo Manager',
-    VERSION: '11.7.0',
+    VERSION: '11.7.1',
     
     STORAGE_KEYS: {
         CURRENT_SESSION: 'rlc_current_session',
