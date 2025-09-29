@@ -99,7 +99,10 @@ class UIComponents {
             <div class="card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3>Session Games Management</h3>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 align-items-center">
+                        <button class="btn success" onclick="window.adminInterface.uiComponents.showAddSessionModal()">
+                            ➕ Add Session Type
+                        </button>
                         <span class="badge badge-info">${metadata.organization || 'Rolla Lions Club'}</span>
                         <span class="badge badge-secondary">Last Updated: ${metadata.lastUpdated || 'Unknown'}</span>
                     </div>
@@ -145,10 +148,26 @@ class UIComponents {
         return `
             <div class="session-card card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>${sessionInfo.sessionName || sessionId} (${sessionId})</h4>
-                    <div class="session-stats">
-                        <span class="badge badge-primary">${games.length} Games</span>
-                        <span class="badge badge-success">$${totalPrizeValue.toLocaleString()} Total Prizes</span>
+                    <div>
+                        <h4>${sessionInfo.sessionName || sessionId} (${sessionId})</h4>
+                        <small class="text-muted">${sessionInfo.description || 'No description'}</small>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <div class="session-stats d-flex gap-2">
+                            <span class="badge badge-primary">${games.length} Games</span>
+                            <span class="badge badge-success">$${totalPrizeValue.toLocaleString()} Total Prizes</span>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-sm" onclick="window.adminInterface.uiComponents.addGameToSession('${sessionId}')">
+                                ➕ Add Game
+                            </button>
+                            <button class="btn btn-sm warning" onclick="window.adminInterface.uiComponents.editSession('${sessionId}')">
+                                ✏️ Edit Session
+                            </button>
+                            <button class="btn btn-sm danger" onclick="window.adminInterface.uiComponents.deleteSession('${sessionId}')">
+                                🗑️ Delete Session
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -312,49 +331,93 @@ class UIComponents {
     // Modal and Detail View Methods (placeholders for now)
     showAddPullTabModal() {
         console.log('Show add pull-tab modal');
-        // Implementation will be in CRUD operations module
+        if (this.adminInterface.crudOperations) {
+            this.adminInterface.crudOperations.showAddPullTabModal();
+        } else {
+            console.error('CRUD Operations module not available');
+            this.adminInterface.utilities.showAlert('CRUD Operations not available', 'error');
+        }
     }
 
     viewPullTabDetails(gameName) {
         console.log('View pull-tab details:', gameName);
-        // Implementation will be in CRUD operations module
+        if (this.adminInterface.crudOperations) {
+            this.adminInterface.crudOperations.viewPullTabDetails(gameName);
+        } else {
+            console.error('CRUD Operations module not available');
+            this.adminInterface.utilities.showAlert('CRUD Operations not available', 'error');
+        }
     }
 
     editPullTab(gameName) {
         console.log('Edit pull-tab:', gameName);
-        // Implementation will be in CRUD operations module
+        if (this.adminInterface.crudOperations) {
+            this.adminInterface.crudOperations.editPullTab(gameName);
+        } else {
+            console.error('CRUD Operations module not available');
+            this.adminInterface.utilities.showAlert('CRUD Operations not available', 'error');
+        }
     }
 
     deletePullTab(gameName) {
         console.log('Delete pull-tab:', gameName);
-        // Implementation will be in CRUD operations module
+        if (this.adminInterface.crudOperations) {
+            this.adminInterface.crudOperations.deletePullTabGame(gameName);
+        } else {
+            console.error('CRUD Operations module not available');
+            this.adminInterface.utilities.showAlert('CRUD Operations not available', 'error');
+        }
     }
 
     viewSessionGameDetails(sessionId, gameNumber) {
         console.log('View session game details:', sessionId, gameNumber);
 
-        // Find the session game data
-        const sessionGames = this.adminInterface.sessionGames || [];
-        const game = sessionGames.find(g => g.sessionId === sessionId && g.gameNumber === gameNumber);
+        // Find the session game data from the correct structure
+        const sessionGamesData = this.adminInterface.sessionGames || {};
+        const sessionTypes = sessionGamesData.sessionTypes || {};
+        const sessionData = sessionTypes[sessionId];
 
-        if (game) {
-            this.showSessionGameModal(game, 'view');
+        if (sessionData && sessionData.games) {
+            const game = sessionData.games.find(g => g.gameNumber === parseInt(gameNumber));
+            if (game) {
+                // Add session context to game data
+                const gameWithContext = {
+                    ...game,
+                    sessionId: sessionId,
+                    sessionName: sessionData.sessionName
+                };
+                this.showSessionGameModal(gameWithContext, 'view');
+            } else {
+                this.adminInterface.utilities.showAlert('Game not found in session', 'error');
+            }
         } else {
-            this.adminInterface.utilities.showAlert('Session game not found', 'error');
+            this.adminInterface.utilities.showAlert('Session not found', 'error');
         }
     }
 
     editSessionGame(sessionId, gameNumber) {
         console.log('Edit session game:', sessionId, gameNumber);
 
-        // Find the session game data
-        const sessionGames = this.adminInterface.sessionGames || [];
-        const game = sessionGames.find(g => g.sessionId === sessionId && g.gameNumber === gameNumber);
+        // Find the session game data from the correct structure
+        const sessionGamesData = this.adminInterface.sessionGames || {};
+        const sessionTypes = sessionGamesData.sessionTypes || {};
+        const sessionData = sessionTypes[sessionId];
 
-        if (game) {
-            this.showSessionGameModal(game, 'edit');
+        if (sessionData && sessionData.games) {
+            const game = sessionData.games.find(g => g.gameNumber === parseInt(gameNumber));
+            if (game) {
+                // Add session context to game data
+                const gameWithContext = {
+                    ...game,
+                    sessionId: sessionId,
+                    sessionName: sessionData.sessionName
+                };
+                this.showSessionGameModal(gameWithContext, 'edit');
+            } else {
+                this.adminInterface.utilities.showAlert('Game not found in session', 'error');
+            }
         } else {
-            this.adminInterface.utilities.showAlert('Session game not found', 'error');
+            this.adminInterface.utilities.showAlert('Session not found', 'error');
         }
     }
 
@@ -370,24 +433,32 @@ class UIComponents {
                         <div class="modal-body">
                             <form id="sessionGameForm">
                                 <div class="form-group">
-                                    <label>Session ID:</label>
-                                    <input type="text" class="form-control" value="${game.sessionId}" ${mode === 'view' ? 'readonly' : ''}>
+                                    <label>Session:</label>
+                                    <input type="text" class="form-control" value="${game.sessionName || game.sessionId}" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label>Game Number:</label>
                                     <input type="number" class="form-control" value="${game.gameNumber}" ${mode === 'view' ? 'readonly' : ''}>
                                 </div>
                                 <div class="form-group">
-                                    <label>Game Type:</label>
-                                    <input type="text" class="form-control" value="${game.gameType || 'Not specified'}" ${mode === 'view' ? 'readonly' : ''}>
+                                    <label>Game Name:</label>
+                                    <input type="text" class="form-control" value="${game.name || 'Not specified'}" ${mode === 'view' ? 'readonly' : ''}>
                                 </div>
                                 <div class="form-group">
-                                    <label>Players:</label>
-                                    <input type="number" class="form-control" value="${game.players || 0}" ${mode === 'view' ? 'readonly' : ''}>
+                                    <label>Category:</label>
+                                    <input type="text" class="form-control" value="${game.category || 'Not specified'}" ${mode === 'view' ? 'readonly' : ''}>
                                 </div>
                                 <div class="form-group">
-                                    <label>Prize Amount:</label>
-                                    <input type="text" class="form-control" value="${game.prizeAmount || '$0.00'}" ${mode === 'view' ? 'readonly' : ''}>
+                                    <label>Color:</label>
+                                    <input type="text" class="form-control" value="${game.color || 'N/A'}" ${mode === 'view' ? 'readonly' : ''}>
+                                </div>
+                                <div class="form-group">
+                                    <label>Payout:</label>
+                                    <input type="number" class="form-control" value="${game.payout || 0}" ${mode === 'view' ? 'readonly' : ''}>
+                                </div>
+                                <div class="form-group">
+                                    <label>Timing:</label>
+                                    <input type="text" class="form-control" value="${game.timing || 'Not specified'}" ${mode === 'view' ? 'readonly' : ''}>
                                 </div>
                             </form>
                         </div>
@@ -428,6 +499,190 @@ class UIComponents {
     saveSessionGame() {
         this.adminInterface.utilities.showAlert('Session game save functionality not yet implemented', 'info');
         this.closeModal('sessionGameModal');
+    }
+
+    // Session CRUD Methods
+    showAddSessionModal() {
+        console.log('Show add session modal');
+        const modalHTML = `
+            <div class="modal fade" id="addSessionModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add New Session Type</h5>
+                            <button type="button" class="btn-close" onclick="window.adminInterface.uiComponents.closeModal('addSessionModal')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addSessionForm">
+                                <div class="form-group">
+                                    <label>Session ID:</label>
+                                    <input type="text" id="sessionId" class="form-control" placeholder="e.g., 5-1" required>
+                                    <small class="text-muted">Format: week-day (e.g., 5-1 for 1st/5th Monday)</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Session Name:</label>
+                                    <input type="text" id="sessionName" class="form-control" placeholder="e.g., 1st/5th Monday" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description:</label>
+                                    <input type="text" id="sessionDescription" class="form-control" placeholder="e.g., 1st & 5th Monday of Month">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="window.adminInterface.uiComponents.saveNewSession()">Create Session</button>
+                            <button type="button" class="btn btn-secondary" onclick="window.adminInterface.uiComponents.closeModal('addSessionModal')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal to page and show it
+        const existingModal = document.getElementById('addSessionModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        document.getElementById('addSessionModal').style.display = 'block';
+    }
+
+    editSession(sessionId) {
+        console.log('Edit session:', sessionId);
+        const sessionGamesData = this.adminInterface.sessionGames || {};
+        const sessionTypes = sessionGamesData.sessionTypes || {};
+        const sessionData = sessionTypes[sessionId];
+
+        if (!sessionData) {
+            this.adminInterface.utilities.showAlert('Session not found', 'error');
+            return;
+        }
+
+        const modalHTML = `
+            <div class="modal fade" id="editSessionModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Session: ${sessionData.sessionName}</h5>
+                            <button type="button" class="btn-close" onclick="window.adminInterface.uiComponents.closeModal('editSessionModal')"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editSessionForm">
+                                <input type="hidden" id="editSessionId" value="${sessionId}">
+                                <div class="form-group">
+                                    <label>Session Name:</label>
+                                    <input type="text" id="editSessionName" class="form-control" value="${sessionData.sessionName || ''}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description:</label>
+                                    <input type="text" id="editSessionDescription" class="form-control" value="${sessionData.description || ''}">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="window.adminInterface.uiComponents.saveEditedSession()">Save Changes</button>
+                            <button type="button" class="btn btn-secondary" onclick="window.adminInterface.uiComponents.closeModal('editSessionModal')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal to page and show it
+        const existingModal = document.getElementById('editSessionModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        document.getElementById('editSessionModal').style.display = 'block';
+    }
+
+    deleteSession(sessionId) {
+        console.log('Delete session:', sessionId);
+        const sessionGamesData = this.adminInterface.sessionGames || {};
+        const sessionTypes = sessionGamesData.sessionTypes || {};
+        const sessionData = sessionTypes[sessionId];
+
+        if (!sessionData) {
+            this.adminInterface.utilities.showAlert('Session not found', 'error');
+            return;
+        }
+
+        const gameCount = sessionData.games ? sessionData.games.length : 0;
+        const confirmMessage = `Are you sure you want to delete session "${sessionData.sessionName}" (${sessionId})? This will delete ${gameCount} games.`;
+
+        if (confirm(confirmMessage)) {
+            delete sessionTypes[sessionId];
+            this.adminInterface.utilities.showAlert(`Session "${sessionData.sessionName}" deleted successfully`, 'success');
+            // Refresh the view
+            this.renderSessionGamesView(this.adminInterface.sessionGames);
+        }
+    }
+
+    addGameToSession(sessionId) {
+        console.log('Add game to session:', sessionId);
+        this.adminInterface.utilities.showAlert('Add Game to Session functionality coming soon', 'info');
+    }
+
+    saveNewSession() {
+        const sessionId = document.getElementById('sessionId').value.trim();
+        const sessionName = document.getElementById('sessionName').value.trim();
+        const sessionDescription = document.getElementById('sessionDescription').value.trim();
+
+        if (!sessionId || !sessionName) {
+            this.adminInterface.utilities.showAlert('Session ID and Name are required', 'error');
+            return;
+        }
+
+        const sessionGamesData = this.adminInterface.sessionGames || {};
+        const sessionTypes = sessionGamesData.sessionTypes || {};
+
+        if (sessionTypes[sessionId]) {
+            this.adminInterface.utilities.showAlert('Session ID already exists', 'error');
+            return;
+        }
+
+        // Create new session
+        sessionTypes[sessionId] = {
+            sessionName: sessionName,
+            description: sessionDescription,
+            totalGames: 0,
+            totalPrizeValue: 0,
+            games: []
+        };
+
+        this.adminInterface.utilities.showAlert(`Session "${sessionName}" created successfully`, 'success');
+        this.closeModal('addSessionModal');
+        // Refresh the view
+        this.renderSessionGamesView(this.adminInterface.sessionGames);
+    }
+
+    saveEditedSession() {
+        const sessionId = document.getElementById('editSessionId').value;
+        const sessionName = document.getElementById('editSessionName').value.trim();
+        const sessionDescription = document.getElementById('editSessionDescription').value.trim();
+
+        if (!sessionName) {
+            this.adminInterface.utilities.showAlert('Session Name is required', 'error');
+            return;
+        }
+
+        const sessionGamesData = this.adminInterface.sessionGames || {};
+        const sessionTypes = sessionGamesData.sessionTypes || {};
+
+        if (sessionTypes[sessionId]) {
+            sessionTypes[sessionId].sessionName = sessionName;
+            sessionTypes[sessionId].description = sessionDescription;
+
+            this.adminInterface.utilities.showAlert(`Session "${sessionName}" updated successfully`, 'success');
+            this.closeModal('editSessionModal');
+            // Refresh the view
+            this.renderSessionGamesView(this.adminInterface.sessionGames);
+        } else {
+            this.adminInterface.utilities.showAlert('Session not found', 'error');
+        }
     }
 
     viewOccasion(occasionId) {

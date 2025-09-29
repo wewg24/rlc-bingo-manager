@@ -97,18 +97,35 @@ class AdminInterface {
     }
 
     toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('rlc_theme', isDark ? 'dark' : 'light');
-        document.getElementById('theme-toggle').textContent = isDark ? '☀️' : '🌙';
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('rlc_theme', newTheme);
+
+        const themeButton = document.getElementById('theme-toggle');
+        if (themeButton) {
+            themeButton.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            themeButton.setAttribute('aria-label', newTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+
+        console.log(`Theme switched to: ${newTheme}`);
     }
 
     loadSavedState() {
-        const theme = localStorage.getItem('rlc_theme');
-        if (theme === 'dark') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('theme-toggle').textContent = '☀️';
+        const savedTheme = localStorage.getItem('rlc_theme') || 'light';
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = savedTheme === 'auto' ? (systemPrefersDark ? 'dark' : 'light') : savedTheme;
+
+        document.documentElement.setAttribute('data-theme', theme);
+
+        const themeButton = document.getElementById('theme-toggle');
+        if (themeButton) {
+            themeButton.textContent = theme === 'dark' ? '☀️' : '🌙';
+            themeButton.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
         }
+
+        console.log(`Theme loaded: ${theme}`);
     }
 
     // Navigation Methods

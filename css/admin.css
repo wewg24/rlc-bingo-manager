@@ -1,4 +1,100 @@
-/* Admin Interface Styles */
+/* Admin Interface Styles with CSS Custom Properties for Theme Support */
+
+/* CSS Custom Properties for Light Theme (Default) */
+:root {
+    /* Primary Colors - Lions Club Branding */
+    --primary-blue: #1565C0;
+    --primary-blue-dark: #0D47A1;
+    --accent-gold: #f9c910;
+    --accent-gold-dark: #e6b800;
+
+    /* Background Colors */
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f8f9fa;
+    --bg-card: #ffffff;
+
+    /* Text Colors */
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --text-muted: #495057;
+    --text-inverse: #ffffff;
+
+    /* Border Colors */
+    --border-primary: #e0e0e0;
+    --border-secondary: #ddd;
+    --border-focus: #2196F3;
+
+    /* Status Colors */
+    --success: #28a745;
+    --success-hover: #218838;
+    --warning: #ffc107;
+    --warning-hover: #e0a800;
+    --danger: #dc3545;
+    --danger-hover: #c82333;
+    --info: #2196F3;
+
+    /* Shadow Colors */
+    --shadow-sm: rgba(0,0,0,0.1);
+    --shadow-md: rgba(0,0,0,0.15);
+    --shadow-primary: rgba(21, 101, 192, 0.12);
+    --shadow-accent: rgba(249, 201, 16, 0.3);
+
+    /* Alert Colors */
+    --alert-error-bg: #f8d7da;
+    --alert-error-text: #721c24;
+    --alert-error-border: #f5c6cb;
+    --alert-success-bg: #d4edda;
+    --alert-success-text: #155724;
+    --alert-success-border: #c3e6cb;
+
+    /* Status Badge Colors */
+    --status-draft-bg: #fff3cd;
+    --status-draft-text: #856404;
+    --status-completed-bg: #d4edda;
+    --status-completed-text: #155724;
+}
+
+/* Dark Theme CSS Custom Properties */
+[data-theme="dark"] {
+    /* Background Colors */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2a2a2a;
+    --bg-tertiary: #333333;
+    --bg-card: #2a2a2a;
+
+    /* Text Colors */
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --text-muted: #888888;
+    --text-inverse: #333333;
+
+    /* Border Colors */
+    --border-primary: #444444;
+    --border-secondary: #555555;
+    --border-focus: #2196F3;
+
+    /* Shadow Colors (darker) */
+    --shadow-sm: rgba(0,0,0,0.3);
+    --shadow-md: rgba(0,0,0,0.4);
+    --shadow-primary: rgba(21, 101, 192, 0.2);
+    --shadow-accent: rgba(249, 201, 16, 0.4);
+
+    /* Alert Colors (dark theme) */
+    --alert-error-bg: #2d1b1e;
+    --alert-error-text: #f8d7da;
+    --alert-error-border: #4a2c2f;
+    --alert-success-bg: #1b2d1e;
+    --alert-success-text: #d4edda;
+    --alert-success-border: #2f4a32;
+
+    /* Status Badge Colors (dark theme) */
+    --status-draft-bg: #3d3a2e;
+    --status-draft-text: #fff3cd;
+    --status-completed-bg: #1e3d22;
+    --status-completed-text: #d4edda;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,9 +103,10 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f5f5f5;
-    color: #333;
+    background: var(--bg-primary);
+    color: var(--text-primary);
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .admin-container {
@@ -38,16 +135,16 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, #1565C0, #0D47A1);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+    color: var(--text-inverse);
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 4px solid #f9c910;
-    box-shadow: 0 8px 24px rgba(21, 101, 192, 0.12);
+    border-top: 4px solid var(--accent-gold);
+    box-shadow: 0 8px 24px var(--shadow-primary);
 }
 
 .header h1 {
@@ -125,22 +222,22 @@ body {
 }
 
 .card {
-    background: white;
+    background: var(--bg-card);
     border-radius: 8px;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px var(--shadow-sm);
+    border: 1px solid var(--border-primary);
 }
 
 .card h3 {
     margin-bottom: 15px;
-    color: #2196F3;
+    color: var(--info);
     font-size: 1.25rem;
 }
 
 .card p {
     margin-bottom: 15px;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .form-group {
@@ -156,41 +253,44 @@ body {
 .form-control {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-secondary);
     border-radius: 4px;
     font-size: 14px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-control:focus {
     outline: none;
-    border-color: #2196F3;
+    border-color: var(--border-focus);
     box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
 
 .table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: var(--bg-secondary);
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--shadow-sm);
 }
 
 .table th,
 .table td {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .table th {
-    background: #f8f9fa;
+    background: var(--bg-tertiary);
     font-weight: 600;
-    color: #495057;
+    color: var(--text-muted);
 }
 
 .table tbody tr:hover {
-    background: #f8f9fa;
+    background: var(--bg-tertiary);
 }
 
 .status {
@@ -201,13 +301,13 @@ body {
 }
 
 .status.draft {
-    background: #fff3cd;
-    color: #856404;
+    background: var(--status-draft-bg);
+    color: var(--status-draft-text);
 }
 
 .status.completed {
-    background: #d4edda;
-    color: #155724;
+    background: var(--status-completed-bg);
+    color: var(--status-completed-text);
 }
 
 .stats-grid {
@@ -218,36 +318,36 @@ body {
 }
 
 .stat-card {
-    background: white;
+    background: var(--bg-card);
     padding: 20px;
     border-radius: 8px;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--shadow-sm);
 }
 
 .stat-value {
     font-size: 2rem;
     font-weight: bold;
-    color: #2196F3;
+    color: var(--info);
     margin-bottom: 5px;
 }
 
 .stat-label {
-    color: #666;
+    color: var(--text-secondary);
     font-size: 14px;
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .login-container {
     max-width: 400px;
     margin: 100px auto;
-    background: white;
+    background: var(--bg-card);
     padding: 40px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px var(--shadow-sm);
 }
 
 .login-header {
@@ -267,15 +367,15 @@ body {
 }
 
 .alert.error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: var(--alert-error-bg);
+    color: var(--alert-error-text);
+    border: 1px solid var(--alert-error-border);
 }
 
 .alert.success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: var(--alert-success-bg);
+    color: var(--alert-success-text);
+    border: 1px solid var(--alert-success-border);
 }
 
 .qr-container {
@@ -503,36 +603,4 @@ body {
     opacity: 1;
 }
 
-/* Dark Mode */
-.dark-mode {
-    background: #1a1a1a;
-    color: #e0e0e0;
-}
-
-.dark-mode .card,
-.dark-mode .stat-card,
-.dark-mode .table,
-.dark-mode .login-container {
-    background: #2a2a2a;
-    border-color: #444;
-}
-
-.dark-mode .table th {
-    background: #333;
-    color: #e0e0e0;
-}
-
-.dark-mode .table tbody tr:hover {
-    background: #333;
-}
-
-.dark-mode .form-control {
-    background: #333;
-    border-color: #555;
-    color: #e0e0e0;
-}
-
-.dark-mode .form-control:focus {
-    border-color: #2196F3;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
-}
+/* Old dark mode CSS removed - now using CSS custom properties system above */
