@@ -51,10 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('✅ RLC Bingo Admin Interface initialized successfully');
 
-    // Initialize the dashboard view by default
-    setTimeout(() => {
-        adminInterface.showDashboard();
-    }, 100);
+    // Show login screen by default - do not auto-login
+    // The dashboard will be shown after successful authentication
 });
 
 /**

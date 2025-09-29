@@ -204,14 +204,35 @@ class ApiService {
 
             console.log('Pull-tab library API response:', result); // Debug logging
 
+            // More flexible response validation - check multiple possible structures
+            let games = null;
             if (result.success && result.data && result.data.games && Array.isArray(result.data.games)) {
-                this.adminInterface.pullTabLibrary = result.data.games; // Store for access by other functions
+                games = result.data.games;
+            } else if (result.success && result.data && Array.isArray(result.data)) {
+                games = result.data;
+            } else if (result.success && Array.isArray(result.games)) {
+                games = result.games;
+            } else if (Array.isArray(result)) {
+                games = result;
+            }
+
+            if (games && games.length > 0) {
+                console.log(`Pull-tab library loaded: ${games.length} games`);
+                this.adminInterface.pullTabLibrary = games; // Store for access by other functions
                 if (this.adminInterface.uiComponents) {
-                    this.adminInterface.uiComponents.renderPullTabTable(result.data.games);
+                    this.adminInterface.uiComponents.renderPullTabTable(games);
+                } else {
+                    console.warn('UI Components not available for pull-tab table rendering');
                 }
             } else {
-                console.warn('Invalid pull-tab library response:', result);
-                this.showPullTabError('Invalid response from server. No pull-tab data available.');
+                console.warn('Invalid pull-tab library response structure:', {
+                    hasSuccess: !!result.success,
+                    hasData: !!result.data,
+                    dataType: typeof result.data,
+                    resultKeys: Object.keys(result || {}),
+                    fullResult: result
+                });
+                this.showPullTabError('Invalid response format from server. No pull-tab data available.');
             }
         } catch (error) {
             console.error('Error loading pull-tab library:', error);

@@ -20,7 +20,7 @@
     "javascript.preferences.quoteStyle": "single",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-      "source.fixAll": true
+      "source.fixAll": "explicit"
     }
   },
   "extensions": {
@@ -117,6 +117,69 @@
           "Push Code to Google Apps Script",
           "Deploy Google Apps Script (MAKE LIVE)"
         ]
+      },
+      {
+        "label": "Resume Claude Code Session",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          ".\\scripts\\resume-claude.ps1",
+          "-ShowStatus",
+          "-CheckGit"
+        ],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Advanced Claude Resume (Interactive)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          ".\\scripts\\claude-resume-advanced.ps1",
+          "-Mode",
+          "interactive"
+        ],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Quick Claude Resume (Auto)",
+        "type": "shell",
+        "command": "powershell",
+        "args": [
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          ".\\scripts\\claude-resume-advanced.ps1",
+          "-Mode",
+          "auto"
+        ],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": true,
+          "panel": "new"
+        },
+        "problemMatcher": []
       },
       {
         "label": "Check Git Status",
