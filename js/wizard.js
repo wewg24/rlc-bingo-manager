@@ -614,6 +614,9 @@ function populateSessionGamesNew(sessionData) {
                 <td class="prize-per">$${payout.toFixed(2)}</td>
                 <td class="total-prize">$${payout.toFixed(2)}</td>
                 <td style="text-align: center;">
+                    <input type="checkbox" class="paid-by-check" data-game-index="${index}" title="Paid by Check">
+                </td>
+                <td style="text-align: center;">
                     <input type="checkbox" class="not-played-check" data-game-index="${index}" onchange="toggleGameNotPlayed(${index})" title="Mark as Not Played">
                 </td>
                 <td style="text-align: center;">
@@ -1073,8 +1076,9 @@ function addPullTabRow() {
         <td class="sales-cell">$0.00</td>
         <td class="ideal-cell">$0.00</td>
         <td class="prizes-cell">$0.00</td>
+        <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
         <td class="net-cell">$0.00</td>
-        <td><input type="checkbox" class="se-checkbox"></td>
+        <td><input type="checkbox" class="se-checkbox" title="Special Event"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
     `;
     
@@ -1172,8 +1176,9 @@ function addSpecialEventRow() {
         <td class="sales-cell">$0.00</td>
         <td class="ideal-cell">$0.00</td>
         <td><input type="number" class="prizes-input" min="0" step="0.01" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
+        <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
         <td class="net-cell">$0.00</td>
-        <td><input type="checkbox" class="se-checkbox"></td>
+        <td><input type="checkbox" class="se-checkbox" title="Special Event"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
     `;
 
