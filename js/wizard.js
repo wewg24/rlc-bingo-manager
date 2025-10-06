@@ -1075,6 +1075,7 @@ function addPullTabRow() {
         <td class="prizes-cell">$0.00</td>
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="se-checkbox"></td>
+        <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
     `;
     
     tbody.appendChild(row);
@@ -1151,35 +1152,31 @@ function populatePullTabSelect(selectElement) {
 }
 
 function addSpecialEventRow() {
-    const tbody = document.getElementById('special-events-body');
+    // This adds a custom pull-tab game (not from library)
+    const tbody = document.getElementById('pulltab-body');
     if (!tbody) return;
-    
-    const rowId = 'special-' + Date.now();
+
+    const rowId = 'custom-' + Date.now();
     const row = document.createElement('tr');
-    row.className = 'special-event-row';
+    row.className = 'pulltab-row custom-game';
     row.id = rowId;
-    
+    row.dataset.customGame = 'true';
+
     row.innerHTML = `
         <td>
-            <select class="special-event-select" onchange="handleSpecialEventSelection(this)">
-                <option value="">Select Special Event...</option>
-                <option value="Fire Fighters 599">Fire Fighters 599 ($960)</option>
-                <option value="Race Horse Downs 250">Race Horse Downs 250 ($1000)</option>
-                <option value="Dig Life 200">Dig Life 200 ($300)</option>
-                <option value="Gum Drops 400">Gum Drops 400 ($600)</option>
-                <option value="Bubble Gum 400">Bubble Gum 400 ($600)</option>
-                <option value="custom">Custom Event...</option>
-            </select>
-            <input type="text" class="event-name-input" style="display:none;" placeholder="Event name">
+            <input type="text" class="custom-game-name" placeholder="Enter custom game name..." style="width: 100%;">
         </td>
-        <td><input type="text" class="event-serial-input" placeholder="Serial #"></td>
-        <td class="event-tickets-cell">0</td>
-        <td class="event-sales-cell">$0.00</td>
-        <td><input type="number" class="event-prizes-input" min="0" step="0.01" value="0"></td>
-        <td class="event-profit-cell">$0.00</td>
-        <td><button onclick="deleteSpecialEvent(this)" class="remove-btn">×</button></td>
+        <td><input type="text" class="serial-input" placeholder="Serial #"></td>
+        <td><input type="number" class="ticket-price-input" min="0" step="0.01" value="1.00" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
+        <td><input type="number" class="tickets-input" min="0" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
+        <td class="sales-cell">$0.00</td>
+        <td class="ideal-cell">$0.00</td>
+        <td><input type="number" class="prizes-input" min="0" step="0.01" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
+        <td class="net-cell">$0.00</td>
+        <td><input type="checkbox" class="se-checkbox"></td>
+        <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
     `;
-    
+
     tbody.appendChild(row);
 }
 
@@ -1614,5 +1611,97 @@ function editGameRow(gameIndex) {
             }
             window.app.data.sessionGames[gameIndex].pattern = newPattern;
         }
+    }
+}
+
+// Delete pull-tab row
+function deleteRow(button) {
+    const row = button.closest('tr');
+    if (row && confirm('Remove this pull-tab game?')) {
+        row.remove();
+        // Recalculate totals
+        calculatePullTabTotals();
+    }
+}
+
+// Calculate totals for custom pull-tab games
+function calculateCustomGameTotals(input) {
+    const row = input.closest('tr');
+    if (!row) return;
+
+    const priceInput = row.querySelector('.ticket-price-input');
+    const ticketsInput = row.querySelector('.tickets-input');
+    const prizesInput = row.querySelector('.prizes-input');
+    const salesCell = row.querySelector('.sales-cell');
+    const idealCell = row.querySelector('.ideal-cell');
+    const netCell = row.querySelector('.net-cell');
+
+    const price = parseFloat(priceInput?.value || 0);
+    const tickets = parseInt(ticketsInput?.value || 0);
+    const prizes = parseFloat(prizesInput?.value || 0);
+
+    // Calculate sales (price * tickets)
+    const sales = price * tickets;
+
+    // For custom games, ideal profit is unknown, so show N/A or 0
+    const ideal = 0;
+
+    // Net = Sales - Prizes
+    const net = sales - prizes;
+
+    if (salesCell) salesCell.textContent = `$${sales.toFixed(2)}`;
+    if (idealCell) idealCell.textContent = 'N/A';
+    if (netCell) netCell.textContent = `$${net.toFixed(2)}`;
+
+    // Recalculate overall totals
+    calculatePullTabTotals();
+}
+
+// Calculate overall pull-tab totals
+function calculatePullTabTotals() {
+    const rows = document.querySelectorAll('#pulltab-body tr');
+    let totalSales = 0;
+    let totalPrizes = 0;
+    let totalNet = 0;
+
+    rows.forEach(row => {
+        const salesCell = row.querySelector('.sales-cell');
+        const prizesInput = row.querySelector('.prizes-input');
+        const prizesCell = row.querySelector('.prizes-cell');
+        const netCell = row.querySelector('.net-cell');
+
+        if (salesCell) {
+            const sales = parseFloat(salesCell.textContent.replace('$', '')) || 0;
+            totalSales += sales;
+        }
+
+        if (prizesInput) {
+            const prizes = parseFloat(prizesInput.value) || 0;
+            totalPrizes += prizes;
+        } else if (prizesCell) {
+            const prizes = parseFloat(prizesCell.textContent.replace('$', '')) || 0;
+            totalPrizes += prizes;
+        }
+
+        if (netCell) {
+            const net = parseFloat(netCell.textContent.replace('$', '')) || 0;
+            totalNet += net;
+        }
+    });
+
+    // Update footer totals if they exist
+    const salesFooter = document.querySelector('#pulltab-total-sales');
+    const prizesFooter = document.querySelector('#pulltab-total-prizes');
+    const netFooter = document.querySelector('#pulltab-total-net');
+
+    if (salesFooter) salesFooter.textContent = `$${totalSales.toFixed(2)}`;
+    if (prizesFooter) prizesFooter.textContent = `$${totalPrizes.toFixed(2)}`;
+    if (netFooter) netFooter.textContent = `$${totalNet.toFixed(2)}`;
+
+    // Save to app data
+    if (window.app && window.app.data) {
+        window.app.data.pullTabSales = totalSales;
+        window.app.data.pullTabPrizes = totalPrizes;
+        window.app.data.pullTabNet = totalNet;
     }
 }
