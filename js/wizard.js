@@ -325,17 +325,17 @@ function savePaperSales() {
         });
     }
 
-    // Save electronic rentals
+    // Save electronic rentals (now part of POS items)
     try {
-        const smallMachines = parseInt(document.getElementById('small-machines')?.value) || 0;
-        const largeMachines = parseInt(document.getElementById('large-machines')?.value) || 0;
+        const smallMachineQty = parseInt(window.app.data.posSales['small-machine']?.quantity) || 0;
+        const largeMachineQty = parseInt(window.app.data.posSales['large-machine']?.quantity) || 0;
 
         window.app.data.electronic = {
-            smallMachines,
-            largeMachines,
-            smallTotal: smallMachines * 40,
-            largeTotal: largeMachines * 65,
-            total: (smallMachines * 40) + (largeMachines * 65)
+            smallMachines: smallMachineQty,
+            largeMachines: largeMachineQty,
+            smallTotal: smallMachineQty * 40,
+            largeTotal: largeMachineQty * 65,
+            total: (smallMachineQty * 40) + (largeMachineQty * 65)
         };
     } catch (error) {
         console.error('Error processing electronic rentals:', error);
