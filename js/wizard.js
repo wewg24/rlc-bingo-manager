@@ -555,24 +555,15 @@ async function loadGameResults() {
         // Load session games from API using JSONP to avoid CORS
         const result = await loadSessionGamesJSONP();
 
-        console.log('Full API result:', result);
-        console.log('result.data:', result.data);
-        console.log('Selected sessionType:', sessionType);
-
         if (result.success && result.data) {
             const sessionTypes = result.data.sessionTypes || result.data;
-            console.log('Extracted sessionTypes:', sessionTypes);
-            console.log('Available keys:', Object.keys(sessionTypes));
-
             const sessionData = sessionTypes[sessionType];
-            console.log('sessionData for', sessionType, ':', sessionData);
 
             if (sessionData && sessionData.games && Array.isArray(sessionData.games)) {
-                console.log('Loading session games for:', sessionType, sessionData);
                 populateSessionGamesNew(sessionData);
             } else {
                 console.warn('No games found for session type:', sessionType, sessionData);
-                gamesBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #666;">No games configured for this session type</td></tr>';
+                gamesBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #666;">No games configured for this session type</td></tr>';
             }
         } else {
             throw new Error(result.error || 'Failed to load session games');
@@ -876,8 +867,8 @@ function loadPullTabLibraryJSONP() {
 
 async function loadPullTabs() {
     try {
-        // Show loading if we don't have the library yet
-        if (!window.pullTabLibrary) {
+        // Load library if not already loaded
+        if (!window.pullTabLibrary || window.pullTabLibrary.length === 0) {
             console.log('Loading pull-tab library...');
 
             // Load pull-tab library from API using JSONP
@@ -895,17 +886,19 @@ async function loadPullTabs() {
                     idealProfit: game.idealProfit || 0
                 }));
                 console.log('Pull-tab library loaded:', window.pullTabLibrary.length, 'games');
-
-                // Update any existing pull-tab selects with the library games
-                const pullTabSelects = document.querySelectorAll('.pulltab-select');
-                pullTabSelects.forEach(select => {
-                    populatePullTabSelect(select);
-                });
             } else {
                 console.warn('Failed to load pull-tab library:', result);
-                // Set empty array to prevent further attempts
                 window.pullTabLibrary = [];
             }
+        }
+
+        // ALWAYS populate dropdowns when this function is called, whether library was just loaded or already existed
+        if (window.pullTabLibrary && window.pullTabLibrary.length > 0) {
+            const pullTabSelects = document.querySelectorAll('.pulltab-select');
+            console.log(`Populating ${pullTabSelects.length} pull-tab dropdowns with ${window.pullTabLibrary.length} games`);
+            pullTabSelects.forEach(select => {
+                populatePullTabSelect(select);
+            });
         }
     } catch (error) {
         console.error('Error loading pull-tab library:', error);
