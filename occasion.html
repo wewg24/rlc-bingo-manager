@@ -158,26 +158,63 @@
         console.log('Form populated with existing data');
     }
 
-    // Initialize POS Door Sales table for mobile
+    // Initialize POS Door Sales tables (categorized)
     function initializePOSSalesForMobile() {
-        const tbody = document.getElementById('pos-sales-body');
-        if (!tbody || !CONFIG?.POS_ITEMS) return;
+        if (!CONFIG?.POS_ITEMS) return;
 
-        // Clear any existing rows
-        tbody.innerHTML = '';
+        // Categorize items
+        const electronic = ['small-machine', 'large-machine'];
+        const misc = ['dauber'];
+        const paper = ['6-face', '9-face-solid', '9-face-stripe', 'birthday-pack',
+                       'coverall', 'double-action', 'letter-x', 'number7',
+                       '18-face-prog', '3-face-prog'];
 
-        // Add rows for each POS item
-        CONFIG.POS_ITEMS.forEach(item => {
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td>${item.name}</td>
-                <td>$${item.price.toFixed(2)}</td>
-                <td><input type="number" id="${item.id}-qty" min="0" value="0" onchange="calculatePOSSales('${item.id}', ${item.price})"></td>
-                <td id="${item.id}-total">$0.00</td>
-            `;
-        });
+        // Populate Electronic Bingo table
+        const electronicBody = document.getElementById('electronic-sales-body');
+        if (electronicBody) {
+            electronicBody.innerHTML = '';
+            CONFIG.POS_ITEMS.filter(item => electronic.includes(item.id)).forEach(item => {
+                const row = electronicBody.insertRow();
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td><input type="number" id="${item.id}-qty" min="0" value="0" onchange="calculatePOSSales('${item.id}', ${item.price})"></td>
+                    <td id="${item.id}-total">$0.00</td>
+                `;
+            });
+        }
 
-        console.log('POS Door Sales table initialized with', CONFIG.POS_ITEMS.length, 'items');
+        // Populate Miscellaneous table
+        const miscBody = document.getElementById('misc-sales-body');
+        if (miscBody) {
+            miscBody.innerHTML = '';
+            CONFIG.POS_ITEMS.filter(item => misc.includes(item.id)).forEach(item => {
+                const row = miscBody.insertRow();
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td><input type="number" id="${item.id}-qty" min="0" value="0" onchange="calculatePOSSales('${item.id}', ${item.price})"></td>
+                    <td id="${item.id}-total">$0.00</td>
+                `;
+            });
+        }
+
+        // Populate Paper table
+        const paperBody = document.getElementById('paper-sales-body-new');
+        if (paperBody) {
+            paperBody.innerHTML = '';
+            CONFIG.POS_ITEMS.filter(item => paper.includes(item.id)).forEach(item => {
+                const row = paperBody.insertRow();
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td><input type="number" id="${item.id}-qty" min="0" value="0" onchange="calculatePOSSales('${item.id}', ${item.price})"></td>
+                    <td id="${item.id}-total">$0.00</td>
+                `;
+            });
+        }
+
+        console.log('POS Door Sales tables initialized with', CONFIG.POS_ITEMS.length, 'items');
     }
 
     // Calculate POS sales totals
@@ -200,18 +237,42 @@
             total: total
         };
 
-        // Calculate total POS sales
-        let totalPosSales = 0;
-        Object.values(window.app.data.posSales).forEach(item => {
-            totalPosSales += item.total || 0;
+        // Categorize items
+        const electronic = ['small-machine', 'large-machine'];
+        const misc = ['dauber'];
+        const paper = ['6-face', '9-face-solid', '9-face-stripe', 'birthday-pack',
+                       'coverall', 'double-action', 'letter-x', 'number7',
+                       '18-face-prog', '3-face-prog'];
+
+        // Calculate subtotals
+        let electronicTotal = 0;
+        let miscTotal = 0;
+        let paperTotal = 0;
+
+        Object.keys(window.app.data.posSales).forEach(id => {
+            const itemTotal = window.app.data.posSales[id].total || 0;
+            if (electronic.includes(id)) electronicTotal += itemTotal;
+            else if (misc.includes(id)) miscTotal += itemTotal;
+            else if (paper.includes(id)) paperTotal += itemTotal;
         });
 
-        const totalElement = document.getElementById('total-paper-sales');
-        if (totalElement) {
-            totalElement.textContent = `$${totalPosSales.toFixed(2)}`;
+        // Update subtotals
+        const electronicSubtotalCell = document.getElementById('electronic-subtotal');
+        const miscSubtotalCell = document.getElementById('misc-subtotal');
+        const paperSubtotalCell = document.getElementById('paper-subtotal');
+
+        if (electronicSubtotalCell) electronicSubtotalCell.innerHTML = `<strong>$${electronicTotal.toFixed(2)}</strong>`;
+        if (miscSubtotalCell) miscSubtotalCell.innerHTML = `<strong>$${miscTotal.toFixed(2)}</strong>`;
+        if (paperSubtotalCell) paperSubtotalCell.innerHTML = `<strong>$${paperTotal.toFixed(2)}</strong>`;
+
+        // Calculate grand total
+        const grandTotal = electronicTotal + miscTotal + paperTotal;
+        const grandTotalCell = document.getElementById('total-bingo-sales');
+        if (grandTotalCell) {
+            grandTotalCell.innerHTML = `<strong>$${grandTotal.toFixed(2)}</strong>`;
         }
 
-        console.log('POS Sales updated:', itemId, { quantity, total, totalPosSales });
+        console.log('POS Sales updated:', itemId, { quantity, total, electronicTotal, miscTotal, paperTotal, grandTotal });
     }
 
     // Fix hamburger menu
@@ -396,7 +457,10 @@
             <!-- Step 2: Bingo Sales -->
             <div class="wizard-step" id="step-2">
                 <h2>Bingo Sales</h2>
+
+                <!-- Physical Counts Section (Optional) -->
                 <div class="form-section">
+                    <h3>Physical Counts <span style="font-size: 0.8em; font-weight: normal; color: #666;">(Optional - for over/short analysis)</span></h3>
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -411,8 +475,14 @@
                             <!-- Rows will be generated by JavaScript -->
                         </tbody>
                     </table>
+                </div>
 
-                    <h3>POS Door Sales</h3>
+                <!-- Door Sales Summary Section -->
+                <div class="form-section">
+                    <h3>Door Sales Summary</h3>
+
+                    <!-- Electronic Bingo -->
+                    <h4 style="margin-top: 20px; color: #2c3e50;">Electronic Bingo</h4>
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -422,13 +492,67 @@
                                 <th>Total</th>
                             </tr>
                         </thead>
-                        <tbody id="pos-sales-body">
-                            <!-- Rows will be generated by JavaScript -->
+                        <tbody id="electronic-sales-body">
+                            <!-- Electronic items will be here -->
                         </tbody>
                         <tfoot>
-                            <tr class="total-row">
-                                <td colspan="3">Total Bingo Sales</td>
-                                <td id="total-paper-sales">$0.00</td>
+                            <tr class="subtotal-row">
+                                <td colspan="3"><strong>Electronic Subtotal</strong></td>
+                                <td id="electronic-subtotal"><strong>$0.00</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Miscellaneous -->
+                    <h4 style="margin-top: 20px; color: #2c3e50;">Miscellaneous</h4>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="misc-sales-body">
+                            <!-- Misc items will be here -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="subtotal-row">
+                                <td colspan="3"><strong>Miscellaneous Subtotal</strong></td>
+                                <td id="misc-subtotal"><strong>$0.00</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Paper -->
+                    <h4 style="margin-top: 20px; color: #2c3e50;">Paper</h4>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paper-sales-body-new">
+                            <!-- Paper items will be here -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="subtotal-row">
+                                <td colspan="3"><strong>Paper Subtotal</strong></td>
+                                <td id="paper-subtotal"><strong>$0.00</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Grand Total -->
+                    <table class="data-table" style="margin-top: 20px;">
+                        <tfoot>
+                            <tr class="total-row" style="background-color: #3498db; color: white;">
+                                <td colspan="3"><strong>TOTAL BINGO SALES</strong></td>
+                                <td id="total-bingo-sales"><strong>$0.00</strong></td>
                             </tr>
                         </tfoot>
                     </table>
