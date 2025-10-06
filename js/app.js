@@ -1107,15 +1107,52 @@ class BingoApp {
         };
         return prices[paperType] || 0;
     }
-    
+
+    /**
+     * Load data via JSONP to avoid CORS issues
+     */
+    loadViaJSONP(url) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+            const script = document.createElement('script');
+
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(data);
+            };
+
+            script.src = `${url}&callback=${callbackName}&t=${Date.now()}`;
+            script.onerror = function() {
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
+                reject(new Error('JSONP request failed'));
+            };
+
+            document.body.appendChild(script);
+
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    delete window[callbackName];
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                    reject(new Error('Request timeout'));
+                }
+            }, 30000);
+        });
+    }
+
     /**
      * Load pull-tab library from backend or cache
      * Maps JSON data to expected structure
      */
     async loadPullTabLibrary(forceReload = false) {
         try {
-            const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
-            const data = await response.json();
+            // Use JSONP to avoid CORS issues with Google Apps Script
+            const data = await this.loadViaJSONP(CONFIG.API_URL + '?action=getPullTabsLibrary');
             
             if (data.success && data.games) {
                 // Store library with proper JSON data mapping

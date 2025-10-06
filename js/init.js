@@ -1,12 +1,47 @@
-// init.js - Complete Initialization Fix v11.7.0
+// init.js - Complete Initialization Fix v12.3.0
 // This file ensures proper initialization order and fixes all missing references
 // Add as a new file and include AFTER all other scripts in index.html
 
 (function() {
     'use strict';
-    
-    console.log('RLC Bingo Manager - Initializing v11.7.0');
-    
+
+    console.log('RLC Bingo Manager - Initializing v12.3.0');
+
+    // Helper function: Load data via JSONP to avoid CORS issues
+    function loadViaJSONP(url) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+            const script = document.createElement('script');
+
+            window[callbackName] = function(data) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(data);
+            };
+
+            script.src = `${url}&callback=${callbackName}&t=${Date.now()}`;
+            script.onerror = function() {
+                delete window[callbackName];
+                if (script.parentNode) {
+                    document.body.removeChild(script);
+                }
+                reject(new Error('JSONP request failed'));
+            };
+
+            document.body.appendChild(script);
+
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    delete window[callbackName];
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                    reject(new Error('Request timeout'));
+                }
+            }, 30000);
+        });
+    }
+
     // 1. ENSURE BINGO APP IS INSTANTIATED
     function ensureAppExists() {
         if (!window.app || !(window.app instanceof BingoApp)) {
@@ -18,8 +53,8 @@
     
     async function initializePullTabLibrary() {
         try {
-            const response = await fetch(CONFIG.API_URL + '?path=pulltabs');
-            const data = await response.json();
+            // Use JSONP to avoid CORS issues
+            const data = await loadViaJSONP(CONFIG.API_URL + '?action=getPullTabsLibrary');
             
             if (data.success && data.games) {
                 // Handle both array and object formats from backend
@@ -202,8 +237,8 @@
         if (!tbody) return;
         
         try {
-            const response = await fetch(CONFIG.API_URL + '?path=session-games&sessionType=' + sessionType);
-            const data = await response.json();
+            // Use JSONP to avoid CORS issues
+            const data = await loadViaJSONP(CONFIG.API_URL + '?action=getSessionGames&sessionType=' + sessionType);
             
             if (data.success && data.games) {
                 renderGamesTable(tbody, data.games);
