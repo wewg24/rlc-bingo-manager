@@ -1575,6 +1575,17 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Wizard.js initialization complete');
 });
 
+// Make functions globally accessible for inline onclick handlers
+window.addPullTabRow = addPullTabRow;
+window.addSpecialEventRow = addSpecialEventRow;
+window.handlePullTabSelection = handlePullTabSelection;
+window.deleteRow = deleteRow;
+window.calculateCustomGameTotals = calculateCustomGameTotals;
+window.updateGamePrizesNew = updateGamePrizesNew;
+window.updateGamePrizesManual = updateGamePrizesManual;
+window.toggleGameNotPlayed = toggleGameNotPlayed;
+window.editGameRow = editGameRow;
+
 // Update game prizes with auto-calculation of Per Winner
 function updateGamePrizesNew(gameIndex) {
     const row = document.querySelector(`tr[data-game-index="${gameIndex}"]`);
