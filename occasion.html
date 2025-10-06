@@ -205,12 +205,24 @@
             paperBody.innerHTML = '';
             CONFIG.POS_ITEMS.filter(item => paper.includes(item.id)).forEach(item => {
                 const row = paperBody.insertRow();
+
+                // Pre-populate birthday-pack from Occasion Info
+                let defaultQty = 0;
+                if (item.id === 'birthday-pack' && window.app?.data?.occasion?.birthdayBogos) {
+                    defaultQty = parseInt(window.app.data.occasion.birthdayBogos) || 0;
+                }
+
                 row.innerHTML = `
                     <td>${item.name}</td>
                     <td>$${item.price.toFixed(2)}</td>
-                    <td><input type="number" id="${item.id}-qty" min="0" value="0" onchange="calculatePOSSales('${item.id}', ${item.price})"></td>
+                    <td><input type="number" id="${item.id}-qty" min="0" value="${defaultQty}" onchange="calculatePOSSales('${item.id}', ${item.price})"></td>
                     <td id="${item.id}-total">$0.00</td>
                 `;
+
+                // Trigger calculation for birthday-pack if pre-populated
+                if (defaultQty > 0 && item.id === 'birthday-pack') {
+                    setTimeout(() => calculatePOSSales('birthday-pack', item.price), 100);
+                }
             });
         }
 

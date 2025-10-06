@@ -663,7 +663,15 @@ function populateSessionGamesNew(sessionData) {
         const gameNumber = game.gameNumber || game.order || (index + 1);
         const gameName = game.pattern || game.name || 'Unknown Game';
         const gameColor = game.color || 'N/A';
-        const payout = typeof game.payout === 'number' ? game.payout : (game.payout === 'Varies' ? 0 : parseInt(game.payout) || 0);
+
+        // Check if this is the Progressive Diamond game and use prize from Occasion Info
+        let payout = typeof game.payout === 'number' ? game.payout : (game.payout === 'Varies' ? 0 : parseInt(game.payout) || 0);
+        if (game.isProgressive && game.pattern && game.pattern.includes('Progressive Diamond')) {
+            // Use progressive prize from Occasion Info if available
+            if (window.app?.data?.occasion?.progressivePrize) {
+                payout = parseInt(window.app.data.occasion.progressivePrize) || payout;
+            }
+        }
 
         // Color-coded styling for game colors
         let colorStyle = '';
