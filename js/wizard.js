@@ -603,10 +603,9 @@ function populateSessionGamesNew(sessionData) {
     let gamesHtml = '';
     games.forEach((game, index) => {
         const gameNumber = game.gameNumber || game.order || (index + 1);
-        const gameName = game.name || 'Unknown Game';
+        const gameName = game.pattern || game.name || 'Unknown Game';
         const gameColor = game.color || 'N/A';
-        const category = game.category || 'Regular';
-        const payout = typeof game.payout === 'number' ? game.payout : 0;
+        const payout = typeof game.payout === 'number' ? game.payout : (game.payout === 'Varies' ? 0 : parseInt(game.payout) || 0);
 
         // Color-coded styling for game colors
         let colorStyle = '';
@@ -615,14 +614,20 @@ function populateSessionGamesNew(sessionData) {
         }
 
         gamesHtml += `
-            <tr>
+            <tr data-game-index="${index}">
                 <td><strong>${gameNumber}</strong></td>
                 <td style="${colorStyle} text-align: center; padding: 4px 8px; border-radius: 4px;">${gameColor}</td>
                 <td>${gameName}</td>
-                <td>$${payout}</td>
-                <td><input type="number" class="winner-count" data-game="${gameNumber}" min="0" value="1" onchange="updateGamePrizesNew(${index}, ${payout})" style="width: 60px;"></td>
-                <td class="prize-per">$${payout}</td>
-                <td class="total-prize">$${payout}</td>
+                <td>$${game.payout}</td>
+                <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="1" onchange="updateGamePrizesNew(${index})" style="width: 60px;"></td>
+                <td class="prize-per">$${payout.toFixed(2)}</td>
+                <td class="total-prize">$${payout.toFixed(2)}</td>
+                <td style="text-align: center;">
+                    <input type="checkbox" class="not-played-check" data-game-index="${index}" onchange="toggleGameNotPlayed(${index})" title="Mark as Not Played">
+                </td>
+                <td style="text-align: center;">
+                    <button onclick="editGameRow(${index})" class="btn btn-small" style="padding: 2px 8px;">Edit</button>
+                </td>
             </tr>
         `;
     });
@@ -1533,3 +1538,88 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Wizard.js initialization complete');
 });
+
+// Update game prizes with auto-calculation of Per Winner
+function updateGamePrizesNew(gameIndex) {
+    const row = document.querySelector(`tr[data-game-index="${gameIndex}"]`);
+    if (!row) return;
+
+    const winnerInput = row.querySelector('.winner-count');
+    const prizePerCell = row.querySelector('.prize-per');
+    const totalPrizeCell = row.querySelector('.total-prize');
+    const prizeCell = row.cells[3]; // Prize column
+
+    const winners = parseInt(winnerInput.value) || 1;
+    const basePrize = parseFloat(prizeCell.textContent.replace('$', '')) || 0;
+
+    // Calculate per winner (rounded up to nearest dollar)
+    const perWinner = Math.ceil(basePrize / winners);
+    const totalPrize = perWinner * winners;
+
+    prizePerCell.textContent = `$${perWinner.toFixed(2)}`;
+    totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
+
+    // Save to app data
+    if (window.app && window.app.data && window.app.data.sessionGames) {
+        if (!window.app.data.sessionGames[gameIndex]) {
+            window.app.data.sessionGames[gameIndex] = {};
+        }
+        window.app.data.sessionGames[gameIndex].winners = winners;
+        window.app.data.sessionGames[gameIndex].perWinner = perWinner;
+        window.app.data.sessionGames[gameIndex].totalPrize = totalPrize;
+    }
+}
+
+// Toggle game as not played
+function toggleGameNotPlayed(gameIndex) {
+    const row = document.querySelector(`tr[data-game-index="${gameIndex}"]`);
+    if (!row) return;
+
+    const checkbox = row.querySelector('.not-played-check');
+    const isNotPlayed = checkbox.checked;
+
+    // Disable/enable inputs when not played
+    const winnerInput = row.querySelector('.winner-count');
+    winnerInput.disabled = isNotPlayed;
+
+    // Gray out the row if not played
+    if (isNotPlayed) {
+        row.style.opacity = '0.5';
+        row.style.textDecoration = 'line-through';
+    } else {
+        row.style.opacity = '1';
+        row.style.textDecoration = 'none';
+    }
+
+    // Save to app data
+    if (window.app && window.app.data && window.app.data.sessionGames) {
+        if (!window.app.data.sessionGames[gameIndex]) {
+            window.app.data.sessionGames[gameIndex] = {};
+        }
+        window.app.data.sessionGames[gameIndex].notPlayed = isNotPlayed;
+    }
+}
+
+// Edit individual game row
+function editGameRow(gameIndex) {
+    const row = document.querySelector(`tr[data-game-index="${gameIndex}"]`);
+    if (!row) return;
+
+    const gameNumber = row.cells[0].textContent;
+    const color = row.cells[1].textContent;
+    const pattern = row.cells[2].textContent;
+    const prize = row.cells[3].textContent;
+
+    const newPattern = prompt(`Edit game ${gameNumber} pattern:`, pattern);
+    if (newPattern && newPattern !== pattern) {
+        row.cells[2].textContent = newPattern;
+
+        // Save to app data
+        if (window.app && window.app.data && window.app.data.sessionGames) {
+            if (!window.app.data.sessionGames[gameIndex]) {
+                window.app.data.sessionGames[gameIndex] = {};
+            }
+            window.app.data.sessionGames[gameIndex].pattern = newPattern;
+        }
+    }
+}
