@@ -1134,12 +1134,21 @@ function initializeGameCalculations() {
 // ============================================
 
 function addPullTabRow() {
+    console.log('=== addPullTabRow() CALLED ===');
+    console.log('Timestamp:', new Date().toISOString());
+
     const tbody = document.getElementById('pulltab-body');
-    if (!tbody) return;
+    console.log('tbody element found:', !!tbody);
+
+    if (!tbody) {
+        console.error('ERROR: pulltab-body element not found!');
+        return;
+    }
 
     const row = document.createElement('tr');
     row.className = 'pulltab-row';
     row.id = 'pulltab-' + Date.now();
+    console.log('Created row with ID:', row.id);
 
     row.innerHTML = `
         <td>
@@ -1160,11 +1169,18 @@ function addPullTabRow() {
     `;
 
     tbody.appendChild(row);
+    console.log('Row appended to tbody successfully');
+    console.log('Current tbody row count:', tbody.children.length);
 
     // Populate the select with library games
     const selectElement = row.querySelector('.pulltab-select');
-    console.log('addPullTabRow: selectElement found:', selectElement);
-    console.log('addPullTabRow: window.pullTabLibrary exists:', !!window.pullTabLibrary, 'length:', window.pullTabLibrary?.length);
+    console.log('addPullTabRow: selectElement found:', !!selectElement);
+    console.log('addPullTabRow: selectElement tag:', selectElement?.tagName);
+    console.log('addPullTabRow: selectElement class:', selectElement?.className);
+    console.log('addPullTabRow: window.pullTabLibrary exists:', !!window.pullTabLibrary);
+    console.log('addPullTabRow: window.pullTabLibrary type:', typeof window.pullTabLibrary);
+    console.log('addPullTabRow: window.pullTabLibrary length:', window.pullTabLibrary?.length);
+    console.log('addPullTabRow: First 3 games:', window.pullTabLibrary?.slice(0, 3));
 
     if (window.pullTabLibrary && window.pullTabLibrary.length > 0) {
         console.log('Populating new dropdown with', window.pullTabLibrary.length, 'games');
