@@ -611,7 +611,7 @@ function populateSessionGamesNew(sessionData) {
                 <td>${gameName}</td>
                 <td>$${game.payout}</td>
                 <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="1" onchange="updateGamePrizesNew(${index})" style="width: 60px;"></td>
-                <td class="prize-per">$${payout.toFixed(2)}</td>
+                <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="0.01" value="${payout.toFixed(2)}" onchange="updateGamePrizesManual(${index})" style="width: 70px;"></td>
                 <td class="total-prize">$${payout.toFixed(2)}</td>
                 <td style="text-align: center;">
                     <input type="checkbox" class="paid-by-check" data-game-index="${index}" title="Paid by Check">
@@ -1058,11 +1058,11 @@ function initializeGameCalculations() {
 function addPullTabRow() {
     const tbody = document.getElementById('pulltab-body');
     if (!tbody) return;
-    
+
     const row = document.createElement('tr');
     row.className = 'pulltab-row';
     row.id = 'pulltab-' + Date.now();
-    
+
     row.innerHTML = `
         <td>
             <select class="pulltab-select" onchange="handlePullTabSelection(this)">
@@ -1077,16 +1077,35 @@ function addPullTabRow() {
         <td class="ideal-cell">$0.00</td>
         <td class="prizes-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
-        <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="se-checkbox" title="Special Event"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
     `;
-    
+
     tbody.appendChild(row);
-    
-    // Populate the select with library games if available
-    if (window.pullTabLibrary) {
-        populatePullTabSelect(row.querySelector('.pulltab-select'));
+
+    // Populate the select with library games
+    const selectElement = row.querySelector('.pulltab-select');
+    if (window.pullTabLibrary && window.pullTabLibrary.length > 0) {
+        console.log('Populating new dropdown with', window.pullTabLibrary.length, 'games');
+        populatePullTabSelect(selectElement);
+    } else {
+        console.log('Library not loaded, loading now...');
+        // Load library if not already loaded, then populate
+        loadPullTabLibraryJSONP().then(result => {
+            if (result.success && result.data && result.data.games) {
+                window.pullTabLibrary = result.data.games.map(game => ({
+                    ...game,
+                    identifier: game.identifier || `${game.name}_${game.form}` || game.name,
+                    name: game.name || 'Unknown Game',
+                    form: game.form || '',
+                    count: game.count || 0,
+                    price: game.price || 1,
+                    idealProfit: game.idealProfit || 0
+                }));
+                console.log('Library loaded, populating dropdown with', window.pullTabLibrary.length, 'games');
+                populatePullTabSelect(selectElement);
+            }
+        });
     }
 }
 
@@ -1174,10 +1193,9 @@ function addSpecialEventRow() {
         <td><input type="number" class="ticket-price-input" min="0" step="0.01" value="1.00" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
         <td><input type="number" class="tickets-input" min="0" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
         <td class="sales-cell">$0.00</td>
-        <td class="ideal-cell">$0.00</td>
+        <td class="ideal-cell">N/A</td>
         <td><input type="number" class="prizes-input" min="0" step="0.01" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
-        <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="se-checkbox" title="Special Event"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
     `;
@@ -1540,7 +1558,7 @@ function updateGamePrizesNew(gameIndex) {
     if (!row) return;
 
     const winnerInput = row.querySelector('.winner-count');
-    const prizePerCell = row.querySelector('.prize-per');
+    const prizePerInput = row.querySelector('.prize-per-input');
     const totalPrizeCell = row.querySelector('.total-prize');
     const prizeCell = row.cells[3]; // Prize column
 
@@ -1551,7 +1569,35 @@ function updateGamePrizesNew(gameIndex) {
     const perWinner = Math.ceil(basePrize / winners);
     const totalPrize = perWinner * winners;
 
-    prizePerCell.textContent = `$${perWinner.toFixed(2)}`;
+    prizePerInput.value = perWinner.toFixed(2);
+    totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
+
+    // Save to app data
+    if (window.app && window.app.data && window.app.data.sessionGames) {
+        if (!window.app.data.sessionGames[gameIndex]) {
+            window.app.data.sessionGames[gameIndex] = {};
+        }
+        window.app.data.sessionGames[gameIndex].winners = winners;
+        window.app.data.sessionGames[gameIndex].perWinner = perWinner;
+        window.app.data.sessionGames[gameIndex].totalPrize = totalPrize;
+    }
+}
+
+// Update game prizes when Per Winner is manually edited
+function updateGamePrizesManual(gameIndex) {
+    const row = document.querySelector(`tr[data-game-index="${gameIndex}"]`);
+    if (!row) return;
+
+    const winnerInput = row.querySelector('.winner-count');
+    const prizePerInput = row.querySelector('.prize-per-input');
+    const totalPrizeCell = row.querySelector('.total-prize');
+
+    const winners = parseInt(winnerInput.value) || 1;
+    const perWinner = parseFloat(prizePerInput.value) || 0;
+
+    // Calculate total (Per Winner × Winners)
+    const totalPrize = perWinner * winners;
+
     totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
 
     // Save to app data
