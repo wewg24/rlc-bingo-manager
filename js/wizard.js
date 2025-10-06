@@ -535,13 +535,80 @@ function loadOccasionInfo() {
 }
 
 function loadPaperSales() {
-    // Implementation for loading paper sales data
+    // Populate Physical Counts table
+    const tbody = document.getElementById('paper-sales-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    // Use CONFIG.PAPER_TYPES for correct labels matching legacy forms
+    CONFIG.PAPER_TYPES.forEach(type => {
+        const row = tbody.insertRow();
+        const hasFree = type.hasFree;
+
+        row.innerHTML = `
+            <td>${type.name}</td>
+            <td><input type="number" id="paper-${type.id}-start" min="0" value="0" onchange="calculatePaperSold('${type.id}')"></td>
+            ${hasFree ? '<td><input type="number" id="paper-' + type.id + '-free" min="0" value="0" onchange="calculatePaperSold(\'' + type.id + '\')"></td>' : '<td>-</td>'}
+            <td><input type="number" id="paper-${type.id}-end" min="0" value="0" onchange="calculatePaperSold('${type.id}')"></td>
+            <td id="paper-${type.id}-sold">0</td>
+        `;
+    });
+
+    // Load saved data if exists
+    if (window.app?.data?.paperBingo) {
+        Object.keys(window.app.data.paperBingo).forEach(id => {
+            const data = window.app.data.paperBingo[id];
+            const startInput = document.getElementById(`paper-${id}-start`);
+            const freeInput = document.getElementById(`paper-${id}-free`);
+            const endInput = document.getElementById(`paper-${id}-end`);
+            const soldCell = document.getElementById(`paper-${id}-sold`);
+
+            if (startInput) startInput.value = data.start || 0;
+            if (freeInput) freeInput.value = data.free || 0;
+            if (endInput) endInput.value = data.end || 0;
+            if (soldCell) soldCell.textContent = data.sold || 0;
+        });
+    }
 }
 
+// Calculate paper sold
+function calculatePaperSold(typeId) {
+    const startInput = document.getElementById(`paper-${typeId}-start`);
+    const freeInput = document.getElementById(`paper-${typeId}-free`);
+    const endInput = document.getElementById(`paper-${typeId}-end`);
+    const soldCell = document.getElementById(`paper-${typeId}-sold`);
+
+    if (!startInput || !endInput || !soldCell) return;
+
+    const start = parseInt(startInput.value) || 0;
+    const free = freeInput ? (parseInt(freeInput.value) || 0) : 0;
+    const end = parseInt(endInput.value) || 0;
+
+    const sold = start - end - free;
+    soldCell.textContent = Math.max(0, sold);
+
+    // Save to app data
+    if (!window.app.data.paperBingo) window.app.data.paperBingo = {};
+    window.app.data.paperBingo[typeId] = { start, free, end, sold: Math.max(0, sold) };
+
+    console.log('Saved paperBingo[' + typeId + ']:', window.app.data.paperBingo[typeId]);
+}
+
+// Make globally accessible
+window.calculatePaperSold = calculatePaperSold;
+
 async function loadGameResults() {
+    const gamesBody = document.getElementById('games-body');
+
+    // Check if games are already loaded - don't reload unnecessarily
+    if (gamesBody && gamesBody.children.length > 0 && !gamesBody.textContent.includes('Loading')) {
+        console.log('Session games already loaded, skipping reload');
+        return;
+    }
+
     // Get the selected session type from step 1
     const sessionType = document.getElementById('session-type')?.value;
-    const gamesBody = document.getElementById('games-body');
 
     if (!sessionType || !gamesBody) {
         console.warn('Session type not selected or games body not found');
@@ -550,7 +617,7 @@ async function loadGameResults() {
 
     try {
         // Show loading state
-        gamesBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Loading session games...</td></tr>';
+        gamesBody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">Loading session games...</td></tr>';
 
         // Load session games from API using JSONP to avoid CORS
         const result = await loadSessionGamesJSONP();
