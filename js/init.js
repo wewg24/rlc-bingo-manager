@@ -1,11 +1,11 @@
-// init.js - Complete Initialization Fix v12.3.0
+// init.js - Complete Initialization Fix v12.4.0
 // This file ensures proper initialization order and fixes all missing references
 // Add as a new file and include AFTER all other scripts in index.html
 
 (function() {
     'use strict';
 
-    console.log('RLC Bingo Manager - Initializing v12.3.0');
+    console.log('RLC Bingo Manager - Initializing v12.4.0');
 
     // Helper function: Load data via JSONP to avoid CORS issues
     function loadViaJSONP(url) {

@@ -1,8 +1,8 @@
 // Configuration - Make CONFIG globally available
 window.CONFIG = {
-    API_URL: 'https://script.google.com/macros/s/AKfycbzuXre-DUU_4a1fbl_RyYR9SeBs_BNij6hneRgxP-Mlc08J3hzLWhIG5Fun4krB3iABlw/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbzsk1ZAX6XjgfkcW2Qy5G_N3LaMikWqd03ZI385mNvLVPjV_By6c3Cx3kWS9QAED5lWdA/exec',
     APP_NAME: 'RLC Bingo Manager',
-    VERSION: '12.3.1',
+    VERSION: '12.4.0',
     
     STORAGE_KEYS: {
         CURRENT_SESSION: 'rlc_current_session',
