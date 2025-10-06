@@ -611,7 +611,7 @@ function populateSessionGamesNew(sessionData) {
                 <td>${gameName}</td>
                 <td>$${game.payout}</td>
                 <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="1" onchange="updateGamePrizesNew(${index})" style="width: 60px;"></td>
-                <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="0.01" value="${payout.toFixed(2)}" onchange="updateGamePrizesManual(${index})" style="width: 70px;"></td>
+                <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="1" value="${payout.toFixed(2)}" onchange="updateGamePrizesManual(${index})" style="width: 70px;"></td>
                 <td class="total-prize">$${payout.toFixed(2)}</td>
                 <td style="text-align: center;">
                     <input type="checkbox" class="paid-by-check" data-game-index="${index}" title="Paid by Check">
@@ -629,8 +629,11 @@ function populateSessionGamesNew(sessionData) {
     if (gamesHtml) {
         gamesBody.innerHTML = gamesHtml;
         console.log(`Successfully loaded ${games.length} games for session`);
+
+        // Calculate initial total prizes
+        updateTotalBingoPrizes();
     } else {
-        gamesBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #666;">No games available for this session</td></tr>';
+        gamesBody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #666;">No games available for this session</td></tr>';
     }
 }
 
@@ -1085,13 +1088,17 @@ function addPullTabRow() {
 
     // Populate the select with library games
     const selectElement = row.querySelector('.pulltab-select');
+    console.log('addPullTabRow: selectElement found:', selectElement);
+    console.log('addPullTabRow: window.pullTabLibrary exists:', !!window.pullTabLibrary, 'length:', window.pullTabLibrary?.length);
+
     if (window.pullTabLibrary && window.pullTabLibrary.length > 0) {
         console.log('Populating new dropdown with', window.pullTabLibrary.length, 'games');
         populatePullTabSelect(selectElement);
     } else {
-        console.log('Library not loaded, loading now...');
+        console.log('Library not loaded yet, loading now...');
         // Load library if not already loaded, then populate
         loadPullTabLibraryJSONP().then(result => {
+            console.log('Library load result:', result);
             if (result.success && result.data && result.data.games) {
                 window.pullTabLibrary = result.data.games.map(game => ({
                     ...game,
@@ -1102,9 +1109,11 @@ function addPullTabRow() {
                     price: game.price || 1,
                     idealProfit: game.idealProfit || 0
                 }));
-                console.log('Library loaded, populating dropdown with', window.pullTabLibrary.length, 'games');
+                console.log('Library loaded in addPullTabRow, populating dropdown with', window.pullTabLibrary.length, 'games');
                 populatePullTabSelect(selectElement);
             }
+        }).catch(error => {
+            console.error('Error loading library in addPullTabRow:', error);
         });
     }
 }
@@ -1150,23 +1159,37 @@ function deletePullTabRow(button) {
 }
 
 function populatePullTabSelect(selectElement) {
-    if (!window.pullTabLibrary) return;
-    
+    console.log('populatePullTabSelect called with selectElement:', selectElement);
+    console.log('window.pullTabLibrary:', window.pullTabLibrary?.length, 'games');
+
+    if (!window.pullTabLibrary || !selectElement) {
+        console.log('Cannot populate - missing library or selectElement');
+        return;
+    }
+
     // Keep existing options
     const currentValue = selectElement.value;
-    
+
     // Clear options except first two
     while (selectElement.options.length > 2) {
         selectElement.remove(2);
     }
-    
+
+    console.log('Adding', window.pullTabLibrary.length, 'games to dropdown');
+
     // Add library games
-    window.pullTabLibrary.forEach(game => {
+    window.pullTabLibrary.forEach((game, index) => {
         const option = document.createElement('option');
         option.value = game.identifier || game.name;
         option.textContent = `${game.name} (${game.form})`;
         selectElement.appendChild(option);
+
+        if (index < 3) {
+            console.log('Added game:', option.textContent, 'value:', option.value);
+        }
     });
+
+    console.log('Dropdown now has', selectElement.options.length, 'options');
     
     // Restore value if it existed
     if (currentValue) {
@@ -1581,6 +1604,9 @@ function updateGamePrizesNew(gameIndex) {
         window.app.data.sessionGames[gameIndex].perWinner = perWinner;
         window.app.data.sessionGames[gameIndex].totalPrize = totalPrize;
     }
+
+    // Update total prizes
+    updateTotalBingoPrizes();
 }
 
 // Update game prizes when Per Winner is manually edited
@@ -1608,6 +1634,30 @@ function updateGamePrizesManual(gameIndex) {
         window.app.data.sessionGames[gameIndex].winners = winners;
         window.app.data.sessionGames[gameIndex].perWinner = perWinner;
         window.app.data.sessionGames[gameIndex].totalPrize = totalPrize;
+    }
+
+    // Update total prizes
+    updateTotalBingoPrizes();
+}
+
+// Calculate and update total bingo prizes
+function updateTotalBingoPrizes() {
+    const totalPrizeCells = document.querySelectorAll('#games-body .total-prize');
+    let total = 0;
+
+    totalPrizeCells.forEach(cell => {
+        const value = parseFloat(cell.textContent.replace('$', '')) || 0;
+        total += value;
+    });
+
+    const totalElement = document.getElementById('total-bingo-prizes');
+    if (totalElement) {
+        totalElement.innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
+    }
+
+    // Save to app data
+    if (window.app && window.app.data) {
+        window.app.data.totalBingoPrizes = total;
     }
 }
 
