@@ -555,9 +555,17 @@ async function loadGameResults() {
         // Load session games from API using JSONP to avoid CORS
         const result = await loadSessionGamesJSONP();
 
+        console.log('Full API result:', result);
+        console.log('result.data:', result.data);
+        console.log('Selected sessionType:', sessionType);
+
         if (result.success && result.data) {
             const sessionTypes = result.data.sessionTypes || result.data;
+            console.log('Extracted sessionTypes:', sessionTypes);
+            console.log('Available keys:', Object.keys(sessionTypes));
+
             const sessionData = sessionTypes[sessionType];
+            console.log('sessionData for', sessionType, ':', sessionData);
 
             if (sessionData && sessionData.games && Array.isArray(sessionData.games)) {
                 console.log('Loading session games for:', sessionType, sessionData);
@@ -1368,7 +1376,18 @@ async function submitOccasion() {
     if (!confirm('Submit this occasion? This will save all data to the database.')) {
         return;
     }
-    
+
+    // Show loading overlay and disable button to prevent multiple clicks
+    if (window.showLoading) {
+        window.showLoading('Submitting Occasion', 'Please wait while we save your data...');
+    }
+
+    const submitBtn = document.querySelector('[onclick="submitOccasion()"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+    }
+
     try {
         // Prepare submission data
         const submissionData = {
@@ -1376,7 +1395,7 @@ async function submitOccasion() {
             submittedAt: new Date().toISOString(),
             submittedBy: window.app.data.occasion.lionInCharge
         };
-        
+
         // Submit to backend
         const response = await fetch(CONFIG.API_URL, {
             method: 'POST',
@@ -1388,23 +1407,44 @@ async function submitOccasion() {
                 data: JSON.stringify(submissionData)
             })
         });
-        
+
         const result = await response.json();
-        
+
+        // Hide loading overlay
+        if (window.hideLoading) {
+            window.hideLoading();
+        }
+
         if (result.success) {
             alert('Occasion submitted successfully!');
-            
+
             // Clear draft data
             localStorage.removeItem(CONFIG.STORAGE_KEYS.DRAFT_DATA);
-            
+
             // Reset form
             window.location.reload();
         } else {
+            // Re-enable button on error
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Occasion';
+            }
             throw new Error(result.message || 'Submission failed');
         }
     } catch (error) {
         console.error('Submission error:', error);
-        
+
+        // Hide loading overlay
+        if (window.hideLoading) {
+            window.hideLoading();
+        }
+
+        // Re-enable button
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Occasion';
+        }
+
         // Add to sync queue for later submission
         const queue = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE) || '[]');
         queue.push({
@@ -1413,7 +1453,7 @@ async function submitOccasion() {
             timestamp: new Date().toISOString()
         });
         localStorage.setItem(CONFIG.STORAGE_KEYS.SYNC_QUEUE, JSON.stringify(queue));
-        
+
         alert('Submission saved offline. Will sync when connection is restored.');
     }
 }
