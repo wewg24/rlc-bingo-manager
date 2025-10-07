@@ -13,7 +13,7 @@ function showLoading(message = 'Loading...') {
         if (messageEl) {
             messageEl.textContent = message;
         }
-        overlay.style.display = 'flex';
+        overlay.classList.add('active');
         // Disable all inputs to prevent interaction
         document.querySelectorAll('input, select, textarea, button').forEach(el => {
             el.dataset.wasDisabled = el.disabled;
@@ -26,7 +26,7 @@ function hideLoading() {
     const overlay = document.getElementById('loading-overlay');
 
     if (overlay) {
-        overlay.style.display = 'none';
+        overlay.classList.remove('active');
         // Re-enable inputs
         document.querySelectorAll('input, select, textarea, button').forEach(el => {
             if (el.dataset.wasDisabled === 'false' || !el.dataset.wasDisabled) {
@@ -861,6 +861,14 @@ function savePullTabs() {
 
     console.log(`Total pull-tab games saved: ${pullTabs.length}`);
     window.app.data.pullTabs = pullTabs;
+
+    // Save Lion in Charge of Pull-Tabs field
+    const ptLion = document.getElementById('pt-lion')?.value || '';
+    if (!window.app.data.occasion) {
+        window.app.data.occasion = {};
+    }
+    window.app.data.occasion.lionPullTabs = ptLion;
+    console.log('Saved Lion in Charge of Pull-Tabs:', ptLion);
 
     // Trigger financial calculations update
     if (window.app && typeof window.app.calculateComprehensiveFinancials === 'function') {
