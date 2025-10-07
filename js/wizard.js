@@ -1175,7 +1175,7 @@ function addPullTabRow() {
         <td class="tickets-cell">0</td>
         <td class="sales-cell">$0.00</td>
         <td class="ideal-cell">$0.00</td>
-        <td><input type="number" class="prizes-input" min="0" step="0.01" value="0" onchange="recalculateNetProfit(this)" style="width: 70px;"></td>
+        <td><input type="number" class="prizes-input" min="0" step="1" value="0" onchange="recalculateNetProfit(this)" style="width: 70px;"></td>
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
         <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
@@ -1367,7 +1367,7 @@ function addSpecialEventRow() {
         <td><input type="number" class="tickets-input" min="0" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
         <td class="sales-cell">$0.00</td>
         <td class="ideal-cell">N/A</td>
-        <td><input type="number" class="prizes-input" min="0" step="0.01" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
+        <td><input type="number" class="prizes-input" min="0" step="1" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
         <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
