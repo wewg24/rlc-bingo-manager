@@ -1212,6 +1212,8 @@ function populateSessionGamesNew(sessionData) {
             prizePerOnChange = `updateGamePrizesManual(${index})`;
         }
 
+        const formatCurrency = window.formatCurrency || ((v) => '$' + parseFloat(v).toFixed(2));
+
         gamesHtml += `
             <tr data-game-index="${index}">
                 <td><strong>${gameNumber}</strong></td>
@@ -1220,11 +1222,11 @@ function populateSessionGamesNew(sessionData) {
                     <span>${gameName}</span>
                     <button onclick="editGameRow(${index})" class="btn btn-small" style="padding: 2px 8px; margin-left: 8px;">Edit</button>
                 </td>
-                <td>$${payout}</td>
+                <td>${formatCurrency(payout)}</td>
                 ${actualBallsCell}
                 <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="${winners}" onchange="${winnersOnChange}" style="width: 60px;"></td>
                 <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="1" value="${prizePerWinner.toFixed(2)}" onchange="${prizePerOnChange}" style="width: 70px;"></td>
-                <td class="total-prize">$${totalPayout.toFixed(2)}</td>
+                <td class="total-prize">${formatCurrency(totalPayout)}</td>
                 <td style="text-align: center;">
                     <input type="checkbox" class="paid-by-check" data-game-index="${index}" ${checkPayment ? 'checked' : ''} title="Paid by Check">
                 </td>
@@ -1365,7 +1367,8 @@ function updateGamePrizesNew(gameIndex, basePayout) {
         const totalPrize = winners * prizePerWinner;
 
         // Update total prize cell
-        totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
+        const formatCurrency = window.formatCurrency || ((v) => '$' + v.toFixed(2));
+        totalPrizeCell.textContent = formatCurrency(totalPrize);
 
         // Update total bingo prizes
         updateTotalBingoPrizes();
@@ -1406,7 +1409,8 @@ function updateProgressivePrize(gameIndex) {
 
     // Update inputs
     prizePerInput.value = prizePerWinner.toFixed(2);
-    totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
+    const formatCurrency = window.formatCurrency || ((v) => '$' + v.toFixed(2));
+    totalPrizeCell.textContent = formatCurrency(totalPrize);
 
     // Update total bingo prizes
     updateTotalBingoPrizes();
@@ -1454,7 +1458,8 @@ function updateTotalBingoPrizes() {
 
     const totalElement = document.getElementById('total-bingo-prizes');
     if (totalElement) {
-        totalElement.textContent = `$${total.toFixed(2)}`;
+        const formatCurrency = window.formatCurrency || ((v) => '$' + v.toFixed(2));
+        totalElement.textContent = formatCurrency(total);
     }
 }
 
@@ -1466,8 +1471,12 @@ function loadSessionGamesJSONP() {
 
         // Set up the callback function
         window[callbackName] = function(data) {
-            delete window[callbackName];
-            document.body.removeChild(script);
+            if (window[callbackName]) {
+                delete window[callbackName];
+            }
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
             resolve(data);
         };
 
@@ -1475,21 +1484,27 @@ function loadSessionGamesJSONP() {
         const url = `${CONFIG.API_URL}?action=getSessionGames&callback=${callbackName}&t=${Date.now()}`;
         script.src = url;
         script.onerror = function() {
-            delete window[callbackName];
-            document.body.removeChild(script);
+            if (window[callbackName]) {
+                delete window[callbackName];
+            }
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
             reject(new Error('Failed to load session games'));
         };
 
         document.body.appendChild(script);
 
-        // Timeout after 10 seconds
+        // Timeout after 15 seconds (increased from 10)
         setTimeout(() => {
             if (window[callbackName]) {
                 delete window[callbackName];
-                document.body.removeChild(script);
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
                 reject(new Error('Session games request timeout'));
             }
-        }, 10000);
+        }, 15000);
     });
 }
 
@@ -1501,8 +1516,12 @@ function loadPullTabLibraryJSONP() {
 
         // Set up the callback function
         window[callbackName] = function(data) {
-            delete window[callbackName];
-            document.body.removeChild(script);
+            if (window[callbackName]) {
+                delete window[callbackName];
+            }
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
             resolve(data);
         };
 
@@ -1510,21 +1529,27 @@ function loadPullTabLibraryJSONP() {
         const url = `${CONFIG.API_URL}?action=getPullTabsLibrary&callback=${callbackName}&t=${Date.now()}`;
         script.src = url;
         script.onerror = function() {
-            delete window[callbackName];
-            document.body.removeChild(script);
+            if (window[callbackName]) {
+                delete window[callbackName];
+            }
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
             reject(new Error('Failed to load pull-tab library'));
         };
 
         document.body.appendChild(script);
 
-        // Timeout after 10 seconds
+        // Timeout after 15 seconds (increased from 10)
         setTimeout(() => {
             if (window[callbackName]) {
                 delete window[callbackName];
-                document.body.removeChild(script);
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
                 reject(new Error('Pull-tab library request timeout'));
             }
-        }, 10000);
+        }, 15000);
     });
 }
 

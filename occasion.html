@@ -405,6 +405,21 @@
 
     // Make globally accessible
     window.handleSECheckbox = handleSECheckbox;
+
+    // Formatting functions
+    function formatCurrency(value) {
+        const num = parseFloat(value) || 0;
+        return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatNumber(value) {
+        const num = parseInt(value) || 0;
+        return num.toLocaleString('en-US');
+    }
+
+    // Make globally accessible
+    window.formatCurrency = formatCurrency;
+    window.formatNumber = formatNumber;
     </script>
     <div id="app">
         <!-- Header -->
