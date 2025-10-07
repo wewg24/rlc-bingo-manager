@@ -1,0 +1,291 @@
+{
+  "occasion": {
+    "date": "2025-07-14",
+    "sessionType": "6-2",
+    "lionInCharge": "Wayne Parry",
+    "totalPlayers": 85,
+    "birthdays": 4,
+    "createdBy": "Mobile Entry"
+  },
+  "paperBingo": {
+    "eb": {
+      "start": 0,
+      "end": 0,
+      "free": 0,
+      "sold": 0
+    },
+    "6f": {
+      "start": 0,
+      "end": 0,
+      "free": 0,
+      "sold": 0
+    },
+    "9fs": {
+      "start": 0,
+      "end": 0,
+      "free": 0,
+      "sold": 0
+    },
+    "9fst": {
+      "start": 0,
+      "end": 0,
+      "free": 0,
+      "sold": 0
+    },
+    "p3": {
+      "start": 0,
+      "end": 0,
+      "free": 0,
+      "sold": 0
+    },
+    "p18": {
+      "start": 0,
+      "end": 0,
+      "free": 0,
+      "sold": 0
+    }
+  },
+  "posSales": {
+    "birthday": {
+      "price": 0,
+      "quantity": 0,
+      "total": 0
+    },
+    "small-machine": {
+      "name": "27reg/18pro (Small Machine)",
+      "price": 40,
+      "quantity": 12,
+      "total": 480
+    },
+    "large-machine": {
+      "name": "45reg/36pro (Large Machine)",
+      "price": 65,
+      "quantity": 6,
+      "total": 390
+    },
+    "dauber": {
+      "name": "Dauber",
+      "price": 2,
+      "quantity": 13,
+      "total": 26
+    },
+    "6-face": {
+      "name": "6 Packs",
+      "price": 10,
+      "quantity": 18,
+      "total": 180
+    },
+    "9-face-solid": {
+      "name": "Solid Border 9",
+      "price": 15,
+      "quantity": 54,
+      "total": 810
+    },
+    "9-face-stripe": {
+      "name": "Stripe Border 9",
+      "price": 10,
+      "quantity": 70,
+      "total": 700
+    },
+    "birthday-pack": {
+      "name": "Birthdays (BOGOs)",
+      "price": 0,
+      "quantity": 4,
+      "total": 0
+    },
+    "coverall": {
+      "name": "Coverall Extra",
+      "price": 1,
+      "quantity": 36,
+      "total": 36
+    },
+    "double-action": {
+      "name": "Early Bird Double",
+      "price": 5,
+      "quantity": 89,
+      "total": 445
+    },
+    "letter-x": {
+      "name": "Letter X Extra",
+      "price": 1,
+      "quantity": 37,
+      "total": 37
+    },
+    "number7": {
+      "name": "Number 7 Extra",
+      "price": 1,
+      "quantity": 36,
+      "total": 36
+    },
+    "18-face-prog": {
+      "name": "$5.00 Progressives",
+      "price": 5,
+      "quantity": 78,
+      "total": 390
+    },
+    "3-face-prog": {
+      "name": "$1.00 Progressives",
+      "price": 1,
+      "quantity": 29,
+      "total": 29
+    }
+  },
+  "electronic": {
+    "smallMachines": 12,
+    "largeMachines": 6,
+    "smallTotal": 480,
+    "largeTotal": 390,
+    "total": 870
+  },
+  "games": [],
+  "pullTabs": [
+    {
+      "gameName": "Fire Fighters 140_None",
+      "serialNumber": "C718598",
+      "price": 0,
+      "tickets": 225,
+      "sales": 0,
+      "idealProfit": 0,
+      "prizesPaid": 140,
+      "netProfit": -140,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Rockin' Robin 140_7348J",
+      "serialNumber": "H633639",
+      "price": 0,
+      "tickets": 230,
+      "sales": 0,
+      "idealProfit": 0,
+      "prizesPaid": 140,
+      "netProfit": -140,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Slots 280_6917M",
+      "serialNumber": "89T2670",
+      "price": 0,
+      "tickets": 400,
+      "sales": 0,
+      "idealProfit": 0,
+      "prizesPaid": 280,
+      "netProfit": -280,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Triple Twist 175_6081J",
+      "serialNumber": "90C1455",
+      "price": 0,
+      "tickets": 250,
+      "sales": 0,
+      "idealProfit": 0,
+      "prizesPaid": 175,
+      "netProfit": -175,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Race Horse Downs 250_354GA",
+      "serialNumber": "2V55969",
+      "price": 0,
+      "tickets": 1000,
+      "sales": 0,
+      "idealProfit": 0,
+      "prizesPaid": 670,
+      "netProfit": -670,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Lollipops 400_6749U",
+      "serialNumber": "96K8809",
+      "price": 0,
+      "tickets": 600,
+      "sales": 0,
+      "idealProfit": 0,
+      "prizesPaid": 400,
+      "netProfit": -400,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Race Horse Downs 250_354GA",
+      "serialNumber": "2V57008",
+      "price": 0,
+      "tickets": 1000,
+      "sales": 0,
+      "idealProfit": 0,
+      "prizesPaid": 670,
+      "netProfit": -670,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Life Happens 599_7726H",
+      "serialNumber": "H037559",
+      "price": 0,
+      "tickets": 960,
+      "sales": 0,
+      "idealProfit": 0,
+      "prizesPaid": 599,
+      "netProfit": -599,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    }
+  ],
+  "moneyCount": {
+    "bingo": {
+      "1": 129,
+      "2": 0,
+      "5": 70,
+      "10": 20,
+      "20": 1660,
+      "50": 0,
+      "100": 0,
+      "coins": 0,
+      "checks": 0
+    },
+    "pullTab": {
+      "1": 91,
+      "2": 0,
+      "5": 395,
+      "10": 570,
+      "20": 520,
+      "50": 0,
+      "100": 0,
+      "coins": 1
+    }
+  },
+  "financial": {
+    "totalBingoSales": 870,
+    "totalPosSales": 3559,
+    "pullTabSales": 4665,
+    "specialEventSales": 0,
+    "grossSales": 9094,
+    "bingoPrizesPaid": 0,
+    "pullTabPrizesPaid": 0,
+    "specialEventPrizesPaid": 0,
+    "totalPrizesPaid": 0,
+    "prizesPaidByCheck": 0,
+    "idealProfit": 8094,
+    "overShort": -5638,
+    "totalCashDeposit": 3456,
+    "actualProfit": 2456
+  },
+  "pullTabSales": 4665,
+  "pullTabPrizes": 3074,
+  "pullTabNet": 1591,
+  "sessionType": "6-2",
+  "progressive": {
+    "jackpot": 1160,
+    "ballsNeeded": 21,
+    "consolation": 200,
+    "actualBalls": 30,
+    "actualPrize": 200,
+    "checkPayment": false
+  },
+  "totalBingoPrizes": 2710
+}

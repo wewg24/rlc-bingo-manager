@@ -943,6 +943,18 @@
         <div class="overlay" id="overlay" onclick="closeMenu()"></div>
     </div>
 
+    <!-- Existing Occasion Modal -->
+    <div id="existing-occasion-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Existing Occasion Found</h3>
+            <p id="modal-message">An occasion already exists for this date.</p>
+            <div class="modal-buttons">
+                <button class="button primary" onclick="loadExistingOccasion()">Load Existing</button>
+                <button class="button secondary" onclick="closeExistingOccasionModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/config.js?v=12.4.0"></script>
     <script src="js/loading.js?v=12.4.0"></script>

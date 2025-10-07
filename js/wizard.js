@@ -117,17 +117,57 @@ async function checkExistingOccasion() {
             console.log('Found local draft for', selectedDate);
             const draftData = JSON.parse(localDraft);
 
-            // Auto-load draft
-            if (confirm(`Found a draft for ${selectedDate}. Load it?`)) {
-                loadOccasionData(draftData);
-                console.log('✅ Draft loaded');
-                return;
-            }
+            // Auto-load draft without confirmation
+            loadOccasionData(draftData);
+            console.log('✅ Draft loaded automatically');
+            return;
         }
 
         // Check backend for submitted/finalized occasions
-        // TODO: Backend API call would go here
-        // For now, we'll just check localStorage
+        console.log('Checking backend for existing occasion...');
+        const apiUrl = `${CONFIG.API_URL}?action=checkOccasionByDate&date=${selectedDate}`;
+
+        // Use JSONP for backend call
+        window.tempOccasionData = null;
+        const callbackName = 'occasionCheckCallback_' + Date.now();
+
+        window[callbackName] = function(response) {
+            console.log('Backend response:', response);
+
+            if (response.exists) {
+                // Store data temporarily
+                window.tempOccasionData = response.data;
+
+                // Show modal based on status
+                const modal = document.getElementById('existing-occasion-modal');
+                const message = document.getElementById('modal-message');
+
+                if (response.status === 'submitted') {
+                    message.textContent = `A submitted occasion exists for ${selectedDate}. Would you like to load it?`;
+                    modal.style.display = 'flex';
+                } else if (response.status === 'finalized') {
+                    message.textContent = `This occasion has been finalized by admin. It will be loaded in read-only mode.`;
+                    modal.style.display = 'flex';
+                    // Will load as read-only
+                    window.isReadOnlyMode = true;
+                } else if (response.status === 'draft') {
+                    // Auto-load server draft
+                    loadOccasionData(response.data);
+                }
+            }
+
+            // Cleanup
+            delete window[callbackName];
+        };
+
+        const script = document.createElement('script');
+        script.src = `${apiUrl}&callback=${callbackName}`;
+        script.onerror = function() {
+            console.log('Backend check not available, using localStorage only');
+            delete window[callbackName];
+        };
+        document.head.appendChild(script);
+        setTimeout(() => script.remove(), 5000);
 
     } catch (error) {
         console.error('Error checking existing occasion:', error);
@@ -176,6 +216,63 @@ function loadOccasionData(data) {
 
 // Make loadOccasionData globally accessible
 window.loadOccasionData = loadOccasionData;
+
+// ============================================
+// MODAL HANDLERS
+// ============================================
+
+function loadExistingOccasion() {
+    if (window.tempOccasionData) {
+        loadOccasionData(window.tempOccasionData);
+
+        // If read-only mode, disable all inputs
+        if (window.isReadOnlyMode) {
+            setReadOnlyMode(true);
+        }
+    }
+    closeExistingOccasionModal();
+}
+
+function closeExistingOccasionModal() {
+    const modal = document.getElementById('existing-occasion-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+
+    // Clear date if user cancels
+    if (!window.tempOccasionData) {
+        document.getElementById('occasion-date').value = '';
+    }
+
+    window.tempOccasionData = null;
+    window.isReadOnlyMode = false;
+}
+
+function setReadOnlyMode(readOnly) {
+    // Disable all inputs, selects, and textareas
+    document.querySelectorAll('input, select, textarea').forEach(element => {
+        element.disabled = readOnly;
+    });
+
+    // Hide Save Draft and Submit buttons
+    document.querySelectorAll('.save-draft-btn, button[onclick="submitOccasion()"]').forEach(btn => {
+        btn.style.display = readOnly ? 'none' : '';
+    });
+
+    // Show finalized banner
+    if (readOnly) {
+        const banner = document.createElement('div');
+        banner.id = 'finalized-banner';
+        banner.style.cssText = 'background: #f39c12; color: white; padding: 1rem; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 1000;';
+        banner.textContent = '⚠️ This occasion has been finalized by admin and is read-only';
+        document.querySelector('.wizard-container').prepend(banner);
+    }
+}
+
+// Make modal functions globally accessible
+window.loadExistingOccasion = loadExistingOccasion;
+window.closeExistingOccasionModal = closeExistingOccasionModal;
+window.setReadOnlyMode = setReadOnlyMode;
 
 // ============================================
 // STEP NAVIGATION FUNCTIONS (Legacy - kept for compatibility)
