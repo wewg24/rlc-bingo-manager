@@ -1463,59 +1463,64 @@ async function loadPullTabs() {
         }
 
         // Load saved pull-tab data
-        if (window.app?.data?.pullTabs && Array.isArray(window.app.data.pullTabs)) {
+        if (window.app?.data?.pullTabs && Array.isArray(window.app.data.pullTabs) && window.app.data.pullTabs.length > 0) {
             const pullTabsBody = document.getElementById('pulltab-body');
             if (pullTabsBody) {
-                // Clear existing rows except the first one (template)
-                while (pullTabsBody.rows.length > 1) {
-                    pullTabsBody.deleteRow(1);
-                }
+                // Clear all existing rows
+                pullTabsBody.innerHTML = '';
 
                 // Add rows for each saved pull-tab
                 window.app.data.pullTabs.forEach((pt, index) => {
-                    if (index > 0 && typeof window.addPullTab === 'function') {
-                        window.addPullTab(); // Add new row
+                    // Add a new row
+                    if (typeof addPullTabRow === 'function') {
+                        addPullTabRow();
                     }
 
-                    // Populate the row
-                    const row = pullTabsBody.rows[index];
+                    // Populate the row that was just added
+                    const row = pullTabsBody.rows[pullTabsBody.rows.length - 1]; // Get the last row (just added)
                     if (row) {
                         // Set game name in dropdown
                         const select = row.querySelector('.pulltab-select');
                         if (select) {
                             select.value = pt.gameName || '';
+                            // Trigger selection to populate cells
+                            if (pt.gameName && typeof handlePullTabSelection === 'function') {
+                                handlePullTabSelection(select);
+                            }
                         }
 
                         // Set serial number
-                        const serialInput = row.querySelector('[id$="-serial"]');
+                        const serialInput = row.querySelector('.serial-input');
                         if (serialInput) serialInput.value = pt.serialNumber || '';
 
-                        // Set price
-                        const priceInput = row.querySelector('[id$="-price"]');
-                        if (priceInput) priceInput.value = pt.price || 1;
-
-                        // Set tickets
-                        const ticketsInput = row.querySelector('[id$="-tickets"]');
-                        if (ticketsInput) ticketsInput.value = pt.tickets || 0;
-
-                        // Set sales
-                        const salesInput = row.querySelector('[id$="-sales"]');
-                        if (salesInput) salesInput.value = pt.sales || 0;
-
                         // Set prizes paid
-                        const prizesInput = row.querySelector('[id$="-prizes"]');
-                        if (prizesInput) prizesInput.value = pt.prizesPaid || 0;
+                        const prizesInput = row.querySelector('.prizes-input');
+                        if (prizesInput) {
+                            prizesInput.value = pt.prizesPaid || 0;
+                            // Trigger recalculation
+                            if (typeof recalculateNetProfit === 'function') {
+                                recalculateNetProfit(prizesInput);
+                            }
+                        }
 
                         // Set special event checkbox
-                        const seCheckbox = row.querySelector('[id$="-se"]');
-                        if (seCheckbox) seCheckbox.checked = pt.isSpecialEvent || false;
+                        const seCheckbox = row.querySelector('.se-checkbox');
+                        if (seCheckbox) {
+                            seCheckbox.checked = pt.isSpecialEvent || false;
+                        }
 
-                        // Trigger calculation
-                        if (typeof window.calculatePullTabRow === 'function') {
-                            window.calculatePullTabRow(index);
+                        // Set check payment checkbox
+                        const checkPayment = row.querySelector('.paid-by-check');
+                        if (checkPayment) {
+                            checkPayment.checked = pt.checkPayment || false;
                         }
                     }
                 });
+
+                // Recalculate totals
+                if (typeof calculatePullTabTotals === 'function') {
+                    calculatePullTabTotals();
+                }
 
                 console.log('Loaded', window.app.data.pullTabs.length, 'pull-tab rows');
             }
