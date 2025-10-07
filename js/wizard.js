@@ -95,8 +95,21 @@ function saveDraft() {
     console.log('💾 Saving draft...');
 
     try {
-        // Save all current data
-        saveStepData();
+        // Save current tab first
+        const currentTab = window.app?.currentStep || 1;
+
+        // Save ALL tabs' data by calling save for each step
+        console.log('Saving all tabs data...');
+        const originalStep = window.app.currentStep;
+
+        // Save each tab's data
+        [1, 2, 3, 4, 5].forEach(step => {
+            window.app.currentStep = step;
+            saveStepData();
+        });
+
+        // Restore current step
+        window.app.currentStep = originalStep;
 
         // Get occasion date for key
         const occasionDate = document.getElementById('occasion-date')?.value;
@@ -113,6 +126,8 @@ function saveDraft() {
             savedAt: new Date().toISOString(),
             status: 'draft'
         };
+
+        console.log('Draft data being saved:', draftData);
 
         localStorage.setItem(draftKey, JSON.stringify(draftData));
         localStorage.setItem(CONFIG.STORAGE_KEYS.DRAFT_DATA, JSON.stringify(draftData));
@@ -562,7 +577,7 @@ function validateMoneyCount() {
 
 function saveStepData() {
     if (!window.app) return;
-    
+
     switch (window.app.currentStep) {
         case 1:
             saveOccasionInfo();
@@ -580,11 +595,9 @@ function saveStepData() {
             saveMoneyCount();
             break;
     }
-    
-    // Always save to localStorage as draft
-    if (window.app.saveDraft) {
-        window.app.saveDraft();
-    }
+
+    // Note: Removed recursive saveDraft() call to prevent infinite loop
+    // saveDraft() now explicitly saves all tabs when called
 }
 
 function saveOccasionInfo() {
