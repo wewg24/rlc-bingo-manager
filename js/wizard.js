@@ -1210,34 +1210,70 @@ function addPullTabRow() {
 }
 
 function handlePullTabSelection(selectElement) {
+    console.log('=== handlePullTabSelection CALLED ===');
     const selectedValue = selectElement.value;
+    console.log('Selected value:', selectedValue);
+
     if (!selectedValue || selectedValue === 'No Game') return;
-    
+
     const row = selectElement.closest('tr');
     const game = window.pullTabLibrary?.find(g => g.identifier === selectedValue || g.name === selectedValue);
-    
+
+    console.log('Found game:', game);
+    console.log('Row:', row);
+
     if (game && row) {
-        // Auto-populate fields
+        // Auto-populate fields based on actual table structure
+        const ticketPriceCell = row.querySelector('.ticket-price-cell');
         const ticketsCell = row.querySelector('.tickets-cell');
-        const ticketsSoldCell = row.querySelector('.tickets-sold-cell');
-        const prizesPaidCell = row.querySelector('.prizes-cell');
-        const profitCell = row.querySelector('.profit-cell');
-        const idealProfitCell = row.querySelector('.ideal-profit-cell');
-        
-        // Set values
-        if (ticketsCell) ticketsCell.textContent = game.count;
-        
-        // Calculate ideal values
-        const idealSales = game.count * game.price;
-        const idealPrizes = idealSales - game.idealProfit;
-        
-        if (ticketsSoldCell) ticketsSoldCell.textContent = `$${idealSales.toFixed(2)}`;
-        if (prizesPaidCell) prizesPaidCell.textContent = `$${idealPrizes.toFixed(2)}`;
-        if (profitCell) profitCell.textContent = `$${game.idealProfit.toFixed(2)}`;
-        if (idealProfitCell) idealProfitCell.textContent = `$${game.idealProfit.toFixed(2)}`;
-        
+        const salesCell = row.querySelector('.sales-cell');
+        const idealCell = row.querySelector('.ideal-cell');
+        const prizesCell = row.querySelector('.prizes-cell');
+
+        console.log('Cells found:', {
+            ticketPriceCell: !!ticketPriceCell,
+            ticketsCell: !!ticketsCell,
+            salesCell: !!salesCell,
+            idealCell: !!idealCell,
+            prizesCell: !!prizesCell
+        });
+
+        // Populate ticket price
+        if (ticketPriceCell) {
+            ticketPriceCell.textContent = `$${game.price.toFixed(2)}`;
+            console.log('Set ticket price:', game.price);
+        }
+
+        // Populate ticket count
+        if (ticketsCell) {
+            ticketsCell.textContent = game.count;
+            console.log('Set tickets:', game.count);
+        }
+
+        // Calculate and populate sales (tickets × price)
+        const totalSales = game.count * game.price;
+        if (salesCell) {
+            salesCell.textContent = `$${totalSales.toFixed(2)}`;
+            console.log('Set sales:', totalSales);
+        }
+
+        // Populate ideal profit
+        if (idealCell) {
+            idealCell.textContent = `$${game.idealProfit.toFixed(2)}`;
+            console.log('Set ideal profit:', game.idealProfit);
+        }
+
+        // Calculate and populate expected prizes (sales - ideal profit)
+        const expectedPrizes = totalSales - game.idealProfit;
+        if (prizesCell) {
+            prizesCell.textContent = `$${expectedPrizes.toFixed(2)}`;
+            console.log('Set prizes:', expectedPrizes);
+        }
+
         // Trigger totals calculation
         calculatePullTabTotals();
+    } else {
+        console.warn('Game or row not found');
     }
 }
 
