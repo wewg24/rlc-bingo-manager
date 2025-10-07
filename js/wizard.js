@@ -273,19 +273,21 @@ function savePaperSales() {
         window.app.data.electronic = {};
     }
 
-    // Save manual count inventory
-    if (CONFIG.MANUAL_COUNT_ITEMS && Array.isArray(CONFIG.MANUAL_COUNT_ITEMS)) {
-        CONFIG.MANUAL_COUNT_ITEMS.forEach(type => {
+    // Save physical counts inventory (using PAPER_TYPES for correct ID matching)
+    console.log('Saving physical counts...');
+    if (CONFIG.PAPER_TYPES && Array.isArray(CONFIG.PAPER_TYPES)) {
+        CONFIG.PAPER_TYPES.forEach(type => {
             try {
                 // Validate type object has required properties
                 if (!type || !type.id) {
-                    console.warn('Invalid MANUAL_COUNT_ITEMS entry:', type);
+                    console.warn('Invalid PAPER_TYPES entry:', type);
                     return;
                 }
 
-                const start = parseInt(document.getElementById(`${type.id}-start`)?.value) || 0;
-                const end = parseInt(document.getElementById(`${type.id}-end`)?.value) || 0;
-                const free = parseInt(document.getElementById(`${type.id}-free`)?.value) || 0;
+                // IDs are in format "paper-{id}-start" as created by loadPaperSales
+                const start = parseInt(document.getElementById(`paper-${type.id}-start`)?.value) || 0;
+                const end = parseInt(document.getElementById(`paper-${type.id}-end`)?.value) || 0;
+                const free = parseInt(document.getElementById(`paper-${type.id}-free`)?.value) || 0;
                 const sold = Math.max(0, start - end - free);
 
                 // Ensure paperBingo object exists and initialize the specific type
@@ -301,11 +303,11 @@ function savePaperSales() {
 
                 console.log(`Saved paperBingo[${type.id}]:`, window.app.data.paperBingo[type.id]);
             } catch (error) {
-                console.error('Error processing manual count item:', type.id, error);
+                console.error('Error processing paper type:', type.id, error);
             }
         });
     } else {
-        console.warn('CONFIG.MANUAL_COUNT_ITEMS not found or invalid');
+        console.warn('CONFIG.PAPER_TYPES not found or invalid');
     }
 
     // Save POS sales
@@ -348,32 +350,41 @@ function savePaperSales() {
 }
 
 function saveGameResults() {
+    console.log('=== saveGameResults CALLED ===');
     const games = [];
-    document.querySelectorAll('#games-body tr').forEach(row => {
-        const gameNum = row.querySelector('.winner-count')?.getAttribute('data-game');
-        if (gameNum) {
-            const winners = parseInt(row.querySelector('.winner-count')?.value) || 0;
-            const prizePerWinner = parseFloat(row.querySelector('.prize-per')?.value) || 0;
-            const checkPaid = row.querySelector('.check-payment')?.checked || false;
+    document.querySelectorAll('#games-body tr').forEach((row, index) => {
+        // Try multiple ways to find the game number
+        const winnerInput = row.querySelector('.winner-count');
+        const prizePerInput = row.querySelector('.prize-per-input');
+        const gameNum = winnerInput?.getAttribute('data-game') ||
+                       prizePerInput?.getAttribute('data-game-index') ||
+                       (index + 1);
 
-            // Get game details from the row
-            const colorCell = row.cells[1];
-            const gameNameCell = row.cells[2];
-            const basePrizeCell = row.cells[3];
+        const winners = parseInt(winnerInput?.value) || 0;
+        const prizePerWinner = parseFloat(prizePerInput?.value) || 0;
+        const checkPaid = row.querySelector('.check-payment')?.checked || false;
 
-            games.push({
-                number: parseInt(gameNum), // Backend expects 'number' not 'num'
-                color: colorCell?.textContent || '',
-                name: gameNameCell?.textContent || '',
-                prize: parseFloat(basePrizeCell?.textContent?.replace('$', '')) || 0,
-                winners,
-                prizePerWinner,
-                totalPayout: winners * prizePerWinner, // Backend expects 'totalPayout'
-                checkPayment: checkPaid // Backend expects 'checkPayment'
-            });
-        }
+        // Get game details from the row
+        const colorCell = row.cells[1];
+        const gameNameCell = row.cells[2];
+        const basePrizeCell = row.cells[3];
+
+        const gameData = {
+            number: parseInt(gameNum),
+            color: colorCell?.textContent?.trim() || '',
+            name: gameNameCell?.textContent?.trim() || '',
+            prize: parseFloat(basePrizeCell?.textContent?.replace('$', '')) || 0,
+            winners,
+            prizePerWinner,
+            totalPayout: winners * prizePerWinner,
+            checkPayment: checkPaid
+        };
+
+        console.log(`Game ${gameNum}:`, gameData);
+        games.push(gameData);
     });
 
+    console.log(`Total games saved: ${games.length}`);
     window.app.data.games = games;
 
     // Trigger bingo prize calculations and comprehensive financials
@@ -383,67 +394,69 @@ function saveGameResults() {
 }
 
 function savePullTabs() {
+    console.log('=== savePullTabs CALLED ===');
     const pullTabs = [];
 
-    // Regular games
-    document.querySelectorAll('.pulltab-row').forEach(row => {
+    // Get all rows (both library and custom games)
+    document.querySelectorAll('#pulltab-body tr').forEach(row => {
         const gameSelect = row.querySelector('.pulltab-select');
+        const customNameInput = row.querySelector('.custom-game-name');
         const serialInput = row.querySelector('.serial-input');
+        const isCustomGame = row.classList.contains('custom-game');
+        const isSpecialEvent = row.querySelector('.se-checkbox')?.checked || false;
 
-        if (gameSelect && gameSelect.value && gameSelect.value !== 'No Game') {
-            const tickets = parseInt(row.querySelector('.tickets-cell')?.textContent) || 0;
-            const ticketsSold = parseFloat(row.querySelector('.tickets-sold-cell')?.textContent?.replace('$', '')) || 0;
-            const prizes = parseFloat(row.querySelector('.prizes-cell')?.textContent?.replace('$', '')) || 0;
-            const idealProfit = parseFloat(row.querySelector('.ideal-profit-cell')?.textContent?.replace('$', '')) || 0;
-            const netProfit = ticketsSold - prizes;
-            const checkPayment = row.querySelector('.check-payment')?.checked || false;
+        // Get game name
+        let gameName = '';
+        if (isCustomGame && customNameInput) {
+            gameName = customNameInput.value;
+        } else if (gameSelect) {
+            gameName = gameSelect.value;
+        }
+
+        if (gameName && gameName !== '' && gameName !== 'No Game') {
+            // Get values from actual table cells
+            const ticketPriceCell = row.querySelector('.ticket-price-cell');
+            const ticketsCell = row.querySelector('.tickets-cell');
+            const salesCell = row.querySelector('.sales-cell');
+            const idealCell = row.querySelector('.ideal-cell');
+            const prizesCell = row.querySelector('.prizes-cell');
+            const netCell = row.querySelector('.net-cell');
+            const checkPayment = row.querySelector('.paid-by-check')?.checked || false;
+
+            // For custom games, get values from inputs
+            const ticketPriceInput = row.querySelector('.ticket-price-input');
+            const ticketsInput = row.querySelector('.tickets-input');
+            const prizesInput = row.querySelector('.prizes-input');
+
+            const price = ticketPriceInput ? parseFloat(ticketPriceInput.value) || 0 :
+                         parseFloat(ticketPriceCell?.textContent?.replace('$', '')) || 0;
+            const tickets = ticketsInput ? parseInt(ticketsInput.value) || 0 :
+                           parseInt(ticketsCell?.textContent) || 0;
+            const sales = parseFloat(salesCell?.textContent?.replace('$', '')) || 0;
+            const ideal = idealCell?.textContent === 'N/A' ? 0 :
+                         parseFloat(idealCell?.textContent?.replace('$', '')) || 0;
+            const prizes = prizesInput ? parseFloat(prizesInput.value) || 0 :
+                          parseFloat(prizesCell?.textContent?.replace('$', '')) || 0;
+            const net = parseFloat(netCell?.textContent?.replace('$', '')) || 0;
+
+            console.log(`Saving game: ${gameName}, Price: ${price}, Tickets: ${tickets}, Sales: ${sales}, Ideal: ${ideal}, Prizes: ${prizes}, Net: ${net}, SE: ${isSpecialEvent}`);
 
             pullTabs.push({
-                gameName: gameSelect.value, // Backend expects 'gameName'
-                serialNumber: serialInput?.value || '', // Backend expects 'serialNumber'
-                price: tickets > 0 ? ticketsSold / tickets : 1, // Calculate price per ticket
+                gameName,
+                serialNumber: serialInput?.value || '',
+                price,
                 tickets,
-                sales: ticketsSold, // Backend expects 'sales'
-                idealProfit,
-                prizesPaid: prizes, // Backend expects 'prizesPaid'
-                netProfit,
-                isSpecialEvent: false, // Backend expects 'isSpecialEvent'
+                sales,
+                idealProfit: ideal,
+                prizesPaid: prizes,
+                netProfit: net,
+                isSpecialEvent,
                 checkPayment
             });
         }
     });
 
-    // Special events
-    document.querySelectorAll('.special-event-row').forEach(row => {
-        const nameSelect = row.querySelector('.special-event-select');
-        const nameInput = row.querySelector('.event-name-input');
-        const serialInput = row.querySelector('.event-serial-input');
-        const name = nameInput?.value || nameSelect?.options[nameSelect?.selectedIndex]?.text || '';
-        const ticketsCell = row.querySelector('.event-tickets-cell');
-        const salesCell = row.querySelector('.event-sales-cell');
-        const prizesInput = row.querySelector('.event-prizes-input');
-
-        if (name && name !== 'Select Special Event...') {
-            const tickets = parseInt(ticketsCell?.textContent) || 0;
-            const sales = parseFloat(salesCell?.textContent?.replace('$', '')) || 0;
-            const prizes = parseFloat(prizesInput?.value) || 0;
-            const netProfit = sales - prizes;
-
-            pullTabs.push({
-                gameName: name,
-                serialNumber: serialInput?.value || '',
-                price: tickets > 0 ? sales / tickets : 1,
-                tickets,
-                sales,
-                idealProfit: 0, // Special events don't have ideal profit
-                prizesPaid: prizes,
-                netProfit,
-                isSpecialEvent: true,
-                checkPayment: false // Special events typically don't pay by check
-            });
-        }
-    });
-
+    console.log(`Total pull-tab games saved: ${pullTabs.length}`);
     window.app.data.pullTabs = pullTabs;
 
     // Trigger financial calculations update
