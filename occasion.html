@@ -386,6 +386,25 @@
 
     // Make globally accessible
     window.updateBirthdayBOGOs = updateBirthdayBOGOs;
+
+    // Handle SE checkbox like a radio button (only one can be checked)
+    function handleSECheckbox(checkbox) {
+        if (checkbox.checked) {
+            // Uncheck all other SE checkboxes
+            document.querySelectorAll('.se-checkbox').forEach(cb => {
+                if (cb !== checkbox) {
+                    cb.checked = false;
+                }
+            });
+        }
+        // Trigger calculation
+        if (typeof calculatePullTabTotals === 'function') {
+            calculatePullTabTotals();
+        }
+    }
+
+    // Make globally accessible
+    window.handleSECheckbox = handleSECheckbox;
     </script>
     <div id="app">
         <!-- Header -->
@@ -685,7 +704,7 @@
                                 <th>Ideal</th>
                                 <th>Prizes</th>
                                 <th>Net</th>
-                                <th style="width: 5%;" title="Paid by Check">✓</th>
+                                <th style="width: 8%;">Paid by Check</th>
                                 <th style="width: 4%;">SE</th>
                                 <th style="width: 6%;">Remove</th>
                             </tr>

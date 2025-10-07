@@ -1159,7 +1159,7 @@ function populateSessionGamesNew(sessionData) {
         } else if (isEarlyBird) {
             gameColor = 'Early Bird';
         } else if (isPullTabEvent) {
-            gameColor = 'Pull-Tab Event';
+            gameColor = 'Event Game';
         }
 
         // Get progressive game data from Occasion Info
@@ -1191,7 +1191,9 @@ function populateSessionGamesNew(sessionData) {
 
         // Color-coded styling for game colors
         let colorStyle = '';
-        if (gameColor !== 'N/A' && gameColor !== '') {
+        // Only apply background color for actual CSS colors, not text labels
+        const textLabels = ['early bird', 'pull-tab event', 'progressive', 'event game'];
+        if (gameColor !== 'N/A' && gameColor !== '' && !textLabels.includes(gameColor.toLowerCase())) {
             colorStyle = `background-color: ${gameColor.toLowerCase()}; color: white; font-weight: bold;`;
         }
 
@@ -1218,7 +1220,7 @@ function populateSessionGamesNew(sessionData) {
                     <span>${gameName}</span>
                     <button onclick="editGameRow(${index})" class="btn btn-small" style="padding: 2px 8px; margin-left: 8px;">Edit</button>
                 </td>
-                <td>$${game.payout}</td>
+                <td>$${payout}</td>
                 ${actualBallsCell}
                 <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="${winners}" onchange="${winnersOnChange}" style="width: 60px;"></td>
                 <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="1" value="${prizePerWinner.toFixed(2)}" onchange="${prizePerOnChange}" style="width: 70px;"></td>
@@ -1676,9 +1678,8 @@ function loadMoneyCount() {
     }
 
     // Recalculate totals if function exists
-    if (typeof window.calculateDrawerTotal === 'function') {
-        window.calculateDrawerTotal('bingo');
-        window.calculateDrawerTotal('pt');
+    if (window.app && typeof window.app.calculateMoneyTotals === 'function') {
+        window.app.calculateMoneyTotals();
     }
 
     console.log('Money count data loaded');
@@ -1858,7 +1859,7 @@ function addPullTabRow() {
         <td><input type="number" class="prizes-input" min="0" step="1" value="0" onchange="recalculateNetProfit(this)" style="width: 70px;"></td>
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
-        <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
+        <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="handleSECheckbox(this)"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">🗑️</button></td>
     `;
 
@@ -2050,7 +2051,7 @@ function addSpecialEventRow() {
         <td><input type="number" class="prizes-input" min="0" step="1" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
-        <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
+        <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="handleSECheckbox(this)"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">🗑️</button></td>
     `;
 
