@@ -873,6 +873,9 @@ function savePullTabs() {
     window.app.data.occasion.lionPullTabs = ptLion;
     console.log('Saved Lion in Charge of Pull-Tabs:', ptLion);
 
+    // Update Pull-Tab Event game prize in Session Games if it exists
+    updatePullTabEventGamePrize();
+
     // Trigger financial calculations update
     if (window.app && typeof window.app.calculateComprehensiveFinancials === 'function') {
         window.app.calculateComprehensiveFinancials();
@@ -1170,7 +1173,8 @@ function populateSessionGamesNew(sessionData) {
         let payout = typeof game.payout === 'number' ? game.payout : (game.payout === 'Varies' ? 0 : parseInt(game.payout) || 0);
 
         if (isProgressiveGame) {
-            // Use progressive jackpot from Occasion Info if available
+            // Prize column always shows jackpot for Progressive Diamond
+            // Per Winner/Total will use jackpot or consolation based on actual balls
             payout = progJackpot || payout;
         } else if (isPullTabEvent) {
             // Calculate total prize from Special Event pull-tabs
@@ -1436,6 +1440,46 @@ function updateGamePrizes(gameIndex) {
     }
 }
 
+// Update Pull-Tab Event game prize from Special Event pull-tabs
+function updatePullTabEventGamePrize() {
+    const rows = document.querySelectorAll('#games-body tr');
+
+    rows.forEach(row => {
+        const gameCell = row.cells[2];
+        const gameName = gameCell?.textContent?.trim() || '';
+        const isPullTabEvent = gameName.toLowerCase().includes('pot of gold') ||
+                               gameName.toLowerCase().includes('pull-tab event');
+
+        if (isPullTabEvent) {
+            // Calculate total prize from Special Event pull-tabs
+            const pullTabs = window.app?.data?.pullTabs || [];
+            const specialEventPrize = pullTabs
+                .filter(pt => pt.isSpecialEvent)
+                .reduce((sum, pt) => sum + (pt.prizesPaid || 0), 0);
+
+            // Update the Prize column (4th column, index 3)
+            const prizeCell = row.cells[3];
+            if (prizeCell) {
+                const formatCurrency = window.formatCurrency || ((v) => '$' + v.toFixed(2));
+                prizeCell.textContent = formatCurrency(specialEventPrize);
+            }
+
+            // Update per winner and total based on winners
+            const winnersInput = row.querySelector('.winner-count');
+            const prizePerInput = row.querySelector('.prize-per-input');
+            const totalPrizeCell = row.querySelector('.total-prize');
+
+            if (winnersInput && prizePerInput && totalPrizeCell) {
+                const winners = parseInt(winnersInput.value) || 1;
+                const prizePerWinner = winners > 0 ? specialEventPrize / winners : 0;
+
+                prizePerInput.value = prizePerWinner.toFixed(2);
+                totalPrizeCell.textContent = formatCurrency(specialEventPrize);
+            }
+        }
+    });
+}
+
 function updateTotalBingoPrizes() {
     const rows = document.querySelectorAll('#games-body tr');
     let total = 0;
@@ -1445,12 +1489,13 @@ function updateTotalBingoPrizes() {
         const gameCell = row.cells[2]; // Game name column
         const gameName = gameCell?.textContent?.trim() || '';
         const isPullTabEvent = gameName.toLowerCase().includes('pot of gold') ||
-                               gameName.toLowerCase().includes('pull-tab event');
+                               gameName.toLowerCase().includes('pull-tab event') ||
+                               gameName.toLowerCase().includes('event game');
 
         if (!isPullTabEvent) {
             const totalPrizeCell = row.querySelector('.total-prize');
             if (totalPrizeCell) {
-                const amount = parseFloat(totalPrizeCell.textContent.replace('$', '')) || 0;
+                const amount = parseFloat(totalPrizeCell.textContent.replace(/[$,]/g, '')) || 0;
                 total += amount;
             }
         }
