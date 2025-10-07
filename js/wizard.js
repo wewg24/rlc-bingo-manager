@@ -1802,22 +1802,57 @@ function calculateFinalTotals() {
     // Get data from window.app if available
     const appData = window.app?.data || {};
 
-    // 1. Calculate Bingo Sales (Paper Sales + Electronic)
-    let totalBingoSales = 0;
+    // 1. Calculate Bingo Sales by Category from POS data
+    let totalElectronicSales = 0;
+    let totalMiscellaneousSales = 0;
+    let totalPaperSales = 0;
 
-    // From POS Door Sales
-    const totalPaperElement = document.getElementById('total-paper-sales');
-    const totalPaperSales = parseFloat(totalPaperElement?.textContent?.replace('$', '')) || 0;
-    totalBingoSales += totalPaperSales;
+    if (appData.posSales) {
+        Object.entries(appData.posSales).forEach(([key, item]) => {
+            const total = item.total || 0;
 
-    // From Electronic Sales
-    if (appData.electronic?.total) {
-        totalBingoSales += appData.electronic.total;
+            // Categorize based on CONFIG.POS_ITEMS
+            const configItem = CONFIG.POS_ITEMS?.find(i => i.id === key);
+            if (configItem) {
+                if (configItem.category === 'Electronic') {
+                    totalElectronicSales += total;
+                } else if (configItem.category === 'Miscellaneous') {
+                    totalMiscellaneousSales += total;
+                } else if (configItem.category === 'Paper') {
+                    totalPaperSales += total;
+                }
+            }
+        });
     }
 
+    // Total Bingo Sales = Electronic + Misc + Paper
+    const totalBingoSales = totalElectronicSales + totalMiscellaneousSales + totalPaperSales;
+
     // 2. Bingo Prizes (from Session Games in step 3)
-    const bingoTotalElement = document.getElementById('total-bingo-prizes');
-    const totalBingoPrizes = parseFloat(bingoTotalElement?.textContent?.replace('$', '')) || 0;
+    let totalBingoPrizes = 0;
+    let prizesPaidByCheck = 0;
+
+    if (appData.games && Array.isArray(appData.games)) {
+        appData.games.forEach(game => {
+            const payout = game.totalPayout || 0;
+            totalBingoPrizes += payout;
+
+            // Count check payments
+            if (game.checkPayment) {
+                prizesPaidByCheck += payout;
+            }
+        });
+    }
+
+    // Add progressive prize if paid
+    if (appData.progressive?.actualPrize) {
+        totalBingoPrizes += appData.progressive.actualPrize;
+
+        // Add to check payments if progressive was paid by check
+        if (appData.progressive?.checkPayment) {
+            prizesPaidByCheck += appData.progressive.actualPrize;
+        }
+    }
 
     // 3. Pull-Tab Sales and Prizes (from step 4)
     let totalPullTabSales = 0;
@@ -1838,17 +1873,6 @@ function calculateFinalTotals() {
         });
     }
 
-    // Fallback: try to read from UI elements
-    const ptRegSalesElement = document.getElementById('pt-reg-sales');
-    const ptRegPrizesElement = document.getElementById('pt-reg-prizes');
-    const ptSeSalesElement = document.getElementById('pt-se-sales');
-    const ptSePrizesElement = document.getElementById('pt-se-prizes');
-
-    if (ptRegSalesElement) totalPullTabSales = parseFloat(ptRegSalesElement.textContent?.replace('$', '')) || totalPullTabSales;
-    if (ptRegPrizesElement) totalPullTabPrizes = parseFloat(ptRegPrizesElement.textContent?.replace('$', '')) || totalPullTabPrizes;
-    if (ptSeSalesElement) totalSESales = parseFloat(ptSeSalesElement.textContent?.replace('$', '')) || totalSESales;
-    if (ptSePrizesElement) totalSEPrizes = parseFloat(ptSePrizesElement.textContent?.replace('$', '')) || totalSEPrizes;
-
     // 4. Cash Deposit (from step 5 - Money Count)
     let totalDeposit = 0;
 
@@ -1858,14 +1882,18 @@ function calculateFinalTotals() {
         const bingoDrawer = appData.moneyCount.bingo || {};
         const pullTabDrawer = appData.moneyCount.pulltab || appData.moneyCount.pullTab || {};
 
-        Object.values(bingoDrawer).forEach(amount => totalDeposit += parseFloat(amount) || 0);
-        Object.values(pullTabDrawer).forEach(amount => totalDeposit += parseFloat(amount) || 0);
-    }
-
-    // Fallback: try to read from UI elements
-    const depositTotalElement = document.getElementById('deposit-total');
-    if (depositTotalElement) {
-        totalDeposit = parseFloat(depositTotalElement.textContent?.replace('$', '')) || totalDeposit;
+        Object.entries(bingoDrawer).forEach(([key, amount]) => {
+            // Sum all denomination values (not the 'checks' key)
+            if (key !== 'checks') {
+                totalDeposit += parseFloat(amount) || 0;
+            }
+        });
+        Object.entries(pullTabDrawer).forEach(([key, amount]) => {
+            // Sum all denomination values (not the 'checks' key if exists)
+            if (key !== 'checks') {
+                totalDeposit += parseFloat(amount) || 0;
+            }
+        });
     }
 
     // Calculate derived totals
@@ -1878,8 +1906,10 @@ function calculateFinalTotals() {
     // Save financial data to window.app.data
     if (window.app && window.app.data) {
         window.app.data.financial = {
-            totalBingoSales: totalBingoSales,
-            totalPosSales: totalPaperSales,  // Broken down from totalBingoSales
+            totalElectronicSales: totalElectronicSales,
+            totalMiscellaneousSales: totalMiscellaneousSales,
+            totalPaperSales: totalPaperSales,
+            totalBingoSales: totalBingoSales,  // Sum of Electronic + Misc + Paper
             pullTabSales: totalPullTabSales,
             specialEventSales: totalSESales,
             grossSales: grossSales,
@@ -1887,7 +1917,7 @@ function calculateFinalTotals() {
             pullTabPrizesPaid: totalPullTabPrizes,
             specialEventPrizesPaid: totalSEPrizes,
             totalPrizesPaid: totalPrizes,
-            prizesPaidByCheck: 0, // TODO: Calculate from game results
+            prizesPaidByCheck: prizesPaidByCheck,
             idealProfit: idealProfit,
             overShort: overShort,
             totalCashDeposit: totalDeposit,
