@@ -1166,9 +1166,9 @@ function populateSessionGamesNew(sessionData) {
         }
 
         // Get progressive game data from Occasion Info
-        const progJackpot = window.app?.data?.occasion?.progressiveJackpot || 0;
-        const progBalls = window.app?.data?.occasion?.progressiveBalls || 0;
-        const progConsolation = window.app?.data?.occasion?.progressiveConsolation || 200;
+        const progJackpot = window.app?.data?.progressive?.jackpot || 0;
+        const progBalls = window.app?.data?.progressive?.ballsNeeded || 0;
+        const progConsolation = window.app?.data?.progressive?.consolation || 200;
 
         let payout = typeof game.payout === 'number' ? game.payout : (game.payout === 'Varies' ? 0 : parseInt(game.payout) || 0);
 
@@ -1391,9 +1391,9 @@ function updateProgressivePrize(gameIndex) {
     if (!actualBallsInput || !prizePerInput || !winnersInput || !totalPrizeCell) return;
 
     // Get progressive game data from Occasion Info
-    const progJackpot = window.app?.data?.occasion?.progressiveJackpot || 0;
-    const progBalls = window.app?.data?.occasion?.progressiveBalls || 0;
-    const progConsolation = window.app?.data?.occasion?.progressiveConsolation || 200;
+    const progJackpot = window.app?.data?.progressive?.jackpot || 0;
+    const progBalls = window.app?.data?.progressive?.ballsNeeded || 0;
+    const progConsolation = window.app?.data?.progressive?.consolation || 200;
 
     const actualBalls = parseInt(actualBallsInput.value) || 0;
     const winners = parseInt(winnersInput.value) || 1;
@@ -1487,7 +1487,8 @@ function updateTotalBingoPrizes() {
     rows.forEach(row => {
         // Check if this is a Pull-Tab Event game (exclude from bingo prizes)
         const gameCell = row.cells[2]; // Game name column
-        const gameName = gameCell?.textContent?.trim() || '';
+        const gameNameSpan = gameCell?.querySelector('span');
+        const gameName = (gameNameSpan?.textContent || gameCell?.textContent || '').trim();
         const isPullTabEvent = gameName.toLowerCase().includes('pot of gold') ||
                                gameName.toLowerCase().includes('pull-tab event') ||
                                gameName.toLowerCase().includes('event game');
@@ -2201,18 +2202,27 @@ function calculateFinalTotals() {
 
     if (appData.games && Array.isArray(appData.games)) {
         appData.games.forEach(game => {
-            const payout = game.totalPayout || 0;
-            totalBingoPrizes += payout;
+            // Exclude Pull-Tab Event game from bingo prizes
+            const gameName = game.name || '';
+            const isPullTabEvent = gameName.toLowerCase().includes('pot of gold') ||
+                                   gameName.toLowerCase().includes('pull-tab event') ||
+                                   gameName.toLowerCase().includes('event game');
 
-            // Count check payments
-            if (game.checkPayment) {
-                prizesPaidByCheck += payout;
+            if (!isPullTabEvent) {
+                const payout = game.totalPayout || 0;
+                totalBingoPrizes += payout;
+
+                // Count check payments
+                if (game.checkPayment) {
+                    prizesPaidByCheck += payout;
+                }
             }
         });
     }
 
     // Note: Progressive prize is already included in the games array
     // (game with color "Progressive"), so we don't add it separately
+    // Pull-Tab Event game is excluded as it's a pull-tab prize, not bingo
 
     // 3. Pull-Tab Sales and Prizes (from step 4)
     let totalPullTabSales = 0;
