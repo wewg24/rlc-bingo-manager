@@ -48,6 +48,54 @@ function switchToTab(tabNumber) {
 window.switchToTab = switchToTab;
 
 // ============================================
+// SAVE DRAFT FUNCTION
+// ============================================
+
+function saveDraft() {
+    console.log('💾 Saving draft...');
+
+    try {
+        // Save all current data
+        saveStepData();
+
+        // Get occasion date for key
+        const occasionDate = document.getElementById('occasion-date')?.value;
+
+        if (!occasionDate) {
+            alert('Please select a date before saving draft');
+            return;
+        }
+
+        // Save to localStorage with date as key
+        const draftKey = `rlc_draft_${occasionDate}`;
+        const draftData = {
+            ...window.app.data,
+            savedAt: new Date().toISOString(),
+            status: 'draft'
+        };
+
+        localStorage.setItem(draftKey, JSON.stringify(draftData));
+        localStorage.setItem(CONFIG.STORAGE_KEYS.DRAFT_DATA, JSON.stringify(draftData));
+
+        // Show success notification
+        if (window.showNotification) {
+            window.showNotification('Draft saved successfully', 'success');
+        } else {
+            alert('✅ Draft saved successfully');
+        }
+
+        console.log('Draft saved to localStorage:', draftKey);
+
+    } catch (error) {
+        console.error('Error saving draft:', error);
+        alert('❌ Error saving draft: ' + error.message);
+    }
+}
+
+// Make saveDraft globally accessible
+window.saveDraft = saveDraft;
+
+// ============================================
 // STEP NAVIGATION FUNCTIONS (Legacy - kept for compatibility)
 // ============================================
 
