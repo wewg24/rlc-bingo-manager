@@ -1844,15 +1844,8 @@ function calculateFinalTotals() {
         });
     }
 
-    // Add progressive prize if paid
-    if (appData.progressive?.actualPrize) {
-        totalBingoPrizes += appData.progressive.actualPrize;
-
-        // Add to check payments if progressive was paid by check
-        if (appData.progressive?.checkPayment) {
-            prizesPaidByCheck += appData.progressive.actualPrize;
-        }
-    }
+    // Note: Progressive prize is already included in the games array
+    // (game with color "Progressive"), so we don't add it separately
 
     // 3. Pull-Tab Sales and Prizes (from step 4)
     let totalPullTabSales = 0;
