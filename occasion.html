@@ -328,6 +328,20 @@
                 }
             });
         }
+
+        // Auto-scroll focused inputs into view
+        document.querySelectorAll('input, select, textarea').forEach(element => {
+            element.addEventListener('focus', function() {
+                // Small delay to let the browser finish focusing
+                setTimeout(() => {
+                    this.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                        inline: 'nearest'
+                    });
+                }, 100);
+            });
+        });
     });
 
     // Function to handle session type changes and reload games
@@ -957,9 +971,9 @@
 
     <!-- Loading Spinner Overlay -->
     <div id="loading-overlay" class="loading-overlay" style="display: none;">
-        <div class="loading-spinner">
-            <div class="spinner"></div>
-            <p id="loading-message">Loading...</p>
+        <div class="loading-spinner" style="background: #ffffff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); text-align: center; min-width: 250px; max-width: 400px;">
+            <div class="spinner" style="display: block !important; width: 60px !important; height: 60px !important; margin: 0 auto 1.5rem !important; border: 5px solid #ecf0f1 !important; border-top: 5px solid #1565C0 !important; border-radius: 50% !important; animation: spin 0.8s linear infinite !important; box-sizing: border-box !important;"></div>
+            <p id="loading-message" style="margin: 0; color: #2c3e50; font-size: 1.1rem; font-weight: 600; line-height: 1.4;">Loading...</p>
         </div>
     </div>
 
