@@ -1,3 +1,55 @@
+/* Tab Navigation Styles */
+.tab-navigation {
+    display: flex;
+    background: var(--white);
+    border-bottom: 2px solid var(--light);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-button {
+    flex: 1;
+    min-width: 120px;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tab-button:hover {
+    background: var(--light);
+    color: var(--primary);
+}
+
+.tab-button.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: var(--light);
+    font-weight: 600;
+}
+
+.tab-button:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+}
+
+/* Mobile responsive tabs */
+@media (max-width: 768px) {
+    .tab-button {
+        min-width: 100px;
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
 /* Wizard Styles */
 .wizard-container {
     max-width: 1200px;

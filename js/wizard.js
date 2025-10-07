@@ -1,8 +1,54 @@
 // wizard.js - Complete implementation with all fixes
-// Version 11.0.4 - Properly structured with all functions
+// Version 12.5.0 - Tabbed interface with auto-save
 
 // ============================================
-// STEP NAVIGATION FUNCTIONS
+// TAB NAVIGATION FUNCTIONS
+// ============================================
+
+function switchToTab(tabNumber) {
+    console.log('Switching to tab:', tabNumber);
+
+    // Save current tab data before switching
+    if (window.app && window.app.currentStep) {
+        saveStepData();
+    }
+
+    // Update current step
+    if (window.app) {
+        window.app.currentStep = tabNumber;
+    }
+
+    // Hide all wizard steps
+    document.querySelectorAll('.wizard-step').forEach(step => {
+        step.classList.remove('active');
+    });
+
+    // Show selected step
+    const targetStep = document.getElementById(`step-${tabNumber}`);
+    if (targetStep) {
+        targetStep.classList.add('active');
+    }
+
+    // Update tab button states
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+        if (parseInt(btn.getAttribute('data-tab')) === tabNumber) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Load data for the new tab
+    loadStepData();
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Make switchToTab globally accessible
+window.switchToTab = switchToTab;
+
+// ============================================
+// STEP NAVIGATION FUNCTIONS (Legacy - kept for compatibility)
 // ============================================
 
 function nextStep() {
