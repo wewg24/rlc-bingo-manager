@@ -952,7 +952,7 @@ function loadPaperSales() {
         `;
     });
 
-    // Load saved data if exists
+    // Load saved Physical Counts data if exists
     if (window.app?.data?.paperBingo) {
         Object.keys(window.app.data.paperBingo).forEach(id => {
             const data = window.app.data.paperBingo[id];
@@ -966,6 +966,35 @@ function loadPaperSales() {
             if (endInput) endInput.value = data.end || 0;
             if (soldCell) soldCell.textContent = data.sold || 0;
         });
+    }
+
+    // Load saved Door Sales (POS) quantities
+    if (window.app?.data?.posSales) {
+        Object.entries(window.app.data.posSales).forEach(([itemId, itemData]) => {
+            const qtyInput = document.getElementById(`${itemId}-qty`);
+            const totalCell = document.getElementById(`${itemId}-total`);
+
+            if (qtyInput && itemData.quantity !== undefined) {
+                qtyInput.value = itemData.quantity;
+
+                // Update total cell
+                if (totalCell && itemData.total !== undefined) {
+                    totalCell.textContent = `$${itemData.total.toFixed(2)}`;
+                }
+            }
+        });
+
+        // Recalculate category totals and grand total
+        if (typeof window.calculatePOSSales === 'function') {
+            // Trigger recalculation by calling calculatePOSSales for first item
+            const firstItem = Object.keys(window.app.data.posSales)[0];
+            if (firstItem) {
+                const itemConfig = CONFIG.POS_ITEMS?.find(i => i.id === firstItem);
+                if (itemConfig) {
+                    window.calculatePOSSales(firstItem, itemConfig.price);
+                }
+            }
+        }
     }
 }
 
@@ -1054,6 +1083,9 @@ function populateSessionGamesNew(sessionData) {
     // Sort games by order/gameNumber
     games.sort((a, b) => (a.order || a.gameNumber || 0) - (b.order || b.gameNumber || 0));
 
+    // Check if we have saved game data to restore
+    const savedGames = window.app?.data?.games || [];
+
     // Generate HTML for all games
     let gamesHtml = '';
     games.forEach((game, index) => {
@@ -1070,6 +1102,13 @@ function populateSessionGamesNew(sessionData) {
             }
         }
 
+        // Get saved data for this game if it exists
+        const savedGame = savedGames[index];
+        const winners = savedGame?.winners || 1;
+        const prizePerWinner = savedGame?.prizePerWinner || payout;
+        const totalPayout = savedGame?.totalPayout || payout;
+        const checkPayment = savedGame?.checkPayment || false;
+
         // Color-coded styling for game colors
         let colorStyle = '';
         if (gameColor !== 'N/A' && gameColor !== '') {
@@ -1082,11 +1121,11 @@ function populateSessionGamesNew(sessionData) {
                 <td style="${colorStyle} text-align: center; padding: 4px 8px; border-radius: 4px;">${gameColor}</td>
                 <td>${gameName}</td>
                 <td>$${game.payout}</td>
-                <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="1" onchange="updateGamePrizesNew(${index})" style="width: 60px;"></td>
-                <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="1" value="${payout.toFixed(2)}" onchange="updateGamePrizesManual(${index})" style="width: 70px;"></td>
-                <td class="total-prize">$${payout.toFixed(2)}</td>
+                <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="${winners}" onchange="updateGamePrizesNew(${index})" style="width: 60px;"></td>
+                <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="1" value="${prizePerWinner.toFixed(2)}" onchange="updateGamePrizesManual(${index})" style="width: 70px;"></td>
+                <td class="total-prize">$${totalPayout.toFixed(2)}</td>
                 <td style="text-align: center;">
-                    <input type="checkbox" class="paid-by-check" data-game-index="${index}" title="Paid by Check">
+                    <input type="checkbox" class="paid-by-check" data-game-index="${index}" ${checkPayment ? 'checked' : ''} title="Paid by Check">
                 </td>
                 <td style="text-align: center;">
                     <input type="checkbox" class="not-played-check" data-game-index="${index}" onchange="toggleGameNotPlayed(${index})" title="Mark as Not Played">
@@ -1378,6 +1417,65 @@ async function loadPullTabs() {
                 populatePullTabSelect(select);
             });
         }
+
+        // Load saved pull-tab data
+        if (window.app?.data?.pullTabs && Array.isArray(window.app.data.pullTabs)) {
+            const pullTabsBody = document.getElementById('pulltabs-body');
+            if (pullTabsBody) {
+                // Clear existing rows except the first one (template)
+                while (pullTabsBody.rows.length > 1) {
+                    pullTabsBody.deleteRow(1);
+                }
+
+                // Add rows for each saved pull-tab
+                window.app.data.pullTabs.forEach((pt, index) => {
+                    if (index > 0 && typeof window.addPullTab === 'function') {
+                        window.addPullTab(); // Add new row
+                    }
+
+                    // Populate the row
+                    const row = pullTabsBody.rows[index];
+                    if (row) {
+                        // Set game name in dropdown
+                        const select = row.querySelector('.pulltab-select');
+                        if (select) {
+                            select.value = pt.gameName || '';
+                        }
+
+                        // Set serial number
+                        const serialInput = row.querySelector('[id$="-serial"]');
+                        if (serialInput) serialInput.value = pt.serialNumber || '';
+
+                        // Set price
+                        const priceInput = row.querySelector('[id$="-price"]');
+                        if (priceInput) priceInput.value = pt.price || 1;
+
+                        // Set tickets
+                        const ticketsInput = row.querySelector('[id$="-tickets"]');
+                        if (ticketsInput) ticketsInput.value = pt.tickets || 0;
+
+                        // Set sales
+                        const salesInput = row.querySelector('[id$="-sales"]');
+                        if (salesInput) salesInput.value = pt.sales || 0;
+
+                        // Set prizes paid
+                        const prizesInput = row.querySelector('[id$="-prizes"]');
+                        if (prizesInput) prizesInput.value = pt.prizesPaid || 0;
+
+                        // Set special event checkbox
+                        const seCheckbox = row.querySelector('[id$="-se"]');
+                        if (seCheckbox) seCheckbox.checked = pt.isSpecialEvent || false;
+
+                        // Trigger calculation
+                        if (typeof window.calculatePullTabRow === 'function') {
+                            window.calculatePullTabRow(index);
+                        }
+                    }
+                });
+
+                console.log('Loaded', window.app.data.pullTabs.length, 'pull-tab rows');
+            }
+        }
     } catch (error) {
         console.error('Error loading pull-tab library:', error);
         window.pullTabLibrary = [];
@@ -1385,7 +1483,38 @@ async function loadPullTabs() {
 }
 
 function loadMoneyCount() {
-    // Implementation for loading money count
+    if (!window.app?.data?.moneyCount) return;
+
+    const moneyData = window.app.data.moneyCount;
+
+    // Load Bingo Drawer
+    if (moneyData.bingo) {
+        Object.entries(moneyData.bingo).forEach(([key, value]) => {
+            const input = document.getElementById(`bingo-${key}`);
+            if (input) {
+                input.value = value || 0;
+            }
+        });
+    }
+
+    // Load Pull-Tab Drawer (check both pullTab and pulltab)
+    const pullTabData = moneyData.pullTab || moneyData.pulltab;
+    if (pullTabData) {
+        Object.entries(pullTabData).forEach(([key, value]) => {
+            const input = document.getElementById(`pulltab-${key}`);
+            if (input) {
+                input.value = value || 0;
+            }
+        });
+    }
+
+    // Recalculate totals if function exists
+    if (typeof window.calculateDrawerTotal === 'function') {
+        window.calculateDrawerTotal('bingo');
+        window.calculateDrawerTotal('pulltab');
+    }
+
+    console.log('Money count data loaded');
 }
 
 function loadReviewData() {
