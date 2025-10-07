@@ -96,6 +96,88 @@ function saveDraft() {
 window.saveDraft = saveDraft;
 
 // ============================================
+// CHECK EXISTING OCCASION ON DATE CHANGE
+// ============================================
+
+async function checkExistingOccasion() {
+    const selectedDate = document.getElementById('occasion-date')?.value;
+
+    if (!selectedDate) {
+        return;
+    }
+
+    console.log('📅 Checking for existing occasion on:', selectedDate);
+
+    try {
+        // First, check localStorage for draft
+        const draftKey = `rlc_draft_${selectedDate}`;
+        const localDraft = localStorage.getItem(draftKey);
+
+        if (localDraft) {
+            console.log('Found local draft for', selectedDate);
+            const draftData = JSON.parse(localDraft);
+
+            // Auto-load draft
+            if (confirm(`Found a draft for ${selectedDate}. Load it?`)) {
+                loadOccasionData(draftData);
+                console.log('✅ Draft loaded');
+                return;
+            }
+        }
+
+        // Check backend for submitted/finalized occasions
+        // TODO: Backend API call would go here
+        // For now, we'll just check localStorage
+
+    } catch (error) {
+        console.error('Error checking existing occasion:', error);
+    }
+}
+
+// Make checkExistingOccasion globally accessible
+window.checkExistingOccasion = checkExistingOccasion;
+
+// ============================================
+// LOAD OCCASION DATA
+// ============================================
+
+function loadOccasionData(data) {
+    console.log('Loading occasion data:', data);
+
+    if (!data) return;
+
+    // Store in app.data
+    window.app.data = data;
+
+    // Load Occasion Info (Step 1)
+    if (data.occasion) {
+        if (data.occasion.date) document.getElementById('occasion-date').value = data.occasion.date;
+        if (data.occasion.sessionType) document.getElementById('session-type').value = data.occasion.sessionType;
+        if (data.occasion.lionInCharge) document.getElementById('lion-charge').value = data.occasion.lionInCharge;
+        if (data.occasion.totalPlayers) document.getElementById('total-people').value = data.occasion.totalPlayers;
+        if (data.occasion.birthdays) document.getElementById('birthdays').value = data.occasion.birthdays;
+    }
+
+    // Load Progressive data
+    if (data.progressive) {
+        if (data.progressive.jackpot) document.getElementById('prog-jackpot').value = data.progressive.jackpot;
+        if (data.progressive.ballsNeeded) document.getElementById('prog-balls').value = data.progressive.ballsNeeded;
+        if (data.progressive.consolation) document.getElementById('prog-consolation').value = data.progressive.consolation;
+        if (data.progressive.actualBalls) document.getElementById('prog-actual-balls').value = data.progressive.actualBalls;
+        if (data.progressive.actualPrize) document.getElementById('prog-prize').value = data.progressive.actualPrize;
+        if (data.progressive.checkPayment) document.getElementById('prog-check').checked = data.progressive.checkPayment;
+    }
+
+    // Load other tabs' data
+    loadStepData();
+
+    console.log('✅ Occasion data loaded successfully');
+}
+
+// Make loadOccasionData globally accessible
+window.loadOccasionData = loadOccasionData;
+
+// ============================================
 // STEP NAVIGATION FUNCTIONS (Legacy - kept for compatibility)
 // ============================================
 
