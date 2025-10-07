@@ -94,6 +94,11 @@ window.switchToTab = switchToTab;
 function saveDraft() {
     console.log('💾 Saving draft...');
 
+    // Show loading spinner
+    if (typeof showLoading === 'function') {
+        showLoading('Saving draft...');
+    }
+
     try {
         // Save current tab first
         const currentTab = window.app?.currentStep || 1;
@@ -115,6 +120,9 @@ function saveDraft() {
         const occasionDate = document.getElementById('occasion-date')?.value;
 
         if (!occasionDate) {
+            if (typeof hideLoading === 'function') {
+                hideLoading();
+            }
             alert('Please select a date before saving draft');
             return;
         }
@@ -132,6 +140,11 @@ function saveDraft() {
         localStorage.setItem(draftKey, JSON.stringify(draftData));
         localStorage.setItem(CONFIG.STORAGE_KEYS.DRAFT_DATA, JSON.stringify(draftData));
 
+        // Hide loading spinner
+        if (typeof hideLoading === 'function') {
+            hideLoading();
+        }
+
         // Show success notification
         if (window.showNotification) {
             window.showNotification('Draft saved successfully', 'success');
@@ -143,6 +156,12 @@ function saveDraft() {
 
     } catch (error) {
         console.error('Error saving draft:', error);
+
+        // Hide loading spinner on error
+        if (typeof hideLoading === 'function') {
+            hideLoading();
+        }
+
         alert('❌ Error saving draft: ' + error.message);
     }
 }
@@ -917,7 +936,9 @@ function loadOccasionInfo() {
     }
 
     if (data.lionInCharge) document.getElementById('lion-charge').value = data.lionInCharge;
-    if (data.attendance) document.getElementById('total-people').value = data.attendance;
+    if (data.lionPullTabs) document.getElementById('pt-lion').value = data.lionPullTabs;
+    if (data.totalPlayers) document.getElementById('total-people').value = data.totalPlayers;
+    if (data.attendance) document.getElementById('total-people').value = data.attendance; // Fallback for old data
     if (data.birthdays) document.getElementById('birthdays').value = data.birthdays;
     
     if (data.progressive) {
@@ -1041,8 +1062,13 @@ async function loadGameResults() {
         return;
     }
 
+    // Show loading spinner
+    if (typeof showLoading === 'function') {
+        showLoading('Loading session games...');
+    }
+
     try {
-        // Show loading state
+        // Show loading state in table
         gamesBody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">Loading session games...</td></tr>';
 
         // Load session games from API using JSONP to avoid CORS
@@ -1061,8 +1087,19 @@ async function loadGameResults() {
         } else {
             throw new Error(result.error || 'Failed to load session games');
         }
+
+        // Hide loading spinner
+        if (typeof hideLoading === 'function') {
+            hideLoading();
+        }
     } catch (error) {
         console.error('Error loading session games:', error);
+
+        // Hide loading spinner
+        if (typeof hideLoading === 'function') {
+            hideLoading();
+        }
+
         gamesBody.innerHTML = `
             <tr><td colspan="8" style="text-align: center; padding: 20px; color: #e74c3c;">
                 Error loading session games: ${error.message}
@@ -1383,9 +1420,16 @@ function loadPullTabLibraryJSONP() {
 }
 
 async function loadPullTabs() {
+    // Show loading spinner if loading library from API
+    const needsLibraryLoad = !window.pullTabLibrary || window.pullTabLibrary.length === 0;
+
+    if (needsLibraryLoad && typeof showLoading === 'function') {
+        showLoading('Loading pull-tab library...');
+    }
+
     try {
         // Load library if not already loaded
-        if (!window.pullTabLibrary || window.pullTabLibrary.length === 0) {
+        if (needsLibraryLoad) {
             console.log('Loading pull-tab library...');
 
             // Load pull-tab library from API using JSONP
@@ -1420,7 +1464,7 @@ async function loadPullTabs() {
 
         // Load saved pull-tab data
         if (window.app?.data?.pullTabs && Array.isArray(window.app.data.pullTabs)) {
-            const pullTabsBody = document.getElementById('pulltabs-body');
+            const pullTabsBody = document.getElementById('pulltab-body');
             if (pullTabsBody) {
                 // Clear existing rows except the first one (template)
                 while (pullTabsBody.rows.length > 1) {
@@ -1476,9 +1520,19 @@ async function loadPullTabs() {
                 console.log('Loaded', window.app.data.pullTabs.length, 'pull-tab rows');
             }
         }
+
+        // Hide loading spinner
+        if (needsLibraryLoad && typeof hideLoading === 'function') {
+            hideLoading();
+        }
     } catch (error) {
         console.error('Error loading pull-tab library:', error);
         window.pullTabLibrary = [];
+
+        // Hide loading spinner on error
+        if (needsLibraryLoad && typeof hideLoading === 'function') {
+            hideLoading();
+        }
     }
 }
 
@@ -1501,7 +1555,8 @@ function loadMoneyCount() {
     const pullTabData = moneyData.pullTab || moneyData.pulltab;
     if (pullTabData) {
         Object.entries(pullTabData).forEach(([key, value]) => {
-            const input = document.getElementById(`pulltab-${key}`);
+            // Use 'pt-' prefix for pull-tab drawer inputs
+            const input = document.getElementById(`pt-${key}`);
             if (input) {
                 input.value = value || 0;
             }
@@ -1511,7 +1566,7 @@ function loadMoneyCount() {
     // Recalculate totals if function exists
     if (typeof window.calculateDrawerTotal === 'function') {
         window.calculateDrawerTotal('bingo');
-        window.calculateDrawerTotal('pulltab');
+        window.calculateDrawerTotal('pt');
     }
 
     console.log('Money count data loaded');
