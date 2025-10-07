@@ -3,6 +3,7 @@
     "date": "2025-07-14",
     "sessionType": "6-2",
     "lionInCharge": "Wayne Parry",
+    "lionPullTabs": "",
     "totalPlayers": 85,
     "birthdays": 4,
     "createdBy": "Mobile Entry"
@@ -312,7 +313,7 @@
   "pullTabs": [
     {
       "gameName": "Fire Fighters 140_None",
-      "serialNumber": "C718598",
+      "serialNumber": "",
       "price": 1,
       "tickets": 225,
       "sales": 225,
@@ -324,7 +325,7 @@
     },
     {
       "gameName": "Rockin' Robin 140_7348J",
-      "serialNumber": "H633639",
+      "serialNumber": "",
       "price": 1,
       "tickets": 230,
       "sales": 230,
@@ -336,7 +337,7 @@
     },
     {
       "gameName": "Slots 280_6917M",
-      "serialNumber": "89T2670",
+      "serialNumber": "",
       "price": 1,
       "tickets": 400,
       "sales": 400,
@@ -348,7 +349,7 @@
     },
     {
       "gameName": "Triple Twist 175_6081J",
-      "serialNumber": "90C1455",
+      "serialNumber": "",
       "price": 1,
       "tickets": 250,
       "sales": 250,
@@ -360,7 +361,7 @@
     },
     {
       "gameName": "Race Horse Downs 250_354GA",
-      "serialNumber": "2V55969",
+      "serialNumber": "",
       "price": 1,
       "tickets": 1000,
       "sales": 1000,
@@ -372,7 +373,7 @@
     },
     {
       "gameName": "Lollipops 400_6749U",
-      "serialNumber": "96K8809",
+      "serialNumber": "",
       "price": 1,
       "tickets": 600,
       "sales": 600,
@@ -384,7 +385,7 @@
     },
     {
       "gameName": "Race Horse Downs 250_354GA",
-      "serialNumber": "2V57008",
+      "serialNumber": "",
       "price": 1,
       "tickets": 1000,
       "sales": 1000,
@@ -396,7 +397,7 @@
     },
     {
       "gameName": "Life Happens 599_7726H",
-      "serialNumber": "H037559",
+      "serialNumber": "",
       "price": 1,
       "tickets": 960,
       "sales": 960,
@@ -431,18 +432,20 @@
     }
   },
   "financial": {
-    "totalBingoSales": 870,
-    "totalPosSales": 3559,
-    "pullTabSales": 4665,
-    "specialEventSales": 0,
-    "grossSales": 9094,
-    "bingoPrizesPaid": 0,
-    "pullTabPrizesPaid": 0,
-    "specialEventPrizesPaid": 0,
-    "totalPrizesPaid": 0,
+    "totalElectronicSales": 870,
+    "totalMiscellaneousSales": 26,
+    "totalPaperSales": 2663,
+    "totalBingoSales": 3559,
+    "pullTabSales": 3705,
+    "specialEventSales": 960,
+    "grossSales": 8224,
+    "bingoPrizesPaid": 2910,
+    "pullTabPrizesPaid": 2475,
+    "specialEventPrizesPaid": 599,
+    "totalPrizesPaid": 5984,
     "prizesPaidByCheck": 0,
-    "idealProfit": 8094,
-    "overShort": -5638,
+    "idealProfit": 2240,
+    "overShort": 216,
     "totalCashDeposit": 3456,
     "actualProfit": 2456
   },
@@ -461,5 +464,5 @@
   "totalBingoPrizes": 2710,
   "id": "OCC_1759806736639",
   "created": "2025-10-07T03:12:16.639Z",
-  "modified": "2025-10-07T10:54:35.736Z"
+  "modified": "2025-10-07T11:16:46.366Z"
 }

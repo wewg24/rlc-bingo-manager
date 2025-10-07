@@ -998,6 +998,11 @@ function loadPaperSales() {
         });
     }
 
+    // Update Birthday BOGOs if birthdays value exists
+    if (typeof window.updateBirthdayBOGOs === 'function') {
+        setTimeout(() => window.updateBirthdayBOGOs(), 100);
+    }
+
     // Load saved Door Sales (POS) quantities
     if (window.app?.data?.posSales) {
         Object.entries(window.app.data.posSales).forEach(([itemId, itemData]) => {
@@ -1137,10 +1142,25 @@ function populateSessionGamesNew(sessionData) {
     games.forEach((game, index) => {
         const gameNumber = game.gameNumber || game.order || (index + 1);
         const gameName = game.pattern || game.name || 'Unknown Game';
-        const gameColor = game.color || 'N/A';
+        let gameColor = game.color || 'N/A';
 
         // Check if this is the Progressive Diamond game
         const isProgressiveGame = game.isProgressive && game.pattern && game.pattern.includes('Progressive Diamond');
+
+        // Check if this is an Early Bird game
+        const isEarlyBird = game.category === 'Early Bird' || gameName.toLowerCase().includes('early bird');
+
+        // Check if this is a Pull-Tab Event game
+        const isPullTabEvent = gameName.toLowerCase().includes('pot of gold') || gameName.toLowerCase().includes('pull-tab event') || game.isSpecialEvent;
+
+        // Override color labels for special games
+        if (isProgressiveGame) {
+            gameColor = 'Progressive';
+        } else if (isEarlyBird) {
+            gameColor = 'Early Bird';
+        } else if (isPullTabEvent) {
+            gameColor = 'Pull-Tab Event';
+        }
 
         // Get progressive game data from Occasion Info
         const progJackpot = window.app?.data?.occasion?.progressiveJackpot || 0;
@@ -1148,9 +1168,17 @@ function populateSessionGamesNew(sessionData) {
         const progConsolation = window.app?.data?.occasion?.progressiveConsolation || 200;
 
         let payout = typeof game.payout === 'number' ? game.payout : (game.payout === 'Varies' ? 0 : parseInt(game.payout) || 0);
+
         if (isProgressiveGame) {
             // Use progressive jackpot from Occasion Info if available
             payout = progJackpot || payout;
+        } else if (isPullTabEvent) {
+            // Calculate total prize from Special Event pull-tabs
+            const pullTabs = window.app?.data?.pullTabs || [];
+            const specialEventPrize = pullTabs
+                .filter(pt => pt.isSpecialEvent)
+                .reduce((sum, pt) => sum + (pt.prizesPaid || 0), 0);
+            payout = specialEventPrize || payout;
         }
 
         // Get saved data for this game if it exists
@@ -1403,12 +1431,23 @@ function updateGamePrizes(gameIndex) {
 }
 
 function updateTotalBingoPrizes() {
-    const totalPrizeCells = document.querySelectorAll('#games-body .total-prize');
+    const rows = document.querySelectorAll('#games-body tr');
     let total = 0;
 
-    totalPrizeCells.forEach(cell => {
-        const amount = parseFloat(cell.textContent.replace('$', '')) || 0;
-        total += amount;
+    rows.forEach(row => {
+        // Check if this is a Pull-Tab Event game (exclude from bingo prizes)
+        const gameCell = row.cells[2]; // Game name column
+        const gameName = gameCell?.textContent?.trim() || '';
+        const isPullTabEvent = gameName.toLowerCase().includes('pot of gold') ||
+                               gameName.toLowerCase().includes('pull-tab event');
+
+        if (!isPullTabEvent) {
+            const totalPrizeCell = row.querySelector('.total-prize');
+            if (totalPrizeCell) {
+                const amount = parseFloat(totalPrizeCell.textContent.replace('$', '')) || 0;
+                total += amount;
+            }
+        }
     });
 
     const totalElement = document.getElementById('total-bingo-prizes');
