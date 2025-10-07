@@ -1175,7 +1175,7 @@ function addPullTabRow() {
         <td class="tickets-cell">0</td>
         <td class="sales-cell">$0.00</td>
         <td class="ideal-cell">$0.00</td>
-        <td class="prizes-cell">$0.00</td>
+        <td><input type="number" class="prizes-input" min="0" step="0.01" value="0" onchange="recalculateNetProfit(this)" style="width: 70px;"></td>
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
         <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
@@ -1242,7 +1242,7 @@ function handlePullTabSelection(selectElement) {
         const ticketsCell = row.querySelector('.tickets-cell');
         const salesCell = row.querySelector('.sales-cell');
         const idealCell = row.querySelector('.ideal-cell');
-        const prizesCell = row.querySelector('.prizes-cell');
+        const prizesInput = row.querySelector('.prizes-input');
         const netCell = row.querySelector('.net-cell');
 
         console.log('Cells found:', {
@@ -1250,7 +1250,7 @@ function handlePullTabSelection(selectElement) {
             ticketsCell: !!ticketsCell,
             salesCell: !!salesCell,
             idealCell: !!idealCell,
-            prizesCell: !!prizesCell,
+            prizesInput: !!prizesInput,
             netCell: !!netCell
         });
 
@@ -1281,15 +1281,16 @@ function handlePullTabSelection(selectElement) {
 
         // Calculate and populate expected prizes (sales - ideal profit)
         const expectedPrizes = totalSales - game.idealProfit;
-        if (prizesCell) {
-            prizesCell.textContent = `$${expectedPrizes.toFixed(2)}`;
+        if (prizesInput) {
+            prizesInput.value = expectedPrizes.toFixed(2);
             console.log('Set prizes:', expectedPrizes);
         }
 
-        // Calculate and populate net (ideal profit, which is sales - prizes)
+        // Calculate and populate net (sales - prizes)
+        const netProfit = totalSales - expectedPrizes;
         if (netCell) {
-            netCell.textContent = `$${game.idealProfit.toFixed(2)}`;
-            console.log('Set net:', game.idealProfit);
+            netCell.textContent = `$${netProfit.toFixed(2)}`;
+            console.log('Set net:', netProfit);
         }
 
         // Trigger totals calculation
@@ -1687,6 +1688,27 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Wizard.js initialization complete');
 });
 
+// Recalculate net profit when prizes are manually edited
+function recalculateNetProfit(input) {
+    const row = input.closest('tr');
+    if (!row) return;
+
+    const salesCell = row.querySelector('.sales-cell');
+    const prizesInput = row.querySelector('.prizes-input');
+    const netCell = row.querySelector('.net-cell');
+
+    const sales = parseFloat(salesCell?.textContent?.replace('$', '')) || 0;
+    const prizes = parseFloat(prizesInput?.value) || 0;
+    const net = sales - prizes;
+
+    if (netCell) {
+        netCell.textContent = `$${net.toFixed(2)}`;
+    }
+
+    // Recalculate totals
+    calculatePullTabTotals();
+}
+
 // Make functions globally accessible for inline onclick handlers
 window.addPullTabRow = addPullTabRow;
 window.addSpecialEventRow = addSpecialEventRow;
@@ -1697,6 +1719,7 @@ window.updateGamePrizesNew = updateGamePrizesNew;
 window.updateGamePrizesManual = updateGamePrizesManual;
 window.toggleGameNotPlayed = toggleGameNotPlayed;
 window.editGameRow = editGameRow;
+window.recalculateNetProfit = recalculateNetProfit;
 
 // Update game prizes with auto-calculation of Per Winner
 function updateGamePrizesNew(gameIndex) {
@@ -1897,12 +1920,12 @@ function calculatePullTabTotals() {
 
         const salesCell = row.querySelector('.sales-cell');
         const idealCell = row.querySelector('.ideal-cell');
-        const prizesCell = row.querySelector('.prizes-cell');
+        const prizesInput = row.querySelector('.prizes-input');
         const netCell = row.querySelector('.net-cell');
 
         const sales = parseFloat(salesCell?.textContent?.replace('$', '')) || 0;
         const ideal = parseFloat(idealCell?.textContent?.replace('$', '')) || 0;
-        const prizes = parseFloat(prizesCell?.textContent?.replace('$', '')) || 0;
+        const prizes = parseFloat(prizesInput?.value) || 0;
         const net = parseFloat(netCell?.textContent?.replace('$', '')) || 0;
 
         console.log(`Row ${index}: SE=${isSpecialEvent}, Sales=${sales}, Ideal=${ideal}, Prizes=${prizes}, Net=${net}`);
