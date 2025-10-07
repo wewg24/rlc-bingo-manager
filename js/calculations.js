@@ -93,69 +93,7 @@ function calculateTotalBingoPrizes() {
     }
 }
 
-function addPullTabRow() {
-    const tbody = document.getElementById('pulltab-body');
-    if (!tbody) return;
-    
-    const row = tbody.insertRow();
-    row.innerHTML = `
-        <td>
-            <select class="pt-game-select">
-                <option value="">Select Game...</option>
-                ${window.app?.pullTabLibrary.map(game => 
-                    `<option value="${game.name}">${game.name}</option>`
-                ).join('')}
-            </select>
-        </td>
-        <td><input type="text" placeholder="Serial #"></td>
-        <td><input type="number" value="1.00" step="0.01" class="pt-price"></td>
-        <td><input type="number" class="pt-tickets" min="0"></td>
-        <td class="pt-sales">$0.00</td>
-        <td><input type="number" class="pt-ideal" step="0.01"></td>
-        <td><input type="number" class="pt-prizes" step="0.01"></td>
-        <td class="pt-net">$0.00</td>
-        <td><input type="checkbox" class="pt-special"></td>
-        <td><input type="checkbox" class="pt-check"></td>
-    `;
-    
-    // Add event listeners
-    const gameSelect = row.querySelector('.pt-game-select');
-    gameSelect.addEventListener('change', (e) => {
-        const game = window.app?.pullTabLibrary.find(g => g.name === e.target.value);
-        if (game) {
-            row.querySelector('.pt-price').value = game.price || 1;
-            row.querySelector('.pt-ideal').value = game.idealProfit || 0;
-        }
-    });
-    
-    row.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('input', () => calculatePullTabRow(row));
-    });
-}
-
-function addSpecialEventRow() {
-    const tbody = document.getElementById('pulltab-body');
-    if (!tbody) return;
-    
-    const row = tbody.insertRow();
-    row.className = 'special-event';
-    row.innerHTML = `
-        <td><input type="text" value="Special Event" style="font-weight: bold;"></td>
-        <td><input type="text" placeholder="Serial #"></td>
-        <td><input type="number" value="1.00" step="0.01" class="pt-price"></td>
-        <td><input type="number" class="pt-tickets" min="0"></td>
-        <td class="pt-sales">$0.00</td>
-        <td><input type="number" class="pt-ideal" step="0.01"></td>
-        <td><input type="number" class="pt-prizes" step="0.01"></td>
-        <td class="pt-net">$0.00</td>
-        <td><input type="checkbox" class="pt-special" checked disabled></td>
-        <td><input type="checkbox" class="pt-check"></td>
-    `;
-    
-    row.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('input', () => calculatePullTabRow(row));
-    });
-}
+// addPullTabRow and addSpecialEventRow moved to wizard.js to avoid conflicts
 
 function calculatePullTabRow(row) {
     const price = parseFloat(row.querySelector('.pt-price')?.value) || 0;
