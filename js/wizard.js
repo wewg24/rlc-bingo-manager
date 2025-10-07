@@ -279,6 +279,7 @@ function loadOccasionData(data) {
         if (data.occasion.date) document.getElementById('occasion-date').value = data.occasion.date;
         if (data.occasion.sessionType) document.getElementById('session-type').value = data.occasion.sessionType;
         if (data.occasion.lionInCharge) document.getElementById('lion-charge').value = data.occasion.lionInCharge;
+        if (data.occasion.lionPullTabs) document.getElementById('pt-lion').value = data.occasion.lionPullTabs;
         if (data.occasion.totalPlayers) document.getElementById('total-people').value = data.occasion.totalPlayers;
         if (data.occasion.birthdays) document.getElementById('birthdays').value = data.occasion.birthdays;
     }
@@ -311,6 +312,16 @@ function loadOccasionData(data) {
         window.app.currentStep = currentTab;
     }
     switchToTab(currentTab);
+
+    // Recalculate financial totals for Review tab
+    if (typeof calculateFinalTotals === 'function') {
+        calculateFinalTotals();
+    }
+
+    // Update Performance Metrics
+    if (typeof updatePerformanceMetrics === 'function') {
+        updatePerformanceMetrics();
+    }
 
     console.log('✅ Occasion data loaded successfully');
 }
@@ -608,6 +619,7 @@ function saveOccasionInfo() {
         date: document.getElementById('occasion-date')?.value,
         sessionType: sessionTypeKey, // Backend expects the session code (5-1, 6-2, etc.)
         lionInCharge: document.getElementById('lion-charge')?.value,
+        lionPullTabs: document.getElementById('pt-lion')?.value,  // Lion in Charge of Pull-Tabs
         totalPlayers: parseInt(document.getElementById('total-people')?.value) || 0, // Backend expects 'totalPlayers'
         birthdays: parseInt(document.getElementById('birthdays')?.value) || 0,
         createdBy: 'Mobile Entry' // Backend expects this field
@@ -1860,6 +1872,28 @@ function calculateFinalTotals() {
     const grossSales = totalBingoSales + totalPullTabSales + totalSESales;
     const totalPrizes = totalBingoPrizes + totalPullTabPrizes + totalSEPrizes;
     const actualProfit = totalDeposit - 1000; // Less startup of $1000
+    const idealProfit = grossSales - totalPrizes;
+    const overShort = actualProfit - idealProfit;
+
+    // Save financial data to window.app.data
+    if (window.app && window.app.data) {
+        window.app.data.financial = {
+            totalBingoSales: totalBingoSales,
+            totalPosSales: totalPaperSales,  // Broken down from totalBingoSales
+            pullTabSales: totalPullTabSales,
+            specialEventSales: totalSESales,
+            grossSales: grossSales,
+            bingoPrizesPaid: totalBingoPrizes,
+            pullTabPrizesPaid: totalPullTabPrizes,
+            specialEventPrizesPaid: totalSEPrizes,
+            totalPrizesPaid: totalPrizes,
+            prizesPaidByCheck: 0, // TODO: Calculate from game results
+            idealProfit: idealProfit,
+            overShort: overShort,
+            totalCashDeposit: totalDeposit,
+            actualProfit: actualProfit
+        };
+    }
 
     // Update the Review & Submit summary fields
     updateSummaryField('summary-bingo-sales', totalBingoSales);
@@ -1872,6 +1906,11 @@ function calculateFinalTotals() {
     updateSummaryField('summary-total-prizes', totalPrizes);
     updateSummaryField('summary-deposit', totalDeposit);
     updateSummaryField('summary-actual', actualProfit);
+    updateSummaryField('summary-ideal', idealProfit);
+    updateSummaryField('summary-overshort', overShort);
+
+    // Update performance metrics
+    updatePerformanceMetrics();
 
     console.log('Final totals calculated:', {
         bingoSales: totalBingoSales,
@@ -1883,7 +1922,9 @@ function calculateFinalTotals() {
         sePrizes: totalSEPrizes,
         totalPrizes: totalPrizes,
         deposit: totalDeposit,
-        actualProfit: actualProfit
+        idealProfit: idealProfit,
+        actualProfit: actualProfit,
+        overShort: overShort
     });
 }
 
@@ -1892,6 +1933,37 @@ function updateSummaryField(fieldId, value) {
     if (field) {
         field.textContent = `$${value.toFixed(2)}`;
     }
+}
+
+function updatePerformanceMetrics() {
+    const appData = window.app?.data || {};
+
+    // Total Players
+    const totalPlayers = appData.occasion?.totalPlayers || 0;
+    const playersEl = document.getElementById('metric-players');
+    if (playersEl) playersEl.textContent = totalPlayers;
+
+    // Gross Sales (from financial data or calculate)
+    let grossSales = appData.financial?.grossSales || 0;
+    const grossEl = document.getElementById('metric-gross');
+    if (grossEl) grossEl.textContent = `$${grossSales.toFixed(2)}`;
+
+    // Net Profit (Actual Profit)
+    let netProfit = appData.financial?.actualProfit || 0;
+    const profitEl = document.getElementById('metric-profit');
+    if (profitEl) profitEl.textContent = `$${netProfit.toFixed(2)}`;
+
+    // Per Player (Gross Sales / Total Players)
+    const perPlayer = totalPlayers > 0 ? (grossSales / totalPlayers) : 0;
+    const perPlayerEl = document.getElementById('metric-per-player');
+    if (perPlayerEl) perPlayerEl.textContent = `$${perPlayer.toFixed(2)}`;
+
+    console.log('Performance metrics updated:', {
+        totalPlayers,
+        grossSales,
+        netProfit,
+        perPlayer
+    });
 }
 
 // ============================================

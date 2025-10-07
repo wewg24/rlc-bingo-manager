@@ -1,0 +1,465 @@
+{
+  "occasion": {
+    "date": "2025-07-14",
+    "sessionType": "6-2",
+    "lionInCharge": "Wayne Parry",
+    "totalPlayers": 85,
+    "birthdays": 4,
+    "createdBy": "Mobile Entry"
+  },
+  "paperBingo": {
+    "eb": {
+      "start": 188,
+      "end": 0,
+      "free": 8,
+      "sold": 180
+    },
+    "6f": {
+      "start": 25,
+      "end": 3,
+      "free": 4,
+      "sold": 18
+    },
+    "9fs": {
+      "start": 70,
+      "end": 16,
+      "free": 0,
+      "sold": 54
+    },
+    "9fst": {
+      "start": 86,
+      "end": 16,
+      "free": 0,
+      "sold": 70
+    },
+    "p3": {
+      "start": 30,
+      "end": 1,
+      "free": 0,
+      "sold": 29
+    },
+    "p18": {
+      "start": 80,
+      "end": 2,
+      "free": 0,
+      "sold": 78
+    }
+  },
+  "posSales": {
+    "birthday": {
+      "price": 0,
+      "quantity": 0,
+      "total": 0
+    },
+    "small-machine": {
+      "name": "27reg/18pro (Small Machine)",
+      "price": 40,
+      "quantity": 12,
+      "total": 480
+    },
+    "large-machine": {
+      "name": "45reg/36pro (Large Machine)",
+      "price": 65,
+      "quantity": 6,
+      "total": 390
+    },
+    "dauber": {
+      "name": "Dauber",
+      "price": 2,
+      "quantity": 13,
+      "total": 26
+    },
+    "6-face": {
+      "name": "6 Packs",
+      "price": 10,
+      "quantity": 18,
+      "total": 180
+    },
+    "9-face-solid": {
+      "name": "Solid Border 9",
+      "price": 15,
+      "quantity": 54,
+      "total": 810
+    },
+    "9-face-stripe": {
+      "name": "Stripe Border 9",
+      "price": 10,
+      "quantity": 70,
+      "total": 700
+    },
+    "birthday-pack": {
+      "name": "Birthdays (BOGOs)",
+      "price": 0,
+      "quantity": 4,
+      "total": 0
+    },
+    "coverall": {
+      "name": "Coverall Extra",
+      "price": 1,
+      "quantity": 36,
+      "total": 36
+    },
+    "double-action": {
+      "name": "Early Bird Double",
+      "price": 5,
+      "quantity": 89,
+      "total": 445
+    },
+    "letter-x": {
+      "name": "Letter X Extra",
+      "price": 1,
+      "quantity": 37,
+      "total": 37
+    },
+    "number7": {
+      "name": "Number 7 Extra",
+      "price": 1,
+      "quantity": 36,
+      "total": 36
+    },
+    "18-face-prog": {
+      "name": "$5.00 Progressives",
+      "price": 5,
+      "quantity": 78,
+      "total": 390
+    },
+    "3-face-prog": {
+      "name": "$1.00 Progressives",
+      "price": 1,
+      "quantity": 29,
+      "total": 29
+    }
+  },
+  "electronic": {
+    "smallMachines": 12,
+    "largeMachines": 6,
+    "smallTotal": 480,
+    "largeTotal": 390,
+    "total": 870
+  },
+  "games": [
+    {
+      "number": 0,
+      "color": "Early Bird",
+      "name": "Hard Way Bingo No Free Space",
+      "prize": 100,
+      "winners": 1,
+      "prizePerWinner": 100,
+      "totalPayout": 100,
+      "checkPayment": false
+    },
+    {
+      "number": 1,
+      "color": "Early Bird",
+      "name": "Diagonal & Outside Corners",
+      "prize": 100,
+      "winners": 3,
+      "prizePerWinner": 35,
+      "totalPayout": 105,
+      "checkPayment": false
+    },
+    {
+      "number": 2,
+      "color": "Early Bird",
+      "name": "Small Picture Frame",
+      "prize": 100,
+      "winners": 1,
+      "prizePerWinner": 100,
+      "totalPayout": 100,
+      "checkPayment": false
+    },
+    {
+      "number": 3,
+      "color": "Blue",
+      "name": "Block of 9",
+      "prize": 100,
+      "winners": 1,
+      "prizePerWinner": 100,
+      "totalPayout": 100,
+      "checkPayment": false
+    },
+    {
+      "number": 4,
+      "color": "Orange",
+      "name": "Number 7",
+      "prize": 250,
+      "winners": 1,
+      "prizePerWinner": 250,
+      "totalPayout": 250,
+      "checkPayment": false
+    },
+    {
+      "number": 5,
+      "color": "Green",
+      "name": "Small Diamond",
+      "prize": 100,
+      "winners": 1,
+      "prizePerWinner": 100,
+      "totalPayout": 100,
+      "checkPayment": false
+    },
+    {
+      "number": 6,
+      "color": "Yellow",
+      "name": "Razor Blade",
+      "prize": 100,
+      "winners": 3,
+      "prizePerWinner": 35,
+      "totalPayout": 105,
+      "checkPayment": false
+    },
+    {
+      "number": 7,
+      "color": "Pink",
+      "name": "Letter X",
+      "prize": 250,
+      "winners": 1,
+      "prizePerWinner": 250,
+      "totalPayout": 250,
+      "checkPayment": false
+    },
+    {
+      "number": 8,
+      "color": "Special Event",
+      "name": "Pull-Tab Event Game - Pot of Gold, etc.",
+      "prize": 0,
+      "winners": 1,
+      "prizePerWinner": 0,
+      "totalPayout": 0,
+      "checkPayment": false
+    },
+    {
+      "number": 9,
+      "color": "Gray",
+      "name": "5 Around Any Corner",
+      "prize": 150,
+      "winners": 2,
+      "prizePerWinner": 75,
+      "totalPayout": 150,
+      "checkPayment": false
+    },
+    {
+      "number": 10,
+      "color": "Olive",
+      "name": "Double Postage Stamp",
+      "prize": 150,
+      "winners": 1,
+      "prizePerWinner": 150,
+      "totalPayout": 150,
+      "checkPayment": false
+    },
+    {
+      "number": 11,
+      "color": "Brown",
+      "name": "Outside Line",
+      "prize": 150,
+      "winners": 1,
+      "prizePerWinner": 150,
+      "totalPayout": 150,
+      "checkPayment": false
+    },
+    {
+      "number": 12,
+      "color": "Progressive",
+      "name": "Progressive Diamond",
+      "prize": 0,
+      "winners": 1,
+      "prizePerWinner": 200,
+      "totalPayout": 200,
+      "checkPayment": false
+    },
+    {
+      "number": 13,
+      "color": "Red",
+      "name": "Checkmark",
+      "prize": 150,
+      "winners": 1,
+      "prizePerWinner": 150,
+      "totalPayout": 150,
+      "checkPayment": false
+    },
+    {
+      "number": 14,
+      "color": "Purple",
+      "name": "Regular Bingo No Corners",
+      "prize": 150,
+      "winners": 1,
+      "prizePerWinner": 150,
+      "totalPayout": 150,
+      "checkPayment": false
+    },
+    {
+      "number": 15,
+      "color": "Black",
+      "name": "3 on Top Row and 3 on Bottom Row",
+      "prize": 150,
+      "winners": 1,
+      "prizePerWinner": 150,
+      "totalPayout": 150,
+      "checkPayment": false
+    },
+    {
+      "number": 16,
+      "color": "Aqua",
+      "name": "Coverall",
+      "prize": 500,
+      "winners": 1,
+      "prizePerWinner": 500,
+      "totalPayout": 500,
+      "checkPayment": false
+    }
+  ],
+  "pullTabs": [
+    {
+      "gameName": "Fire Fighters 140_None",
+      "serialNumber": "C718598",
+      "price": 1,
+      "tickets": 225,
+      "sales": 225,
+      "idealProfit": 85,
+      "prizesPaid": 140,
+      "netProfit": 85,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Rockin' Robin 140_7348J",
+      "serialNumber": "H633639",
+      "price": 1,
+      "tickets": 230,
+      "sales": 230,
+      "idealProfit": 90,
+      "prizesPaid": 140,
+      "netProfit": 90,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Slots 280_6917M",
+      "serialNumber": "89T2670",
+      "price": 1,
+      "tickets": 400,
+      "sales": 400,
+      "idealProfit": 120,
+      "prizesPaid": 280,
+      "netProfit": 120,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Triple Twist 175_6081J",
+      "serialNumber": "90C1455",
+      "price": 1,
+      "tickets": 250,
+      "sales": 250,
+      "idealProfit": 75,
+      "prizesPaid": 175,
+      "netProfit": 75,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Race Horse Downs 250_354GA",
+      "serialNumber": "2V55969",
+      "price": 1,
+      "tickets": 1000,
+      "sales": 1000,
+      "idealProfit": 330,
+      "prizesPaid": 670,
+      "netProfit": 330,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Lollipops 400_6749U",
+      "serialNumber": "96K8809",
+      "price": 1,
+      "tickets": 600,
+      "sales": 600,
+      "idealProfit": 200,
+      "prizesPaid": 400,
+      "netProfit": 200,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Race Horse Downs 250_354GA",
+      "serialNumber": "2V57008",
+      "price": 1,
+      "tickets": 1000,
+      "sales": 1000,
+      "idealProfit": 330,
+      "prizesPaid": 670,
+      "netProfit": 330,
+      "isSpecialEvent": false,
+      "checkPayment": false
+    },
+    {
+      "gameName": "Life Happens 599_7726H",
+      "serialNumber": "H037559",
+      "price": 1,
+      "tickets": 960,
+      "sales": 960,
+      "idealProfit": 361,
+      "prizesPaid": 599,
+      "netProfit": 361,
+      "isSpecialEvent": true,
+      "checkPayment": false
+    }
+  ],
+  "moneyCount": {
+    "bingo": {
+      "1": 129,
+      "2": 0,
+      "5": 70,
+      "10": 20,
+      "20": 1660,
+      "50": 0,
+      "100": 0,
+      "coins": 0,
+      "checks": 0
+    },
+    "pullTab": {
+      "1": 91,
+      "2": 0,
+      "5": 395,
+      "10": 570,
+      "20": 520,
+      "50": 0,
+      "100": 0,
+      "coins": 1
+    }
+  },
+  "financial": {
+    "totalBingoSales": 870,
+    "totalPosSales": 3559,
+    "pullTabSales": 4665,
+    "specialEventSales": 0,
+    "grossSales": 9094,
+    "bingoPrizesPaid": 0,
+    "pullTabPrizesPaid": 0,
+    "specialEventPrizesPaid": 0,
+    "totalPrizesPaid": 0,
+    "prizesPaidByCheck": 0,
+    "idealProfit": 8094,
+    "overShort": -5638,
+    "totalCashDeposit": 3456,
+    "actualProfit": 2456
+  },
+  "pullTabSales": 4665,
+  "pullTabPrizes": 3074,
+  "pullTabNet": 1591,
+  "sessionType": "6-2",
+  "progressive": {
+    "jackpot": 1160,
+    "ballsNeeded": 21,
+    "consolation": 200,
+    "actualBalls": 30,
+    "actualPrize": 200,
+    "checkPayment": false
+  },
+  "totalBingoPrizes": 2710,
+  "id": "OCC_1759806736639",
+  "created": "2025-10-07T03:12:16.639Z",
+  "modified": "2025-10-07T10:54:35.736Z"
+}
