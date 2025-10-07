@@ -1163,6 +1163,7 @@ function addPullTabRow() {
         <td class="sales-cell">$0.00</td>
         <td class="ideal-cell">$0.00</td>
         <td class="prizes-cell">$0.00</td>
+        <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
         <td><input type="checkbox" class="se-checkbox" title="Special Event"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
@@ -1229,13 +1230,15 @@ function handlePullTabSelection(selectElement) {
         const salesCell = row.querySelector('.sales-cell');
         const idealCell = row.querySelector('.ideal-cell');
         const prizesCell = row.querySelector('.prizes-cell');
+        const netCell = row.querySelector('.net-cell');
 
         console.log('Cells found:', {
             ticketPriceCell: !!ticketPriceCell,
             ticketsCell: !!ticketsCell,
             salesCell: !!salesCell,
             idealCell: !!idealCell,
-            prizesCell: !!prizesCell
+            prizesCell: !!prizesCell,
+            netCell: !!netCell
         });
 
         // Populate ticket price
@@ -1268,6 +1271,12 @@ function handlePullTabSelection(selectElement) {
         if (prizesCell) {
             prizesCell.textContent = `$${expectedPrizes.toFixed(2)}`;
             console.log('Set prizes:', expectedPrizes);
+        }
+
+        // Calculate and populate net (ideal profit, which is sales - prizes)
+        if (netCell) {
+            netCell.textContent = `$${game.idealProfit.toFixed(2)}`;
+            console.log('Set net:', game.idealProfit);
         }
 
         // Trigger totals calculation
@@ -1382,45 +1391,7 @@ function deleteSpecialEvent(button) {
     }
 }
 
-function calculatePullTabTotals() {
-    let totalSold = 0;
-    let totalPrizes = 0;
-    let totalProfit = 0;
-    let idealProfit = 0;
-    
-    // Regular games
-    document.querySelectorAll('.pulltab-row').forEach(row => {
-        totalSold += parseFloat(row.querySelector('.tickets-sold-cell')?.textContent?.replace('$', '')) || 0;
-        totalPrizes += parseFloat(row.querySelector('.prizes-cell')?.textContent?.replace('$', '')) || 0;
-        totalProfit += parseFloat(row.querySelector('.profit-cell')?.textContent?.replace('$', '')) || 0;
-        idealProfit += parseFloat(row.querySelector('.ideal-profit-cell')?.textContent?.replace('$', '')) || 0;
-    });
-    
-    // Special events
-    document.querySelectorAll('.special-event-row').forEach(row => {
-        const sales = parseFloat(row.querySelector('.event-sales-cell')?.textContent?.replace('$', '')) || 0;
-        const prizes = parseFloat(row.querySelector('.event-prizes-input')?.value) || 0;
-        
-        totalSold += sales;
-        totalPrizes += prizes;
-        totalProfit += (sales - prizes);
-    });
-    
-    // Update totals display
-    const elements = {
-        'pulltab-total-sold': totalSold,
-        'pulltab-total-prizes': totalPrizes,
-        'pulltab-total-profit': totalProfit,
-        'pulltab-ideal-profit': idealProfit
-    };
-    
-    for (const [id, value] of Object.entries(elements)) {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = `$${value.toFixed(2)}`;
-        }
-    }
-}
+// calculatePullTabTotals moved to end of file to avoid duplicates
 
 // ============================================
 // FINAL CALCULATIONS
@@ -1898,49 +1869,74 @@ function calculateCustomGameTotals(input) {
 
 // Calculate overall pull-tab totals
 function calculatePullTabTotals() {
-    const rows = document.querySelectorAll('#pulltab-body tr');
-    let totalSales = 0;
-    let totalPrizes = 0;
-    let totalNet = 0;
+    console.log('=== calculatePullTabTotals CALLED ===');
 
-    rows.forEach(row => {
+    const rows = document.querySelectorAll('#pulltab-body tr');
+    console.log('Found rows:', rows.length);
+
+    // Separate regular games from special events
+    let regSales = 0, regIdeal = 0, regPrizes = 0, regNet = 0;
+    let seSales = 0, seIdeal = 0, sePrizes = 0, seNet = 0;
+
+    rows.forEach((row, index) => {
+        const isSpecialEvent = row.querySelector('.se-checkbox')?.checked || false;
+
         const salesCell = row.querySelector('.sales-cell');
-        const prizesInput = row.querySelector('.prizes-input');
+        const idealCell = row.querySelector('.ideal-cell');
         const prizesCell = row.querySelector('.prizes-cell');
         const netCell = row.querySelector('.net-cell');
 
-        if (salesCell) {
-            const sales = parseFloat(salesCell.textContent.replace('$', '')) || 0;
-            totalSales += sales;
-        }
+        const sales = parseFloat(salesCell?.textContent?.replace('$', '')) || 0;
+        const ideal = parseFloat(idealCell?.textContent?.replace('$', '')) || 0;
+        const prizes = parseFloat(prizesCell?.textContent?.replace('$', '')) || 0;
+        const net = parseFloat(netCell?.textContent?.replace('$', '')) || 0;
 
-        if (prizesInput) {
-            const prizes = parseFloat(prizesInput.value) || 0;
-            totalPrizes += prizes;
-        } else if (prizesCell) {
-            const prizes = parseFloat(prizesCell.textContent.replace('$', '')) || 0;
-            totalPrizes += prizes;
-        }
+        console.log(`Row ${index}: SE=${isSpecialEvent}, Sales=${sales}, Ideal=${ideal}, Prizes=${prizes}, Net=${net}`);
 
-        if (netCell) {
-            const net = parseFloat(netCell.textContent.replace('$', '')) || 0;
-            totalNet += net;
+        if (isSpecialEvent) {
+            seSales += sales;
+            seIdeal += ideal;
+            sePrizes += prizes;
+            seNet += net;
+        } else {
+            regSales += sales;
+            regIdeal += ideal;
+            regPrizes += prizes;
+            regNet += net;
         }
     });
 
-    // Update footer totals if they exist
-    const salesFooter = document.querySelector('#pulltab-total-sales');
-    const prizesFooter = document.querySelector('#pulltab-total-prizes');
-    const netFooter = document.querySelector('#pulltab-total-net');
+    console.log('Regular totals:', { regSales, regIdeal, regPrizes, regNet });
+    console.log('SE totals:', { seSales, seIdeal, sePrizes, seNet });
 
-    if (salesFooter) salesFooter.textContent = `$${totalSales.toFixed(2)}`;
-    if (prizesFooter) prizesFooter.textContent = `$${totalPrizes.toFixed(2)}`;
-    if (netFooter) netFooter.textContent = `$${totalNet.toFixed(2)}`;
+    // Update footer totals - Regular Games
+    const ptRegSales = document.getElementById('pt-reg-sales');
+    const ptRegIdeal = document.getElementById('pt-reg-ideal');
+    const ptRegPrizes = document.getElementById('pt-reg-prizes');
+    const ptRegNet = document.getElementById('pt-reg-net');
+
+    if (ptRegSales) ptRegSales.textContent = `$${regSales.toFixed(2)}`;
+    if (ptRegIdeal) ptRegIdeal.textContent = `$${regIdeal.toFixed(2)}`;
+    if (ptRegPrizes) ptRegPrizes.textContent = `$${regPrizes.toFixed(2)}`;
+    if (ptRegNet) ptRegNet.textContent = `$${regNet.toFixed(2)}`;
+
+    // Update footer totals - Special Events
+    const ptSeSales = document.getElementById('pt-se-sales');
+    const ptSeIdeal = document.getElementById('pt-se-ideal');
+    const ptSePrizes = document.getElementById('pt-se-prizes');
+    const ptSeNet = document.getElementById('pt-se-net');
+
+    if (ptSeSales) ptSeSales.textContent = `$${seSales.toFixed(2)}`;
+    if (ptSeIdeal) ptSeIdeal.textContent = `$${seIdeal.toFixed(2)}`;
+    if (ptSePrizes) ptSePrizes.textContent = `$${sePrizes.toFixed(2)}`;
+    if (ptSeNet) ptSeNet.textContent = `$${seNet.toFixed(2)}`;
+
+    console.log('Footer updated successfully');
 
     // Save to app data
     if (window.app && window.app.data) {
-        window.app.data.pullTabSales = totalSales;
-        window.app.data.pullTabPrizes = totalPrizes;
-        window.app.data.pullTabNet = totalNet;
+        window.app.data.pullTabSales = regSales + seSales;
+        window.app.data.pullTabPrizes = regPrizes + sePrizes;
+        window.app.data.pullTabNet = regNet + seNet;
     }
 }

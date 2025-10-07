@@ -95,65 +95,7 @@ function calculateTotalBingoPrizes() {
 
 // addPullTabRow and addSpecialEventRow moved to wizard.js to avoid conflicts
 
-function calculatePullTabRow(row) {
-    const price = parseFloat(row.querySelector('.pt-price')?.value) || 0;
-    const tickets = parseInt(row.querySelector('.pt-tickets')?.value) || 0;
-    const prizes = parseFloat(row.querySelector('.pt-prizes')?.value) || 0;
-    
-    const sales = price * tickets;
-    const net = sales - prizes;
-    
-    row.querySelector('.pt-sales').textContent = `$${sales.toFixed(2)}`;
-    row.querySelector('.pt-net').textContent = `$${net.toFixed(2)}`;
-    
-    calculatePullTabTotals();
-}
-
-function calculatePullTabTotals() {
-    let regSales = 0, regIdeal = 0, regPrizes = 0, regNet = 0;
-    let seSales = 0, seIdeal = 0, sePrizes = 0, seNet = 0;
-    
-    document.querySelectorAll('#pulltab-body tr').forEach(row => {
-        const isSpecial = row.querySelector('.pt-special')?.checked;
-        const sales = parseFloat(row.querySelector('.pt-sales')?.textContent.replace('$', '')) || 0;
-        const ideal = parseFloat(row.querySelector('.pt-ideal')?.value) || 0;
-        const prizes = parseFloat(row.querySelector('.pt-prizes')?.value) || 0;
-        const net = parseFloat(row.querySelector('.pt-net')?.textContent.replace('$', '')) || 0;
-        
-        if (isSpecial) {
-            seSales += sales;
-            seIdeal += ideal;
-            sePrizes += prizes;
-            seNet += net;
-        } else {
-            regSales += sales;
-            regIdeal += ideal;
-            regPrizes += prizes;
-            regNet += net;
-        }
-    });
-    
-    // Update totals
-    document.getElementById('pt-reg-sales').textContent = `$${regSales.toFixed(2)}`;
-    document.getElementById('pt-reg-ideal').textContent = `$${regIdeal.toFixed(2)}`;
-    document.getElementById('pt-reg-prizes').textContent = `$${regPrizes.toFixed(2)}`;
-    document.getElementById('pt-reg-net').textContent = `$${regNet.toFixed(2)}`;
-    
-    document.getElementById('pt-se-sales').textContent = `$${seSales.toFixed(2)}`;
-    document.getElementById('pt-se-ideal').textContent = `$${seIdeal.toFixed(2)}`;
-    document.getElementById('pt-se-prizes').textContent = `$${sePrizes.toFixed(2)}`;
-    document.getElementById('pt-se-net').textContent = `$${seNet.toFixed(2)}`;
-    
-    // Store in app data
-    if (window.app) {
-        window.app.data.pullTabTotals = {
-            regularSales: regSales,
-            regularPrizes: regPrizes,
-            specialSales: seSales,
-            specialPrizes: sePrizes
-        };
-    }
-}
+// calculatePullTabRow and calculatePullTabTotals moved to wizard.js to avoid conflicts
 
 function submitOccasion() {
     if (!validateCurrentStep()) return;
