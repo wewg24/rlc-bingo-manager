@@ -1165,7 +1165,7 @@ function addPullTabRow() {
         <td class="prizes-cell">$0.00</td>
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
-        <td><input type="checkbox" class="se-checkbox" title="Special Event"></td>
+        <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
     `;
 
@@ -1354,8 +1354,9 @@ function addSpecialEventRow() {
         <td class="sales-cell">$0.00</td>
         <td class="ideal-cell">N/A</td>
         <td><input type="number" class="prizes-input" min="0" step="0.01" value="0" onchange="calculateCustomGameTotals(this)" style="width: 60px;"></td>
+        <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
-        <td><input type="checkbox" class="se-checkbox" title="Special Event"></td>
+        <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
         <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
     `;
 
