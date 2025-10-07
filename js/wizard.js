@@ -2,6 +2,46 @@
 // Version 12.5.0 - Tabbed interface with auto-save
 
 // ============================================
+// LOADING SPINNER FUNCTIONS
+// ============================================
+
+function showLoading(message = 'Loading...') {
+    const overlay = document.getElementById('loading-overlay');
+    const messageEl = document.getElementById('loading-message');
+
+    if (overlay) {
+        if (messageEl) {
+            messageEl.textContent = message;
+        }
+        overlay.style.display = 'flex';
+        // Disable all inputs to prevent interaction
+        document.querySelectorAll('input, select, textarea, button').forEach(el => {
+            el.dataset.wasDisabled = el.disabled;
+            el.disabled = true;
+        });
+    }
+}
+
+function hideLoading() {
+    const overlay = document.getElementById('loading-overlay');
+
+    if (overlay) {
+        overlay.style.display = 'none';
+        // Re-enable inputs
+        document.querySelectorAll('input, select, textarea, button').forEach(el => {
+            if (el.dataset.wasDisabled === 'false' || !el.dataset.wasDisabled) {
+                el.disabled = false;
+            }
+            delete el.dataset.wasDisabled;
+        });
+    }
+}
+
+// Make globally accessible
+window.showLoading = showLoading;
+window.hideLoading = hideLoading;
+
+// ============================================
 // TAB NAVIGATION FUNCTIONS
 // ============================================
 
@@ -108,6 +148,9 @@ async function checkExistingOccasion() {
 
     console.log('📅 Checking for existing occasion on:', selectedDate);
 
+    // Show loading spinner
+    showLoading('Checking for existing occasion...');
+
     try {
         // First, check localStorage for draft
         const draftKey = `rlc_draft_${selectedDate}`;
@@ -117,9 +160,15 @@ async function checkExistingOccasion() {
             console.log('Found local draft for', selectedDate);
             const draftData = JSON.parse(localDraft);
 
+            // Show loading message for data loading
+            showLoading('Loading draft data...');
+
             // Auto-load draft without confirmation
             loadOccasionData(draftData);
             console.log('✅ Draft loaded automatically');
+
+            // Hide spinner after short delay to show data is loaded
+            setTimeout(() => hideLoading(), 500);
             return;
         }
 
@@ -138,6 +187,9 @@ async function checkExistingOccasion() {
                 // Store data temporarily
                 window.tempOccasionData = response.data;
 
+                // Hide loading spinner before showing modal
+                hideLoading();
+
                 // Show modal based on status
                 const modal = document.getElementById('existing-occasion-modal');
                 const message = document.getElementById('modal-message');
@@ -151,9 +203,18 @@ async function checkExistingOccasion() {
                     // Will load as read-only
                     window.isReadOnlyMode = true;
                 } else if (response.status === 'draft') {
+                    // Show loading message for data loading
+                    showLoading('Loading draft data...');
+
                     // Auto-load server draft
                     loadOccasionData(response.data);
+
+                    // Hide spinner after short delay
+                    setTimeout(() => hideLoading(), 500);
                 }
+            } else {
+                // No occasion found, hide spinner
+                hideLoading();
             }
 
             // Cleanup
@@ -164,13 +225,20 @@ async function checkExistingOccasion() {
         script.src = `${apiUrl}&callback=${callbackName}`;
         script.onerror = function() {
             console.log('Backend check not available, using localStorage only');
+            hideLoading();
             delete window[callbackName];
         };
         document.head.appendChild(script);
-        setTimeout(() => script.remove(), 5000);
+
+        // Timeout fallback to hide spinner
+        setTimeout(() => {
+            script.remove();
+            hideLoading();
+        }, 5000);
 
     } catch (error) {
         console.error('Error checking existing occasion:', error);
+        hideLoading();
     }
 }
 
@@ -186,8 +254,10 @@ function loadOccasionData(data) {
 
     if (!data) return;
 
-    // Store in app.data
-    window.app.data = data;
+    // Store in app.data FIRST - this is critical for loadStepData() to work
+    if (window.app) {
+        window.app.data = {...data};
+    }
 
     // Load Occasion Info (Step 1)
     if (data.occasion) {
@@ -208,8 +278,24 @@ function loadOccasionData(data) {
         if (data.progressive.checkPayment) document.getElementById('prog-check').checked = data.progressive.checkPayment;
     }
 
-    // Load other tabs' data
-    loadStepData();
+    // Load ALL tabs' data by switching to each tab
+    // Save current tab
+    const currentTab = window.app?.currentStep || 1;
+
+    // Load data for each tab by temporarily switching to it
+    const tabs = [1, 2, 3, 4, 5, 6]; // All tab numbers
+    tabs.forEach(tabNum => {
+        if (window.app) {
+            window.app.currentStep = tabNum;
+        }
+        loadStepData();
+    });
+
+    // Restore original tab
+    if (window.app) {
+        window.app.currentStep = currentTab;
+    }
+    switchToTab(currentTab);
 
     console.log('✅ Occasion data loaded successfully');
 }
