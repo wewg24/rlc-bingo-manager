@@ -131,9 +131,7 @@
                 if (prog.jackpot) document.getElementById('prog-jackpot').value = prog.jackpot;
                 if (prog.ballsNeeded) document.getElementById('prog-balls').value = prog.ballsNeeded;
                 if (prog.consolation) document.getElementById('prog-consolation').value = prog.consolation;
-                if (prog.actualBalls) document.getElementById('prog-actual-balls').value = prog.actualBalls;
-                if (prog.prizeAwarded) document.getElementById('prog-prize').value = prog.prizeAwarded;
-                if (prog.paidByCheck) document.getElementById('prog-check').checked = prog.paidByCheck;
+                // actualBalls, prizeAwarded, and paidByCheck are now handled in the Game Results tab
             }
         }
 
@@ -314,20 +312,7 @@
         }
 
         // Progressive auto-calculation
-        const progActual = document.getElementById('prog-actual-balls');
-        if (progActual) {
-            progActual.addEventListener('input', function() {
-                const jackpot = parseFloat(document.getElementById('prog-jackpot')?.value) || 0;
-                const ballsNeeded = parseInt(document.getElementById('prog-balls')?.value) || 0;
-                const actualBalls = parseInt(this.value) || 0;
-                const consolation = parseFloat(document.getElementById('prog-consolation')?.value) || 200;
-
-                if (actualBalls > 0 && ballsNeeded > 0) {
-                    const prize = actualBalls <= ballsNeeded ? jackpot : consolation;
-                    document.getElementById('prog-prize').value = prize;
-                }
-            });
-        }
+        // Progressive game prize calculation is now handled in the Game Results tab (wizard.js: updateProgressivePrize function)
 
         // Auto-scroll focused inputs into view
         document.querySelectorAll('input, select, textarea').forEach(element => {
@@ -472,21 +457,10 @@
                                 <label for="prog-consolation">Consolation Prize</label>
                                 <input type="number" id="prog-consolation" value="200">
                             </div>
-                            <div class="form-group">
-                                <label for="prog-actual-balls">Actual Balls Called</label>
-                                <input type="number" id="prog-actual-balls" min="1" max="75">
-                            </div>
-                            <div class="form-group">
-                                <label for="prog-prize">Prize Awarded</label>
-                                <input type="number" id="prog-prize" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" id="prog-check">
-                                    Paid by Check
-                                </label>
-                            </div>
                         </div>
+                        <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">
+                            <em>Note: Actual Balls Called and Prize Awarded are now entered directly in the Progressive Diamond row on the Game Results tab.</em>
+                        </p>
                     </div>
                 </div>
 
@@ -617,12 +591,12 @@
                                 <th>Color</th>
                                 <th>Game</th>
                                 <th>Prize</th>
+                                <th>Actual Balls</th>
                                 <th>Winners</th>
                                 <th>Per Winner</th>
                                 <th>Total</th>
                                 <th>Paid by Check</th>
                                 <th>Not Played</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="games-body">
@@ -630,9 +604,9 @@
                         </tbody>
                         <tfoot>
                             <tr class="total-row">
-                                <td colspan="6"><strong>Total Bingo Prizes</strong></td>
+                                <td colspan="7"><strong>Total Bingo Prizes</strong></td>
                                 <td id="total-bingo-prizes"><strong>$0.00</strong></td>
-                                <td colspan="3"></td>
+                                <td colspan="2"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -656,17 +630,17 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Game</th>
-                                <th>Serial #</th>
+                                <th style="width: 25%;">Game</th>
+                                <th style="width: 12%;">Serial #</th>
                                 <th>$/Ticket</th>
                                 <th>Tickets</th>
                                 <th>Sales</th>
                                 <th>Ideal</th>
                                 <th>Prizes</th>
                                 <th>Net</th>
-                                <th>Paid by Check</th>
-                                <th>SE</th>
-                                <th>Actions</th>
+                                <th style="width: 5%;" title="Paid by Check">✓</th>
+                                <th style="width: 4%;">SE</th>
+                                <th style="width: 6%;">Remove</th>
                             </tr>
                         </thead>
                         <tbody id="pulltab-body">
@@ -1009,6 +983,40 @@
             border-radius: 50%;
             animation: spinnerRotate 0.8s linear infinite;
             box-sizing: border-box;
+        }
+
+        /* Door Sales column alignment */
+        #electronic-sales-body th:nth-child(1),
+        #misc-sales-body th:nth-child(1),
+        #paper-sales-body-new th:nth-child(1),
+        #electronic-sales-body td:nth-child(1),
+        #misc-sales-body td:nth-child(1),
+        #paper-sales-body-new td:nth-child(1) {
+            width: 40%;
+        }
+        #electronic-sales-body th:nth-child(2),
+        #misc-sales-body th:nth-child(2),
+        #paper-sales-body-new th:nth-child(2),
+        #electronic-sales-body td:nth-child(2),
+        #misc-sales-body td:nth-child(2),
+        #paper-sales-body-new td:nth-child(2) {
+            width: 20%;
+        }
+        #electronic-sales-body th:nth-child(3),
+        #misc-sales-body th:nth-child(3),
+        #paper-sales-body-new th:nth-child(3),
+        #electronic-sales-body td:nth-child(3),
+        #misc-sales-body td:nth-child(3),
+        #paper-sales-body-new td:nth-child(3) {
+            width: 20%;
+        }
+        #electronic-sales-body th:nth-child(4),
+        #misc-sales-body th:nth-child(4),
+        #paper-sales-body-new th:nth-child(4),
+        #electronic-sales-body td:nth-child(4),
+        #misc-sales-body td:nth-child(4),
+        #paper-sales-body-new td:nth-child(4) {
+            width: 20%;
         }
     </style>
     <div id="loading-overlay">

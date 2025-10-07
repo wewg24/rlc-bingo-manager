@@ -308,9 +308,7 @@ function loadOccasionData(data) {
         if (data.progressive.jackpot) document.getElementById('prog-jackpot').value = data.progressive.jackpot;
         if (data.progressive.ballsNeeded) document.getElementById('prog-balls').value = data.progressive.ballsNeeded;
         if (data.progressive.consolation) document.getElementById('prog-consolation').value = data.progressive.consolation;
-        if (data.progressive.actualBalls) document.getElementById('prog-actual-balls').value = data.progressive.actualBalls;
-        if (data.progressive.actualPrize) document.getElementById('prog-prize').value = data.progressive.actualPrize;
-        if (data.progressive.checkPayment) document.getElementById('prog-check').checked = data.progressive.checkPayment;
+        // actualBalls, actualPrize, and checkPayment are now handled in the Game Results tab
     }
 
     // Load ALL tabs' data by switching to each tab
@@ -648,10 +646,8 @@ function saveOccasionInfo() {
     window.app.data.progressive = {
         jackpot: parseFloat(document.getElementById('prog-jackpot')?.value) || 0,
         ballsNeeded: parseInt(document.getElementById('prog-balls')?.value) || 0,
-        consolation: parseFloat(document.getElementById('prog-consolation')?.value) || 200,
-        actualBalls: parseInt(document.getElementById('prog-actual-balls')?.value) || 0,
-        actualPrize: parseFloat(document.getElementById('prog-prize')?.value) || 0, // Backend expects 'actualPrize'
-        checkPayment: document.getElementById('prog-check')?.checked || false // Backend expects 'checkPayment'
+        consolation: parseFloat(document.getElementById('prog-consolation')?.value) || 200
+        // actualBalls, actualPrize, and checkPayment are now saved per-game in saveGameResults()
     };
 }
 
@@ -765,7 +761,9 @@ function saveGameResults() {
 
         const winners = parseInt(winnerInput?.value) || 0;
         const prizePerWinner = parseFloat(prizePerInput?.value) || 0;
-        const checkPaid = row.querySelector('.check-payment')?.checked || false;
+        const checkPaid = row.querySelector('.paid-by-check')?.checked || false;
+        const actualBallsInput = row.querySelector('.prog-actual-balls');
+        const actualBalls = actualBallsInput ? parseInt(actualBallsInput.value) || 0 : null;
 
         // Get game details from the row
         const colorCell = row.cells[1];
@@ -782,6 +780,11 @@ function saveGameResults() {
             totalPayout: winners * prizePerWinner,
             checkPayment: checkPaid
         };
+
+        // Add actualBalls field only for progressive games
+        if (actualBalls !== null) {
+            gameData.actualBalls = actualBalls;
+        }
 
         console.log(`Game ${gameNum}:`, gameData);
         games.push(gameData);
@@ -953,10 +956,8 @@ function loadOccasionInfo() {
         const prog = data.progressive;
         if (prog.jackpot) document.getElementById('prog-jackpot').value = prog.jackpot;
         if (prog.ballsNeeded) document.getElementById('prog-balls').value = prog.ballsNeeded;
-        if (prog.actualBalls) document.getElementById('prog-actual-balls').value = prog.actualBalls;
         if (prog.consolation) document.getElementById('prog-consolation').value = prog.consolation;
-        if (prog.prizeAwarded) document.getElementById('prog-prize').value = prog.prizeAwarded;
-        if (prog.paidByCheck) document.getElementById('prog-check').checked = prog.paidByCheck;
+        // actualBalls, prizeAwarded, and paidByCheck are now handled in the Game Results tab
     }
 }
 
@@ -1090,7 +1091,7 @@ async function loadGameResults() {
                 populateSessionGamesNew(sessionData);
             } else {
                 console.warn('No games found for session type:', sessionType, sessionData);
-                gamesBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px; color: #666;">No games configured for this session type</td></tr>';
+                gamesBody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #666;">No games configured for this session type</td></tr>';
             }
         } else {
             throw new Error(result.error || 'Failed to load session games');
@@ -1109,7 +1110,7 @@ async function loadGameResults() {
         }
 
         gamesBody.innerHTML = `
-            <tr><td colspan="8" style="text-align: center; padding: 20px; color: #e74c3c;">
+            <tr><td colspan="10" style="text-align: center; padding: 20px; color: #e74c3c;">
                 Error loading session games: ${error.message}
                 <br><button onclick="loadGameResults()" class="btn btn-small" style="margin-top: 10px;">Retry</button>
             </td></tr>
@@ -1138,13 +1139,18 @@ function populateSessionGamesNew(sessionData) {
         const gameName = game.pattern || game.name || 'Unknown Game';
         const gameColor = game.color || 'N/A';
 
-        // Check if this is the Progressive Diamond game and use prize from Occasion Info
+        // Check if this is the Progressive Diamond game
+        const isProgressiveGame = game.isProgressive && game.pattern && game.pattern.includes('Progressive Diamond');
+
+        // Get progressive game data from Occasion Info
+        const progJackpot = window.app?.data?.occasion?.progressiveJackpot || 0;
+        const progBalls = window.app?.data?.occasion?.progressiveBalls || 0;
+        const progConsolation = window.app?.data?.occasion?.progressiveConsolation || 200;
+
         let payout = typeof game.payout === 'number' ? game.payout : (game.payout === 'Varies' ? 0 : parseInt(game.payout) || 0);
-        if (game.isProgressive && game.pattern && game.pattern.includes('Progressive Diamond')) {
-            // Use progressive prize from Occasion Info if available
-            if (window.app?.data?.occasion?.progressivePrize) {
-                payout = parseInt(window.app.data.occasion.progressivePrize) || payout;
-            }
+        if (isProgressiveGame) {
+            // Use progressive jackpot from Occasion Info if available
+            payout = progJackpot || payout;
         }
 
         // Get saved data for this game if it exists
@@ -1153,6 +1159,7 @@ function populateSessionGamesNew(sessionData) {
         const prizePerWinner = savedGame?.prizePerWinner || payout;
         const totalPayout = savedGame?.totalPayout || payout;
         const checkPayment = savedGame?.checkPayment || false;
+        const actualBalls = savedGame?.actualBalls || '';
 
         // Color-coded styling for game colors
         let colorStyle = '';
@@ -1160,23 +1167,39 @@ function populateSessionGamesNew(sessionData) {
             colorStyle = `background-color: ${gameColor.toLowerCase()}; color: white; font-weight: bold;`;
         }
 
+        // Generate Actual Balls column and configure winner/prize inputs based on whether it's the progressive game
+        let actualBallsCell;
+        let winnersOnChange;
+        let prizePerOnChange;
+
+        if (isProgressiveGame) {
+            actualBallsCell = `<td style="text-align: center;"><input type="number" class="prog-actual-balls" data-game-index="${index}" min="1" max="75" value="${actualBalls}" onchange="updateProgressivePrize(${index})" style="width: 60px;" title="Actual Balls Called"></td>`;
+            winnersOnChange = `updateProgressivePrize(${index})`;
+            prizePerOnChange = `updateGamePrizesManual(${index})`; // Allow manual override if needed
+        } else {
+            actualBallsCell = `<td style="text-align: center; color: #999;">—</td>`;
+            winnersOnChange = `updateGamePrizesNew(${index})`;
+            prizePerOnChange = `updateGamePrizesManual(${index})`;
+        }
+
         gamesHtml += `
             <tr data-game-index="${index}">
                 <td><strong>${gameNumber}</strong></td>
                 <td style="${colorStyle} text-align: center; padding: 4px 8px; border-radius: 4px;">${gameColor}</td>
-                <td>${gameName}</td>
+                <td style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>${gameName}</span>
+                    <button onclick="editGameRow(${index})" class="btn btn-small" style="padding: 2px 8px; margin-left: 8px;">Edit</button>
+                </td>
                 <td>$${game.payout}</td>
-                <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="${winners}" onchange="updateGamePrizesNew(${index})" style="width: 60px;"></td>
-                <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="1" value="${prizePerWinner.toFixed(2)}" onchange="updateGamePrizesManual(${index})" style="width: 70px;"></td>
+                ${actualBallsCell}
+                <td><input type="number" class="winner-count" data-game-index="${index}" min="0" value="${winners}" onchange="${winnersOnChange}" style="width: 60px;"></td>
+                <td><input type="number" class="prize-per-input" data-game-index="${index}" min="0" step="1" value="${prizePerWinner.toFixed(2)}" onchange="${prizePerOnChange}" style="width: 70px;"></td>
                 <td class="total-prize">$${totalPayout.toFixed(2)}</td>
                 <td style="text-align: center;">
                     <input type="checkbox" class="paid-by-check" data-game-index="${index}" ${checkPayment ? 'checked' : ''} title="Paid by Check">
                 </td>
                 <td style="text-align: center;">
                     <input type="checkbox" class="not-played-check" data-game-index="${index}" onchange="toggleGameNotPlayed(${index})" title="Mark as Not Played">
-                </td>
-                <td style="text-align: center;">
-                    <button onclick="editGameRow(${index})" class="btn btn-small" style="padding: 2px 8px;">Edit</button>
                 </td>
             </tr>
         `;
@@ -1294,7 +1317,7 @@ function populateSessionGames(sessionData) {
         gamesBody.innerHTML = gamesHtml;
         console.log(`Loaded ${allGames.length} games for session`);
     } else {
-        gamesBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #666;">No games available for this session</td></tr>';
+        gamesBody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px; color: #666;">No games available for this session</td></tr>';
     }
 }
 
@@ -1303,23 +1326,60 @@ function updateGamePrizesNew(gameIndex, basePayout) {
     if (!row) return;
 
     const winnersInput = row.querySelector('.winner-count');
-    const prizePerCell = row.querySelector('.prize-per');
+    const prizePerInput = row.querySelector('.prize-per-input');
     const totalPrizeCell = row.querySelector('.total-prize');
 
-    if (winnersInput && prizePerCell && totalPrizeCell) {
+    if (winnersInput && prizePerInput && totalPrizeCell) {
         const winners = parseInt(winnersInput.value) || 1;
-        const totalPrize = basePayout; // Total prize pool stays the same
-        const prizePerWinner = winners > 0 ? totalPrize / winners : 0;
+        const prizePerWinner = parseFloat(prizePerInput.value) || 0;
+        const totalPrize = winners * prizePerWinner;
 
-        // Update the per-winner amount
-        prizePerCell.textContent = `$${prizePerWinner.toFixed(2)}`;
-
-        // Total prize stays the same (total pool is fixed)
+        // Update total prize cell
         totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
 
         // Update total bingo prizes
         updateTotalBingoPrizes();
     }
+}
+
+function updateProgressivePrize(gameIndex) {
+    const row = document.querySelector(`#games-body tr:nth-child(${gameIndex + 1})`);
+    if (!row) return;
+
+    const actualBallsInput = row.querySelector('.prog-actual-balls');
+    const prizePerInput = row.querySelector('.prize-per-input');
+    const winnersInput = row.querySelector('.winner-count');
+    const totalPrizeCell = row.querySelector('.total-prize');
+
+    if (!actualBallsInput || !prizePerInput || !winnersInput || !totalPrizeCell) return;
+
+    // Get progressive game data from Occasion Info
+    const progJackpot = window.app?.data?.occasion?.progressiveJackpot || 0;
+    const progBalls = window.app?.data?.occasion?.progressiveBalls || 0;
+    const progConsolation = window.app?.data?.occasion?.progressiveConsolation || 200;
+
+    const actualBalls = parseInt(actualBallsInput.value) || 0;
+    const winners = parseInt(winnersInput.value) || 1;
+
+    // Calculate prize: if actualBalls <= ballsNeeded, prize = jackpot; else prize = consolation
+    let totalPrize;
+    if (actualBalls > 0 && progBalls > 0 && actualBalls <= progBalls) {
+        totalPrize = progJackpot;
+    } else if (actualBalls > 0) {
+        totalPrize = progConsolation;
+    } else {
+        totalPrize = 0;
+    }
+
+    // Calculate per-winner amount
+    const prizePerWinner = winners > 0 ? totalPrize / winners : 0;
+
+    // Update inputs
+    prizePerInput.value = prizePerWinner.toFixed(2);
+    totalPrizeCell.textContent = `$${totalPrize.toFixed(2)}`;
+
+    // Update total bingo prizes
+    updateTotalBingoPrizes();
 }
 
 function updateGamePrizes(gameIndex) {
@@ -1760,7 +1820,7 @@ function addPullTabRow() {
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
         <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
-        <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
+        <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">🗑️</button></td>
     `;
 
     tbody.appendChild(row);
@@ -1952,7 +2012,7 @@ function addSpecialEventRow() {
         <td class="net-cell">$0.00</td>
         <td><input type="checkbox" class="paid-by-check" title="Paid by Check"></td>
         <td><input type="checkbox" class="se-checkbox" title="Special Event" onchange="calculatePullTabTotals()"></td>
-        <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">×</button></td>
+        <td><button onclick="deleteRow(this)" class="remove-btn" title="Remove">🗑️</button></td>
     `;
 
     tbody.appendChild(row);
