@@ -1,204 +1,105 @@
 /**
  * Loading Overlay System
- * Provides spinner and progress feedback during data operations
- * Version 11.7.0
+ * Simple, reliable spinner for RLC Bingo Manager
+ * Version 12.0.0 - Rebuilt from scratch
  */
 
-class LoadingManager {
-    constructor() {
-        this.overlay = null;
-        this.currentTimeout = null;
-        this.isShowing = false;
-        this.init();
+(function() {
+    'use strict';
+
+    let overlay = null;
+    let textElement = null;
+    let subtextElement = null;
+    let hideTimeout = null;
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
     }
 
-    init() {
-        // Create loading overlay HTML structure
-        const overlay = document.createElement('div');
-        overlay.id = 'loading-overlay';
-        overlay.className = 'loading-overlay';
+    function init() {
+        overlay = document.getElementById('loading-overlay');
+        textElement = document.getElementById('loading-text');
+        subtextElement = document.getElementById('loading-subtext');
 
-        overlay.innerHTML = `
-            <div class="loading-content">
-                <div class="loading-spinner"></div>
-                <div class="loading-text" id="loading-text">Loading</div>
-                <div class="loading-subtext" id="loading-subtext">Please wait...</div>
-            </div>
-        `;
-
-        // Add to body
-        document.body.appendChild(overlay);
-        this.overlay = overlay;
-
-        // Prevent scrolling when overlay is shown
-        this.overlay.addEventListener('transitionstart', () => {
-            if (this.overlay.classList.contains('show')) {
-                document.body.style.overflow = 'hidden';
-            }
-        });
-
-        this.overlay.addEventListener('transitionend', () => {
-            if (!this.overlay.classList.contains('show')) {
-                document.body.style.overflow = '';
-            }
-        });
-    }
-
-    show(options = {}) {
-        const {
-            text = 'Loading',
-            subtext = 'Please wait...',
-            timeout = null,
-            dots = true
-        } = options;
-
-        // Clear any existing timeout first
-        if (this.currentTimeout) {
-            clearTimeout(this.currentTimeout);
-            this.currentTimeout = null;
-        }
-
-        // If already showing, just update text and return
-        if (this.isShowing) {
-            this.updateText(text, subtext);
+        if (!overlay) {
+            console.error('Loading overlay element not found!');
             return;
         }
 
-        // Update text content
-        const textEl = document.getElementById('loading-text');
-        const subtextEl = document.getElementById('loading-subtext');
+        console.log('Loading manager initialized');
+    }
 
-        if (textEl) {
-            textEl.textContent = text;
-            textEl.className = dots ? 'loading-text loading-dots' : 'loading-text';
+    function showLoading(text = 'Loading', subtext = 'Please wait...') {
+        if (!overlay) {
+            console.warn('Loading overlay not initialized');
+            return;
         }
 
-        if (subtextEl) {
-            subtextEl.textContent = subtext;
+        // Clear any pending hide timeout
+        if (hideTimeout) {
+            clearTimeout(hideTimeout);
+            hideTimeout = null;
         }
+
+        // Update text
+        if (textElement) textElement.textContent = text;
+        if (subtextElement) subtextElement.textContent = subtext;
 
         // Show overlay
-        this.overlay.classList.add('show');
-        this.isShowing = true;
-
-        // Auto-hide after timeout if specified
-        if (timeout) {
-            this.currentTimeout = setTimeout(() => {
-                if (this.isShowing) {  // Only hide if still showing
-                    this.hide();
-                    console.warn('Loading timeout reached:', timeout + 'ms');
-                }
-            }, timeout);
-        }
-
-        // Disable form inputs to prevent interference
-        this.disableInputs(true);
+        overlay.classList.add('show');
 
         console.log('Loading shown:', text);
     }
 
-    hide() {
-        // Clear timeout
-        if (this.currentTimeout) {
-            clearTimeout(this.currentTimeout);
-            this.currentTimeout = null;
-        }
-
-        // Only hide if actually showing
-        if (!this.isShowing) {
+    function hideLoading(delay = 0) {
+        if (!overlay) {
+            console.warn('Loading overlay not initialized');
             return;
         }
 
-        // Hide overlay
-        this.overlay.classList.remove('show');
-        this.isShowing = false;
-
-        // Re-enable form inputs
-        this.disableInputs(false);
-
-        console.log('Loading hidden');
-    }
-
-    updateText(text, subtext = null) {
-        const textEl = document.getElementById('loading-text');
-        const subtextEl = document.getElementById('loading-subtext');
-
-        if (textEl && text) {
-            textEl.textContent = text;
+        // Clear any existing hide timeout
+        if (hideTimeout) {
+            clearTimeout(hideTimeout);
+            hideTimeout = null;
         }
 
-        if (subtextEl && subtext !== null) {
-            subtextEl.textContent = subtext;
+        if (delay > 0) {
+            hideTimeout = setTimeout(() => {
+                overlay.classList.remove('show');
+                console.log('Loading hidden (after delay)');
+            }, delay);
+        } else {
+            overlay.classList.remove('show');
+            console.log('Loading hidden');
         }
     }
 
-    disableInputs(disable) {
-        const inputs = document.querySelectorAll('input, button, select, textarea');
-        inputs.forEach(input => {
-            if (disable) {
-                input.disabled = true;
-                input.setAttribute('data-loading-disabled', 'true');
-            } else {
-                // Only re-enable if it was disabled by loading
-                if (input.hasAttribute('data-loading-disabled')) {
-                    input.disabled = false;
-                    input.removeAttribute('data-loading-disabled');
-                }
-            }
-        });
+    function updateLoadingText(text, subtext = null) {
+        if (textElement && text) {
+            textElement.textContent = text;
+        }
+        if (subtextElement && subtext) {
+            subtextElement.textContent = subtext;
+        }
     }
 
-    // Convenience methods for common loading scenarios
-    showSaving() {
-        this.show({
-            text: 'Saving',
-            subtext: 'Saving your data to Google Drive...',
-            timeout: 30000 // 30 second timeout
-        });
-    }
+    // Export to global window object
+    window.showLoading = showLoading;
+    window.hideLoading = hideLoading;
+    window.updateLoading = updateLoadingText;
 
-    showLoading() {
-        this.show({
-            text: 'Loading',
-            subtext: 'Fetching data from Google Drive...',
-            timeout: 20000 // 20 second timeout
-        });
-    }
+    // Legacy compatibility
+    window.LoadingManager = {
+        show: (options = {}) => {
+            const text = options.text || 'Loading';
+            const subtext = options.subtext || 'Please wait...';
+            showLoading(text, subtext);
+        },
+        hide: hideLoading,
+        updateText: updateLoadingText
+    };
 
-    showProcessing(operation = 'Processing') {
-        this.show({
-            text: operation,
-            subtext: 'Please do not close this window...',
-            timeout: 45000 // 45 second timeout
-        });
-    }
-
-    showDeleting() {
-        this.show({
-            text: 'Deleting',
-            subtext: 'Removing occasion data...',
-            timeout: 15000 // 15 second timeout
-        });
-    }
-}
-
-// Global loading manager instance - initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeLoadingManager);
-} else {
-    initializeLoadingManager();
-}
-
-function initializeLoadingManager() {
-    window.LoadingManager = new LoadingManager();
-
-    // Convenience global functions
-    window.showLoading = (options) => window.LoadingManager.show(options);
-    window.hideLoading = () => window.LoadingManager.hide();
-}
-window.updateLoading = (text, subtext) => window.LoadingManager.updateText(text, subtext);
-
-// Export for modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = LoadingManager;
-}
+})();

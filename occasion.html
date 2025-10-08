@@ -563,7 +563,7 @@
                             <tr>
                                 <th>Type</th>
                                 <th>Start</th>
-                                <th>Free</th>
+                                <th>Free (BOGOs)</th>
                                 <th>End</th>
                                 <th>Sold</th>
                             </tr>
@@ -711,17 +711,17 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th style="width: 25%;">Game</th>
-                                <th style="width: 12%;">Serial #</th>
+                                <th style="width: 28%;">Game</th>
+                                <th style="width: 15%;">Serial #</th>
                                 <th>$/Ticket</th>
                                 <th>Tickets</th>
                                 <th>Sales</th>
                                 <th>Ideal</th>
                                 <th>Prizes</th>
                                 <th>Net</th>
-                                <th style="width: 8%;">Paid by Check</th>
-                                <th style="width: 4%;">SE</th>
-                                <th style="width: 6%;">Remove</th>
+                                <th style="width: 5%; writing-mode: vertical-rl; text-orientation: mixed; padding: 0.5rem 0.25rem;">By Check</th>
+                                <th style="width: 5%; writing-mode: vertical-rl; text-orientation: mixed; padding: 0.5rem 0.25rem;">Special</th>
+                                <th style="width: 5%; writing-mode: vertical-rl; text-orientation: mixed; padding: 0.5rem 0.25rem;">Remove</th>
                             </tr>
                         </thead>
                         <tbody id="pulltab-body">
@@ -964,14 +964,12 @@
                             <div class="metric">
                                 <span class="metric-value" id="metric-gross">$0.00</span>
                                 <span class="metric-label">Gross Sales</span>
+                                <span class="metric-value" id="metric-sales-per-player" style="font-size: 0.8em; color: #666; margin-top: 0.25rem;">$0.00 / player</span>
                             </div>
                             <div class="metric">
                                 <span class="metric-value" id="metric-profit">$0.00</span>
                                 <span class="metric-label">Net Profit</span>
-                            </div>
-                            <div class="metric">
-                                <span class="metric-value" id="metric-per-player">$0.00</span>
-                                <span class="metric-label">Per Player</span>
+                                <span class="metric-value" id="metric-profit-per-player" style="font-size: 0.8em; color: #666; margin-top: 0.25rem;">$0.00 / player</span>
                             </div>
                         </div>
                     </div>
@@ -983,8 +981,11 @@
                         <button class="button secondary" onclick="saveDraft()">
                             Save Draft
                         </button>
-                        <button class="button" onclick="printReport()">
-                            Print Report
+                        <button class="button" onclick="generatePDFReport()">
+                            📄 Generate PDF Report
+                        </button>
+                        <button class="button" onclick="generateSMSSummary()">
+                            💬 SMS Summary
                         </button>
                         <button class="button" onclick="exportData()">
                             Export Data
@@ -1026,44 +1027,62 @@
 
     <!-- Loading Spinner Overlay -->
     <style>
-        @keyframes spinnerRotate {
+        @keyframes rlcSpinnerRotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
         #loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10000;
+            z-index: 99999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
         }
-        #loading-overlay.active {
-            display: flex !important;
+
+        #loading-overlay.show {
+            opacity: 1;
+            visibility: visible;
         }
-        .loading-spinner {
+
+        .loading-content {
             background: #ffffff;
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             text-align: center;
-            min-width: 250px;
-            max-width: 400px;
+            min-width: 280px;
         }
-        .spinner {
-            display: block;
+
+        .loading-spinner {
             width: 60px;
             height: 60px;
             margin: 0 auto 1.5rem;
-            border: 5px solid #ecf0f1;
+            border: 5px solid #e0e0e0;
             border-top: 5px solid #1565C0;
             border-radius: 50%;
-            animation: spinnerRotate 0.8s linear infinite;
-            box-sizing: border-box;
+            animation: rlcSpinnerRotate 0.8s linear infinite;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .loading-subtext {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin: 0;
         }
 
         /* Door Sales column alignment */
@@ -1101,9 +1120,10 @@
         }
     </style>
     <div id="loading-overlay">
-        <div class="loading-spinner">
-            <div class="spinner"></div>
-            <p id="loading-message" style="margin: 0; color: #2c3e50; font-size: 1.1rem; font-weight: 600; line-height: 1.4;">Loading...</p>
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loading-text">Loading</div>
+            <div class="loading-subtext" id="loading-subtext">Please wait...</div>
         </div>
     </div>
 
@@ -1113,6 +1133,7 @@
     <script src="js/app.js?v=12.4.0"></script>
     <script src="js/wizard.js?v=12.4.0"></script>
     <script src="js/calculations.js?v=12.4.0"></script>
+    <script src="js/reports.js?v=1.0.0"></script>
     <script src="js/offline.js?v=12.4.0"></script>
     <script src="js/sync.js?v=12.4.0"></script>
     <script src="js/init.js?v=12.4.0"></script>

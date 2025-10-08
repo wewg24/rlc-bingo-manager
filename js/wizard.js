@@ -1222,9 +1222,8 @@ function populateSessionGamesNew(sessionData) {
             <tr data-game-index="${index}">
                 <td><strong>${gameNumber}</strong></td>
                 <td style="${colorStyle} text-align: center; padding: 4px 8px; border-radius: 4px;">${gameColor}</td>
-                <td style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>${gameName}</span>
-                    <button onclick="editGameRow(${index})" class="btn btn-small" style="padding: 2px 8px; margin-left: 8px;">Edit</button>
+                <td>
+                    ${gameName}
                 </td>
                 <td>${formatCurrency(payout)}</td>
                 ${actualBallsCell}
@@ -1487,8 +1486,7 @@ function updateTotalBingoPrizes() {
     rows.forEach(row => {
         // Check if this is a Pull-Tab Event game (exclude from bingo prizes)
         const gameCell = row.cells[2]; // Game name column
-        const gameNameSpan = gameCell?.querySelector('span');
-        const gameName = (gameNameSpan?.textContent || gameCell?.textContent || '').trim();
+        const gameName = (gameCell?.textContent || '').trim();
         const isPullTabEvent = gameName.toLowerCase().includes('pot of gold') ||
                                gameName.toLowerCase().includes('pull-tab event') ||
                                gameName.toLowerCase().includes('event game');
@@ -2353,10 +2351,15 @@ function updatePerformanceMetrics() {
     const profitEl = document.getElementById('metric-profit');
     if (profitEl) profitEl.textContent = `$${netProfit.toFixed(2)}`;
 
-    // Per Player (Gross Sales / Total Players)
-    const perPlayer = totalPlayers > 0 ? (grossSales / totalPlayers) : 0;
-    const perPlayerEl = document.getElementById('metric-per-player');
-    if (perPlayerEl) perPlayerEl.textContent = `$${perPlayer.toFixed(2)}`;
+    // Sales Per Player (Gross Sales / Total Players)
+    const salesPerPlayer = totalPlayers > 0 ? (grossSales / totalPlayers) : 0;
+    const salesPerPlayerEl = document.getElementById('metric-sales-per-player');
+    if (salesPerPlayerEl) salesPerPlayerEl.textContent = `$${salesPerPlayer.toFixed(2)}`;
+
+    // Profit Per Player (Net Profit / Total Players)
+    const profitPerPlayer = totalPlayers > 0 ? (netProfit / totalPlayers) : 0;
+    const profitPerPlayerEl = document.getElementById('metric-profit-per-player');
+    if (profitPerPlayerEl) profitPerPlayerEl.textContent = `$${profitPerPlayer.toFixed(2)}`;
 
     console.log('Performance metrics updated:', {
         totalPlayers,
@@ -2628,27 +2631,6 @@ function updateGamePrizesManual(gameIndex) {
 
     // Update total prizes
     updateTotalBingoPrizes();
-}
-
-// Calculate and update total bingo prizes
-function updateTotalBingoPrizes() {
-    const totalPrizeCells = document.querySelectorAll('#games-body .total-prize');
-    let total = 0;
-
-    totalPrizeCells.forEach(cell => {
-        const value = parseFloat(cell.textContent.replace('$', '')) || 0;
-        total += value;
-    });
-
-    const totalElement = document.getElementById('total-bingo-prizes');
-    if (totalElement) {
-        totalElement.innerHTML = `<strong>$${total.toFixed(2)}</strong>`;
-    }
-
-    // Save to app data
-    if (window.app && window.app.data) {
-        window.app.data.totalBingoPrizes = total;
-    }
 }
 
 // Toggle game as not played
