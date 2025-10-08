@@ -13,9 +13,9 @@
     <meta http-equiv="Expires" content="0">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css?v=11.9.0">
-    <link rel="stylesheet" href="css/wizard.css?v=11.9.0">
-    <link rel="stylesheet" href="css/dark-mode.css?v=11.9.0">
+    <link rel="stylesheet" href="css/style.css?v=12.5.0">
+    <link rel="stylesheet" href="css/wizard.css?v=12.5.0">
+    <link rel="stylesheet" href="css/dark-mode.css?v=12.5.0">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -442,39 +442,6 @@
             </div>
         </header>
 
-        <!-- Progress Bar -->
-        <div class="wizard-progress">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-            </div>
-            <div class="progress-steps">
-                <div class="step active" data-step="1">
-                    <span class="step-number">1</span>
-                    <span class="step-label">Occasion</span>
-                </div>
-                <div class="step" data-step="2">
-                    <span class="step-number">2</span>
-                    <span class="step-label">Bingo</span>
-                </div>
-                <div class="step" data-step="3">
-                    <span class="step-number">3</span>
-                    <span class="step-label">Game Results</span>
-                </div>
-                <div class="step" data-step="4">
-                    <span class="step-number">4</span>
-                    <span class="step-label">Pull-Tabs</span>
-                </div>
-                <div class="step" data-step="5">
-                    <span class="step-number">5</span>
-                    <span class="step-label">Money Count</span>
-                </div>
-                <div class="step" data-step="6">
-                    <span class="step-number">6</span>
-                    <span class="step-label">Review</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Main Content -->
         <main class="wizard-container">
             <!-- Tab Navigation -->
@@ -508,7 +475,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="lion-charge">Lion in Charge</label>
+                            <label for="lion-charge">Closet Worker</label>
                             <input type="text" id="lion-charge" required>
                         </div>
                         <div class="form-group">
@@ -729,7 +696,7 @@
                         </tbody>
                         <tfoot>
                             <tr class="total-row">
-                                <td colspan="4">Regular Games</td>
+                                <td colspan="4">Regular Pull-Tab Games</td>
                                 <td id="pt-reg-sales">$0.00</td>
                                 <td id="pt-reg-ideal">$0.00</td>
                                 <td id="pt-reg-prizes">$0.00</td>
@@ -737,11 +704,19 @@
                                 <td colspan="2"></td>
                             </tr>
                             <tr class="total-row special-event">
-                                <td colspan="4">Special Events</td>
+                                <td colspan="4">Special Event Game</td>
                                 <td id="pt-se-sales">$0.00</td>
                                 <td id="pt-se-ideal">$0.00</td>
                                 <td id="pt-se-prizes">$0.00</td>
                                 <td id="pt-se-net">$0.00</td>
+                                <td colspan="2"></td>
+                            </tr>
+                            <tr class="total-row" style="background-color: #bbdefb; font-weight: 700;">
+                                <td colspan="4">All Pull-Tab Games</td>
+                                <td id="pt-all-sales">$0.00</td>
+                                <td id="pt-all-ideal">$0.00</td>
+                                <td id="pt-all-prizes">$0.00</td>
+                                <td id="pt-all-net">$0.00</td>
                                 <td colspan="2"></td>
                             </tr>
                         </tfoot>
@@ -749,6 +724,60 @@
 
                     <button class="button secondary" onclick="addPullTabRow()">Add Game</button>
                     <button onclick="addSpecialEventRow()" class="button secondary">Add Custom</button>
+
+                    <!-- Drawer Tracking Section -->
+                    <h3 style="margin-top: 2rem; color: #2c3e50;">Drawer Tracking</h3>
+                    <div class="drawer-section" style="background: var(--light); padding: 1.5rem; border-radius: 8px;">
+                        <table class="money-table" style="width: 100%;">
+                            <tr>
+                                <td style="width: 20%;">$100's</td>
+                                <td style="width: 30%;"><input type="number" id="pt-drawer-100" step="100" min="0" onchange="calculatePullTabDrawer()"></td>
+                                <td style="width: 20%;">$5's</td>
+                                <td style="width: 30%;"><input type="number" id="pt-drawer-5" step="5" min="0" onchange="calculatePullTabDrawer()"></td>
+                            </tr>
+                            <tr>
+                                <td>$50's</td>
+                                <td><input type="number" id="pt-drawer-50" step="50" min="0" onchange="calculatePullTabDrawer()"></td>
+                                <td>$2's</td>
+                                <td><input type="number" id="pt-drawer-2" step="2" min="0" onchange="calculatePullTabDrawer()"></td>
+                            </tr>
+                            <tr>
+                                <td>$20's</td>
+                                <td><input type="number" id="pt-drawer-20" step="20" min="0" onchange="calculatePullTabDrawer()"></td>
+                                <td>$1's</td>
+                                <td><input type="number" id="pt-drawer-1" step="1" min="0" onchange="calculatePullTabDrawer()"></td>
+                            </tr>
+                            <tr>
+                                <td>$10's</td>
+                                <td><input type="number" id="pt-drawer-10" step="10" min="0" onchange="calculatePullTabDrawer()"></td>
+                                <td>Coins</td>
+                                <td><input type="number" id="pt-drawer-coins" step="0.01" min="0" onchange="calculatePullTabDrawer()"></td>
+                            </tr>
+                            <tr class="total-row" style="background-color: #e3f2fd; font-weight: 600;">
+                                <td colspan="3" style="text-align: right; padding-right: 1rem;"><strong>Pull-Tab Drawer Total:</strong></td>
+                                <td><strong><span id="pt-drawer-total">$0.00</span></strong></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Offage Analysis Section -->
+                    <h3 style="margin-top: 2rem; color: #2c3e50;">Offage Analysis</h3>
+                    <div class="drawer-section" style="background: var(--light); padding: 1.5rem; border-radius: 8px;">
+                        <table class="money-table" style="width: 100%;">
+                            <tr>
+                                <td style="width: 70%; font-weight: 600;">Pull-Tab Drawer Total Deposit:</td>
+                                <td style="width: 30%; text-align: right;" id="offage-drawer-total">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">All Pull-Tab Games Net:</td>
+                                <td style="text-align: right;" id="offage-games-net">$0.00</td>
+                            </tr>
+                            <tr class="total-row" style="background-color: #e3f2fd; font-weight: 700;">
+                                <td><strong>Over/(Short):</strong></td>
+                                <td style="text-align: right;"><strong><span id="offage-overshort">$0.00</span></strong></td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Save Draft Button -->
@@ -809,39 +838,39 @@
                         </div>
 
                         <div class="drawer-section">
-                            <h3>Pull-Tab Drawer</h3>
+                            <h3>Pull-Tab Drawer <span style="font-size: 0.8em; color: #666; font-weight: normal;">(Read-Only - Edit on Pull-Tabs tab)</span></h3>
                             <table class="money-table">
                                 <tr>
                                     <td>$100's</td>
-                                    <td><input type="number" id="pt-100" step="100" min="0"></td>
+                                    <td id="pt-100-display">$0.00</td>
                                 </tr>
                                 <tr>
                                     <td>$50's</td>
-                                    <td><input type="number" id="pt-50" step="50" min="0"></td>
+                                    <td id="pt-50-display">$0.00</td>
                                 </tr>
                                 <tr>
                                     <td>$20's</td>
-                                    <td><input type="number" id="pt-20" step="20" min="0"></td>
+                                    <td id="pt-20-display">$0.00</td>
                                 </tr>
                                 <tr>
                                     <td>$10's</td>
-                                    <td><input type="number" id="pt-10" step="10" min="0"></td>
+                                    <td id="pt-10-display">$0.00</td>
                                 </tr>
                                 <tr>
                                     <td>$5's</td>
-                                    <td><input type="number" id="pt-5" step="5" min="0"></td>
+                                    <td id="pt-5-display">$0.00</td>
                                 </tr>
                                 <tr>
                                     <td>$2's</td>
-                                    <td><input type="number" id="pt-2" step="2" min="0"></td>
+                                    <td id="pt-2-display">$0.00</td>
                                 </tr>
                                 <tr>
                                     <td>$1's</td>
-                                    <td><input type="number" id="pt-1" step="1" min="0"></td>
+                                    <td id="pt-1-display">$0.00</td>
                                 </tr>
                                 <tr>
                                     <td>Coins</td>
-                                    <td><input type="number" id="pt-coins" step="0.01" min="0"></td>
+                                    <td id="pt-coins-display">$0.00</td>
                                 </tr>
                                 <tr>
                                     <td>Checks</td>
@@ -1128,14 +1157,14 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/config.js?v=12.4.0"></script>
-    <script src="js/loading.js?v=12.4.0"></script>
-    <script src="js/app.js?v=12.4.0"></script>
-    <script src="js/wizard.js?v=12.4.0"></script>
-    <script src="js/calculations.js?v=12.4.0"></script>
-    <script src="js/reports.js?v=1.0.0"></script>
-    <script src="js/offline.js?v=12.4.0"></script>
-    <script src="js/sync.js?v=12.4.0"></script>
-    <script src="js/init.js?v=12.4.0"></script>
+    <script src="js/config.js?v=12.5.0"></script>
+    <script src="js/loading.js?v=12.5.0"></script>
+    <script src="js/app.js?v=12.5.0"></script>
+    <script src="js/wizard.js?v=12.5.0"></script>
+    <script src="js/calculations.js?v=12.5.0"></script>
+    <script src="js/reports.js?v=2.0.0"></script>
+    <script src="js/offline.js?v=12.5.0"></script>
+    <script src="js/sync.js?v=12.5.0"></script>
+    <script src="js/init.js?v=12.5.0"></script>
 </body>
 </html>

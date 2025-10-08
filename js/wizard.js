@@ -2794,12 +2794,143 @@ function calculatePullTabTotals() {
     if (ptSePrizes) ptSePrizes.textContent = `$${sePrizes.toFixed(2)}`;
     if (ptSeNet) ptSeNet.textContent = `$${seNet.toFixed(2)}`;
 
+    // Update footer totals - All Pull-Tab Games
+    const allSales = regSales + seSales;
+    const allIdeal = regIdeal + seIdeal;
+    const allPrizes = regPrizes + sePrizes;
+    const allNet = regNet + seNet;
+
+    const ptAllSales = document.getElementById('pt-all-sales');
+    const ptAllIdeal = document.getElementById('pt-all-ideal');
+    const ptAllPrizes = document.getElementById('pt-all-prizes');
+    const ptAllNet = document.getElementById('pt-all-net');
+
+    if (ptAllSales) ptAllSales.textContent = `$${allSales.toFixed(2)}`;
+    if (ptAllIdeal) ptAllIdeal.textContent = `$${allIdeal.toFixed(2)}`;
+    if (ptAllPrizes) ptAllPrizes.textContent = `$${allPrizes.toFixed(2)}`;
+    if (ptAllNet) ptAllNet.textContent = `$${allNet.toFixed(2)}`;
+
     console.log('Footer updated successfully');
+
+    // Update Offage Analysis section
+    const offageGamesNet = document.getElementById('offage-games-net');
+    if (offageGamesNet) {
+        offageGamesNet.textContent = `$${allNet.toFixed(2)}`;
+    }
+
+    // Calculate and update Over/Short
+    calculateOffageAnalysis();
 
     // Save to app data
     if (window.app && window.app.data) {
-        window.app.data.pullTabSales = regSales + seSales;
-        window.app.data.pullTabPrizes = regPrizes + sePrizes;
-        window.app.data.pullTabNet = regNet + seNet;
+        window.app.data.pullTabSales = allSales;
+        window.app.data.pullTabPrizes = allPrizes;
+        window.app.data.pullTabNet = allNet;
     }
 }
+
+// ============================================
+// PULL-TAB DRAWER CALCULATION
+// ============================================
+
+function calculatePullTabDrawer() {
+    console.log('=== calculatePullTabDrawer CALLED ===');
+
+    const denominations = {
+        100: parseFloat(document.getElementById('pt-drawer-100')?.value) || 0,
+        50: parseFloat(document.getElementById('pt-drawer-50')?.value) || 0,
+        20: parseFloat(document.getElementById('pt-drawer-20')?.value) || 0,
+        10: parseFloat(document.getElementById('pt-drawer-10')?.value) || 0,
+        5: parseFloat(document.getElementById('pt-drawer-5')?.value) || 0,
+        2: parseFloat(document.getElementById('pt-drawer-2')?.value) || 0,
+        1: parseFloat(document.getElementById('pt-drawer-1')?.value) || 0,
+        coins: parseFloat(document.getElementById('pt-drawer-coins')?.value) || 0
+    };
+
+    const total = denominations[100] + denominations[50] + denominations[20] +
+                  denominations[10] + denominations[5] + denominations[2] +
+                  denominations[1] + denominations.coins;
+
+    // Update total display on Pull-Tabs tab
+    const ptDrawerTotal = document.getElementById('pt-drawer-total');
+    if (ptDrawerTotal) {
+        ptDrawerTotal.textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Update read-only displays on Money Count tab
+    document.getElementById('pt-100-display').textContent = `$${denominations[100].toFixed(2)}`;
+    document.getElementById('pt-50-display').textContent = `$${denominations[50].toFixed(2)}`;
+    document.getElementById('pt-20-display').textContent = `$${denominations[20].toFixed(2)}`;
+    document.getElementById('pt-10-display').textContent = `$${denominations[10].toFixed(2)}`;
+    document.getElementById('pt-5-display').textContent = `$${denominations[5].toFixed(2)}`;
+    document.getElementById('pt-2-display').textContent = `$${denominations[2].toFixed(2)}`;
+    document.getElementById('pt-1-display').textContent = `$${denominations[1].toFixed(2)}`;
+    document.getElementById('pt-coins-display').textContent = `$${denominations.coins.toFixed(2)}`;
+
+    const ptTotal = document.getElementById('pt-total');
+    if (ptTotal) {
+        ptTotal.textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Update Offage Analysis
+    const offageDrawerTotal = document.getElementById('offage-drawer-total');
+    if (offageDrawerTotal) {
+        offageDrawerTotal.textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Calculate Over/Short
+    calculateOffageAnalysis();
+
+    // Save to app data
+    if (window.app && window.app.data) {
+        if (!window.app.data.moneyCount) window.app.data.moneyCount = {};
+        if (!window.app.data.moneyCount.pullTab) window.app.data.moneyCount.pullTab = {};
+        window.app.data.moneyCount.pullTab = {
+            ...denominations,
+            total: total
+        };
+    }
+
+    console.log('Pull-Tab Drawer Total:', total);
+}
+
+// ============================================
+// OFFAGE ANALYSIS CALCULATION
+// ============================================
+
+function calculateOffageAnalysis() {
+    console.log('=== calculateOffageAnalysis CALLED ===');
+
+    // Get drawer total
+    const drawerTotalEl = document.getElementById('pt-drawer-total');
+    const drawerTotal = drawerTotalEl ? parseFloat(drawerTotalEl.textContent.replace('$', '')) || 0 : 0;
+
+    // Get games net
+    const gamesNetEl = document.getElementById('pt-all-net');
+    const gamesNet = gamesNetEl ? parseFloat(gamesNetEl.textContent.replace('$', '')) || 0 : 0;
+
+    // Calculate Over/Short (Drawer - Games Net)
+    const overShort = drawerTotal - gamesNet;
+
+    // Update display
+    const offageOvershort = document.getElementById('offage-overshort');
+    if (offageOvershort) {
+        offageOvershort.textContent = `$${overShort.toFixed(2)}`;
+
+        // Color code based on positive/negative
+        const parentCell = offageOvershort.parentElement;
+        if (overShort > 0) {
+            parentCell.style.color = '#27ae60'; // Green for over
+        } else if (overShort < 0) {
+            parentCell.style.color = '#e74c3c'; // Red for short
+        } else {
+            parentCell.style.color = '#2c3e50'; // Default for zero
+        }
+    }
+
+    console.log('Offage Analysis - Drawer:', drawerTotal, 'Games Net:', gamesNet, 'Over/Short:', overShort);
+}
+
+// Make functions globally accessible
+window.calculatePullTabDrawer = calculatePullTabDrawer;
+window.calculateOffageAnalysis = calculateOffageAnalysis;

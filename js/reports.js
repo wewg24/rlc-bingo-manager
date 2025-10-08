@@ -262,10 +262,19 @@ function formatNumber(value) {
 
 function generateFinancialSummarySection(appData) {
     const financial = appData.financial || {};
+    const totalPlayers = appData.occasion?.totalPlayers || appData.occasion?.totalPeople || 0;
+
+    // Get values from multiple possible locations for compatibility
+    const totalBingoSales = financial.totalBingoSales || 0;
+    const totalPullTabSales = financial.pullTabSales || appData.pullTabSales || 0;
     const grossSales = financial.grossSales || 0;
-    const totalExpenses = financial.totalExpenses || 0;
+
+    const bingoPrizes = financial.bingoPrizesPaid || appData.totalBingoPrizes || 0;
+    const pullTabPrizes = financial.pullTabPrizesPaid || appData.pullTabPrizes || 0;
+    const totalPrizes = financial.totalPrizesPaid || (bingoPrizes + pullTabPrizes) || 0;
+
     const netProfit = financial.actualProfit || 0;
-    const totalPlayers = appData.occasion?.totalPeople || 0;
+
     const salesPerPlayer = totalPlayers > 0 ? grossSales / totalPlayers : 0;
     const profitPerPlayer = totalPlayers > 0 ? netProfit / totalPlayers : 0;
 
@@ -297,11 +306,11 @@ function generateFinancialSummarySection(appData) {
             </tr>
             <tr>
                 <td>Total Bingo Sales</td>
-                <td class="text-right">${formatCurrency(financial.totalBingoSales || 0)}</td>
+                <td class="text-right">${formatCurrency(totalBingoSales)}</td>
             </tr>
             <tr>
                 <td>Total Pull-Tab Sales</td>
-                <td class="text-right">${formatCurrency(financial.totalPullTabSales || 0)}</td>
+                <td class="text-right">${formatCurrency(totalPullTabSales)}</td>
             </tr>
             <tr class="total-row">
                 <td>Gross Sales</td>
@@ -309,19 +318,15 @@ function generateFinancialSummarySection(appData) {
             </tr>
             <tr>
                 <td>Bingo Prizes</td>
-                <td class="text-right">${formatCurrency(financial.totalBingoPrizes || 0)}</td>
+                <td class="text-right">${formatCurrency(bingoPrizes)}</td>
             </tr>
             <tr>
                 <td>Pull-Tab Prizes</td>
-                <td class="text-right">${formatCurrency(financial.totalPullTabPrizes || 0)}</td>
-            </tr>
-            <tr>
-                <td>Other Expenses</td>
-                <td class="text-right">${formatCurrency(financial.otherExpenses || 0)}</td>
+                <td class="text-right">${formatCurrency(pullTabPrizes)}</td>
             </tr>
             <tr class="total-row">
-                <td>Total Expenses</td>
-                <td class="text-right">${formatCurrency(totalExpenses)}</td>
+                <td>Total Prizes</td>
+                <td class="text-right">${formatCurrency(totalPrizes)}</td>
             </tr>
             <tr class="total-row" style="background: #c8e6c9 !important;">
                 <td><strong>Net Profit</strong></td>
@@ -333,7 +338,26 @@ function generateFinancialSummarySection(appData) {
 }
 
 function generateBingoSalesSection(appData) {
-    const doorSales = appData.doorSales || {};
+    const posSales = appData.posSales || {};
+
+    // Categorize items from posSales object
+    const electronic = ['small-machine', 'large-machine'];
+    const misc = ['dauber'];
+    const paper = ['6-face', '9-face-solid', '9-face-stripe', 'birthday-pack',
+                   'coverall', 'double-action', 'letter-x', 'number7',
+                   '18-face-prog', '3-face-prog'];
+
+    const electronicItems = Object.keys(posSales)
+        .filter(key => electronic.includes(key) && posSales[key].quantity > 0)
+        .map(key => ({ ...posSales[key], name: posSales[key].name || key }));
+
+    const miscItems = Object.keys(posSales)
+        .filter(key => misc.includes(key) && posSales[key].quantity > 0)
+        .map(key => ({ ...posSales[key], name: posSales[key].name || key }));
+
+    const paperItems = Object.keys(posSales)
+        .filter(key => paper.includes(key) && posSales[key].quantity > 0)
+        .map(key => ({ ...posSales[key], name: posSales[key].name || key }));
 
     return `
     <div class="section">
@@ -347,7 +371,7 @@ function generateBingoSalesSection(appData) {
                 <th class="text-right">Quantity</th>
                 <th class="text-right">Total</th>
             </tr>
-            ${generateDoorSalesRows(doorSales.electronic || [])}
+            ${generateDoorSalesRows(electronicItems)}
         </table>
 
         <h4 style="margin-top: 1.5rem; color: #34495e;">Miscellaneous</h4>
@@ -358,7 +382,7 @@ function generateBingoSalesSection(appData) {
                 <th class="text-right">Quantity</th>
                 <th class="text-right">Total</th>
             </tr>
-            ${generateDoorSalesRows(doorSales.miscellaneous || [])}
+            ${generateDoorSalesRows(miscItems)}
         </table>
 
         <h4 style="margin-top: 1.5rem; color: #34495e;">Paper Bingo</h4>
@@ -369,7 +393,7 @@ function generateBingoSalesSection(appData) {
                 <th class="text-right">Quantity</th>
                 <th class="text-right">Total</th>
             </tr>
-            ${generateDoorSalesRows(doorSales.paper || [])}
+            ${generateDoorSalesRows(paperItems)}
         </table>
     </div>
     `;
@@ -397,23 +421,29 @@ function generateSessionGamesSection(appData) {
         return '<div class="section"><div class="section-title">Session Games</div><p style="color: #95a5a6;">No games recorded</p></div>';
     }
 
-    const gameRows = games.map((game, index) => `
+    const gameRows = games.map((game, index) => {
+        const gameName = (game.name || '').replace(/\s*Edit\s*/g, '').replace(/\n/g, ' ').trim();
+        const isPTEvent = gameName.toLowerCase().includes('pot of gold') ||
+                         gameName.toLowerCase().includes('pull-tab event') ||
+                         gameName.toLowerCase().includes('event game');
+
+        return `
         <tr>
             <td class="text-center">${index + 1}</td>
-            <td>${game.name || 'Unknown Game'}</td>
-            <td class="text-right">${formatCurrency(game.payout || 0)}</td>
+            <td>${gameName}${isPTEvent ? ' <em>(Not included in Bingo total)</em>' : ''}</td>
+            <td class="text-right">${formatCurrency(game.prizePerWinner || game.payout || 0)}</td>
             <td class="text-right">${game.winners || 0}</td>
             <td class="text-right">${formatCurrency(game.totalPayout || 0)}</td>
             <td class="text-center">${game.checkPayment ? '✓' : ''}</td>
             <td class="text-center">${game.notPlayed ? 'Not Played' : ''}</td>
         </tr>
-    `).join('');
+    `}).join('');
 
     const totalPrizes = games.reduce((sum, g) => {
-        const gameName = g.name || '';
-        const isPTEvent = gameName.toLowerCase().includes('pot of gold') ||
-                         gameName.toLowerCase().includes('pull-tab event') ||
-                         gameName.toLowerCase().includes('event game');
+        const gameName = (g.name || '').toLowerCase();
+        const isPTEvent = gameName.includes('pot of gold') ||
+                         gameName.includes('pull-tab event') ||
+                         gameName.includes('event game');
         return isPTEvent ? sum : sum + (g.totalPayout || 0);
     }, 0);
 
@@ -452,13 +482,13 @@ function generatePullTabsSection(appData) {
         <tr>
             <td>${pt.gameName || 'Unknown'}</td>
             <td class="text-center">${pt.serialNumber || 'N/A'}</td>
-            <td class="text-right">${formatCurrency(pt.ticketPrice || 0)}</td>
-            <td class="text-right">${formatNumber(pt.ticketsSold || 0)}</td>
+            <td class="text-right">${formatCurrency(pt.price || pt.ticketPrice || 0)}</td>
+            <td class="text-right">${formatNumber(pt.tickets || pt.ticketsSold || 0)}</td>
             <td class="text-right">${formatCurrency(pt.sales || 0)}</td>
             <td class="text-right">${formatCurrency(pt.idealProfit || 0)}</td>
             <td class="text-right">${formatCurrency(pt.prizesPaid || 0)}</td>
             <td class="text-right">${formatCurrency(pt.netProfit || 0)}</td>
-            <td class="text-center">${pt.paidByCheck ? '✓' : ''}</td>
+            <td class="text-center">${pt.checkPayment || pt.paidByCheck ? '✓' : ''}</td>
             <td class="text-center">${pt.isSpecialEvent ? '✓' : ''}</td>
         </tr>
     `).join('');
@@ -544,15 +574,19 @@ function generateSMSSummary() {
 
     const date = occasion.date || 'N/A';
     const session = occasion.sessionType || 'N/A';
-    const players = occasion.totalPeople || 0;
+    const players = occasion.totalPlayers || occasion.totalPeople || 0;
+
+    // Get values from multiple possible locations for compatibility
     const grossSales = financial.grossSales || 0;
+    const bingoSales = financial.totalBingoSales || 0;
+    const ptSales = financial.pullTabSales || appData.pullTabSales || 0;
+
+    const bingoPrizes = financial.bingoPrizesPaid || appData.totalBingoPrizes || 0;
+    const ptPrizes = financial.pullTabPrizesPaid || appData.pullTabPrizes || 0;
+    const totalPrizes = bingoPrizes + ptPrizes;
+
     const netProfit = financial.actualProfit || 0;
     const profitPerPlayer = players > 0 ? netProfit / players : 0;
-
-    const bingoSales = financial.totalBingoSales || 0;
-    const ptSales = financial.totalPullTabSales || 0;
-    const bingoPrizes = financial.totalBingoPrizes || 0;
-    const ptPrizes = financial.totalPullTabPrizes || 0;
 
     // Create SMS-friendly summary
     const summary = `🎱 RLC Bingo Report
@@ -566,7 +600,7 @@ Gross Sales: ${formatCurrency(grossSales)}
 └─ Pull-Tabs: ${formatCurrency(ptSales)}
 
 🎁 PRIZES PAID
-Total: ${formatCurrency(bingoPrizes + ptPrizes)}
+Total: ${formatCurrency(totalPrizes)}
 ├─ Bingo: ${formatCurrency(bingoPrizes)}
 └─ Pull-Tabs: ${formatCurrency(ptPrizes)}
 
