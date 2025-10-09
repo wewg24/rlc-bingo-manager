@@ -2365,7 +2365,7 @@ function updatePerformanceMetrics() {
         totalPlayers,
         grossSales,
         netProfit,
-        perPlayer
+        profitPerPlayer
     });
 }
 
