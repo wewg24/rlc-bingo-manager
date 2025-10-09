@@ -725,58 +725,73 @@
                     <button class="button secondary" onclick="addPullTabRow()">Add Game</button>
                     <button onclick="addSpecialEventRow()" class="button secondary">Add Custom</button>
 
-                    <!-- Drawer Tracking Section -->
-                    <h3 style="margin-top: 2rem; color: #2c3e50;">Drawer Tracking</h3>
-                    <div class="drawer-section" style="background: var(--light); padding: 1.5rem; border-radius: 8px;">
-                        <table class="money-table" style="width: 100%;">
-                            <tr>
-                                <td style="width: 20%;">$100's</td>
-                                <td style="width: 30%;"><input type="number" id="pt-drawer-100" step="100" min="0" onchange="calculatePullTabDrawer()"></td>
-                                <td style="width: 20%;">$5's</td>
-                                <td style="width: 30%;"><input type="number" id="pt-drawer-5" step="5" min="0" onchange="calculatePullTabDrawer()"></td>
-                            </tr>
-                            <tr>
-                                <td>$50's</td>
-                                <td><input type="number" id="pt-drawer-50" step="50" min="0" onchange="calculatePullTabDrawer()"></td>
-                                <td>$2's</td>
-                                <td><input type="number" id="pt-drawer-2" step="2" min="0" onchange="calculatePullTabDrawer()"></td>
-                            </tr>
-                            <tr>
-                                <td>$20's</td>
-                                <td><input type="number" id="pt-drawer-20" step="20" min="0" onchange="calculatePullTabDrawer()"></td>
-                                <td>$1's</td>
-                                <td><input type="number" id="pt-drawer-1" step="1" min="0" onchange="calculatePullTabDrawer()"></td>
-                            </tr>
-                            <tr>
-                                <td>$10's</td>
-                                <td><input type="number" id="pt-drawer-10" step="10" min="0" onchange="calculatePullTabDrawer()"></td>
-                                <td>Coins</td>
-                                <td><input type="number" id="pt-drawer-coins" step="0.01" min="0" onchange="calculatePullTabDrawer()"></td>
-                            </tr>
-                            <tr class="total-row" style="background-color: #e3f2fd; font-weight: 600;">
-                                <td colspan="3" style="text-align: right; padding-right: 1rem;"><strong>Pull-Tab Drawer Total:</strong></td>
-                                <td><strong><span id="pt-drawer-total">$0.00</span></strong></td>
-                            </tr>
-                        </table>
-                    </div>
+                    <!-- Drawer Tracking and Offage Analysis Container -->
+                    <div style="display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap;">
+                        <!-- Drawer Tracking Section -->
+                        <div style="flex: 1; min-width: 300px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 1rem;">Drawer Tracking</h3>
+                            <div class="drawer-section" style="background: var(--light); padding: 1.5rem; border-radius: 8px;">
+                                <table class="money-table" style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 30%;">$100's</td>
+                                        <td style="width: 70%;"><input type="number" id="pt-drawer-100" step="100" min="0" onchange="calculatePullTabDrawer()" tabindex="401"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>$50's</td>
+                                        <td><input type="number" id="pt-drawer-50" step="50" min="0" onchange="calculatePullTabDrawer()" tabindex="402"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>$20's</td>
+                                        <td><input type="number" id="pt-drawer-20" step="20" min="0" onchange="calculatePullTabDrawer()" tabindex="403"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>$10's</td>
+                                        <td><input type="number" id="pt-drawer-10" step="10" min="0" onchange="calculatePullTabDrawer()" tabindex="404"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>$5's</td>
+                                        <td><input type="number" id="pt-drawer-5" step="5" min="0" onchange="calculatePullTabDrawer()" tabindex="405"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>$2's</td>
+                                        <td><input type="number" id="pt-drawer-2" step="2" min="0" onchange="calculatePullTabDrawer()" tabindex="406"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>$1's</td>
+                                        <td><input type="number" id="pt-drawer-1" step="1" min="0" onchange="calculatePullTabDrawer()" tabindex="407"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Coins</td>
+                                        <td><input type="number" id="pt-drawer-coins" step="0.01" min="0" onchange="calculatePullTabDrawer()" tabindex="408"></td>
+                                    </tr>
+                                    <tr class="total-row" style="background-color: #e3f2fd; font-weight: 600;">
+                                        <td style="text-align: right; padding-right: 1rem;"><strong>Drawer Total:</strong></td>
+                                        <td><strong><span id="pt-drawer-total">$0.00</span></strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
 
-                    <!-- Offage Analysis Section -->
-                    <h3 style="margin-top: 2rem; color: #2c3e50;">Offage Analysis</h3>
-                    <div class="drawer-section" style="background: var(--light); padding: 1.5rem; border-radius: 8px;">
-                        <table class="money-table" style="width: 100%;">
-                            <tr>
-                                <td style="width: 70%; font-weight: 600;">Pull-Tab Drawer Total Deposit:</td>
-                                <td style="width: 30%; text-align: right;" id="offage-drawer-total">$0.00</td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: 600;">All Pull-Tab Games Net:</td>
-                                <td style="text-align: right;" id="offage-games-net">$0.00</td>
-                            </tr>
-                            <tr class="total-row" style="background-color: #e3f2fd; font-weight: 700;">
-                                <td><strong>Over/(Short):</strong></td>
-                                <td style="text-align: right;"><strong><span id="offage-overshort">$0.00</span></strong></td>
-                            </tr>
-                        </table>
+                        <!-- Offage Analysis Section -->
+                        <div style="flex: 1; min-width: 300px;">
+                            <h3 style="color: #2c3e50; margin-bottom: 1rem;">Offage Analysis</h3>
+                            <div class="drawer-section" style="background: var(--light); padding: 1.5rem; border-radius: 8px;">
+                                <table class="money-table" style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 60%; font-weight: 600;">Pull-Tab Drawer Total Deposit:</td>
+                                        <td style="width: 40%; text-align: right;" id="offage-drawer-total">$0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: 600;">All Pull-Tab Games Net:</td>
+                                        <td style="text-align: right;" id="offage-games-net">$0.00</td>
+                                    </tr>
+                                    <tr class="total-row" style="background-color: #e3f2fd; font-weight: 700;">
+                                        <td><strong>Over/(Short):</strong></td>
+                                        <td style="text-align: right;"><strong><span id="offage-overshort">$0.00</span></strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
