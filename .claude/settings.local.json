@@ -24,7 +24,9 @@
       "Bash(start \"C:\\Users\\bill.wiggins\\OneDrive - Phelps County Bank\\Lion''s Club\\Bingo\\Project\\rlc-bingo-manager\\admin.html\")",
       "Bash(git rm:*)",
       "Bash(grep:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(git restore:*)",
+      "Bash(gh:*)"
     ],
     "deny": [],
     "ask": []

@@ -264,15 +264,26 @@ class UIComponents {
 
     renderOccasionRow(occasion) {
         const formattedDate = new Date(occasion.date).toLocaleDateString();
-        const sessionTypeName = CONFIG.SESSION_TYPES ? (CONFIG.SESSION_TYPES[occasion.sessionType] || occasion.sessionType) : occasion.sessionType;
+
+        // Handle both index format (occasion.session) and full format (occasion.sessionType)
+        const sessionType = occasion.session || occasion.sessionType || (occasion.occasion?.sessionType);
+        const sessionTypeName = CONFIG.SESSION_TYPES ? (CONFIG.SESSION_TYPES[sessionType] || sessionType) : sessionType;
+
+        // Access nested occasion data if available (from index), otherwise use top-level properties
+        const lionInCharge = occasion.occasion?.lionInCharge || occasion.lionInCharge || 'N/A';
+        const totalPlayers = occasion.occasion?.totalPlayers || occasion.totalPlayers || 0;
+
+        // Total revenue - may not be in index, try to calculate from financial data if available
+        const totalRevenue = occasion.financial?.grossSales || occasion.financial?.totalSales ||
+                             occasion.totalRevenue || 0;
 
         return `
             <tr>
                 <td><strong>${formattedDate}</strong></td>
                 <td>${sessionTypeName}</td>
-                <td>${occasion.lionInCharge}</td>
-                <td>${occasion.totalPlayers || 0}</td>
-                <td>$${(occasion.totalRevenue || 0).toLocaleString()}</td>
+                <td>${lionInCharge}</td>
+                <td>${totalPlayers}</td>
+                <td>$${totalRevenue.toLocaleString()}</td>
                 <td><span class="status ${occasion.status.toLowerCase()}">${occasion.status}</span></td>
                 <td>
                     <div class="btn-group">

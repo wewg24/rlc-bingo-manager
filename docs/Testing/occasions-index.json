@@ -1,0 +1,25 @@
+{
+    "lastUpdated": "2025-10-09T17:50:45.967Z",
+    "count": 1,
+    "occasions": [
+      {
+        "id": "OCC_1760032241928",
+        "date": "2025-07-14",
+        "session": "6-2",
+        "status": "draft",
+        "fileName": "OCC_1760032241928.json",
+        "yearFolder": "2025",
+        "created": "2025-10-09T17:50:41.928Z",
+        "modified": "2025-10-09T17:50:41.928Z",
+        "occasion": {
+          "date": "2025-07-14",
+          "sessionType": "6-2",
+          "lionInCharge": "Wayne Parry",
+          "lionPullTabs": "Schuman & White",
+          "totalPlayers": 85,
+          "birthdays": 4,
+          "createdBy": "Mobile Entry"
+        }
+      }
+    ]
+  }
